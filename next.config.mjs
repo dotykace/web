@@ -1,10 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  // Nastavenie base path pre GitHub Pages, ak používate vlastnú doménu, môžete to odstrániť
-  // basePath: '/nazov-repozitara',
-  // Nastavenie assetPrefix pre GitHub Pages, ak používate vlastnú doménu, môžete to odstrániť
-  // assetPrefix: '/nazov-repozitara',
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -14,6 +9,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig

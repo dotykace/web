@@ -21,38 +21,30 @@ body {
   background: linear-gradient(to bottom, transparent, rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
 }
 
-/* Custom scrollbar for the chat area */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #c084fc;
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #a855f7;
-}
-
-/* Emoji animations */
+/* Custom emoji animations */
 @keyframes float {
   0% {
-    transform: translateY(0px);
+    transform: translateY(0px) rotate(0deg);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-10px) rotate(5deg);
   }
   100% {
-    transform: translateY(0px);
+    transform: translateY(0px) rotate(0deg);
   }
 }
 
 .emoji-float {
+  display: inline-block;
   animation: float 3s ease-in-out infinite;
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }

@@ -1,9 +1,8 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
-import { PaperAirplaneIcon } from "@heroicons/react/24/solid"
+import { ArrowRightIcon } from "lucide-react"
 
 interface UserInputProps {
   onSubmit: (input: string) => void
@@ -33,7 +32,7 @@ export default function UserInput({ onSubmit, placeholder, buttonText }: UserInp
         autoFocus
       />
       <button type="submit" className="bg-purple-600 text-white p-3 rounded-full hover:bg-purple-700 transition-colors">
-        <PaperAirplaneIcon className="h-5 w-5" />
+        <ArrowRightIcon className="h-5 w-5" />
         <span className="sr-only">{buttonText}</span>
       </button>
     </form>

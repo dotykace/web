@@ -6,8 +6,8 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin", "latin-ext"] })
 
 export const metadata: Metadata = {
-  title: "Teen Chat App",
-  description: "Chat with your phone that has come to life!",
+  title: "Teen Card App",
+  description: "Interactive card-based app for teenagers",
     generator: 'v0.dev'
 }
 
