@@ -1,0 +1,54 @@
+@startuml
+
+entity Chapter {
+  +ID : int <<PK>>
+  Name : string
+  Description : string
+  Order : int
+}
+
+entity Subchapter {
+  +ID : int <<PK>>
+  +ChapterID : int <<FK>>
+  Name : string
+  Description : string
+  Order : int
+}
+
+abstract Interaction {
+  +ID : int <<PK>>
+  +SubchapterID : int <<FK>>
+  Order : int
+}
+
+entity ChatMessage {
+  +ID : int <<PK>>
+  +InteractionID : int <<FK>>
+  Message : string
+  Type : string
+  Duration : time
+}
+
+entity NotificationMessage {
+  +ID : int <<PK>>
+  +InteractionID : int <<FK>>
+  Message : string
+  Type : string
+  Duration : time
+}
+
+entity ButtonMessage {
+  +ID : int <<PK>>
+  +InteractionID : int <<FK>>
+  Message : string
+  Type : string
+  Duration : time
+}
+
+Chapter ||--o{ Subchapter : contains
+Subchapter ||--o{ Interaction : contains
+Interaction ||--|> ChatMessage : specialization
+Interaction ||--|> NotificationMessage : specialization
+Interaction ||--|> ButtonMessage : specialization
+
+@enduml
