@@ -2,7 +2,7 @@
 
 import { memo } from "react"
 import { Handle, Position } from "reactflow"
-import type { Interaction } from "@/types/interactions"
+import type { Interaction } from "@/app/interactions/interactions"
 import { MessageSquare, MessageSquareText, List, HelpCircle, Play, Bell, Clock } from "lucide-react"
 
 interface InteractionNodeProps {
