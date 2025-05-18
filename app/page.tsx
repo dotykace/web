@@ -6,7 +6,7 @@ import Link from "next/link"
 import { Settings, MessageSquare } from "lucide-react"
 import Card from "@/components/Card"
 import UserInput from "@/components/UserInput"
-import type { Interaction, Choice } from "./interactions/interactions"
+import type { Interaction, Choice } from "@/interactions"
 
 export default function Home() {
   const [interactions, setInteractions] = useState<Interaction[]>([])

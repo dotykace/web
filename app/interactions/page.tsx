@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import InteractionFlow from "@/components/interactions/interaction-flow"
 import InteractionEditor from "@/components/interactions/interaction-editor"
-import type { Interaction } from "./interactions"
+import type { Interaction } from "@/interactions"
 import initialData from "@/data/interactions.json"
 import { Button } from "@/components/ui/button"
 import { Download, Plus } from "lucide-react"

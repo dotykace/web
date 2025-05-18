@@ -14,7 +14,7 @@ import ReactFlow, {
   useReactFlow,
 } from "reactflow"
 import "reactflow/dist/style.css"
-import type { Interaction } from "@/app/interactions/interactions"
+import type { Interaction } from "@/interactions"
 import InteractionNode from "./interaction-node"
 import { Button } from "@/components/ui/button"
 import { ZoomIn, ZoomOut, Maximize } from "lucide-react"
