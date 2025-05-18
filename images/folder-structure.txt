@@ -1,0 +1,12 @@
+public/
+  images/
+    card-bg-1.jpg
+    card-bg-2.jpg
+    card-bg-3.jpg
+    card-bg-4.jpg
+    card-bg-5.jpg
+    emoji-1.png
+    emoji-2.png
+    emoji-3.png
+    emoji-4.png
+    emoji-5.png
