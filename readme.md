@@ -4,7 +4,7 @@
   <p><strong>An interactive chat experience that blurs the line between you and your device</strong></p>
 
   <p>
-    <a href="https://tochosk.github.io/TouchThePhone/" target="_blank">
+    <a href="https://touch-the-phone.vercel.app/" target="_blank">
       <img src="https://img.shields.io/badge/LIVE_DEMO-Visit_Site-6366F1?style=for-the-badge" alt="Live Demo" />
     </a>
   </p>
@@ -13,13 +13,14 @@
   <img src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react" alt="React" />
   <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Tailwind-3-38B2AC?style=flat-square&logo=tailwind-css" alt="Tailwind" />
+  <img src="https://img.shields.io/badge/Deployed_on-Vercel-000000?style=flat-square&logo=vercel" alt="Deployed on Vercel" />
 </div>
 
 ## 🚀 About
 
 TouchThePhone is an immersive interactive chat experience that creates a unique dialogue between you and your device. This project explores the relationship we have with our technology through a guided conversation that feels surprisingly personal.
 
-**Live Demo:** [https://tochosk.github.io/TouchThePhone/](https://tochosk.github.io/TouchThePhone/)
+**Live Demo:** [https://touch-the-phone.vercel.app/](https://touch-the-phone.vercel.app/)
 
 ## ✨ Features
 
@@ -33,7 +34,11 @@ TouchThePhone is an immersive interactive chat experience that creates a unique 
 ## 🔍 Preview
 
 <div align="center">
-  <img src="https://sjc.microlink.io/T2GBH-3TQRE_SFtrmkbIPTrF9QKOIpcJ20c73alyTd31NuZo5L2QDKQj82Bxk0aLXiB7d92BHXl05-mM-akYXg.jpeg" alt="TouchThePhone Preview" width="80%" />
+  <img src="https://sjc.microlink.io/ubLDSjolwyOytY93k3ok2aME72SY6BhE8Fpch0Ud_ZDmCVpL1FO4r6HEWG1-8Cerp3Hyv-aTHVGRYHBwQLh8pw.jpeg" alt="TouchThePhone Chat Interface" width="80%" />
+</div>
+
+<div align="center">
+  <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/obr%C3%A1zok-bfb2qfFsfeGn3NpdpLHIPeCWLsZbtn.png" alt="TouchThePhone Flow Editor" width="80%" />
 </div>
 
 ## 🛠️ Technology Stack
@@ -45,24 +50,7 @@ TouchThePhone is an immersive interactive chat experience that creates a unique 
 - **Components**: shadcn/ui
 - **Animations**: Framer Motion
 - **Graph Visualization**: React Flow with ELK.js
-
-## 🏗️ Project Structure
-
-\`\`\`
-TouchThePhone/
-├── app/                    # Next.js App Router
-│   ├── interactions/       # Interaction editor page
-│   └── page.tsx            # Main chat interface
-├── components/             # Reusable components
-│   ├── interactions/       # Interaction editor components
-│   │   ├── interaction-editor.tsx
-│   │   ├── interaction-flow.tsx
-│   │   └── interaction-node.tsx
-│   └── ui/                 # UI components
-├── data/                   # Data files
-│   └── interactions.json   # Conversation flow data
-└── public/                 # Static assets
-\`\`\`
+- **Deployment**: Vercel
 
 ## 🚀 Getting Started
 
@@ -89,6 +77,18 @@ pnpm dev
 
 Visit `http://localhost:3000` to see the application in action.
 
+### Deployment
+
+The project is deployed on Vercel. The GitHub Pages deployment redirects to the Vercel deployment.
+
+\`\`\`bash
+# Build for production
+pnpm build
+
+# Deploy to Vercel
+vercel --prod
+\`\`\`
+
 ## 🎮 Using the Interaction Editor
 
 The interaction editor allows you to create and modify conversation flows:
@@ -113,9 +113,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [ELK.js](https://github.com/kieler/elkjs) for the graph layout algorithms
 - [shadcn/ui](https://ui.shadcn.com/) for the beautiful UI components
 - [Framer Motion](https://www.framer.com/motion/) for the smooth animations
-\`\`\`
-
-This README provides a comprehensive overview of your TouchThePhone project with a modern, stylish design. It highlights that the site is running at https://tochosk.github.io/TouchThePhone/ and includes a preview image, feature list, technology stack, and instructions for getting started.
-
-The design uses badges, emojis, and clean formatting to create an attractive presentation that will make your project stand out on GitHub. The structure is organized to give visitors a clear understanding of what your project does and how to use it.
-
+- [Vercel](https://vercel.com/) for the hosting platform
+  \`\`\`
