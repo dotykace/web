@@ -1,11 +1,18 @@
 import {useEffect, useRef, useState} from "react";
-import {MessageSquare} from "lucide-react";
+import {MessageSquare, Send} from "lucide-react";
 import {AnimatePresence, motion} from "framer-motion";
 import InputArea from "@/components/InputArea";
+import {Button} from "@/components/ui/button";
+import AnimatedDot from "@/components/AnimatedDot";
 
 export default function Chat({history, processText, currentInteraction, goToNextInteraction}) {
   const [mode, setMode] = useState<"default"|"overlay">("default")
-
+  const [isVisible, setIsVisible] = useState(false)
+  const [isRevealed, setIsRevealed] = useState(false)
+  const handleReset = () => {
+    setIsRevealed(false)
+    setIsVisible(false)
+  }
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   // Scroll to bottom when history updates
@@ -19,6 +26,30 @@ export default function Chat({history, processText, currentInteraction, goToNext
         <MessageSquare className="w-6 h-6 text-white" />
         <h1 className="text-xl font-semibold text-white">Interaktivní chat</h1>
       </div>
+      {/* Animated dot with notification card as reveal component */}
+      <div className="absolute top-4 left-4 flex gap-4">
+        <Button
+          onClick={() => {
+            if (isRevealed) {
+              handleReset()
+            } else {
+              setIsVisible(!isVisible)
+            }
+          }}
+        >
+          {isRevealed ? "Reset" : isVisible ? "Hide Dot" : "Show Dot"}
+        </Button>
+      </div>
+      <AnimatedDot
+        isVisible={isVisible}
+        position={{ x: "calc(50% - 6px)", y: "calc(50% - 6px)" }}
+        revealComponent={
+          <Button  className="rounded-full w-10 h-10 p-0 flex items-center justify-center">
+            <Send/>
+          </Button>
+        }
+        onAnimationComplete={() => setIsRevealed(true)}
+      />
 
       {/* Chat history */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white/5 backdrop-blur-sm">

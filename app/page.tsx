@@ -24,6 +24,7 @@ const CHAPTER_CONFIG = {
   },
 } as const
 
+
 export default function Home() {
   const [chapter, setChapter] = useLocalStorage<number>("chapter", 0)
   const {
