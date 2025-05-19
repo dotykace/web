@@ -195,7 +195,7 @@
       "id": "1.5",
       "type": "notification",
       "text": "🔔 Chat pro UN spuštěn.",
-      "duration": 2,
+      "duration": 0,
       "next-id": "1.6"
     },
     {
