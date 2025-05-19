@@ -7,6 +7,7 @@ import { Settings, MessageSquare } from "lucide-react"
 import Card from "@/components/Card"
 import UserInput from "@/components/UserInput"
 import type { Interaction, Choice } from "@/interactions"
+import { useLocalStorage } from '@/hooks/use-local-storage';
 
 export default function Home() {
   const [interactions, setInteractions] = useState<Interaction[]>([])
@@ -18,6 +19,7 @@ export default function Home() {
   const [history, setHistory] = useState<Interaction[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
+  const [chapter, setChapter] = useLocalStorage<number>('chapter', 0);
   // Fetch interactions data
   useEffect(() => {
     const fetchData = async () => {
@@ -26,8 +28,22 @@ export default function Home() {
         const data = await import("@/data/interactions.json")
         setInteractions(data.interactions)
 
+        let startOfChapter = null;
+
+        switch (chapter) {
+          case 0:
+            startOfChapter = "1";
+            break;
+          case 1:
+            startOfChapter = "1.1";
+            break;
+          default:
+            startOfChapter = "1"; // Default to chapter 1 if no valid chapter is found
+
+        }
+
         // Set the first interaction
-        const firstInteraction = data.interactions.find((i: Interaction) => i.id === "1")
+        const firstInteraction = data.interactions.find((i: Interaction) => i.id === startOfChapter)
         if (firstInteraction) {
           setCurrentInteraction(firstInteraction)
           setHistory([firstInteraction])
@@ -40,7 +56,7 @@ export default function Home() {
     }
 
     fetchData()
-  }, [])
+  }, [chapter])
 
   // Scroll to bottom when history updates
   useEffect(() => {
@@ -67,6 +83,9 @@ export default function Home() {
     if (next) {
       setCurrentInteraction(next)
       setHistory((prev) => [...prev, next])
+      if(next.id === "chapter-1-animation") {
+        setChapter(1)
+      }
     }
   }
 
