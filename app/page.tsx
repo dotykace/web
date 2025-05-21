@@ -7,6 +7,7 @@ import { Settings } from "lucide-react"
 import Card from "@/components/Card"
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import {useInteractions} from "@/hooks/use-interactions";
+import { ChatProvider } from "@/context/ChatContext";
 import CardSequence from "@/components/CardSequence";
 import Chat from "@/components/Chat";
 
@@ -20,7 +21,9 @@ export default function Home() {
     currentInteraction,
     history,
     goToNextInteraction,
-    processText
+    processText,
+    handleUserInput,
+    handleChoiceSelection
   } = useInteractions()
 
   // Wait for chapter and interactions to load before setting the first interaction
@@ -49,8 +52,13 @@ export default function Home() {
     if(!history || history.length === 0) return
     if(currentInteraction == null ) return
     setLoading(false)
-    console.log("Current interaction:", currentInteraction);
   }, [history, currentInteraction]);
+
+  useEffect(() => {
+    if(currentInteraction?.id === "chapter-1-animation") {
+      setChapter(1)
+    }
+  }, [currentInteraction]);
 
   if (loading) {
     return (
@@ -105,7 +113,12 @@ export default function Home() {
             </motion.div>
           </Link>
         </div>
+        <ChatProvider
+          handleUserInput={handleUserInput}
+          handleChoiceSelection={handleChoiceSelection}
+        >
         {currentView}
+        </ChatProvider>
       </main>
   )
 }

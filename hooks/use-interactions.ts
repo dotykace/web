@@ -53,10 +53,6 @@ export function useInteractions<T>(){
     if (next) {
       setCurrentInteraction(next)
       setHistory((prev) => [...prev, next])
-      if(next.id === "chapter-1-animation") {
-        // todo solve how to set chapters
-        //setChapter(1)
-      }
     }
   }
   const handleUserInput = (input: string) => {

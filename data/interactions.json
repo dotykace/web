@@ -3,9 +3,9 @@
     {
       "id": "1",
       "type": "message",
-      "duration": 5,
+      "duration": 4,
       "next-id": "2",
-      "text": "Ahoj, já jsem appka. Jsem kus softwaru, víš jak: 0-1-1-0-0-1...\nCo ty? Jak ti mám říkat?"
+      "text": "Ahoj, já jsem appka. Jsem kus softwaru, víš jak: 0-1-1-0-0-1...\n"
     },
     {
       "id": "2",
@@ -13,7 +13,7 @@
       "duration": 10,
       "next-id": "3",
       "answer": "",
-      "text": "Jak ti mám říkat?"
+      "text": "Co ty? Jak ti mám říkat?"
     },
     {
       "id": "3",
@@ -54,7 +54,7 @@
       "id": "9",
       "type": "multiple-choice",
       "duration": 6,
-      "text": "Teď s tebou chci ale řešit to, co spolu my dva zažíváme, ok?\n\n(zobrazit 3 tlačítka: \"Hraju.\" \"Nehraju.\" \"O co jde?\")",
+      "text": "Teď s tebou chci ale řešit to, co spolu my dva zažíváme, ok?",
       "choices": [
         {
           "type": "Hraju",
@@ -73,9 +73,9 @@
     {
       "id": "10a",
       "type": "message",
-      "duration": 4,
+      "duration": 2,
       "next-id": "11a",
-      "text": "Bezva, hrajeme! Už vím, jak ti mám říkat, UN. Ale jak ty říkáš mně, svému mobilu?"
+      "text": "Bezva, hrajeme!"
     },
     {
       "id": "11a",
@@ -83,7 +83,7 @@
       "duration": 10,
       "next-id": "12b",
       "answer": "",
-      "text": "řádek k vyplnění od U: 'Jak mám říkat sobě?'"
+      "text": "Už vím, jak ti mám říkat, UN. Ale jak ty říkáš mně, svému mobilu?"
     },
     {
       "id": "10c",
