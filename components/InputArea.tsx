@@ -2,21 +2,18 @@ import UserInput from "@/components/UserInput";
 import {useInteractions} from "@/hooks/use-interactions";
 import {useEffect} from "react";
 import {Interaction} from "@/interactions";
+import {useChatContext} from "@/context/ChatContext";
 
-export default function InputArea(currentInteraction: Interaction) {
+export default function InputArea({currentInteraction, goToNextInteraction}) {
 
-  const { goToNextInteraction, handleUserInput, handleChoiceSelection } = useInteractions();
-
-  useEffect(() => {
-    console.log("Current interaction:", currentInteraction);
-
-  }, [currentInteraction]);
+  const {handleUserInput, handleChoiceSelection} = useChatContext();
+  // {/*todo fix the button styles*/}
   return (
-    <div className="bg-white/10 backdrop-blur-sm rounded-b-xl p-4 border-t border-white/20">
+    <div className="bg-white/10 backdrop-blur-sm rounded p-4 border-t border-white/20">
       {currentInteraction?.type === "input" ? (
         <UserInput
           onSubmit={handleUserInput}
-          placeholder={currentInteraction.id === "2" ? "Jak ti mám říkat?" : "Napiš odpověď..."}
+          placeholder={"Napiš odpověď..."}
           buttonText="Odeslat"
         />
       ) : currentInteraction?.type === "multiple-choice" ? (
@@ -25,7 +22,7 @@ export default function InputArea(currentInteraction: Interaction) {
             <button
               key={index}
               onClick={() => handleChoiceSelection(choice)}
-              className="bg-white/20 hover:bg-white/30 transition-colors py-2 px-4 rounded-lg text-white font-medium flex-1"
+              className="bg-purple-300 hover:bg-white-400 transition-colors py-2 px-4 rounded-lg text-black font-medium flex-1"
             >
               {choice.type}
             </button>
