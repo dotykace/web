@@ -30,22 +30,24 @@ export default function InputArea({currentInteraction, goToNextInteraction}) {
         </div>
       )
     default:
-      if (currentInteraction?.["next-id"]) {
-        return (
-          <div
-            className="bg-white/10 hover:bg-white/20 transition-colors p-3 rounded text-white/70 text-center cursor-pointer"
-            onClick={() => currentInteraction?.["next-id"] && goToNextInteraction(currentInteraction["next-id"])}
-          >
-            Klikni pro pokračování...
-          </div>
-        )
-      }
-      else {
-        return (
-          <div className="bg-white/10 p-3 rounded text-white/70 text-center">
-            Přemýšlím...
-          </div>
-        )
-      }
+      return <div/>
+    // todo let them choose on the meeting if they want to let them continue by their own
+      // if (currentInteraction?.["next-id"]) {
+      //   return (
+      //     <div
+      //       className="bg-white/10 hover:bg-white/20 transition-colors p-3 rounded text-white/70 text-center cursor-pointer"
+      //       onClick={() => currentInteraction?.["next-id"] && goToNextInteraction(currentInteraction["next-id"])}
+      //     >
+      //       Klikni pro pokračování...
+      //     </div>
+      //   )
+      // }
+      // else {
+      //   return (
+      //     <div className="bg-white/10 p-3 rounded text-white/70 text-center">
+      //       Přemýšlím...
+      //     </div>
+      //   )
+      // }
   }
 }

@@ -1,12 +1,13 @@
 import {useEffect, useState} from "react";
 import {Choice, Interaction} from "@/interactions";
+import {useLocalStorage} from "@/hooks/use-local-storage";
 
 export function useInteractions<T>(){
 
   const [interactions, setInteractions] = useState<Interaction[]>([])
   const [currentInteraction, setCurrentInteraction] = useState<Interaction | null>(null)
-  const [username, setUsername] = useState("")
-  const [botName, setBotName] = useState("Bot")
+  const [username, setUsername] =  useLocalStorage<string>('UN', "");
+  const [botName, setBotName] = useLocalStorage<string>('BN', "Bot");
 
   const [userInput, setUserInput] = useState("")
   const [history, setHistory] = useState<Interaction[]>([])
@@ -103,7 +104,7 @@ export function useInteractions<T>(){
 
   // Replace placeholders in text
   const processText = (text: string | undefined) => {
-    console.log("Processing text:", text)
+    //console.log("Processing text:", text)
     if (!text) return ""
 
     let processed = text.replace(/UN/g, username || "ty")
