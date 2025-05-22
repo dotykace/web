@@ -26,10 +26,10 @@ export default function UserInput({ onSubmit, placeholder, buttonText }: UserInp
       <input
         type="text"
         value={input}
-        onChange={(e) => setInput(e.target.value)}
         placeholder={placeholder}
-        className="flex-1 p-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500"
-        autoFocus
+        onChange={(e) => setInput(e.target.value)}
+        className="text-white flex-1 p-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500"
+        //autoFocus
       />
       <button type="submit" className="bg-purple-600 text-white p-3 rounded-full hover:bg-purple-700 transition-colors">
         <ArrowRightIcon className="h-5 w-5" />
