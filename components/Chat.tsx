@@ -3,7 +3,7 @@ import {MessageSquare} from "lucide-react";
 import {AnimatePresence, motion} from "framer-motion";
 import InputArea from "@/components/InputArea";
 
-export default function Chat({history, processText}) {
+export default function Chat({history, processText, currentInteraction, goToNextInteraction}) {
   const [mode, setMode] = useState<"default"|"overlay">("default")
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -58,7 +58,9 @@ export default function Chat({history, processText}) {
       </div>
 
       {/* Input area */}
-      {/*<InputArea />*/}
+      <div className="bg-white/10 backdrop-blur-sm rounded-b-xl p-4 border-t border-white/20">
+        <InputArea currentInteraction={currentInteraction} goToNextInteraction={goToNextInteraction} />
+      </div>
     </div>
   )
 }

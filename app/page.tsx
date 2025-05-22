@@ -83,7 +83,7 @@ export default function Home() {
       currentView = <CardSequence currentInteraction={ currentInteraction} goToNextInteraction={goToNextInteraction} history={history} processText={processText}/>
       break;
     case 1:
-      currentView = <Chat history={history} processText={processText}/>
+      currentView = <Chat history={history} processText={processText} goToNextInteraction={goToNextInteraction} currentInteraction={currentInteraction}/>
       break;
     default:
       currentView = (
@@ -99,9 +99,9 @@ export default function Home() {
   }
 
   return (
-      <main className="min-h-screen flex-col items-center justify-between p-4 bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
+      <main className="min-h-screen flex-col items-center justify-between p-2 bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
         {/* Link to interactions editor */}
-        <div className="absolute top-4 right-4 z-10">
+        <div className="absolute top-4 right-4 z-10 hidden md:block">
           <Link href="/interactions">
             <motion.div
                 className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white py-2 px-4 rounded-full backdrop-blur-sm shadow-lg"

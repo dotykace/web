@@ -22,13 +22,13 @@ export default function UserInput({ onSubmit, placeholder, buttonText }: UserInp
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center space-x-2">
+    <form onSubmit={handleSubmit} className="flex items-center justify-between">
       <input
         type="text"
         value={input}
         placeholder={placeholder}
         onChange={(e) => setInput(e.target.value)}
-        className="text-white flex-1 p-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500"
+        className="max-w-[calc(100%-60px)] text-white flex-1 p-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500"
         //autoFocus
       />
       <button type="submit" className="bg-purple-600 text-white p-3 rounded-full hover:bg-purple-700 transition-colors">
