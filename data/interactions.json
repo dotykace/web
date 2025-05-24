@@ -100,7 +100,7 @@
       "choices": [
         {
           "type": "Hraju",
-          "next-id": "12b"
+          "next-id": "10a"
         },
         {
           "type": "Videa",
@@ -133,11 +133,11 @@
       "id": "confirm-play",
       "type": "multiple-choice",
       "duration": 4,
-      "text": "Tak co, jdeš do toho?\n(Volba: 'Hraju' nebo 'Nehraju')",
+      "text": "Tak co, jdeš do toho?",
       "choices": [
         {
           "type": "Hraju",
-          "next-id": "chapter-1-animation"
+          "next-id": "10a"
         },
         {
           "type": "Nehraju",
