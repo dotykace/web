@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import InteractionFlow from "@/components/interactions/interaction-flow"
 import InteractionEditor from "@/components/interactions/interaction-editor"
-import type { Interaction } from "@/interactions"
+import type { Interaction, InteractionsData, RawInteraction } from "@/interactions"
 import initialData from "@/data/interactions.json"
 import { Button } from "@/components/ui/button"
 import { Download, Plus } from "lucide-react"
@@ -11,14 +11,33 @@ import { useToast } from "@/hooks/use-toast"
 import { ReactFlowProvider } from "reactflow"
 
 export default function Home() {
-  const [interactions, setInteractions] = useState<Interaction[]>(initialData.interactions)
+  // FIXED: Convert object format to array format for easier processing
+  // Old format was array, new format is object with keys as IDs
+  const initialInteractions = Object.entries((initialData as InteractionsData).interactions).map(
+    ([id, interaction]) => ({
+      id,
+      ...interaction,
+    }),
+  ) as Interaction[]
+
+  const [interactions, setInteractions] = useState<Interaction[]>(initialInteractions)
   const [selectedInteraction, setSelectedInteraction] = useState<Interaction | null>(null)
   const { toast } = useToast()
 
   // Auto-save to localStorage whenever interactions change
   useEffect(() => {
     try {
-      localStorage.setItem("interactions", JSON.stringify({ interactions }))
+      // FIXED: Convert back to object format when saving
+      const interactionsObject: Record<string, RawInteraction> = interactions.reduce(
+        (acc, interaction) => {
+          const { id, ...interactionData } = interaction
+          acc[id] = interactionData as RawInteraction
+          return acc
+        },
+        {} as Record<string, RawInteraction>,
+      )
+
+      localStorage.setItem("interactions", JSON.stringify({ interactions: interactionsObject }))
       console.log("Auto-saved interactions to localStorage")
     } catch (error) {
       console.error("Failed to auto-save interactions:", error)
@@ -30,8 +49,13 @@ export default function Home() {
     try {
       const savedData = localStorage.getItem("interactions")
       if (savedData) {
-        const parsedData = JSON.parse(savedData)
-        setInteractions(parsedData.interactions)
+        const parsedData = JSON.parse(savedData) as InteractionsData
+        // FIXED: Convert object format to array format
+        const interactionsArray = Object.entries(parsedData.interactions).map(([id, interaction]) => ({
+          id,
+          ...interaction,
+        })) as Interaction[]
+        setInteractions(interactionsArray)
         console.log("Loaded interactions from localStorage")
       }
     } catch (error) {
@@ -67,7 +91,17 @@ export default function Home() {
   }
 
   const exportData = () => {
-    const dataStr = JSON.stringify({ interactions }, null, 2)
+    // FIXED: Convert back to object format when exporting
+    const interactionsObject: Record<string, RawInteraction> = interactions.reduce(
+      (acc, interaction) => {
+        const { id, ...interactionData } = interaction
+        acc[id] = interactionData as RawInteraction
+        return acc
+      },
+      {} as Record<string, RawInteraction>,
+    )
+
+    const dataStr = JSON.stringify({ interactions: interactionsObject }, null, 2)
     const blob = new Blob([dataStr], { type: "application/json" })
 
     // Create a download link and trigger it

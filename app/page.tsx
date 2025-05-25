@@ -1,20 +1,31 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { Settings } from "lucide-react"
 import Card from "@/components/Card"
-import { useLocalStorage } from '@/hooks/use-local-storage';
-import {useInteractions} from "@/hooks/use-interactions";
-import { ChatProvider } from "@/context/ChatContext";
-import CardSequence from "@/components/CardSequence";
-import Chat from "@/components/Chat";
+import { useLocalStorage } from "@/hooks/use-local-storage"
+import { useInteractions } from "@/hooks/use-interactions"
+import { ChatProvider } from "@/context/ChatContext"
+import CardSequence from "@/components/CardSequence"
+import Chat from "@/components/Chat"
+
+const CHAPTER_CONFIG = {
+  0: {
+    name: "Introduction",
+    startInteractionId: "1",
+    component: "CardSequence",
+  },
+  1: {
+    name: "Chat Mode",
+    startInteractionId: "1.1",
+    component: "Chat",
+  },
+} as const
 
 export default function Home() {
-
-  const [loading, setLoading] = useState(true)
-  const [chapter, setChapter] = useLocalStorage<number>('chapter', 0);
+  const [chapter, setChapter] = useLocalStorage<number>("chapter", 0)
   const {
     interactions,
     setFirstInteraction,
@@ -23,42 +34,39 @@ export default function Home() {
     goToNextInteraction,
     processText,
     handleUserInput,
-    handleChoiceSelection
+    handleChoiceSelection,
+    loading,
+    error,
+    initialized,
+    clearChatHistory,
   } = useInteractions()
 
-  // Wait for chapter and interactions to load before setting the first interaction
+  // Single initialization effect
   useEffect(() => {
-    if(!interactions || interactions.length === 0) return
-    if(chapter == null ) return
-    // Set the first interaction
-    let startOfChapter;
-    switch (chapter) {
-      case 0:
-        startOfChapter = "1";
-        break;
-      case 1:
-        startOfChapter = "1.1";
-        break;
-      default:
-        startOfChapter = "1"; // Default to chapter 1 if no valid chapter is found
-
+    if (loading || error || interactions.length === 0 || initialized) {
+      return
     }
-    setFirstInteraction(startOfChapter);
-  }, [interactions, chapter]);
 
-  // Wait for history to load before showing any interface
-  useEffect(() => {
-    if(!loading) return
-    if(!history || history.length === 0) return
-    if(currentInteraction == null ) return
-    setLoading(false)
-  }, [history, currentInteraction]);
+    console.log("Initializing chapter:", chapter)
+    const chapterConfig = CHAPTER_CONFIG[chapter as keyof typeof CHAPTER_CONFIG]
+    const startOfChapter = chapterConfig?.startInteractionId || "1"
 
+    setFirstInteraction(startOfChapter)
+  }, [loading, error, interactions.length, initialized, chapter, setFirstInteraction])
+
+  // Chapter transitions
   useEffect(() => {
-    if(currentInteraction?.id === "chapter-1-animation") {
-      setChapter(1)
+    if (currentInteraction?.id === "chapter-1-animation") {
+      console.log("Transitioning to chapter 1")
+      setTimeout(() => {
+        setChapter(1)
+        clearChatHistory()
+        setTimeout(() => {
+          setFirstInteraction("1.1", true)
+        }, 100)
+      }, 100)
     }
-  }, [currentInteraction]);
+  }, [currentInteraction?.id, setChapter, clearChatHistory, setFirstInteraction])
 
   if (loading) {
     return (
@@ -74,51 +82,66 @@ export default function Home() {
     )
   }
 
-  // todo store chapter info in some object maybe
+  const chapterConfig = CHAPTER_CONFIG[chapter as keyof typeof CHAPTER_CONFIG]
+  let currentView
 
-  let currentView;
-
-  switch (chapter) {
-    case 0:
-      currentView = <CardSequence currentInteraction={ currentInteraction} goToNextInteraction={goToNextInteraction} history={history} processText={processText}/>
-      break;
-    case 1:
-      currentView = <Chat history={history} processText={processText} goToNextInteraction={goToNextInteraction} currentInteraction={currentInteraction}/>
-      break;
-    default:
-      currentView = (
-          <div className="w-full max-w-md mx-auto">
-            <Card>
-              <div className="p-6 text-center">
-                <h1 className="text-xl font-semibold">Interaktivní chat</h1>
-                <p className="mt-4">Vítej v interaktivním chatu! Klikni na tlačítko níže pro zahájení.</p>
-              </div>
-            </Card>
-          </div>
-      )
+  if (chapterConfig) {
+    switch (chapterConfig.component) {
+      case "CardSequence":
+        currentView = (
+            <CardSequence
+                currentInteraction={currentInteraction}
+                goToNextInteraction={goToNextInteraction}
+                history={history}
+                processText={processText}
+            />
+        )
+        break
+      case "Chat":
+        currentView = (
+            <Chat
+                history={history}
+                processText={processText}
+                goToNextInteraction={goToNextInteraction}
+                currentInteraction={currentInteraction}
+            />
+        )
+        break
+    }
+  } else {
+    currentView = (
+        <div className="w-full max-w-md mx-auto">
+          <Card>
+            <div className="p-6 text-center">
+              <h1 className="text-xl font-semibold">Interaktivní chat</h1>
+              <p className="mt-4">Vítej v interaktivním chatu! Klikni na tlačítko níže pro zahájení.</p>
+            </div>
+          </Card>
+        </div>
+    )
   }
 
   return (
-      <main className="min-h-screen flex-col items-center justify-between p-2 bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
-        {/* Link to interactions editor */}
-        <div className="absolute top-4 right-4 z-10 hidden md:block">
-          <Link href="/interactions">
-            <motion.div
-                className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white py-2 px-4 rounded-full backdrop-blur-sm shadow-lg"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-            >
-              <Settings className="w-5 h-5" />
-              <span className="font-medium">Editor interakcí</span>
-            </motion.div>
-          </Link>
-        </div>
-        <ChatProvider
-          handleUserInput={handleUserInput}
-          handleChoiceSelection={handleChoiceSelection}
-        >
-        {currentView}
+      <>
+        {/* Settings button - only show for non-chat views */}
+        {chapterConfig?.component !== "Chat" && (
+            <div className="absolute top-4 right-4 z-50 hidden md:block">
+              <Link href="/interactions">
+                <motion.div
+                    className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white py-2 px-4 rounded-full backdrop-blur-sm shadow-lg"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                >
+                  <Settings className="w-5 h-5" />
+                  <span className="font-medium">Editor interakcí</span>
+                </motion.div>
+              </Link>
+            </div>
+        )}
+
+        <ChatProvider handleUserInput={handleUserInput} handleChoiceSelection={handleChoiceSelection}>
+          {currentView}
         </ChatProvider>
-      </main>
+      </>
   )
 }
