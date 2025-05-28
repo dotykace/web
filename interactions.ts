@@ -27,9 +27,10 @@ export interface RawInteraction {
   [key: string]: any
 }
 
+export type InteractionRecord = Record<string, RawInteraction>;
 // Type for the interactions object structure in JSON
 export interface InteractionsData {
-  interactions: Record<string, RawInteraction>
+  interactions: InteractionRecord
 }
 
 // Props types for components

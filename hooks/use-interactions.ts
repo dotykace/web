@@ -1,12 +1,12 @@
 "use client"
 
 import { useEffect, useState, useCallback, useRef } from "react"
-import type { Choice, Interaction, InteractionsData } from "@/interactions"
+import type {Choice, Interaction, InteractionRecord, InteractionsData, RawInteraction} from "@/interactions"
 import { useLocalStorage } from "@/hooks/use-local-storage"
 
 export function useInteractions<T>() {
-  const [interactions, setInteractions] = useState<Interaction[]>([])
-  const [currentInteraction, setCurrentInteraction] = useState<Interaction | null>(null)
+  const [interactions, setInteractions] = useState<InteractionRecord>({})
+  const [currentInteraction, setCurrentInteraction] = useState<RawInteraction | null>(null)
   const [username, setUsername] = useLocalStorage<string>("UN", "")
   const [botName, setBotName] = useLocalStorage<string>("BN", "Bot")
   const [loading, setLoading] = useState(true)
@@ -14,6 +14,7 @@ export function useInteractions<T>() {
   const [initialized, setInitialized] = useState(false)
 
   const [userInput, setUserInput] = useState("")
+  // todo maybe get rid of history
   const [history, setHistory] = useState<Interaction[]>([])
 
   // FIXED: Use refs to prevent infinite loops
@@ -37,18 +38,7 @@ export function useInteractions<T>() {
           throw new Error("Invalid data format - missing interactions")
         }
 
-        const interactionsArray = Object.entries(data.interactions).map(([id, interaction]) => ({
-          id,
-          ...interaction,
-        })) as Interaction[]
-
-        console.log("Converted interactions array:", interactionsArray)
-
-        if (interactionsArray.length === 0) {
-          throw new Error("No interactions found in data")
-        }
-
-        setInteractions(interactionsArray)
+        setInteractions(data.interactions)
         console.log("Interactions set successfully")
       } catch (error) {
         console.error("Error loading interactions:", error)
@@ -71,11 +61,11 @@ export function useInteractions<T>() {
 
         console.log("Setting first interaction:", startOfChapter, "Available interactions:", interactions.length)
 
-        const firstInteraction = interactions.find((i: Interaction) => i.id === startOfChapter)
+        const firstInteraction = interactions[startOfChapter]
         if (firstInteraction) {
           console.log("Found first interaction:", firstInteraction)
           setCurrentInteraction(firstInteraction)
-          setHistory([firstInteraction])
+          setHistory([{id:startOfChapter, ...firstInteraction}])
           setInitialized(true)
           firstInteractionSetRef.current = true
         } else {
@@ -100,23 +90,29 @@ export function useInteractions<T>() {
     }
 
     const timer = setTimeout(() => {
-      if (currentInteraction["next-id"]) {
-        goToNextInteraction(currentInteraction["next-id"])
-      }
+      goToNextInteraction()
     }, currentInteraction.duration * 1000)
 
     return () => clearTimeout(timer)
   }, [currentInteraction])
 
   const goToNextInteraction = useCallback(
-      (nextId: string) => {
-        const next = interactions.find((i) => i.id === nextId)
-        if (next) {
-          setCurrentInteraction(next)
-          setHistory((prev) => [...prev, next])
-        }
-      },
-      [interactions],
+    (nextId?:string) => {
+
+      let localNextId = nextId
+      if(!localNextId) {
+        if(!currentInteraction) return
+        if(!currentInteraction["next-id"]) return
+        localNextId = currentInteraction["next-id"]
+        if(!localNextId) return
+      }
+      const next = interactions[localNextId]
+      if (next) {
+        setCurrentInteraction(next)
+        setHistory((prev) => [...prev, {id:localNextId, ...next}])
+      }
+    },
+    [interactions, currentInteraction],
   )
 
   const handleUserInput = useCallback(
@@ -143,9 +139,7 @@ export function useInteractions<T>() {
 
           setHistory((prev) => [...prev, userMessage])
 
-          if (currentInteraction["next-id"]) {
-            goToNextInteraction(currentInteraction["next-id"])
-          }
+          goToNextInteraction()
         }
       },
       [currentInteraction, setUsername, setBotName, goToNextInteraction],
@@ -184,6 +178,7 @@ export function useInteractions<T>() {
       [username, botName, userInput],
   )
 
+  // todo vsetko musi ist do pice je tu toho moc vela
   return {
     interactions,
     currentInteraction,

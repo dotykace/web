@@ -21,7 +21,7 @@ export default function CardSequence({currentInteraction, history, goToNextInter
             <Card
               onClick={()=>{
               if(currentInteraction.type === "message"){
-                goToNextInteraction(currentInteraction["next-id"])
+                goToNextInteraction()
               }
             }}>
               <div className="p-6">
