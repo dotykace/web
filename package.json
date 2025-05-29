@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "net stop winnat && net start winnat",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "windowserrorfixer": "net stop winnat && net start winnat"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",
