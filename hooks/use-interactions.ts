@@ -118,7 +118,7 @@ export function useInteractions<T>() {
   const handleUserInput = useCallback(
       (input: string) => {
         setUserInput(input)
-
+        // todo id is not really part of currentInteraction, solve it later with further refactoring
         if (currentInteraction?.type === "input") {
           // If this is a username input (id "2")
           if (currentInteraction.id === "2") {

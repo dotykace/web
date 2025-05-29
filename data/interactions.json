@@ -7,6 +7,7 @@
       "text": "Ahoj, já jsem appka. Jsem kus softwaru, víš jak: 0-1-1-0-0-1...\n"
     },
     "2": {
+      "id": "2",
       "type": "input",
       "duration": 10,
       "next-id": "3",
@@ -75,6 +76,7 @@
       "text": "Bezva, hrajeme!"
     },
     "11a": {
+      "id": "11a",
       "type": "input",
       "duration": 10,
       "next-id": "12b",
@@ -146,6 +148,7 @@
       "text": "Děkuji za tvůj čas. Nashledanou!"
     },
     "chapter-1-animation": {
+      "id": "chapter-1-animation",
       "type": "animation",
       "duration": 3,
       "next-id": "1.1"

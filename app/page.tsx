@@ -56,6 +56,7 @@ export default function Home() {
 
   // Chapter transitions
   useEffect(() => {
+    // todo id is not really part of currentInteraction, solve it later with further refactoring
     if (currentInteraction?.id === "chapter-1-animation") {
       console.log("Transitioning to chapter 1")
       setTimeout(() => {
