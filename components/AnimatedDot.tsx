@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useEffect, type ReactNode } from "react"
+import {useState, useEffect, type ReactNode, JSX} from "react"
 import { motion, AnimatePresence, type Variants } from "framer-motion"
 
 type AnimatedDotProps = {
   isVisible: boolean
   position: { x: number | string; y: number | string }
-  revealComponent: ReactNode
+  revealComponent: JSX.Element
   onAnimationComplete?: () => void
   dotSize?: number
   dotColor?: string
@@ -49,9 +49,9 @@ export default function AnimatedDot({
   const handleClick = () => {
     if (state === "pulsing") {
       setState("expanding")
-      // if (onAnimationComplete) {
-      //   onAnimationComplete()
-      // }
+      if (onAnimationComplete) {
+        onAnimationComplete()
+      }
       setTimeout(() => {
         setState("revealed")
       }, animationDuration.expand) // Start revealing when glow is 30% expanded
@@ -61,9 +61,6 @@ export default function AnimatedDot({
   const handleExpandComplete = () => {
     setTimeout(() => {
       setState("revealed")
-      if (onAnimationComplete) {
-        onAnimationComplete()
-      }
     }, animationDuration.reveal * 1000)
   }
   const dotVariants: Variants = {

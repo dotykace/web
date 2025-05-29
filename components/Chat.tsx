@@ -4,52 +4,97 @@ import {AnimatePresence, motion} from "framer-motion";
 import InputArea from "@/components/InputArea";
 import {Button} from "@/components/ui/button";
 import AnimatedDot from "@/components/AnimatedDot";
+import UserInput from "@/components/UserInput";
+import {useChatContext} from "@/context/ChatContext";
+import MobileNotification from "@/components/mobile-notification";
 
 export default function Chat({history, processText, currentInteraction, goToNextInteraction}) {
   const [mode, setMode] = useState<"default"|"overlay">("default")
   const [isVisible, setIsVisible] = useState(false)
-  const [isRevealed, setIsRevealed] = useState(false)
-  const handleReset = () => {
-    setIsRevealed(false)
-    setIsVisible(false)
-  }
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messagesEndRef = useRef<HTMLDivElement|null>(null)
+
+  const {handleUserInput} = useChatContext()
+  const [showNotification, setShowNotification] = useState(false)
+  const [showInput, setShowInput] = useState(false)
+
+  const notificationProps ={
+    title: "New Message",
+    message: processText(currentInteraction? currentInteraction?.text : ""),
+    icon: <MessageSquare className="h-6 w-6 text-white" />,}
+
+  useEffect(() => {
+    if(currentInteraction?.id === "1.9"){
+      setMode("overlay")
+    }
+  }, [currentInteraction]);
+
+
 
   // Scroll to bottom when history updates
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [history])
 
+  useEffect(() => {
+    if (currentInteraction?.type === "notification") {
+      if(currentInteraction?.id === "1.5") {
+        console.log("opening input")
+        setShowInput(true)
+      }
+      if(currentInteraction?.id === "1.9") {
+        setIsVisible(true)
+      }
+      setShowNotification(true)
+      console.log("Notification triggered for interaction:", currentInteraction?.id);
+    }
+  }, [currentInteraction]);
+
   return(
     <div className="w-full max-w-md mx-auto flex flex-col p-2 h-[calc(100vh)] bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
+      {(mode==="overlay" )&& (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
+          {showNotification && (
+            <MobileNotification
+              {...notificationProps}
+              isOpen={showNotification}
+              duration={currentInteraction?.duration * 1000}
+              onClose={() => setShowNotification(false)}
+              onNotificationClick={() => console.log("Notification clicked")}
+            />
+          )}
+          <AnimatedDot
+            isVisible={isVisible}
+            dotColor={"white"}
+            glowColor={"white"}
+            position={{ x: "calc(90% - 20px)", y: "calc(60% - 20px)" }}
+            revealComponent={
+              <button className="px-2 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                <Send/>
+              </button>
+            }
+            onAnimationComplete={() => {
+              goToNextInteraction("1.10")
+            }}
+          />
+        </div>
+      )}
+
       <div className="bg-white/10 backdrop-blur-sm rounded-t-xl p-3 flex items-center gap-3 border-b border-white/20">
         <MessageSquare className="w-6 h-6 text-white" />
         <h1 className="text-xl font-semibold text-white">Interaktivní chat</h1>
       </div>
-      {/* Animated dot with notification card as reveal component */}
-      <div className="absolute top-4 left-4 flex gap-4">
-        <Button
-          onClick={() => {
-            if (isRevealed) {
-              handleReset()
-            } else {
-              setIsVisible(!isVisible)
-            }
-          }}
-        >
-          {isRevealed ? "Reset" : isVisible ? "Hide Dot" : "Show Dot"}
-        </Button>
+
+      <div>
+        {currentInteraction?.type === "notification" && (
+          <MobileNotification
+            {...notificationProps}
+            isOpen={showNotification}
+            onClose={() => setShowNotification(false)}
+            onNotificationClick={() => console.log("Notification clicked")}
+          />
+        )}
       </div>
-      <AnimatedDot
-        isVisible={isVisible}
-        position={{ x: "calc(50% - 6px)", y: "calc(50% - 6px)" }}
-        revealComponent={
-          <Button  className="rounded-full w-10 h-10 p-0 flex items-center justify-center">
-            <Send/>
-          </Button>
-        }
-        onAnimationComplete={() => setIsRevealed(true)}
-      />
+
 
       {/* Chat history */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white/5 backdrop-blur-sm">
@@ -72,11 +117,7 @@ export default function Chat({history, processText, currentInteraction, goToNext
                   <div className="bg-white/20 text-white p-3 rounded-xl rounded-tl-none">
                     <p>{processText(interaction.text)}</p>
                   </div>
-                ) : interaction.type === "notification" ? (
-                  <div className="bg-gray-800/50 text-white p-3 rounded-xl text-center w-full max-w-full mx-auto">
-                    <p>{processText(interaction.text)}</p>
-                  </div>
-                ) : interaction.type === "animation" ? (
+                ): interaction.type === "animation" ? (
                   <div className="flex justify-center items-center h-20 w-full max-w-full mx-auto">
                     <div className="animate-bounce text-4xl">✨</div>
                   </div>
@@ -89,8 +130,21 @@ export default function Chat({history, processText, currentInteraction, goToNext
       </div>
 
       {/* Input area */}
+      {/*
+      // todo make it function properly in greater context
+      // todo either dont have user input as interaction or make it work properly
+      // todo maybe separate history, user inputs and interactions
+      */}
       <div className="bg-white/10 backdrop-blur-sm rounded-b-xl p-4 border-t border-white/20">
-        <InputArea currentInteraction={currentInteraction} goToNextInteraction={goToNextInteraction} />
+        {showInput && (
+          <UserInput onSubmit={(input)=>{
+            setShowInput(false);
+            handleUserInput(input)
+          }}
+         placeholder={"Napiš odpověď..."}
+         buttonText="Odeslat"
+          />
+        )}
       </div>
     </div>
   )

@@ -96,6 +96,7 @@ export function useInteractions<T>() {
     return () => clearTimeout(timer)
   }, [currentInteraction])
 
+  // todo branching od 1.6 nefunguje
   const goToNextInteraction = useCallback(
     (nextId?:string) => {
 
@@ -130,21 +131,32 @@ export function useInteractions<T>() {
           }
 
           // Add user's message to history
-          const userMessage: Interaction = {
-            id: `user-${Date.now()}-${Math.random()}`, // FIXED: Ensure unique IDs
-            type: "user-message",
-            text: input,
-            duration: 0,
-          }
-
-          setHistory((prev) => [...prev, userMessage])
-
+          addUserInputToHistory(input)
           goToNextInteraction()
+        }
+          // todo make it function properly in greater context
+          // todo either dont have user input as interaction or make it work properly
+        // todo maybe separate history, user inputs and interactions
+        else if (true){
+          addUserInputToHistory(input)
+          if (currentInteraction?.id === "1.6") {
+            goToNextInteraction("1.7")
+          }
         }
       },
       [currentInteraction, setUsername, setBotName, goToNextInteraction],
   )
+  const addUserInputToHistory = (input: string) => {
+    const userMessage: Interaction = {
+      id: `user-${Date.now()}-${Math.random()}`, // FIXED: Ensure unique IDs
+      type: "user-message",
+      text: input,
+      duration: 0,
+    }
 
+    setHistory((prev) => [...prev, userMessage])
+
+  }
   const handleChoiceSelection = useCallback(
       (choice: Choice) => {
         // Add user's choice to history
