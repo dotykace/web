@@ -180,11 +180,11 @@
     "1.5": {
       "type": "notification",
       "text": "🔔 Chat pro UN spuštěn.",
-      "duration": 0,
+      "duration": 2,
       "next-id": "1.6"
     },
     "1.6": {
-      "type": "input",
+      "type": "message",
       "text": "Napiš něco, pls.",
       "answer": "",
       "duration": 15,
@@ -204,9 +204,15 @@
       "next-id": "1.9"
     },
     "1.9": {
-      "type": "message",
+      "type": "notification",
       "text": "Chci s tebou zavzpomínat na naše oblíbená místa. Jaké vzpomínky máš na tohle místo?\n(rozvíjející se tečka, ještě neaktivní)",
-      "duration": 6
+      "duration": 4
+    },
+    "1.10":
+    {
+      "type": "notification",
+      "duration": 4,
+      "text": "Pro mně je plné očekávání. Všelijakých očekávání..."
     },
     "1.100": {
       "type": "message",
