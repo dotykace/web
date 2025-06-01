@@ -36,7 +36,7 @@ export default function InputArea({currentInteraction, goToNextInteraction}) {
       //   return (
       //     <div
       //       className="bg-white/10 hover:bg-white/20 transition-colors p-3 rounded text-white/70 text-center cursor-pointer"
-      //       onClick={() => currentInteraction?.["next-id"] && goToNextInteraction(currentInteraction["next-id"])}
+      //       onClick={goToNextInteraction}
       //     >
       //       Klikni pro pokračování...
       //     </div>

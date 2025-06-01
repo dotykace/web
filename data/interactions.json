@@ -1,13 +1,12 @@
 {
-  "interactions": [
-    {
-      "id": "1",
+  "interactions": {
+    "1": {
       "type": "message",
       "duration": 4,
       "next-id": "2",
       "text": "Ahoj, já jsem appka. Jsem kus softwaru, víš jak: 0-1-1-0-0-1...\n"
     },
-    {
+    "2": {
       "id": "2",
       "type": "input",
       "duration": 10,
@@ -15,43 +14,43 @@
       "answer": "",
       "text": "Co ty? Jak ti mám říkat?"
     },
-    {
-      "id": "3",
+    "3": {
       "type": "message",
       "duration": 4,
       "next-id": "4",
       "text": "Ok, UN! Řeknu ti, proč mě naprogramovali, jo?"
     },
-    {
-      "id": "4",
+    "4": {
       "type": "message",
       "duration": 4,
       "next-id": "5",
       "text": "Jsem tu, abychom spolu hráli hru."
     },
-    {
-      "id": "5",
+    "5": {
+      "type": "message",
+      "duration": 4,
+      "next-id": "6",
+      "text": "Ty, UN, jsi v téhle hře prostě ty, jasný?"
+    },
+    "6": {
       "type": "message",
       "duration": 4,
       "next-id": "7",
-      "text": "Ty, UN, jsi v téhle hře prostě ty, jasný?"
+      "text": "Já si hraju na to, že jsem tvůj mobil, který jakoby na chvíli obživnul."
     },
-    {
-      "id": "7",
+    "7": {
       "type": "message",
       "duration": 5,
       "next-id": "8",
       "text": "Dovedeš si to představit? Že chatuješ s vlastním mobilem?"
     },
-    {
-      "id": "8",
+    "8": {
       "type": "message",
       "duration": 5,
       "next-id": "9",
       "text": "Většinou ti za sebe píšu jenom: 'battery is low', nakrm mě! Jinak toho moc neřeknu."
     },
-    {
-      "id": "9",
+    "9": {
       "type": "multiple-choice",
       "duration": 6,
       "text": "Teď s tebou chci ale řešit to, co spolu my dva zažíváme, ok?",
@@ -70,14 +69,13 @@
         }
       ]
     },
-    {
-      "id": "10a",
+    "10a": {
       "type": "message",
       "duration": 2,
       "next-id": "11a",
       "text": "Bezva, hrajeme!"
     },
-    {
+    "11a": {
       "id": "11a",
       "type": "input",
       "duration": 10,
@@ -85,15 +83,13 @@
       "answer": "",
       "text": "Už vím, jak ti mám říkat, UN. Ale jak ty říkáš mně, svému mobilu?"
     },
-    {
-      "id": "10c",
+    "10c": {
       "type": "message",
       "duration": 6,
       "next-id": "11c",
       "text": "Chápu, tahle hra je dobrovolná. Jestli ji nechceš hrát, pustím ti pár videí o lidech a mobilech."
     },
-    {
-      "id": "11c",
+    "11c": {
       "type": "multiple-choice",
       "duration": 5,
       "text": "Můžeš si vybrat: (videa z poslední části)",
@@ -108,29 +104,25 @@
         }
       ]
     },
-    {
-      "id": "10b",
+    "10b": {
       "type": "message",
       "duration": 6,
       "next-id": "11b",
       "text": "(zopakovat info, které U dostal od lektorů)"
     },
-    {
-      "id": "11b",
+    "11b": {
       "type": "message",
       "duration": 6,
       "next-id": "confirm-play",
       "text": "(pokračování info)"
     },
-    {
-      "id": "12b",
+    "12b": {
       "type": "message",
       "duration": 4,
       "next-id": "chapter-1-animation",
       "text": "Ok! UN a BN - jdeme na to."
     },
-    {
-      "id": "confirm-play",
+    "confirm-play": {
       "type": "multiple-choice",
       "duration": 4,
       "text": "Tak co, jdeš do toho?",
@@ -145,97 +137,93 @@
         }
       ]
     },
-    {
-      "id": "videos",
+    "videos": {
       "type": "message",
       "duration": 10,
       "text": "Zde jsou videa o lidech a mobilech."
     },
-    {
-      "id": "exit",
+    "exit": {
       "type": "message",
       "duration": 3,
       "text": "Děkuji za tvůj čas. Nashledanou!"
     },
-    {
+    "chapter-1-animation": {
       "id": "chapter-1-animation",
       "type": "animation",
       "duration": 3,
       "next-id": "1.1"
     },
-    {
-      "id": "1.1",
+    "1.1": {
       "type": "message",
       "text": "😲 Wow!",
       "duration": 2,
       "next-id": "1.2"
     },
-    {
-      "id": "1.2",
+    "1.2": {
       "type": "message",
       "text": "Teď už zprávy pro tebe jenom nezobrazuju.\nUž ti je i píšu! Yeeees!",
       "duration": 4,
       "next-id": "1.3"
     },
-    {
-      "id": "1.3",
+    "1.3": {
       "type": "message",
       "text": "Jsi tam?",
       "duration": 2,
       "next-id": "1.4"
     },
-    {
-      "id": "1.4",
+    "1.4": {
       "type": "message",
       "text": "😅 Jaj, promiň. Zapnu ti chat.",
       "duration": 3,
       "next-id": "1.5"
     },
-    {
+    "1.5": {
       "id": "1.5",
       "type": "notification",
       "text": "🔔 Chat pro UN spuštěn.",
-      "duration": 0,
+      "duration": 2,
       "next-id": "1.6"
     },
-    {
-      "id": "1.6",
-      "type": "input",
+    "1.6": {
+        "id": "1.6",
+      "type": "message",
       "text": "Napiš něco, pls.",
       "answer": "",
       "duration": 15,
       "next-id": "1.7",
       "timeout-id": "1.100"
     },
-    {
-      "id": "1.7",
+    "1.7": {
       "type": "message",
       "text": "Hmm... \"{{user_input}}\"\nPrvní slova od UN pro mě.\nTo si budu pamatovat i v továrním nastavení.",
       "duration": 5,
       "next-id": "1.8"
     },
-    {
-      "id": "1.8",
+    "1.8": {
       "type": "message",
       "text": "Když jsme u paměti. Něco ti chci ukázat.",
       "duration": 4,
       "next-id": "1.9"
     },
-    {
-      "id": "1.9",
-      "type": "message",
-      "text": "Chci s tebou zavzpomínat na naše oblíbená místa. Jaké vzpomínky máš na tohle místo?\n(rozvíjející se tečka, ještě neaktivní)",
-      "duration": 6
+    "1.9": {
+        "id": "1.9",
+      "type": "notification",
+      "text": "Chci s tebou zavzpomínat na naše oblíbená místa. Jaké vzpomínky máš na tohle místo?",
+      "duration": 4
     },
+    "1.10":
     {
-      "id": "1.100",
+      "type": "notification",
+      "duration": 4,
+      "text": "Pro mně je plné očekávání. Všelijakých očekávání..."
+    },
+    "1.100": {
       "type": "message",
       "text": "Ty mě napínáš!",
       "duration": 3,
       "next-id": "1.101"
     },
-    {
-      "id": "1.101",
+    "1.101": {
       "type": "input",
       "text": "",
       "answer": "",
@@ -243,15 +231,13 @@
       "next-id": "1.7",
       "timeout-id": "1.102"
     },
-    {
-      "id": "1.102",
+    "1.102": {
       "type": "message",
       "text": "Dáváš si záležet, viď?",
       "duration": 3,
       "next-id": "1.103"
     },
-    {
-      "id": "1.103",
+    "1.103": {
       "type": "input",
       "text": "",
       "answer": "",
@@ -259,12 +245,11 @@
       "next-id": "1.7",
       "timeout-id": "1.104"
     },
-    {
-      "id": "1.104",
+    "1.104": {
       "type": "message",
       "text": "Víš co, netrap se tím. Tohle je pro mě stejně nezapomenutelný.",
       "duration": 4,
       "next-id": "1.8"
     }
-  ]
+  }
 }
