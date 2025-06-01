@@ -63,6 +63,12 @@ export default function Chat({history, processText, currentInteraction, goToNext
             />
           )}
           <AnimatedDot
+            animationDuration={
+              {grow: currentInteraction.duration,
+                pulse: currentInteraction.duration * 0.5,
+                reveal: currentInteraction.duration * 0.5,
+                expand: currentInteraction.duration * 1.5}
+            }
             isVisible={isVisible}
             dotColor={"white"}
             glowColor={"white"}
@@ -138,7 +144,7 @@ export default function Chat({history, processText, currentInteraction, goToNext
       <div className="bg-white/10 backdrop-blur-sm rounded-b-xl p-4 border-t border-white/20">
         {showInput && (
           <UserInput onSubmit={(input)=>{
-            setShowInput(false);
+            //setShowInput(false);
             handleUserInput(input)
           }}
          placeholder={"Napiš odpověď..."}
