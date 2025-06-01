@@ -10,6 +10,7 @@ import { useInteractions } from "@/hooks/use-interactions"
 import { ChatProvider } from "@/context/ChatContext"
 import CardSequence from "@/components/CardSequence"
 import Chat from "@/components/Chat"
+import {redirect} from "next/navigation";
 
 const CHAPTER_CONFIG = {
   0: {
@@ -66,6 +67,11 @@ export default function Home() {
       }, 100)
     }
   }, [currentInteraction?.id, setChapter, setFirstInteraction])
+
+  if(!loading && chapter !== 0) {
+    console.log("Redirecting to menu from chapter", chapter)
+    redirect("/menu")
+  }
 
   if (loading) {
     return (
