@@ -13,7 +13,7 @@ export default function Chat({ processText, currentInteraction, goToNextInteract
   const [isVisible, setIsVisible] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement|null>(null)
 
-  const {handleUserInput} = useChatContext()
+  // const {handleUserInput} = useChatContext()
   const [showNotification, setShowNotification] = useState(false)
   const [showInput, setShowInput] = useState(false)
 
@@ -21,7 +21,8 @@ export default function Chat({ processText, currentInteraction, goToNextInteract
 
   const notificationProps ={
     title: "New Message",
-    message: processText(currentInteraction? currentInteraction?.text : ""),
+    message: currentInteraction?.text ?? "",
+    //message: processText(currentInteraction? currentInteraction?.text : ""),
     icon: <MessageSquare className="h-6 w-6 text-white" />,}
 
   useEffect(() => {
@@ -149,7 +150,8 @@ export default function Chat({ processText, currentInteraction, goToNextInteract
         {showInput && (
           <UserInput onSubmit={(input)=>{
             //setShowInput(false);
-            handleUserInput(input)
+            //handleUserInput(input)
+            console.log("User input submitted:", input);
           }}
          placeholder={"Napiš odpověď..."}
          buttonText="Odeslat"
