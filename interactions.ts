@@ -5,14 +5,14 @@ export interface Choice {
 
 export interface Interaction {
   id: string
-  type: "message" | "input" | "multiple-choice" | "animation" | "notification" | "user-message"
+  type: "message" | "input" | "multiple-choice" | "animation" | "notification"
   duration: number
   "next-id"?: string
   "timeout-id"?: string
   text?: string
-  answer?: string // For input type interactions
-  choices?: Choice[]
-  [key: string]: any // For additional attributes
+  answer?: string      // Only for type: "input"
+  choices?: Choice[]   // Only for type: "multiple-choice"
+  checkpoint?: boolean // Checkpoint marker (optional, default false)
 }
 
 // Type for the raw interaction data from JSON (without id)
@@ -24,30 +24,10 @@ export interface RawInteraction {
   text?: string
   answer?: string
   choices?: Choice[]
-  [key: string]: any
+  checkpoint?: boolean
 }
 
 // Type for the interactions object structure in JSON
 export interface InteractionsData {
   interactions: Record<string, RawInteraction>
-}
-
-// Props types for components
-export interface ChatProps {
-  history: Interaction[]
-  processText: (text: string | undefined) => string
-  currentInteraction: Interaction | null
-  goToNextInteraction: (nextId: string) => void
-}
-
-export interface InputAreaProps {
-  currentInteraction: Interaction | null
-  goToNextInteraction: (nextId: string) => void
-}
-
-export interface CardSequenceProps {
-  currentInteraction: Interaction | null
-  history: Interaction[]
-  goToNextInteraction: (nextId: string) => void
-  processText: (text: string | undefined) => string
 }

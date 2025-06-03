@@ -4,7 +4,8 @@
       "type": "message",
       "duration": 4,
       "next-id": "2",
-      "text": "Ahoj, já jsem appka. Jsem kus softwaru, víš jak: 0-1-1-0-0-1...\n"
+      "text": "Ahoj, já jsem appka. Jsem kus softwaru, víš jak: 0-1-1-0-0-1...\n",
+      "checkpoint": true
     },
     "2": {
       "type": "input",
@@ -154,7 +155,8 @@
       "type": "message",
       "text": "😲 Wow!",
       "duration": 2,
-      "next-id": "1.2"
+      "next-id": "1.2",
+      "checkpoint": true
     },
     "1.2": {
       "type": "message",
