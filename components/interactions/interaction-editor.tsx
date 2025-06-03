@@ -48,7 +48,7 @@ export default function InteractionEditor({
     setEditedInteraction({
       id: newId,
       type: "message",
-      duration: 5,
+      maxDuration: 5,
       text: "",
     })
     setIsCreating(true)
@@ -122,7 +122,7 @@ export default function InteractionEditor({
 
     const newChoice: Choice = {
       type: "",
-      "next-id": "",
+      "nextId": "",
     }
 
     setEditedInteraction({
@@ -255,8 +255,8 @@ export default function InteractionEditor({
             <Input
               id="duration"
               type="number"
-              value={editedInteraction.duration}
-              onChange={(e) => handleChange("duration", Number.parseInt(e.target.value) || 0)}
+              value={editedInteraction.maxDuration}
+              onChange={(e) => handleChange("maxDuration", Number.parseInt(e.target.value) || 0)}
               className="bg-slate-800 border-slate-700 text-white"
             />
           </div>
@@ -283,12 +283,12 @@ export default function InteractionEditor({
 
           {editedInteraction.type !== "multiple-choice" && (
             <div className="space-y-2">
-              <Label htmlFor="next-id" className="text-slate-300">
+              <Label htmlFor="nextId" className="text-slate-300">
                 Next ID
               </Label>
               <Select
-                value={editedInteraction["next-id"] || "none"}
-                onValueChange={(value) => handleChange("next-id", value === "none" ? "" : value)}
+                value={editedInteraction["nextId"] || "none"}
+                onValueChange={(value) => handleChange("nextId", value === "none" ? "" : value)}
               >
                 <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
                   <SelectValue placeholder="Select next interaction" />
@@ -390,15 +390,15 @@ export default function InteractionEditor({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor={`choice-next-id-${index}`} className="text-slate-300">
+                    <Label htmlFor={`choice-nextId-${index}`} className="text-slate-300">
                       Next ID
                     </Label>
                     <Select
-                      value={choice["next-id"] || "none"}
-                      onValueChange={(value) => handleChoiceChange(index, "next-id", value === "none" ? "" : value)}
+                      value={choice["nextId"] || "none"}
+                      onValueChange={(value) => handleChoiceChange(index, "nextId", value === "none" ? "" : value)}
                     >
                       <SelectTrigger
-                        id={`choice-next-id-${index}`}
+                        id={`choice-nextId-${index}`}
                         className="bg-slate-800 border-slate-700 text-white"
                       >
                         <SelectValue placeholder="Select next interaction" />

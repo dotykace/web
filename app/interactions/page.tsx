@@ -129,7 +129,7 @@ export default function Home() {
     setSelectedInteraction({
       id: `new_${Date.now()}`,
       type: "message",
-      duration: 5,
+      maxDuration: 5,
       text: "",
     })
   }

@@ -80,10 +80,10 @@ function InteractionNode({ data }: InteractionNodeProps) {
 
       <div className="text-xs text-white text-opacity-80 mt-1">Type: {interaction.type}</div>
 
-      <div className="text-xs text-white text-opacity-80">Duration: {interaction.duration}s</div>
+      <div className="text-xs text-white text-opacity-80">Duration: {interaction.maxDuration}s</div>
 
-      {interaction["next-id"] && (
-        <div className="text-xs text-white text-opacity-80">Next: {interaction["next-id"]}</div>
+      {interaction["nextId"] && (
+        <div className="text-xs text-white text-opacity-80">Next: {interaction["nextId"]}</div>
       )}
 
       {interaction["timeout-id"] && (

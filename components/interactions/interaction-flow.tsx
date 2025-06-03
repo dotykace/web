@@ -96,11 +96,11 @@ export default function InteractionFlow({
 
     // Second pass: create edges
     interactions.forEach((interaction) => {
-      if (interaction["next-id"]) {
+      if (interaction["nextId"]) {
         newEdges.push({
-          id: `${interaction.id}-${interaction["next-id"]}`,
+          id: `${interaction.id}-${interaction["nextId"]}`,
           source: interaction.id,
-          target: interaction["next-id"],
+          target: interaction["nextId"],
           animated: true,
           style: { stroke: "#6366f1" },
         })
@@ -125,11 +125,11 @@ export default function InteractionFlow({
       // Add edges for multiple choice options
       if (interaction.type === "multiple-choice" && interaction.choices) {
         interaction.choices.forEach((choice, index) => {
-          if (choice["next-id"]) {
+          if (choice["nextId"]) {
             newEdges.push({
-              id: `${interaction.id}-${choice["next-id"]}-${index}`,
+              id: `${interaction.id}-${choice["nextId"]}-${index}`,
               source: interaction.id,
-              target: choice["next-id"],
+              target: choice["nextId"],
               animated: true,
               label: choice.type,
               labelStyle: { fill: "#f3f4f6", fontWeight: 500 },

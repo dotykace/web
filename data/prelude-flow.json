@@ -1,0 +1,163 @@
+{
+  "id": "prelude-flow",
+  "name": "Prelude",
+  "description": "Introduction sequence before main menu",
+  "version": "1.0.0",
+  "startInteractionId": "prelude-1",
+  "interactions": {
+    "prelude-1": {
+      "type": "title-card",
+      "duration": 4000,
+      "text": "Ahoj, já jsem appka. Jsem kus softwaru, víš jak: 0-1-1-0-0-1...\nCo ty? Jak ti mám říkat?",
+      "nextId": "prelude-2"
+    },
+    "prelude-2": {
+      "type": "input",
+      "duration": 30000,
+      "text": "Jak ti mám říkat?",
+      "nextId": "prelude-3",
+      "checkpoint": true
+    },
+    "prelude-3": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "Ok, {userName}! Řeknu ti, proč mě naprogramovali, jo?",
+      "nextId": "prelude-4"
+    },
+    "prelude-4": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "Jsem tu, abychom spolu hráli hru.",
+      "nextId": "prelude-5"
+    },
+    "prelude-5": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "Ty, {userName}, jsi v téhle hře prostě ty, jasný?",
+      "nextId": "prelude-6"
+    },
+    "prelude-6": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "Já si hraju na to, že jsem tvůj mobil, který jakoby na chvíli oživnul.",
+      "nextId": "prelude-7"
+    },
+    "prelude-7": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "Dovedeš si to představit? Že chatuješ s vlastním mobilem?",
+      "nextId": "prelude-8"
+    },
+    "prelude-8": {
+      "type": "title-card",
+      "duration": 4000,
+      "text": "Většinou ti za sebe píšu jenom: 'battery is low', nakrm mě! Jinak toho moc neřeknu.",
+      "nextId": "prelude-9"
+    },
+    "prelude-9": {
+      "type": "multiple-choice",
+      "duration": 30000,
+      "text": "Teď s tebou chci ale řešit to, co spolu my dva zažíváme, ok?",
+      "choices": [
+        {
+          "type": "Hraju",
+          "nextId": "prelude-10a"
+        },
+        {
+          "type": "Nehraju",
+          "nextId": "prelude-10c"
+        },
+        {
+          "type": "O co jde?",
+          "nextId": "prelude-10b"
+        }
+      ]
+    },
+    "prelude-10a": {
+      "type": "title-card",
+      "duration": 4000,
+      "text": "Bezva, hrajeme! Už vím, jak ti mám říkat, {userName}. Ale jak ty říkáš mně, svému mobilu?",
+      "nextId": "prelude-11a"
+    },
+    "prelude-10b": {
+      "type": "title-card",
+      "duration": 5000,
+      "text": "Jde o interaktivní zážitek, kde si budeme povídat o našem vztahu - ty jako člověk a já jako tvůj mobilní telefon. Budeme zkoumat, jak se navzájem dotýkáme a jak spolu komunikujeme.",
+      "nextId": "prelude-11b"
+    },
+    "prelude-10c": {
+      "type": "title-card",
+      "duration": 4000,
+      "text": "Chápu, tahle hra je dobrovolná. Jestli ji nechceš hrát, pustím ti pár videí o lidech a mobilech.",
+      "nextId": "prelude-11c"
+    },
+    "prelude-11a": {
+      "type": "input",
+      "duration": 30000,
+      "text": "Jak mám říkat sobě?",
+      "nextId": "prelude-12b",
+      "checkpoint": true
+    },
+    "prelude-11b": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "Pojďme na to společně!",
+      "nextId": "prelude-12b"
+    },
+    "prelude-11c": {
+      "type": "multiple-choice",
+      "duration": 30000,
+      "text": "Můžeš si vybrat:",
+      "choices": [
+        {
+          "type": "Hraju",
+          "nextId": "prelude-10a"
+        },
+        {
+          "type": "Videa",
+          "nextId": "prelude-videos"
+        }
+      ]
+    },
+    "prelude-12b": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "Ok! {userName} a {phoneName} - jdeme na to.",
+      "nextId": "prelude-final"
+    },
+    "prelude-final": {
+      "type": "multiple-choice",
+      "duration": 30000,
+      "text": "Tak co, jdeš do toho?",
+      "choices": [
+        {
+          "type": "Hraju",
+          "nextId": "prelude-complete"
+        },
+        {
+          "type": "Nehraju",
+          "nextId": "prelude-exit"
+        }
+      ],
+      "checkpoint": true
+    },
+    "prelude-videos": {
+      "type": "title-card",
+      "duration": 4000,
+      "text": "Tady by byly videa o vztahu lidí a mobilů... (zatím nedostupné)",
+      "nextId": "prelude-exit"
+    },
+    "prelude-exit": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "Chápu, možná někdy příště. Díky za tvůj čas!",
+      "nextId": "prelude-1"
+    },
+    "prelude-complete": {
+      "type": "title-card",
+      "duration": 2000,
+      "text": "Výborně! Teď si můžeš vybrat kapitolu...",
+      "nextId": "menu"
+    }
+  }
+}

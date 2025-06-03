@@ -77,8 +77,8 @@ export default function CardSequence({
                     >
                         <Card
                             onClick={() => {
-                                if (currentInteraction?.type === "message" && currentInteraction["next-id"]) {
-                                    goToNextInteraction(currentInteraction["next-id"])
+                                if (currentInteraction?.type === "message" && currentInteraction["nextId"]) {
+                                    goToNextInteraction(currentInteraction["nextId"])
                                 }
                             }}
                             className="transform-gpu"
@@ -108,7 +108,7 @@ export default function CardSequence({
                                 )}
 
                                 {/* Click hint for message types */}
-                                {currentInteraction?.type === "message" && currentInteraction?.["next-id"] && (
+                                {currentInteraction?.type === "message" && currentInteraction?.["nextId"] && (
                                     <motion.div
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}

@@ -3,51 +3,51 @@
     "1": {
       "type": "message",
       "duration": 4,
-      "next-id": "2",
+      "nextId": "2",
       "text": "Ahoj, já jsem appka. Jsem kus softwaru, víš jak: 0-1-1-0-0-1...\n",
       "checkpoint": true
     },
     "2": {
       "type": "input",
       "duration": 10,
-      "next-id": "3",
+      "nextId": "3",
       "answer": "",
       "text": "Co ty? Jak ti mám říkat?"
     },
     "3": {
       "type": "message",
       "duration": 4,
-      "next-id": "4",
+      "nextId": "4",
       "text": "Ok, UN! Řeknu ti, proč mě naprogramovali, jo?"
     },
     "4": {
       "type": "message",
       "duration": 4,
-      "next-id": "5",
+      "nextId": "5",
       "text": "Jsem tu, abychom spolu hráli hru."
     },
     "5": {
       "type": "message",
       "duration": 4,
-      "next-id": "6",
+      "nextId": "6",
       "text": "Ty, UN, jsi v téhle hře prostě ty, jasný?"
     },
     "6": {
       "type": "message",
       "duration": 4,
-      "next-id": "7",
+      "nextId": "7",
       "text": "Já si hraju na to, že jsem tvůj mobil, který jakoby na chvíli obživnul."
     },
     "7": {
       "type": "message",
       "duration": 5,
-      "next-id": "8",
+      "nextId": "8",
       "text": "Dovedeš si to představit? Že chatuješ s vlastním mobilem?"
     },
     "8": {
       "type": "message",
       "duration": 5,
-      "next-id": "9",
+      "nextId": "9",
       "text": "Většinou ti za sebe píšu jenom: 'battery is low', nakrm mě! Jinak toho moc neřeknu."
     },
     "9": {
@@ -57,35 +57,35 @@
       "choices": [
         {
           "type": "Hraju",
-          "next-id": "10a"
+          "nextId": "10a"
         },
         {
           "type": "Nehraju",
-          "next-id": "10c"
+          "nextId": "10c"
         },
         {
           "type": "O co jde?",
-          "next-id": "10b"
+          "nextId": "10b"
         }
       ]
     },
     "10a": {
       "type": "message",
       "duration": 2,
-      "next-id": "11a",
+      "nextId": "11a",
       "text": "Bezva, hrajeme!"
     },
     "11a": {
       "type": "input",
       "duration": 10,
-      "next-id": "12b",
+      "nextId": "12b",
       "answer": "",
       "text": "Už vím, jak ti mám říkat, UN. Ale jak ty říkáš mně, svému mobilu?"
     },
     "10c": {
       "type": "message",
       "duration": 6,
-      "next-id": "11c",
+      "nextId": "11c",
       "text": "Chápu, tahle hra je dobrovolná. Jestli ji nechceš hrát, pustím ti pár videí o lidech a mobilech."
     },
     "11c": {
@@ -95,30 +95,30 @@
       "choices": [
         {
           "type": "Hraju",
-          "next-id": "10a"
+          "nextId": "10a"
         },
         {
           "type": "Videa",
-          "next-id": "videos"
+          "nextId": "videos"
         }
       ]
     },
     "10b": {
       "type": "message",
       "duration": 6,
-      "next-id": "11b",
+      "nextId": "11b",
       "text": "(zopakovat info, které U dostal od lektorů)"
     },
     "11b": {
       "type": "message",
       "duration": 6,
-      "next-id": "confirm-play",
+      "nextId": "confirm-play",
       "text": "(pokračování info)"
     },
     "12b": {
       "type": "message",
       "duration": 4,
-      "next-id": "chapter-1-animation",
+      "nextId": "chapter-1-animation",
       "text": "Ok! UN a BN - jdeme na to."
     },
     "confirm-play": {
@@ -128,11 +128,11 @@
       "choices": [
         {
           "type": "Hraju",
-          "next-id": "10a"
+          "nextId": "10a"
         },
         {
           "type": "Nehraju",
-          "next-id": "exit"
+          "nextId": "exit"
         }
       ]
     },
@@ -149,58 +149,58 @@
     "chapter-1-animation": {
       "type": "animation",
       "duration": 3,
-      "next-id": "1.1"
+      "nextId": "1.1"
     },
     "1.1": {
       "type": "message",
       "text": "😲 Wow!",
       "duration": 2,
-      "next-id": "1.2",
+      "nextId": "1.2",
       "checkpoint": true
     },
     "1.2": {
       "type": "message",
       "text": "Teď už zprávy pro tebe jenom nezobrazuju.\nUž ti je i píšu! Yeeees!",
       "duration": 4,
-      "next-id": "1.3"
+      "nextId": "1.3"
     },
     "1.3": {
       "type": "message",
       "text": "Jsi tam?",
       "duration": 2,
-      "next-id": "1.4"
+      "nextId": "1.4"
     },
     "1.4": {
       "type": "message",
       "text": "😅 Jaj, promiň. Zapnu ti chat.",
       "duration": 3,
-      "next-id": "1.5"
+      "nextId": "1.5"
     },
     "1.5": {
       "type": "notification",
       "text": "🔔 Chat pro UN spuštěn.",
       "duration": 0,
-      "next-id": "1.6"
+      "nextId": "1.6"
     },
     "1.6": {
       "type": "input",
       "text": "Napiš něco, pls.",
       "answer": "",
       "duration": 15,
-      "next-id": "1.7",
+      "nextId": "1.7",
       "timeout-id": "1.100"
     },
     "1.7": {
       "type": "message",
       "text": "Hmm... \"{{user_input}}\"\nPrvní slova od UN pro mě.\nTo si budu pamatovat i v továrním nastavení.",
       "duration": 5,
-      "next-id": "1.8"
+      "nextId": "1.8"
     },
     "1.8": {
       "type": "message",
       "text": "Když jsme u paměti. Něco ti chci ukázat.",
       "duration": 4,
-      "next-id": "1.9"
+      "nextId": "1.9"
     },
     "1.9": {
       "type": "message",
@@ -211,35 +211,35 @@
       "type": "message",
       "text": "Ty mě napínáš!",
       "duration": 3,
-      "next-id": "1.101"
+      "nextId": "1.101"
     },
     "1.101": {
       "type": "input",
       "text": "",
       "answer": "",
       "duration": 10,
-      "next-id": "1.7",
+      "nextId": "1.7",
       "timeout-id": "1.102"
     },
     "1.102": {
       "type": "message",
       "text": "Dáváš si záležet, viď?",
       "duration": 3,
-      "next-id": "1.103"
+      "nextId": "1.103"
     },
     "1.103": {
       "type": "input",
       "text": "",
       "answer": "",
       "duration": 7,
-      "next-id": "1.7",
+      "nextId": "1.7",
       "timeout-id": "1.104"
     },
     "1.104": {
       "type": "message",
       "text": "Víš co, netrap se tím. Tohle je pro mě stejně nezapomenutelný.",
       "duration": 4,
-      "next-id": "1.8"
+      "nextId": "1.8"
     }
   }
 }

@@ -100,10 +100,10 @@ export function useInteractions<T>() {
     }
 
     const timer = setTimeout(() => {
-      if (currentInteraction["next-id"]) {
-        goToNextInteraction(currentInteraction["next-id"])
+      if (currentInteraction["nextId"]) {
+        goToNextInteraction(currentInteraction["nextId"])
       }
-    }, currentInteraction.duration * 1000)
+    }, currentInteraction.maxDuration * 1000)
 
     return () => clearTimeout(timer)
   }, [currentInteraction])
@@ -138,13 +138,13 @@ export function useInteractions<T>() {
             id: `user-${Date.now()}-${Math.random()}`, // FIXED: Ensure unique IDs
             type: "user-message",
             text: input,
-            duration: 0,
+            maxDuration: 0,
           }
 
           setHistory((prev) => [...prev, userMessage])
 
-          if (currentInteraction["next-id"]) {
-            goToNextInteraction(currentInteraction["next-id"])
+          if (currentInteraction["nextId"]) {
+            goToNextInteraction(currentInteraction["nextId"])
           }
         }
       },
@@ -158,13 +158,13 @@ export function useInteractions<T>() {
           id: `user-choice-${Date.now()}-${Math.random()}`, // FIXED: Ensure unique IDs
           type: "user-message",
           text: choice.type,
-          duration: 0,
+          maxDuration: 0,
         }
 
         setHistory((prev) => [...prev, userChoice])
 
-        if (choice["next-id"]) {
-          goToNextInteraction(choice["next-id"])
+        if (choice["nextId"]) {
+          goToNextInteraction(choice["nextId"])
         }
       },
       [goToNextInteraction],
