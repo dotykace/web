@@ -55,7 +55,7 @@ export default function PreludePage() {
 
     // Process text with variables
     const processText = (text: string) => {
-        return text.replace(/\{([^}]+)}/g, (match, variable) => {
+        return text.replace(/\{([^}]+)\}/g, (match, variable) => {
             return variables[variable] || match
         })
     }
@@ -169,6 +169,39 @@ export default function PreludePage() {
 
     return (
         <div className="min-h-screen bg-black text-white flex flex-col">
+            {/* Skip button */}
+            <div className="absolute top-4 right-4 z-10">
+                <Button
+                    onClick={() => {
+                        // Mark prelude as completed
+                        localStorage.setItem("preludeCompleted", "true")
+
+                        // Set default values for required variables
+                        const defaultVariables = {
+                            userName: "User",
+                            phoneName: "Phone",
+                        }
+
+                        // Check if we already have some variables
+                        const existingVars = localStorage.getItem("preludeVariables")
+                        const mergedVars = {
+                            ...defaultVariables,
+                            ...(existingVars ? JSON.parse(existingVars) : {}),
+                        }
+
+                        // Save merged variables
+                        localStorage.setItem("preludeVariables", JSON.stringify(mergedVars))
+
+                        // Navigate to menu
+                        router.push("/menu")
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="bg-transparent border-white/30 text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+                >
+                    Skip Intro
+                </Button>
+            </div>
             <div className="flex-1 flex items-center justify-center p-8">
                 <div className="max-w-4xl w-full text-center">
                     <AnimatePresence mode="wait">

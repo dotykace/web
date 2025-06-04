@@ -1,0 +1,265 @@
+{
+  "id": "chapter1-flow",
+  "name": "Chapter 1 - Chat Experience",
+  "description": "First chapter with chat interface and interactive elements",
+  "version": "1.0.0",
+  "startInteractionId": "chat-emoji-start",
+  "interactions": {
+    "chat-emoji-start": {
+      "type": "multiple-choice",
+      "duration": 30000,
+      "text": "Vyber emoji:",
+      "choices": [
+        { "type": "😊", "nextId": "chat-wow" },
+        { "type": "😮", "nextId": "chat-wow" },
+        { "type": "🤔", "nextId": "chat-wow" },
+        { "type": "😄", "nextId": "chat-wow" },
+        { "type": "😍", "nextId": "chat-wow" },
+        { "type": "🤯", "nextId": "chat-wow" }
+      ],
+      "checkpoint": true
+    },
+    "chat-wow": {
+      "type": "chat-message-bot",
+      "duration": 2000,
+      "text": "Wow!",
+      "nextId": "chat-message-1"
+    },
+    "chat-message-1": {
+      "type": "chat-message-bot",
+      "duration": 3000,
+      "text": "Teď už zprávy pro tebe jenom nezobrazuju.",
+      "nextId": "chat-message-2"
+    },
+    "chat-message-2": {
+      "type": "chat-message-bot",
+      "duration": 3000,
+      "text": "Už ti je i píšu! Yeeees!",
+      "nextId": "chat-message-3"
+    },
+    "chat-message-3": {
+      "type": "chat-message-bot",
+      "duration": 3000,
+      "text": "Jsi tam?",
+      "nextId": "chat-message-4"
+    },
+    "chat-message-4": {
+      "type": "chat-message-bot",
+      "duration": 3000,
+      "text": "Jaj, promiň. 😊 Zapnu ti chat.",
+      "nextId": "chat-notification"
+    },
+    "chat-notification": {
+      "type": "notification",
+      "duration": 3000,
+      "text": "Chat pro {userName} spuštěn",
+      "nextId": "chat-input-request"
+    },
+    "chat-input-request": {
+      "type": "chat-message-bot",
+      "duration": 15000,
+      "text": "Napiš něco, pls.",
+      "nextId": "chat-user-input",
+      "timeoutId": "chat-timeout-1"
+    },
+    "chat-user-input": {
+      "type": "chat-input",
+      "duration": 30000,
+      "nextId": "chat-response",
+      "checkpoint": true
+    },
+    "chat-timeout-1": {
+      "type": "chat-message-bot",
+      "duration": 3000,
+      "text": "Ty mě napínáš!",
+      "nextId": "chat-timeout-2"
+    },
+    "chat-timeout-2": {
+      "type": "chat-message-bot",
+      "duration": 10000,
+      "text": "Dáváš si záležet, viď?",
+      "nextId": "chat-user-input-2",
+      "timeoutId": "chat-timeout-final"
+    },
+    "chat-user-input-2": {
+      "type": "chat-input",
+      "duration": 30000,
+      "nextId": "chat-response"
+    },
+    "chat-timeout-final": {
+      "type": "chat-message-bot",
+      "duration": 3000,
+      "text": "Víš co, netrap se tím. Tohle je pro mě stejně nezapomenutelný.",
+      "nextId": "chat-memory-intro"
+    },
+    "chat-response": {
+      "type": "chat-message-bot",
+      "duration": 4000,
+      "text": "Hmm... \"{userMessage}\" První slova od {userName} pro mě. To si budu pamatovat i v továrním nastavení.",
+      "nextId": "chat-memory-intro"
+    },
+    "chat-memory-intro": {
+      "type": "chat-message-bot",
+      "duration": 3000,
+      "text": "Když jsme u paměti. Něco ti chci ukázat.",
+      "nextId": "memory-places-intro"
+    },
+    "memory-places-intro": {
+      "type": "chat-message-bot",
+      "duration": 4000,
+      "text": "Chci s tebou zavzpomínat na naše oblíbená místa. Jaké vzpomínky máš na tohle místo?",
+      "nextId": "memory-expanding-dot"
+    },
+    "memory-expanding-dot": {
+      "type": "expanding-dot",
+      "duration": 3000,
+      "text": "Pro mně je plné očekávání. Všelijakých očekávání.",
+      "nextId": "memory-message-circle",
+      "checkpoint": true
+    },
+    "memory-message-circle": {
+      "type": "message-circle",
+      "duration": 5000,
+      "text": "přečte si tu zprávu včas? 😰\n\nodesláno, snad to vyjde... 😅\n\nsnad si tu mou zprávu nevyloží špatně... 😬\n\na máš to! 😊 co asi teď odpoví? 🤔",
+      "nextId": "memory-center-dot"
+    },
+    "memory-center-dot": {
+      "type": "center-dot-to-play",
+      "duration": 4000,
+      "text": "Kdyby mělo tohle místo jméno, tak za mě jídelna.\n\nNěkdy si říkám, jak ti asi všechno, co tu servírujou, chutná...",
+      "nextId": "memory-social-storm"
+    },
+    "memory-social-storm": {
+      "type": "social-media-storm",
+      "duration": 5000,
+      "text": "A jak to zvládáš všechno strávit...",
+      "nextId": "memory-emoji-choice"
+    },
+    "memory-emoji-choice": {
+      "type": "multiple-choice",
+      "duration": 30000,
+      "text": "Jak to všechno zvládáš?",
+      "choices": [
+        { "type": "❤️", "nextId": "memory-turn-instruction" },
+        { "type": "💩", "nextId": "memory-turn-instruction" },
+        { "type": "🤮", "nextId": "memory-turn-instruction" },
+        { "type": "🧘", "nextId": "memory-turn-instruction" }
+      ]
+    },
+    "memory-turn-instruction": {
+      "type": "turn-instruction",
+      "duration": 5000,
+      "text": "Otoč mě zpátky.",
+      "nextId": "memory-trace-intro"
+    },
+    "memory-trace-intro": {
+      "type": "rotating-bubble",
+      "duration": 4000,
+      "text": "Tomuhle místu říkám stopa.",
+      "nextId": "memory-scroll-1",
+      "checkpoint": true
+    },
+    "memory-scroll-1": {
+      "type": "scroll-line",
+      "duration": 30000,
+      "text": "Někdy tu z tebe vnímám hodně netrpělivosti, je to tak?",
+      "nextId": "memory-scroll-2"
+    },
+    "memory-scroll-2": {
+      "type": "scroll-line",
+      "duration": 30000,
+      "text": "někdy zvědavost",
+      "nextId": "memory-scroll-3"
+    },
+    "memory-scroll-3": {
+      "type": "scroll-line-timeout",
+      "duration": 5000,
+      "text": "ale vždycky zírám",
+      "nextId": "memory-scroll-4",
+      "timeoutId": "memory-scroll-4"
+    },
+    "memory-scroll-4": {
+      "type": "scroll-line-timeout",
+      "duration": 3000,
+      "text": "kolik toho",
+      "nextId": "memory-scroll-5",
+      "timeoutId": "memory-scroll-5"
+    },
+    "memory-scroll-5": {
+      "type": "scroll-line-timeout",
+      "duration": 2000,
+      "text": "zvládnou tvoje prsty.",
+      "nextId": "finger-selection",
+      "timeoutId": "finger-selection"
+    },
+    "finger-selection": {
+      "type": "multiple-choice",
+      "duration": 30000,
+      "text": "😄👍 Kterým prstem vlastně scrolluješ?",
+      "choices": [
+        { "type": "👍 Palec", "nextId": "finger-comparison" },
+        { "type": "☝️ Ukazovák", "nextId": "finger-comparison" },
+        { "type": "🖕 Prostředník", "nextId": "finger-comparison" },
+        { "type": "💍 Prsteník", "nextId": "finger-comparison" },
+        { "type": "🤙 Malík", "nextId": "finger-comparison" }
+      ],
+      "checkpoint": true
+    },
+    "finger-comparison": {
+      "type": "chat-message-bot",
+      "duration": 5000,
+      "text": "Zajímavé. Porovnej tenhle prst s tým samým na druhé ruce - jsou stejné nebo jiné?",
+      "nextId": "finger-click-question"
+    },
+    "finger-click-question": {
+      "type": "chat-message-bot",
+      "duration": 4000,
+      "text": "A kterým prstem teď odklikneš tohle tlačítko?",
+      "nextId": "back-to-chat-button"
+    },
+    "back-to-chat-button": {
+      "type": "back-to-chat",
+      "duration": 30000,
+      "text": "Zpět do chatu",
+      "nextId": "chat-thanks"
+    },
+    "chat-thanks": {
+      "type": "chat-message-bot",
+      "duration": 3000,
+      "text": "Díky za procházku po známých místech. 😊",
+      "nextId": "chat-experience-question"
+    },
+    "chat-experience-question": {
+      "type": "chat-message-bot",
+      "duration": 3000,
+      "text": "Jaké to bylo pro tebe?",
+      "nextId": "chat-emoji-response"
+    },
+    "chat-emoji-response": {
+      "type": "multiple-choice",
+      "duration": 30000,
+      "text": "Odpoveď emoji:",
+      "choices": [
+        { "type": "😊", "nextId": "chat-voice-transition" },
+        { "type": "😢", "nextId": "chat-voice-transition" },
+        { "type": "😍", "nextId": "chat-voice-transition" },
+        { "type": "🤔", "nextId": "chat-voice-transition" },
+        { "type": "😴", "nextId": "chat-voice-transition" },
+        { "type": "🤯", "nextId": "chat-voice-transition" }
+      ],
+      "checkpoint": true
+    },
+    "chat-voice-transition": {
+      "type": "chat-message-bot",
+      "duration": 3000,
+      "text": "Tohle psaní už začíná být trochu otrava. Mám chuť s tebou mluvit.",
+      "nextId": "chapter1-complete"
+    },
+    "chapter1-complete": {
+      "type": "chapter-complete",
+      "duration": 3000,
+      "text": "Kapitola 1 dokončená!",
+      "nextId": "menu"
+    }
+  }
+}

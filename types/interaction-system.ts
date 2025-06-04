@@ -42,17 +42,4 @@ export interface InteractionFlow {
     interactions: Record<string, Interaction>
 }
 
-// State management
-export interface InteractionState {
-    currentInteractionId: string | null
-    history: string[]
-    variables: Record<string, any>
-}
 
-// Context for renderers
-export interface InteractionContext {
-    state: InteractionState
-    flow: InteractionFlow
-    onInteractionComplete: (interactionId: string, result?: any) => void
-    onVariableChange: (variable: string, value: any) => void
-}
