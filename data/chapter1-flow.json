@@ -51,7 +51,7 @@
     },
     "chat-notification": {
       "type": "notification",
-      "duration": 3000,
+      "duration": 4000,
       "text": "Chat pro {userName} spuštěn",
       "nextId": "chat-input-request"
     },
@@ -112,26 +112,26 @@
     },
     "memory-expanding-dot": {
       "type": "expanding-dot",
-      "duration": 3000,
+      "duration": 5000,
       "text": "Pro mně je plné očekávání. Všelijakých očekávání.",
       "nextId": "memory-message-circle",
       "checkpoint": true
     },
     "memory-message-circle": {
       "type": "message-circle",
-      "duration": 5000,
+      "duration": 8000,
       "text": "přečte si tu zprávu včas? 😰\n\nodesláno, snad to vyjde... 😅\n\nsnad si tu mou zprávu nevyloží špatně... 😬\n\na máš to! 😊 co asi teď odpoví? 🤔",
       "nextId": "memory-center-dot"
     },
     "memory-center-dot": {
       "type": "center-dot-to-play",
-      "duration": 4000,
+      "duration": 6000,
       "text": "Kdyby mělo tohle místo jméno, tak za mě jídelna.\n\nNěkdy si říkám, jak ti asi všechno, co tu servírujou, chutná...",
       "nextId": "memory-social-storm"
     },
     "memory-social-storm": {
       "type": "social-media-storm",
-      "duration": 5000,
+      "duration": 6000,
       "text": "A jak to zvládáš všechno strávit...",
       "nextId": "memory-emoji-choice"
     },
@@ -154,7 +154,7 @@
     },
     "memory-trace-intro": {
       "type": "rotating-bubble",
-      "duration": 4000,
+      "duration": 8000,
       "text": "Tomuhle místu říkám stopa.",
       "nextId": "memory-scroll-1",
       "checkpoint": true
@@ -208,7 +208,7 @@
     "finger-comparison": {
       "type": "chat-message-bot",
       "duration": 5000,
-      "text": "Zajímavé. Porovnej tenhle prst s tým samým na druhé ruce - jsou stejné nebo jiné?",
+      "text": "Zajímavé. Porovnej tenhle prst s tím samým na druhé ruce - jsou stejné nebo jiné?",
       "nextId": "finger-click-question"
     },
     "finger-click-question": {

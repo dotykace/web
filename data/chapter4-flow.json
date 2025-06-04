@@ -1,0 +1,95 @@
+{
+  "id": "chapter4-flow",
+  "name": "Videos",
+  "description": "Fourth chapter with video content",
+  "version": "1.0.0",
+  "startInteractionId": "chapter4-intro",
+  "interactions": {
+    "chapter4-intro": {
+      "type": "video-intro",
+      "duration": 4000,
+      "text": "Vítaj v štvrtej kapitole: Videá",
+      "nextId": "video-explanation"
+    },
+    "video-explanation": {
+      "type": "video-intro",
+      "duration": 5000,
+      "text": "V tejto kapitole sa pozrieme na niekoľko videí o vzťahu medzi ľuďmi a mobilnými telefónmi.",
+      "nextId": "video-selection"
+    },
+    "video-selection": {
+      "type": "video-grid",
+      "duration": 30000,
+      "text": "Vyber si video, ktoré ťa zaujíma:",
+      "choices": [
+        { "type": "Ako nás telefóny menia", "videoId": "video1", "nextId": "video1-intro" },
+        { "type": "Digitálna rovnováha", "videoId": "video2", "nextId": "video2-intro" },
+        { "type": "Technológie a vzťahy", "videoId": "video3", "nextId": "video3-intro" }
+      ],
+      "checkpoint": true
+    },
+    "video1-intro": {
+      "type": "video-player",
+      "duration": 180000,
+      "videoUrl": "https://example.com/video1.mp4",
+      "text": "Ako nás telefóny menia",
+      "nextId": "video1-reflection"
+    },
+    "video1-reflection": {
+      "type": "video-reflection",
+      "duration": 30000,
+      "text": "Čo si myslíš o tom, ako telefóny menia naše správanie?",
+      "nextId": "video-selection-2"
+    },
+    "video2-intro": {
+      "type": "video-player",
+      "duration": 180000,
+      "videoUrl": "https://example.com/video2.mp4",
+      "text": "Digitálna rovnováha",
+      "nextId": "video2-reflection"
+    },
+    "video2-reflection": {
+      "type": "video-reflection",
+      "duration": 30000,
+      "text": "Ako by si opísal/a svoju digitálnu rovnováhu?",
+      "nextId": "video-selection-2"
+    },
+    "video3-intro": {
+      "type": "video-player",
+      "duration": 180000,
+      "videoUrl": "https://example.com/video3.mp4",
+      "text": "Technológie a vzťahy",
+      "nextId": "video3-reflection"
+    },
+    "video3-reflection": {
+      "type": "video-reflection",
+      "duration": 30000,
+      "text": "Ako ovplyvňujú technológie tvoje vzťahy s ostatnými?",
+      "nextId": "video-selection-2"
+    },
+    "video-selection-2": {
+      "type": "video-grid",
+      "duration": 30000,
+      "text": "Chceš si pozrieť ďalšie video?",
+      "choices": [
+        { "type": "Ako nás telefóny menia", "videoId": "video1", "nextId": "video1-intro" },
+        { "type": "Digitálna rovnováha", "videoId": "video2", "nextId": "video2-intro" },
+        { "type": "Technológie a vzťahy", "videoId": "video3", "nextId": "video3-intro" },
+        { "type": "Dokončiť kapitolu", "videoId": "none", "nextId": "chapter4-conclusion" }
+      ],
+      "checkpoint": true
+    },
+    "chapter4-conclusion": {
+      "type": "video-conclusion",
+      "duration": 5000,
+      "text": "Ďakujeme za sledovanie videí. Dúfame, že ti poskytli nový pohľad na tvoj vzťah s technológiami.",
+      "nextId": "chapter4-complete"
+    },
+    "chapter4-complete": {
+      "type": "chapter-complete",
+      "duration": 4000,
+      "text": "Kapitola 4 dokončená!",
+      "nextId": "menu"
+    }
+  }
+}

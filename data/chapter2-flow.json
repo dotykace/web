@@ -1,0 +1,289 @@
+{
+  "id": "chapter2-flow",
+  "name": "Mental & Physical Habits",
+  "description": "Second chapter about mental and physical habits",
+  "version": "1.0.0",
+  "startInteractionId": "chapter2-intro",
+  "interactions": {
+    "chapter2-intro": {
+      "type": "title-screen",
+      "duration": 4000,
+      "text": "Kapitola 2: Mentálne a fyzické návyky",
+      "nextId": "voice-transition"
+    },
+    "voice-transition": {
+      "type": "narrative-text",
+      "duration": 4000,
+      "text": "Tohle psaní už začíná být trochu otrava. Mám chuť s tebou mluvit.",
+      "nextId": "voice-question"
+    },
+    "voice-question": {
+      "type": "voice-selection",
+      "duration": 30000,
+      "text": "Jak na tebe mám mluvit?",
+      "choices": [
+        { "type": "mužský hlas", "nextId": "voice-selected" },
+        { "type": "ženský hlas", "nextId": "voice-selected" },
+        { "type": "neutrální strojový hlas", "nextId": "voice-selected" }
+      ],
+      "checkpoint": true
+    },
+    "voice-selected": {
+      "type": "narrative-text",
+      "duration": 3000,
+      "text": "možná ještě jednoduchý ekvalizér?",
+      "nextId": "voice-demo"
+    },
+    "voice-demo": {
+      "type": "voice-demo",
+      "duration": 5000,
+      "text": "tlačítko 'Mluv!'",
+      "nextId": "voice-response"
+    },
+    "voice-response": {
+      "type": "narrative-text",
+      "duration": 2000,
+      "text": "???",
+      "nextId": "personal-question-intro"
+    },
+    "personal-question-intro": {
+      "type": "narrative-text",
+      "duration": 4000,
+      "text": "Hele, je jedna věc, na kterou se tě chci zeptat... ale... no, zkusím to.",
+      "nextId": "touch-question"
+    },
+    "touch-question": {
+      "type": "narrative-text",
+      "duration": 4000,
+      "text": "Přemýšlíš někdy o tom, jak moc se my dva dotýkáme?",
+      "nextId": "touch-weird-question"
+    },
+    "touch-weird-question": {
+      "type": "narrative-text",
+      "duration": 3000,
+      "text": "Je divný, že to říkám?",
+      "nextId": "touch-choice"
+    },
+    "touch-choice": {
+      "type": "binary-choice",
+      "duration": 30000,
+      "text": "",
+      "choices": [
+        { "type": "Je to divný", "nextId": "touch-weird-response" },
+        { "type": "Ne, proč?", "nextId": "touch-normal-response" }
+      ],
+      "checkpoint": true
+    },
+    "touch-weird-response": {
+      "type": "narrative-text",
+      "duration": 5000,
+      "text": "Promiň, lidi to asi mají jinak než mobily. Mě když nezmáčkneš, tak se ani neproberu. Já vlastně pořád čekám na tvůj hmat.",
+      "nextId": "senses-intro"
+    },
+    "touch-normal-response": {
+      "type": "narrative-text",
+      "duration": 4000,
+      "text": "To se mi ulevilo. Já jsem prostě na hmat. Když mě nezmáčkneš, tak se ani neproberu.",
+      "nextId": "senses-intro"
+    },
+    "senses-intro": {
+      "type": "narrative-text",
+      "duration": 5000,
+      "text": "Třeba o čichu vím prdlajs. Něco jsem googlil/a/o, ale stejně nechápu, co vy lidi tím nosem děláte... Dá se nosem aspoň odeslat zpráva? Myslím jako špičkou nosu - ťuk! Hahaha.",
+      "nextId": "eyes-comparison"
+    },
+    "eyes-comparison": {
+      "type": "narrative-text",
+      "duration": 5000,
+      "text": "A tvoje oči si představuju trochu jako foťák. Ale ty je jakoby nevypínáš, žejo? I když je zavřeš, pořád vidíš to černo. Moc tomu nerozumím... Mít on a off je jednodušší, ne?",
+      "nextId": "taste-confusion"
+    },
+    "taste-confusion": {
+      "type": "narrative-text",
+      "duration": 4000,
+      "text": "A pak ta - jak se to - chuť? To mi procesor vůbec nebere. Já jsem prostě na hmat, dotykáč, no.",
+      "nextId": "game-intro"
+    },
+    "game-intro": {
+      "type": "narrative-text",
+      "duration": 4000,
+      "text": "Je to jednoduchá hra. Nejdřív ti řeknu situaci a pak se tě zeptám, co v ní běžně děláš. A ty to zkus udělat, jo? Fyzicky udělat. Budou to obyčejné věci, nic zvláštního.",
+      "nextId": "game-disclaimer"
+    },
+    "game-disclaimer": {
+      "type": "narrative-text",
+      "duration": 4000,
+      "text": "Kdyby ti to přišlo divný, tak si jenom představ, že to děláš. Nemusíš se za každou cenu fyzicky namáhat.",
+      "nextId": "round-1-intro"
+    },
+    "round-1-intro": {
+      "type": "narrative-text",
+      "duration": 3000,
+      "text": "Jdeme na to. První kolo:",
+      "nextId": "round-1-scenario"
+    },
+    "round-1-scenario": {
+      "type": "scenario-text",
+      "duration": 5000,
+      "text": "Řekněme pro teď, že jakoby nemáš sluchátka, jo? A někdo ti zavolá. Já zvoním, vibruju, ty to zvedneš a... Kam mě dáš?",
+      "nextId": "round-1-pause"
+    },
+    "round-1-pause": {
+      "type": "pause-moment",
+      "duration": 4000,
+      "text": "(4 sec pauza)",
+      "nextId": "round-1-answer"
+    },
+    "round-1-answer": {
+      "type": "narrative-text",
+      "duration": 4000,
+      "text": "K uchu, nebo? Nebo dáš na repro, když nemáš sluchátka? Jen si představuju, jak to máš.",
+      "nextId": "round-2-intro"
+    },
+    "round-2-intro": {
+      "type": "scenario-text",
+      "duration": 4000,
+      "text": "Fajn, druhé kolo. Teď se bavíš s někým, ale už má něco jiného na práci a potřebuje odejít. Řekne ti 'čau' a ty?",
+      "nextId": "round-2-pause"
+    },
+    "round-2-pause": {
+      "type": "pause-moment",
+      "duration": 3000,
+      "text": "(čeká na odpověď)",
+      "nextId": "round-2-response"
+    },
+    "round-2-response": {
+      "type": "narrative-text",
+      "duration": 3000,
+      "text": "Doufal/a jsem od tebe něco jiného.",
+      "nextId": "round-3-intro"
+    },
+    "round-3-intro": {
+      "type": "scenario-text",
+      "duration": 4000,
+      "text": "Ok. Pořád na tebe mluvím a mluvím. Držíš jiný stroj. Podíváš ho. Poznáš podle váhy, že je jiný než já? Nemusíš odpovídat, jenom to vnímej.",
+      "nextId": "round-3-exploration"
+    },
+    "round-3-exploration": {
+      "type": "narrative-text",
+      "duration": 4000,
+      "text": "Jak ti sedí v ruce? Prozkoumej ho trochu hmatem - boky, hrany, zadní strana...",
+      "nextId": "round-3-question"
+    },
+    "round-3-question": {
+      "type": "narrative-text",
+      "duration": 4000,
+      "text": "Kdyby ti to někdo podal v úplné tmě, bylo by to rozpoznatelné? Já nejsem já? Nebo jsme po hmatu docela zaměnitelné věci?",
+      "nextId": "round-4-feeling"
+    },
+    "round-4-feeling": {
+      "type": "narrative-text",
+      "duration": 3000,
+      "text": "A jak se cítíš ohledně toho, že mě teď držíš něčím jiný?",
+      "nextId": "round-4-question"
+    },
+    "round-4-question": {
+      "type": "narrative-text",
+      "duration": 4000,
+      "text": "Chtěl bys svou dvojici na něco upozornit? O něco požádat, něco říct k tomu, že mě máš v ruce? Cokoliv.",
+      "nextId": "message-input-intro"
+    },
+    "message-input-intro": {
+      "type": "narrative-text",
+      "duration": 4000,
+      "text": "Na mobil, který držíš, teď pro tebe napíšu krátký vzkaz:",
+      "nextId": "message-input"
+    },
+    "message-input": {
+      "type": "text-input",
+      "duration": 40000,
+      "text": "Když držíš můj mobil...",
+      "nextId": "message-saved",
+      "checkpoint": true
+    },
+    "message-saved": {
+      "type": "narrative-text",
+      "duration": 3000,
+      "text": "Prima, teď si nás zase vyměňte. Vrať své dvojici její mobil a vezmi si mě zpátky.",
+      "nextId": "back-together"
+    },
+    "back-together": {
+      "type": "narrative-text",
+      "duration": 3000,
+      "text": "Haha, zase spolu. Můžeš se vrátit na svoje místo.",
+      "nextId": "message-offer"
+    },
+    "message-offer": {
+      "type": "binary-choice",
+      "duration": 30000,
+      "text": "Možná mám pro tebe nějaký vzkaz. Chceš se podívat?",
+      "choices": [
+        { "type": "Zobrazit vzkaz", "nextId": "show-message" },
+        { "type": "Třeba později", "nextId": "final-round-intro" }
+      ],
+      "checkpoint": true
+    },
+    "show-message": {
+      "type": "show-saved-message",
+      "duration": 4000,
+      "text": "Zobraz se uložený vzkaz",
+      "nextId": "final-round-intro"
+    },
+    "final-round-intro": {
+      "type": "narrative-text",
+      "duration": 4000,
+      "text": "Ok, a teď páté kolo, poslední: Jestli nesedíš, teď se posaď.",
+      "nextId": "continue-button"
+    },
+    "continue-button": {
+      "type": "continue-button",
+      "duration": 30000,
+      "text": "Pokračuj",
+      "nextId": "place-on-thigh",
+      "checkpoint": true
+    },
+    "place-on-thigh": {
+      "type": "narrative-text",
+      "duration": 3000,
+      "text": "Polož mě na stehno.",
+      "nextId": "thigh-memory"
+    },
+    "thigh-memory": {
+      "type": "narrative-text",
+      "duration": 4000,
+      "text": "Dáváš mě sem někdy? Vzpomeneš si na nějakou situaci, kdy spolu takhle sedíme?",
+      "nextId": "safety-question"
+    },
+    "safety-question": {
+      "type": "narrative-text",
+      "duration": 2000,
+      "text": "Jsem v bezpečí?",
+      "nextId": "falling-question"
+    },
+    "falling-question": {
+      "type": "narrative-text",
+      "duration": 3000,
+      "text": "Jak snadno bych teď sklouzl/a/o a spadl/a/o na zem?",
+      "nextId": "worry-question"
+    },
+    "worry-question": {
+      "type": "narrative-text",
+      "duration": 3000,
+      "text": "A vůbec - jsou někdy situace, kdy o mě máš obavy?",
+      "nextId": "worry-input"
+    },
+    "worry-input": {
+      "type": "text-input",
+      "duration": 40000,
+      "text": "Mám o tebe strach, když...",
+      "nextId": "chapter2-end",
+      "checkpoint": true
+    },
+    "chapter2-end": {
+      "type": "chapter-complete",
+      "duration": 4000,
+      "text": "Díky za tvé odpovědi. Teď už lépe rozumím, jak o mně přemýšlíš.",
+      "nextId": "menu"
+    }
+  }
+}
