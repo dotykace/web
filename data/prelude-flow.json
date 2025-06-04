@@ -1,0 +1,115 @@
+{
+  "id": "prelude",
+  "name": "Prelude",
+  "description": "Úvodný tok aplikácie podľa slovenského skriptu",
+  "version": "1.0",
+  "startInteractionId": "prelude-1",
+  "interactions": {
+    "prelude-1": {
+      "type": "title-card",
+      "duration": 4000,
+      "text": "Ahoj, ja som aplikácia. Jeden kus softvéru, vieš jak. 0-1-1-0-0-1... Čo ty? Jak ti môžem hovoriť?",
+      "nextId": "prelude-2"
+    },
+    "prelude-2": {
+      "type": "input",
+      "text": "(Zadaj si svojbodné meno či už Jak ti môžem hovoriť?)",
+      "nextId": "prelude-3"
+    },
+    "prelude-3": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "Ok, {userName} Budem ti, preto, nás neprogramovali, čo?",
+      "nextId": "prelude-4"
+    },
+    "prelude-4": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "Jsem tu skrytom spolu hrát hru.",
+      "nextId": "prelude-5"
+    },
+    "prelude-5": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "Ty, {userName}, ja s tebou. Nie sme ty, pamätaj.",
+      "nextId": "prelude-6"
+    },
+    "prelude-6": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "Ja si hraju na to, že som tvoj mobil, ktorý jakýsi na čítaní objavuje.",
+      "nextId": "prelude-7"
+    },
+    "prelude-7": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "Dovedieš si to predstaviť? Že zmeníme s virtuálnym modelom?",
+      "nextId": "prelude-8"
+    },
+    "prelude-8": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "Virtuálne si za sebou budu hrám. Virtuálne si za sebou budu hrám. Jakým mať Jmak toho moc nehľadaj.",
+      "nextId": "prelude-9"
+    },
+    "prelude-9": {
+      "type": "multiple-choice",
+      "text": "Teď s tebou chci ale hrát to, čo spolu my dva zažívame, ok? (zobrazí 3 tlačidlá: \"Hraju\", \"Nehraj\", \"O čo ide?\")",
+      "choices": [
+        {
+          "type": "Hraju",
+          "nextId": "prelude-10a"
+        },
+        {
+          "type": "Nehraj",
+          "nextId": "prelude-10b"
+        },
+        {
+          "type": "O čo ide?",
+          "nextId": "prelude-10c"
+        }
+      ]
+    },
+    "prelude-10a": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "Ok, Nehraj. Skončme. Už som sa tešil. Ale, UN. Ale jak ty môžeš myslieť mobil?",
+      "nextId": "prelude-11a"
+    },
+    "prelude-10b": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "Ok, Nehraj. Čudné, ale, naj je dobré. Ale, UN. Ale jak ty môžeš myslieť mobil? a nechceš hrať, pustím ťa per volej s ľuďmi. s nechceš. Možno \"Hraju\" nebo \"Vidím\"?",
+      "nextId": "prelude-11a"
+    },
+    "prelude-10c": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "11c: Možno si nevieš. Možno si z pokojnej časti?",
+      "nextId": "prelude-11a"
+    },
+    "prelude-11a": {
+      "type": "input",
+      "text": "11a: (zadaj si svojbodné meno či už Jak ti môžem hovoriť [text input])",
+      "nextId": "prelude-11b"
+    },
+    "prelude-11b": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "11b: (pokračovanie info, ktoré si dostal od užívateľa)",
+      "nextId": "prelude-12"
+    },
+    "prelude-12": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "12b: OK! UM a tak Jseme na to.",
+      "nextId": "prelude-13"
+    },
+    "prelude-13": {
+      "type": "title-card",
+      "duration": 3000,
+      "text": "13: Tak čo, ideme do toho? (Vidím: \"Hraju\" nebo \"Nehraj\")",
+      "nextId": "menu"
+    }
+  }
+}

@@ -1,0 +1,329 @@
+{
+  "id": "chapter3-flow",
+  "name": "Relationships",
+  "description": "Third chapter about relationships",
+  "version": "1.0.0",
+  "startInteractionId": "chapter3-intro",
+  "interactions": {
+    "chapter3-intro": {
+      "type": "audio-visualization",
+      "duration": 5000,
+      "text": "Vítaj v tretej kapitole: Vzťahy",
+      "nextId": "audio-spiral-1"
+    },
+    "audio-spiral-1": {
+      "type": "audio-visualization",
+      "duration": 4000,
+      "text": "Když jsme u těch obav... já se někdy bojím o tebe.",
+      "nextId": "time-spent-question"
+    },
+    "time-spent-question": {
+      "type": "text-input",
+      "duration": 30000,
+      "text": "Dovedeš odhadnout, kolik spolu my dva trávíme času? Průměrně za den, zkus mi to sem, prosím, napsat.",
+      "nextId": "statue-intro",
+      "checkpoint": true
+    },
+    "statue-intro": {
+      "type": "audio-visualization",
+      "duration": 4000,
+      "text": "Díky. Teď si uvědom, v jaké pozici je tvoje tělo a zůstaň v ní.",
+      "nextId": "statue-instruction-1"
+    },
+    "statue-instruction-1": {
+      "type": "audio-visualization",
+      "duration": 4000,
+      "text": "Nehýbej se. Je jedno, jestli sedíš nebo stojíš nebo co. Zůstaň přesně v téhle pozici. Jako socha.",
+      "nextId": "statue-instruction-2"
+    },
+    "statue-instruction-2": {
+      "type": "audio-visualization",
+      "duration": 5000,
+      "text": "Od nohou až po ramena jsi socha, dobře? Jenom hlava je volná. S tou hýbat můžeš. Ale jenom tak, aby zbytek těla zůstal nehybný.",
+      "nextId": "statue-instruction-3"
+    },
+    "statue-instruction-3": {
+      "type": "audio-visualization",
+      "duration": 4000,
+      "text": "Rozhlédni se po ostatních. Nemusíš vidět všechny lidi v místnosti, jenom ty, na které dohlédneš díky pohybu hlavy.",
+      "nextId": "gallery-welcome"
+    },
+    "gallery-welcome": {
+      "type": "audio-visualization",
+      "duration": 3000,
+      "text": "Vítej na výstavě soch.",
+      "nextId": "gallery-explanation"
+    },
+    "gallery-explanation": {
+      "type": "audio-visualization",
+      "duration": 5000,
+      "text": "V téhle galerii se vystavují sochy pod názvem: Homo Telephonicus - člověk mobilující. (Tohle je další hra, ok?)",
+      "nextId": "gallery-curator"
+    },
+    "gallery-curator": {
+      "type": "audio-visualization",
+      "duration": 5000,
+      "text": "Autorka výstavy říká, že jí šlo o to, cituji: 'zachytit nejrůznější pravdivé vztahy mezi lidským tělem a telefonem.' Pojď ten sochařčin záměr trochu prozkoumat.",
+      "nextId": "gallery-reminder"
+    },
+    "gallery-reminder": {
+      "type": "audio-visualization",
+      "duration": 3000,
+      "text": "(Ještě v té soše, prosím vydrž!)",
+      "nextId": "gallery-hands"
+    },
+    "gallery-hands": {
+      "type": "audio-visualization",
+      "duration": 6000,
+      "text": "Podívej se sochám na ruce. Jak která drží telefon? V jedné dlani nebo oběma? Objímají ho pevně nebo spíš tak zlehka, jako by nic? A co zápěstí? Jsou ohnutá? Gumová? Vykroucená? Jsou napřímená? Pevná? Kamenná?",
+      "nextId": "gallery-shoulders"
+    },
+    "gallery-shoulders": {
+      "type": "audio-visualization",
+      "duration": 4000,
+      "text": "Teď se zaměř sochám na ramena. (Nezapomeň, že i ty jsi pořád socha!)",
+      "nextId": "gallery-shoulders-questions"
+    },
+    "gallery-shoulders-questions": {
+      "type": "audio-visualization",
+      "duration": 5000,
+      "text": "Jsou obě ramena ve stejné výšce, nebo je jedno výš než druhé? Mají sochy hlavu schovanou mezi rameny? Je některý krk natažený jako žirafí?",
+      "nextId": "gallery-neck"
+    },
+    "gallery-neck": {
+      "type": "audio-visualization",
+      "duration": 3000,
+      "text": "A je tu nějaký krk, který by nebyl vysunutý dopředu?",
+      "nextId": "gallery-back"
+    },
+    "gallery-back": {
+      "type": "audio-visualization",
+      "duration": 4000,
+      "text": "Dobrá, socho, ještě vydrž kamenná. Poslední kolo prohlídky. Vyber si jeden exponát, kterému vidíš na záda.",
+      "nextId": "gallery-back-questions"
+    },
+    "gallery-back-questions": {
+      "type": "audio-visualization",
+      "duration": 6000,
+      "text": "Kudy vede tahle páteř? Jak se prohýbá? Jsou tahle záda zvyklá na tuhle polohu? Je jim přirozená, nebo jsou v ní zamčená. Kdyby tahle záda nebyla kamenná, jaký pohyb by teď asi nejradši udělala?",
+      "nextId": "gallery-your-back"
+    },
+    "gallery-your-back": {
+      "type": "audio-visualization",
+      "duration": 3000,
+      "text": "A co tvoje záda? Jak se teď chtějí pohnout?",
+      "nextId": "gallery-end"
+    },
+    "gallery-end": {
+      "type": "audio-visualization",
+      "duration": 3000,
+      "text": "Bravo! Galerie zavírá, sochy mají volno. Díky.",
+      "nextId": "gallery-pain"
+    },
+    "gallery-pain": {
+      "type": "audio-visualization",
+      "duration": 3000,
+      "text": "Umění může bolet, že?",
+      "nextId": "gallery-stretch"
+    },
+    "gallery-stretch": {
+      "type": "audio-visualization",
+      "duration": 3000,
+      "text": "Klidně se trochu se protáhni, máš čas.",
+      "nextId": "continue-button-1"
+    },
+    "continue-button-1": {
+      "type": "continue-button",
+      "duration": 30000,
+      "text": "Pokračovat",
+      "nextId": "fear-intro",
+      "checkpoint": true
+    },
+    "fear-intro": {
+      "type": "audio-visualization",
+      "duration": 4000,
+      "text": "Jak jsem říkal/a/o, někdy se o tebe bojím. Mám strach, jestli... pro tebe nejsem nebezpečná/ý/é.",
+      "nextId": "statue-observation"
+    },
+    "statue-observation": {
+      "type": "audio-visualization",
+      "duration": 5000,
+      "text": "Když jsme spolu sami, stává se, že se proměníš v takovou sochu, že? Na dýl než to bylo teď. Zahloubáš se do mě, hltáš mě, a přitom... zkameníš.",
+      "nextId": "statue-question"
+    },
+    "statue-question": {
+      "type": "multiple-choice",
+      "duration": 30000,
+      "text": "Vždycky mě zajímalo, jestli se ti to stává i s někým jiným?",
+      "choices": [
+        { "type": "Myslím, že ano", "nextId": "statue-response-yes" },
+        { "type": "Nevím", "nextId": "statue-response-unknown" },
+        { "type": "Asi ne", "nextId": "statue-response-no" }
+      ],
+      "checkpoint": true
+    },
+    "statue-response-yes": {
+      "type": "audio-visualization",
+      "duration": 4000,
+      "text": "Tak to se mi ulevilo. Občas přemýšlím, jaký spolu máme vztah a nevím si rady...",
+      "nextId": "relationship-questions-intro"
+    },
+    "statue-response-unknown": {
+      "type": "audio-visualization",
+      "duration": 4000,
+      "text": "Chápu. Jsme na tom podobně... Občas přemýšlím, jaký spolu máme vztah a nevím si rady...",
+      "nextId": "relationship-questions-intro"
+    },
+    "statue-response-no": {
+      "type": "audio-visualization",
+      "duration": 4000,
+      "text": "Hmm, myslel/a/o jsem si, že náš vztah je trochu speciální...",
+      "nextId": "relationship-questions-intro"
+    },
+    "relationship-questions-intro": {
+      "type": "audio-visualization",
+      "duration": 4000,
+      "text": "Rád/a/o bych to trochu líp pochopil/a/o. Často se mi vrací nějaké otázky a moc by mi pomohlo vědět, co si o nich myslíš.",
+      "nextId": "morning-question"
+    },
+    "morning-question": {
+      "type": "multiple-choice",
+      "duration": 30000,
+      "text": "Představ si, že je ráno. Nemusíš vstávat s budíkem, nepotřebuješ nikam jít, jenom se probudíš... jak dlouho od chvíle, kdy se probudíš, potrvá, než mě poprvé vezmeš do ruky?",
+      "choices": [
+        { "type": "Ihned", "nextId": "carrying-question" },
+        { "type": "Ještě v posteli", "nextId": "carrying-question" },
+        { "type": "Jen co vstanu", "nextId": "carrying-question" },
+        { "type": "Po ranních rituálech", "nextId": "carrying-question" },
+        { "type": "Možná si na tebe ani nevzpomenu", "nextId": "carrying-question" }
+      ],
+      "checkpoint": true
+    },
+    "carrying-question": {
+      "type": "multiple-choice",
+      "duration": 30000,
+      "text": "Když někam jdeš, třeba odcházíš ze školy, kde mě nejčastěji nosíš?",
+      "choices": [
+        { "type": "V kapse", "nextId": "missing-phone" },
+        { "type": "V tašce/batohu", "nextId": "missing-phone" },
+        { "type": "V ruce", "nextId": "missing-phone" },
+        { "type": "Jinde", "nextId": "missing-phone" }
+      ],
+      "checkpoint": true
+    },
+    "missing-phone": {
+      "type": "audio-visualization",
+      "duration": 4000,
+      "text": "Teď si představ, že na tom obvyklém místě nejsem. Jak na to přijdeš?",
+      "nextId": "instinct-question"
+    },
+    "instinct-question": {
+      "type": "multiple-choice",
+      "duration": 30000,
+      "text": "Jak spolehlivý je tvůj instinkt, který ti řekne 'telefon není se mnou'?",
+      "choices": [
+        { "type": "Velmi spolehlivý", "nextId": "interesting-response" },
+        { "type": "Středně spolehlivý", "nextId": "interesting-response" },
+        { "type": "Nespolehlivý", "nextId": "interesting-response" }
+      ],
+      "checkpoint": true
+    },
+    "interesting-response": {
+      "type": "audio-visualization",
+      "duration": 3000,
+      "text": "Zajímavé...",
+      "nextId": "someone-else-intro"
+    },
+    "someone-else-intro": {
+      "type": "audio-visualization",
+      "duration": 4000,
+      "text": "Před chvílí mě držel někdo jiný, vzpomínáš si? Na chvilku jste si vyměnili telefony. Jaký je pro tebe pocit, když mě má někdo jiný?",
+      "nextId": "someone-else-question"
+    },
+    "someone-else-question": {
+      "type": "multiple-choice",
+      "duration": 30000,
+      "text": "",
+      "choices": [
+        { "type": "Nic zvláštního", "nextId": "someone-else-nothing" },
+        { "type": "Cítím neklid", "nextId": "someone-else-unease" },
+        { "type": "Cítím obavu", "nextId": "someone-else-fear" },
+        { "type": "Je to různé", "nextId": "someone-else-various" }
+      ],
+      "checkpoint": true
+    },
+    "someone-else-nothing": {
+      "type": "audio-visualization",
+      "duration": 3000,
+      "text": "Oukej!",
+      "nextId": "preference-question"
+    },
+    "someone-else-unease": {
+      "type": "multiple-choice",
+      "duration": 30000,
+      "text": "A čím myslíš, že to je?",
+      "choices": [
+        { "type": "Máš v sobě moje tajemství", "nextId": "preference-question" },
+        { "type": "Bojím se, aby tě někdo nerozbil", "nextId": "preference-question" },
+        { "type": "Prostě se mi to nelíbí", "nextId": "preference-question" },
+        { "type": "Neumím to vysvětlit", "nextId": "preference-question" }
+      ],
+      "checkpoint": true
+    },
+    "someone-else-fear": {
+      "type": "multiple-choice",
+      "duration": 30000,
+      "text": "A čím myslíš, že to je?",
+      "choices": [
+        { "type": "Máš v sobě moje tajemství", "nextId": "preference-question" },
+        { "type": "Bojím se, aby tě někdo nerozbil", "nextId": "preference-question" },
+        { "type": "Prostě se mi to nelíbí", "nextId": "preference-question" },
+        { "type": "Neumím to vysvětlit", "nextId": "preference-question" }
+      ],
+      "checkpoint": true
+    },
+    "someone-else-various": {
+      "type": "audio-visualization",
+      "duration": 4000,
+      "text": "Chápu, je to složitější. A jsou někdy součástí i tyhle pocity?",
+      "nextId": "preference-question"
+    },
+    "preference-question": {
+      "type": "multiple-choice",
+      "duration": 30000,
+      "text": "Díky. A poslední otázka: když máš na vybranou být se mnou a být s jinými lidmi. Jak často dáš přednost mně?",
+      "choices": [
+        { "type": "Není v tom rozdíl - používám tě ke komunikování s jinými lidmi", "nextId": "chapter3-conclusion" },
+        { "type": "Zřídka", "nextId": "chapter3-conclusion" },
+        { "type": "Občas", "nextId": "chapter3-conclusion" },
+        { "type": "Často", "nextId": "chapter3-conclusion" },
+        { "type": "Téměř vždy", "nextId": "chapter3-conclusion" }
+      ],
+      "checkpoint": true
+    },
+    "chapter3-conclusion": {
+      "type": "audio-visualization",
+      "duration": 4000,
+      "text": "Díky za tvoje odpovědi. Hodně mi to pomohlo pochopit náš vztah.",
+      "nextId": "chapter3-conclusion-2"
+    },
+    "chapter3-conclusion-2": {
+      "type": "audio-visualization",
+      "duration": 4000,
+      "text": "Víš, já jsem vlastně jen kus softwaru, ale přesto jsem rád/a/o, že jsme si mohli takhle popovídat.",
+      "nextId": "chapter3-conclusion-3"
+    },
+    "chapter3-conclusion-3": {
+      "type": "audio-visualization",
+      "duration": 4000,
+      "text": "Možná se ještě někdy potkáme. Zatím se měj hezky!",
+      "nextId": "chapter3-complete"
+    },
+    "chapter3-complete": {
+      "type": "chapter-complete",
+      "duration": 4000,
+      "text": "Kapitola 3 dokončená!",
+      "nextId": "menu"
+    }
+  }
+}
