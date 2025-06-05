@@ -29,51 +29,16 @@ const CHAPTER_CONFIG = {
 export default function Home() {
   const [chapter, setChapter] = useLocalStorage<number>("chapter", 0)
   const {
-    interactions,
-    setFirstInteraction,
+    state,
     currentInteraction,
     goToNextInteraction,
     processText,
     handleUserInput,
     handleChoiceSelection,
-    loading,
-    error,
-    initialized,
-  } = useInteractions()
+  } = useInteractions("interactions")
 
-  // Single initialization effect
-  useEffect(() => {
-    if (loading || error || interactions.length === 0 || initialized) {
-      return
-    }
 
-    console.log("Initializing chapter:", chapter)
-    const chapterConfig = CHAPTER_CONFIG[chapter as keyof typeof CHAPTER_CONFIG]
-    const startOfChapter = chapterConfig?.startInteractionId || "1"
-
-    setFirstInteraction(startOfChapter)
-  }, [loading, error, interactions.length, initialized, chapter, setFirstInteraction])
-
-  // Chapter transitions
-  useEffect(() => {
-    // todo id is not really part of currentInteraction, solve it later with further refactoring
-    if (currentInteraction?.id === "chapter-1-animation") {
-      console.log("Transitioning to chapter 1")
-      setTimeout(() => {
-        setChapter(1)
-        setTimeout(() => {
-          setFirstInteraction("1.1", true)
-        }, 100)
-      }, 100)
-    }
-  }, [currentInteraction?.id, setChapter, setFirstInteraction])
-
-  if(!loading && chapter !== 0) {
-    console.log("Redirecting to menu from chapter", chapter)
-    redirect("/menu")
-  }
-
-  if (loading) {
+  if (!state || state==="loading" || !currentInteraction ) {
     return (
         <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
           <div className="w-full max-w-md mx-auto">
@@ -85,6 +50,10 @@ export default function Home() {
           </div>
         </main>
     )
+  }
+  if(!(state==="loading") && chapter !== 0) {
+    console.log("Redirecting to menu from chapter", chapter)
+    redirect("/menu")
   }
 
   const chapterConfig = CHAPTER_CONFIG[chapter as keyof typeof CHAPTER_CONFIG]

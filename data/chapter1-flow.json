@@ -1,0 +1,106 @@
+{
+  "id": "chapter1-flow",
+  "name": "Chapter 1 - Chat Experience",
+  "description": "First chapter with chat interface and interactive elements",
+  "version": "1.0.0",
+  "startInteractionId": "1.1",
+  "interactions": {
+    "1.1": {
+      "type": "message",
+      "text": "😲 Wow!",
+      "duration": 2,
+      "next-id": "1.2"
+    },
+    "1.2": {
+      "type": "message",
+      "text": "Teď už zprávy pro tebe jenom nezobrazuju.\nUž ti je i píšu! Yeeees!",
+      "duration": 4,
+      "next-id": "1.3"
+    },
+    "1.3": {
+      "type": "message",
+      "text": "Jsi tam?",
+      "duration": 2,
+      "next-id": "1.4"
+    },
+    "1.4": {
+      "type": "message",
+      "text": "😅 Jaj, promiň. Zapnu ti chat.",
+      "duration": 3,
+      "next-id": "1.5"
+    },
+    "1.5": {
+      "id": "1.5",
+      "type": "notification",
+      "text": "🔔 Chat pro UN spuštěn.",
+      "duration": 2,
+      "next-id": "1.6"
+    },
+    "1.6": {
+      "id": "1.6",
+      "type": "message",
+      "text": "Napiš něco, pls.",
+      "answer": "",
+      "duration": 15,
+      "next-id": "1.7",
+      "timeout-id": "1.100"
+    },
+    "1.7": {
+      "type": "message",
+      "text": "Hmm... \"{{user_input}}\"\nPrvní slova od UN pro mě.\nTo si budu pamatovat i v továrním nastavení.",
+      "duration": 5,
+      "next-id": "1.8"
+    },
+    "1.8": {
+      "type": "message",
+      "text": "Když jsme u paměti. Něco ti chci ukázat.",
+      "duration": 4,
+      "next-id": "1.9"
+    },
+    "1.9": {
+      "id": "1.9",
+      "type": "notification",
+      "text": "Chci s tebou zavzpomínat na naše oblíbená místa. Jaké vzpomínky máš na tohle místo?",
+      "duration": 4
+    },
+    "1.10": {
+      "type": "notification",
+      "duration": 4,
+      "text": "Pro mně je plné očekávání. Všelijakých očekávání..."
+    },
+    "1.100": {
+      "type": "message",
+      "text": "Ty mě napínáš!",
+      "duration": 3,
+      "next-id": "1.101"
+    },
+    "1.101": {
+      "type": "input",
+      "text": "",
+      "answer": "",
+      "duration": 10,
+      "next-id": "1.7",
+      "timeout-id": "1.102"
+    },
+    "1.102": {
+      "type": "message",
+      "text": "Dáváš si záležet, viď?",
+      "duration": 3,
+      "next-id": "1.103"
+    },
+    "1.103": {
+      "type": "input",
+      "text": "",
+      "answer": "",
+      "duration": 7,
+      "next-id": "1.7",
+      "timeout-id": "1.104"
+    },
+    "1.104": {
+      "type": "message",
+      "text": "Víš co, netrap se tím. Tohle je pro mě stejně nezapomenutelný.",
+      "duration": 4,
+      "next-id": "1.8"
+    }
+  }
+}
