@@ -124,8 +124,13 @@
     "12b": {
       "type": "message",
       "duration": 4,
-      "next-id": "chapter-1-animation",
+      "next-id": "chapter-1-begin",
       "text": "Ok! UN a BN - jdeme na to."
+    },
+    "chapter-1-begin": {
+      "id": "chapter-1-begin",
+      "type": "checkpoint",
+      "duration": 0
     },
     "confirm-play": {
       "type": "multiple-choice",
