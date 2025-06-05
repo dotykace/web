@@ -26,15 +26,15 @@ export default function Chat({ processText, currentInteraction, goToNextInteract
     icon: <MessageSquare className="h-6 w-6 text-white" />,}
 
   useEffect(() => {
-    if(currentInteraction?.id === "1.9"){
-      setMode("overlay")
-    }
-  }, [currentInteraction]);
-
-  useEffect(() => {
     if (!currentInteraction) return;
     setHistory((prev) => [...prev, currentInteraction])
-  }, [currentInteraction])
+    
+    if(currentInteraction.type === "checkpoint"){
+      if( currentInteraction.id === "overlay") {
+        setMode("overlay")
+      }
+    }
+  }, [currentInteraction]);
 
   // Scroll to bottom when history updates
   useEffect(() => {

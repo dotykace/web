@@ -55,6 +55,12 @@
       "type": "message",
       "text": "Když jsme u paměti. Něco ti chci ukázat.",
       "duration": 4,
+      "next-id": "overlay"
+    },
+    "overlay": {
+      "id": "overlay",
+      "type": "checkpoint",
+      "duration": 0,
       "next-id": "1.9"
     },
     "1.9": {
