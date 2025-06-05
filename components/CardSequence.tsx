@@ -1,9 +1,16 @@
 import {AnimatePresence, motion} from "framer-motion";
 import Card from "@/components/Card";
 import InputArea from "@/components/InputArea";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 
-export default function CardSequence({currentInteraction, history, goToNextInteraction, processText}){
+export default function CardSequence({currentInteraction, goToNextInteraction, processText}){
+
+  const [history, setHistory] = useState([])
+
+  useEffect(() => {
+    if (!currentInteraction) return;
+    setHistory((prev) => [...prev, currentInteraction] )
+  }, [currentInteraction]);
 
   // todo maybe dont go to the next interaction automatically
   return (
@@ -39,10 +46,10 @@ export default function CardSequence({currentInteraction, history, goToNextInter
 
         <div className="flex justify-center mt-6">
           <div className="flex space-x-2">
-            {history.map((interaction) => (
+            {history.map((interaction, index) => (
               <div
-                key={interaction.id}
-                className={`w-2 h-2 rounded-full ${interaction.id === currentInteraction?.id ? "bg-white" : "bg-white/30"}`}
+              key={index}
+              className={`w-2 h-2 rounded-full ${index+1 === history.length ? "bg-white" : "bg-white/30"}`}
               />
             ))}
           </div>

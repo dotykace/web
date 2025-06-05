@@ -31,7 +31,6 @@ export default function Home() {
     interactions,
     setFirstInteraction,
     currentInteraction,
-    history,
     goToNextInteraction,
     processText,
     handleUserInput,
@@ -39,7 +38,6 @@ export default function Home() {
     loading,
     error,
     initialized,
-    clearChatHistory,
   } = useInteractions()
 
   // Single initialization effect
@@ -62,13 +60,12 @@ export default function Home() {
       console.log("Transitioning to chapter 1")
       setTimeout(() => {
         setChapter(1)
-        clearChatHistory()
         setTimeout(() => {
           setFirstInteraction("1.1", true)
         }, 100)
       }, 100)
     }
-  }, [currentInteraction?.id, setChapter, clearChatHistory, setFirstInteraction])
+  }, [currentInteraction?.id, setChapter, setFirstInteraction])
 
   if (loading) {
     return (
@@ -94,7 +91,6 @@ export default function Home() {
             <CardSequence
                 currentInteraction={currentInteraction}
                 goToNextInteraction={goToNextInteraction}
-                history={history}
                 processText={processText}
             />
         )
@@ -102,7 +98,6 @@ export default function Home() {
       case "Chat":
         currentView = (
             <Chat
-                history={history}
                 processText={processText}
                 goToNextInteraction={goToNextInteraction}
                 currentInteraction={currentInteraction}

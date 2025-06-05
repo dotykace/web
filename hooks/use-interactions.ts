@@ -14,8 +14,6 @@ export function useInteractions<T>() {
   const [initialized, setInitialized] = useState(false)
 
   const [userInput, setUserInput] = useState("")
-  // todo maybe get rid of history
-  const [history, setHistory] = useState<Interaction[]>([])
 
   // FIXED: Use refs to prevent infinite loops
   const firstInteractionSetRef = useRef(false)
@@ -65,7 +63,6 @@ export function useInteractions<T>() {
         if (firstInteraction) {
           console.log("Found first interaction:", firstInteraction)
           setCurrentInteraction(firstInteraction)
-          setHistory([{id:startOfChapter, ...firstInteraction}])
           setInitialized(true)
           firstInteractionSetRef.current = true
         } else {
@@ -74,14 +71,6 @@ export function useInteractions<T>() {
       },
       [interactions],
   )
-
-  // FIXED: Stable clear function
-  const clearChatHistory = useCallback(() => {
-    console.log("Clearing chat history for new chapter")
-    setHistory([])
-    firstInteractionSetRef.current = false
-    setInitialized(false)
-  }, [])
 
   // Handle timeout for interactions with duration
   useEffect(() => {
@@ -110,7 +99,6 @@ export function useInteractions<T>() {
       const next = interactions[localNextId]
       if (next) {
         setCurrentInteraction(next)
-        setHistory((prev) => [...prev, {id:localNextId, ...next}])
       }
     },
     [interactions, currentInteraction],
@@ -130,15 +118,12 @@ export function useInteractions<T>() {
             setBotName(input)
           }
 
-          // Add user's message to history
-          addUserInputToHistory(input)
           goToNextInteraction()
         }
           // todo make it function properly in greater context
           // todo either dont have user input as interaction or make it work properly
-        // todo maybe separate history, user inputs and interactions
+        // todo maybe separate user inputs and interactions
         else if (true){
-          addUserInputToHistory(input)
           if (currentInteraction?.id === "1.6") {
             goToNextInteraction("1.7")
           }
@@ -153,10 +138,8 @@ export function useInteractions<T>() {
       text: input,
       duration: 0,
     }
-
-    setHistory((prev) => [...prev, userMessage])
-
   }
+
   const handleChoiceSelection = useCallback(
       (choice: Choice) => {
         // Add user's choice to history
@@ -166,8 +149,6 @@ export function useInteractions<T>() {
           text: choice.type,
           duration: 0,
         }
-
-        setHistory((prev) => [...prev, userChoice])
 
         if (choice["next-id"]) {
           goToNextInteraction(choice["next-id"])
@@ -197,12 +178,10 @@ export function useInteractions<T>() {
     username,
     botName,
     userInput,
-    history,
     loading,
     error,
     initialized,
     setFirstInteraction,
-    clearChatHistory,
     handleUserInput,
     handleChoiceSelection,
     processText,

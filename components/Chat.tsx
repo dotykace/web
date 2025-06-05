@@ -8,7 +8,7 @@ import UserInput from "@/components/UserInput";
 import {useChatContext} from "@/context/ChatContext";
 import MobileNotification from "@/components/mobile-notification";
 
-export default function Chat({history, processText, currentInteraction, goToNextInteraction}) {
+export default function Chat({ processText, currentInteraction, goToNextInteraction}) {
   const [mode, setMode] = useState<"default"|"overlay">("default")
   const [isVisible, setIsVisible] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement|null>(null)
@@ -16,6 +16,8 @@ export default function Chat({history, processText, currentInteraction, goToNext
   const {handleUserInput} = useChatContext()
   const [showNotification, setShowNotification] = useState(false)
   const [showInput, setShowInput] = useState(false)
+
+  const [history, setHistory] = useState([])
 
   const notificationProps ={
     title: "New Message",
@@ -28,7 +30,10 @@ export default function Chat({history, processText, currentInteraction, goToNext
     }
   }, [currentInteraction]);
 
-
+  useEffect(() => {
+    if (!currentInteraction) return;
+    setHistory((prev) => [...prev, currentInteraction])
+  }, [currentInteraction])
 
   // Scroll to bottom when history updates
   useEffect(() => {
@@ -101,9 +106,8 @@ export default function Chat({history, processText, currentInteraction, goToNext
         )}
       </div>
 
-
       {/* Chat history */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white/5 backdrop-blur-sm">
+      {history.length > 0 && (<div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white/5 backdrop-blur-sm">
         {history.map((interaction, index) => (
           <div
             key={`${interaction.id}-${index}`}
@@ -133,13 +137,13 @@ export default function Chat({history, processText, currentInteraction, goToNext
           </div>
         ))}
         <div ref={messagesEndRef} />
-      </div>
+      </div>)}
 
       {/* Input area */}
       {/*
       // todo make it function properly in greater context
       // todo either dont have user input as interaction or make it work properly
-      // todo maybe separate history, user inputs and interactions
+      // todo maybe separate user inputs and interactions
       */}
       <div className="bg-white/10 backdrop-blur-sm rounded-b-xl p-4 border-t border-white/20">
         {showInput && (
