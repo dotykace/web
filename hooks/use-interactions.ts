@@ -11,9 +11,9 @@ export function useInteractions<T>(filename:string) {
   const [username, setUsername] = useLocalStorage<string>("UN", "")
   const [botName, setBotName] = useLocalStorage<string>("BN", "Bot")
 
-  const [startOfChapter, setStartOfChapter] = useState<string>("1")
-
   const [userInput, setUserInput] = useState("")
+
+  const [chapter, setChapter] = useLocalStorage<number>("chapter", 0)
 
   // Fetch interactions data
   useEffect(() => {
@@ -31,28 +31,23 @@ export function useInteractions<T>(filename:string) {
         }
 
         setInteractions(data.interactions)
-        console.log("Interactions loaded:", data.interactions)
-        setStartOfChapter(data.startInteractionId || "1")
         console.log("Interactions set successfully")
+
+        const startOfChapter = data.startInteractionId || "1"
+        const firstInteraction = data.interactions[startOfChapter]
+        if (firstInteraction) {
+          console.log("Found first interaction:", firstInteraction)
+          setState("initialized")
+          setCurrentInteraction(firstInteraction)
+        } else {
+          throw new Error(`Start interaction with ID ${startOfChapter} not found in interactions`)
+        }
       } catch (error) {
         console.error("Error loading interactions:", error)
       }
     }
-
     fetchData()
   }, [])
-
-  useEffect(() => {
-    if (!interactions) return
-    const firstInteraction = interactions[startOfChapter]
-    if (firstInteraction) {
-      console.log("Found first interaction:", firstInteraction)
-      setCurrentInteraction(firstInteraction)
-      setState("initialized")
-    } else {
-      throw new Error(`Start interaction with ID ${startOfChapter} not found in interactions`)
-    }
-  }, [interactions]);
 
 
   // Handle timeout for interactions with duration
@@ -68,9 +63,28 @@ export function useInteractions<T>(filename:string) {
     return () => clearTimeout(timer)
   }, [currentInteraction])
 
+  // Handle chapter transitions
+  useEffect(() => {
+    if (!currentInteraction) return
+
+    if (currentInteraction.type === "checkpoint") {
+      if (currentInteraction.id === "chapter-1-begin") {
+        console.log("Chapter 1 start interaction reached, setting chapter to 1")
+        setChapter(1)
+      } else if (currentInteraction.id === "chapter-2-begin") {
+        console.log("Chapter 2 start interaction reached, setting chapter to 2")
+        setChapter(2)
+      }
+    }
+  }, [currentInteraction, setChapter])
+
   // todo branching od 1.6 nefunguje
   const goToNextInteraction = useCallback(
     (nextId?:string) => {
+      if (!interactions) {
+        console.error("Interactions data is not loaded yet")
+        return
+      }
 
       let localNextId = nextId
       if(!localNextId) {

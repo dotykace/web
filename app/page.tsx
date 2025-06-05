@@ -1,6 +1,4 @@
 "use client"
-
-import { useEffect } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { Settings } from "lucide-react"
@@ -23,17 +21,10 @@ export default function Home() {
     handleChoiceSelection,
   } = useInteractions("intro-flow")
 
-  useEffect(() => {
-    if (!currentInteraction) return
-    if(currentInteraction.type === "checkpoint") {
-      if(currentInteraction.id === "chapter-1-begin") {
-        console.log("Chapter 1 start interaction reached, setting chapter to 1")
-        setChapter(1)
-        redirect("/menu")
-      }
-    }
-  }, [currentInteraction]);
-
+  if(chapter && chapter !== 0) {
+    console.log("Redirecting to menu from chapter", chapter)
+    redirect("/menu")
+  }
 
   if (!state || state==="loading" || !currentInteraction ) {
     return (
@@ -47,10 +38,6 @@ export default function Home() {
           </div>
         </main>
     )
-  }
-  if(!(state==="loading") && chapter !== 0) {
-    console.log("Redirecting to menu from chapter", chapter)
-    redirect("/menu")
   }
 
   return (
