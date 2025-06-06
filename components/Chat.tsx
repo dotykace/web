@@ -7,13 +7,14 @@ import AnimatedDot from "@/components/AnimatedDot";
 import UserInput from "@/components/UserInput";
 import {useChatContext} from "@/context/ChatContext";
 import MobileNotification from "@/components/mobile-notification";
+import {Interaction} from "@/interactions";
 
 export default function Chat({ processText, currentInteraction, goToNextInteraction}) {
   const [mode, setMode] = useState<"default"|"overlay">("default")
   const [isVisible, setIsVisible] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement|null>(null)
 
-  // const {handleUserInput} = useChatContext()
+  const {handleUserInput} = useChatContext()
   const [showNotification, setShowNotification] = useState(false)
   const [showInput, setShowInput] = useState(false)
 
@@ -54,6 +55,16 @@ export default function Chat({ processText, currentInteraction, goToNextInteract
       console.log("Notification triggered for interaction:", currentInteraction?.id);
     }
   }, [currentInteraction]);
+
+  const addUserInputToHistory = (input: string) => {
+    const userMessage: Interaction = {
+      id: `user-${Date.now()}-${Math.random()}`, // FIXED: Ensure unique IDs
+      type: "user-message",
+      text: input,
+      duration: 0,
+    }
+    setHistory((prev) => [...prev, userMessage]);
+  }
 
   return(
     <div className="w-full max-w-md mx-auto flex flex-col p-2 h-[calc(100vh)] bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
@@ -149,8 +160,8 @@ export default function Chat({ processText, currentInteraction, goToNextInteract
       <div className="bg-white/10 backdrop-blur-sm rounded-b-xl p-4 border-t border-white/20">
         {showInput && (
           <UserInput onSubmit={(input)=>{
-            //setShowInput(false);
-            //handleUserInput(input)
+            handleUserInput(input)
+            addUserInputToHistory(input);
             console.log("User input submitted:", input);
           }}
          placeholder={"Napiš odpověď..."}

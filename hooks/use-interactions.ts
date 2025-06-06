@@ -131,14 +131,6 @@ export function useInteractions<T>(filename:string) {
       },
       [currentInteraction, setUsername, setBotName, goToNextInteraction],
   )
-  const addUserInputToHistory = (input: string) => {
-    const userMessage: Interaction = {
-      id: `user-${Date.now()}-${Math.random()}`, // FIXED: Ensure unique IDs
-      type: "user-message",
-      text: input,
-      duration: 0,
-    }
-  }
 
   const handleChoiceSelection = useCallback(
       (choice: Choice) => {
