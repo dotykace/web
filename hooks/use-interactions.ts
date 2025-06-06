@@ -12,6 +12,10 @@ export function useInteractions<T>(filename:string) {
 
   const [userInput, setUserInput] = useState("")
 
+  const setCurrent = (current, key) => {
+    const newInteraction = {...current, id: key, text: () => processText(current.text)}
+    setCurrentInteraction(newInteraction)
+  }
 
   // Fetch interactions data
   useEffect(() => {
@@ -36,7 +40,7 @@ export function useInteractions<T>(filename:string) {
         if (firstInteraction) {
           console.log("Found first interaction:", firstInteraction)
           setState("initialized")
-          setCurrentInteraction(firstInteraction)
+          setCurrent(firstInteraction, startOfChapter)
         } else {
           throw new Error(`Start interaction with ID ${startOfChapter} not found in interactions`)
         }
@@ -98,7 +102,7 @@ export function useInteractions<T>(filename:string) {
       }
       const next = interactions[localNextId]
       if (next) {
-        setCurrentInteraction(next)
+        setCurrent(next, localNextId)
       }
     },
     [interactions, currentInteraction],
@@ -173,7 +177,6 @@ export function useInteractions<T>(filename:string) {
     state,
     handleUserInput,
     handleChoiceSelection,
-    processText,
     goToNextInteraction,
   }
 }

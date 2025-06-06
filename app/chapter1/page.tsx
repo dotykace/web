@@ -14,7 +14,6 @@ export default function Part1Page() {
     state,
     currentInteraction,
     goToNextInteraction,
-    processText,
     handleUserInput,
     handleChoiceSelection,
   } = useInteractions("chapter1-flow")
@@ -39,7 +38,7 @@ export default function Part1Page() {
   }
   return (
     <ChatProvider handleUserInput={handleUserInput} handleChoiceSelection={handleChoiceSelection}>
-      <Chat currentInteraction={currentInteraction} goToNextInteraction={goToNextInteraction} processText={processText}/>
+      <Chat currentInteraction={currentInteraction} goToNextInteraction={goToNextInteraction}/>
     </ChatProvider>
     )
 }

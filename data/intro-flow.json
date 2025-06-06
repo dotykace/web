@@ -12,7 +12,6 @@
       "text": "Ahoj, já jsem appka. Jsem kus softwaru, víš jak: 0-1-1-0-0-1...\n"
     },
     "2": {
-      "id": "2",
       "type": "input",
       "duration": 10,
       "next-id": "3",
@@ -81,7 +80,6 @@
       "text": "Bezva, hrajeme!"
     },
     "11a": {
-      "id": "11a",
       "type": "input",
       "duration": 10,
       "next-id": "12b",
@@ -128,7 +126,6 @@
       "text": "Ok! UN a BN - jdeme na to."
     },
     "chapter-1-begin": {
-      "id": "chapter-1-begin",
       "type": "checkpoint",
       "duration": 0
     },

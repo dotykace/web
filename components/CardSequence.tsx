@@ -3,7 +3,7 @@ import Card from "@/components/Card";
 import InputArea from "@/components/InputArea";
 import {useEffect, useState} from "react";
 
-export default function CardSequence({currentInteraction, goToNextInteraction, processText}){
+export default function CardSequence({currentInteraction, goToNextInteraction}){
 
   const [history, setHistory] = useState([])
 
@@ -32,7 +32,7 @@ export default function CardSequence({currentInteraction, goToNextInteraction, p
               }
             }}>
               <div className="p-6">
-                <p className="text-lg mb-4">{processText(currentInteraction?.text)}</p>
+                <p className="text-lg mb-4">{currentInteraction?.text()}</p>
 
                 {(currentInteraction?.type === "input" || currentInteraction?.type === "multiple-choice") && (
                   <InputArea currentInteraction={currentInteraction} goToNextInteraction={goToNextInteraction}/>

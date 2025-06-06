@@ -16,7 +16,6 @@ export default function Home() {
     state,
     currentInteraction,
     goToNextInteraction,
-    processText,
     handleUserInput,
     handleChoiceSelection,
   } = useInteractions("intro-flow")
@@ -60,7 +59,6 @@ export default function Home() {
           <CardSequence
             currentInteraction={currentInteraction}
             goToNextInteraction={goToNextInteraction}
-            processText={processText}
           />
         </ChatProvider>
       </>

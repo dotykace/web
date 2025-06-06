@@ -30,14 +30,12 @@
       "next-id": "1.5"
     },
     "1.5": {
-      "id": "1.5",
       "type": "notification",
       "text": "🔔 Chat pro UN spuštěn.",
       "duration": 2,
       "next-id": "1.6"
     },
     "1.6": {
-      "id": "1.6",
       "type": "message",
       "text": "Napiš něco, pls.",
       "answer": "",
@@ -58,13 +56,11 @@
       "next-id": "overlay"
     },
     "overlay": {
-      "id": "overlay",
       "type": "checkpoint",
       "duration": 0,
       "next-id": "1.9"
     },
     "1.9": {
-      "id": "1.9",
       "type": "notification",
       "text": "Chci s tebou zavzpomínat na naše oblíbená místa. Jaké vzpomínky máš na tohle místo?",
       "duration": 4

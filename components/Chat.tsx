@@ -9,7 +9,7 @@ import {useChatContext} from "@/context/ChatContext";
 import MobileNotification from "@/components/mobile-notification";
 import {Interaction} from "@/interactions";
 
-export default function Chat({ processText, currentInteraction, goToNextInteraction}) {
+export default function Chat({ currentInteraction, goToNextInteraction}) {
   const [mode, setMode] = useState<"default"|"overlay">("default")
   const [isVisible, setIsVisible] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement|null>(null)
@@ -22,8 +22,7 @@ export default function Chat({ processText, currentInteraction, goToNextInteract
 
   const notificationProps ={
     title: "New Message",
-    message: currentInteraction?.text ?? "",
-    //message: processText(currentInteraction? currentInteraction?.text : ""),
+    message: currentInteraction?.text() ?? "",
     icon: <MessageSquare className="h-6 w-6 text-white" />,}
 
   useEffect(() => {
@@ -137,7 +136,7 @@ export default function Chat({ processText, currentInteraction, goToNextInteract
                   </div>
                 ) : interaction.type === "message" ? (
                   <div className="bg-white/20 text-white p-3 rounded-xl rounded-tl-none">
-                    <p>{processText(interaction.text)}</p>
+                    <p>{interaction.text()}</p>
                   </div>
                 ): interaction.type === "animation" ? (
                   <div className="flex justify-center items-center h-20 w-full max-w-full mx-auto">
