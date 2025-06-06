@@ -89,13 +89,17 @@ export default function MenuPage() {
       {/* Logo placeholder - smaller for mobile */}
       <div className="flex justify-center mb-6 mt-4">
         <motion.div
-          className="w-24 h-24 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg"
+          className="font-museo w-24 h-24 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg"
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
           LOGO
         </motion.div>
+      </div>
+      <div className="p-6">
+        <h1 className="text-3xl font-museo">This is Museo</h1>
+        <p className="mt-4 font-ofelia text-lg">This is Ofelia</p>
       </div>
 
       {/* Menu grid - single column for mobile */}

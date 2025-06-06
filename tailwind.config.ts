@@ -10,6 +10,11 @@ const config: Config = {
   ],
   theme: {
   	extend: {
+			fontFamily:{
+				museo: ['Museo', 'sans-serif'],
+				ofelia: ['Ofelia', 'serif'],
+
+			},
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
