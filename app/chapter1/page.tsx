@@ -1,15 +1,15 @@
 "use client";
 
 import Chat from "@/components/Chat";
-import {useLocalStorage} from "@/hooks/use-local-storage";
 import {useInteractions} from "@/hooks/use-interactions";
 import {redirect} from "next/navigation";
 import Card from "@/components/Card";
 import {ChatProvider} from "@/context/ChatContext";
+import {readFromStorage} from "@/scripts/local-storage";
 
 
 export default function Part1Page() {
-  const [chapter, setChapter] = useLocalStorage<number>("chapter", 0)
+  const chapter = readFromStorage("chapter") as number
   const {
     state,
     currentInteraction,
@@ -19,7 +19,7 @@ export default function Part1Page() {
     handleChoiceSelection,
   } = useInteractions("chapter1-flow")
 
-  if(chapter && chapter !== 1) {
+  if((chapter && chapter !== 1)|| chapter == undefined) {
     console.log("Redirecting to root from chapter", chapter)
     redirect("/")
   }

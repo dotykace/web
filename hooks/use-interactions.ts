@@ -2,18 +2,16 @@
 
 import { useEffect, useState, useCallback, useRef } from "react"
 import type {Choice, Interaction, InteractionRecord, RawInteraction} from "@/interactions"
-import { useLocalStorage } from "@/hooks/use-local-storage"
+import {redirect} from "next/navigation";
+import {readFromStorage, setToStorage} from "@/scripts/local-storage";
 
 export function useInteractions<T>(filename:string) {
   const [interactions, setInteractions] = useState<InteractionRecord|null>(null)
   const [currentInteraction, setCurrentInteraction] = useState<RawInteraction | null>(null)
   const [state, setState] = useState<"loading"|"initialized"|"error"|null>(null)
-  const [username, setUsername] = useLocalStorage<string>("UN", "")
-  const [botName, setBotName] = useLocalStorage<string>("BN", "Bot")
 
   const [userInput, setUserInput] = useState("")
 
-  const [chapter, setChapter] = useLocalStorage<number>("chapter", 0)
 
   // Fetch interactions data
   useEffect(() => {
@@ -73,13 +71,15 @@ export function useInteractions<T>(filename:string) {
     if (currentInteraction.type === "checkpoint") {
       if (currentInteraction.id === "chapter-1-begin") {
         console.log("Chapter 1 start interaction reached, setting chapter to 1")
-        setChapter(1)
+        setToStorage("chapter", 1)
+        redirect("/menu")
       } else if (currentInteraction.id === "chapter-2-begin") {
         console.log("Chapter 2 start interaction reached, setting chapter to 2")
-        setChapter(2)
+        setToStorage("chapter", 2)
+        redirect("/menu")
       }
     }
-  }, [currentInteraction, setChapter])
+  }, [currentInteraction])
 
   // todo branching od 1.6 nefunguje
   const goToNextInteraction = useCallback(
@@ -111,11 +111,11 @@ export function useInteractions<T>(filename:string) {
         if (currentInteraction?.type === "input") {
           // If this is a username input (id "2")
           if (currentInteraction.id === "2") {
-            setUsername(input)
+            setToStorage("UN", input)
           }
           // If this is a bot name input (id "11a")
           else if (currentInteraction.id === "11a") {
-            setBotName(input)
+            setToStorage("BN", input)
           }
 
           goToNextInteraction()
@@ -129,7 +129,7 @@ export function useInteractions<T>(filename:string) {
           }
         }
       },
-      [currentInteraction, setUsername, setBotName, goToNextInteraction],
+      [currentInteraction, goToNextInteraction],
   )
 
   const handleChoiceSelection = useCallback(
@@ -154,13 +154,16 @@ export function useInteractions<T>(filename:string) {
       (text: string | undefined) => {
         if (!text) return ""
 
+        const username = readFromStorage("UN") as string
+        const botName = readFromStorage("BN") as string
+
         let processed = text.replace(/UN/g, username || "ty")
         processed = processed.replace(/BN/g, botName || "Bot")
         processed = processed.replace(/\{\{user_input\}\}/g, userInput || "")
 
         return processed
       },
-      [username, botName, userInput],
+      [userInput],
   )
 
   // todo vsetko musi ist do pice je tu toho moc vela

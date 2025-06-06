@@ -3,15 +3,15 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { Settings } from "lucide-react"
 import Card from "@/components/Card"
-import { useLocalStorage } from "@/hooks/use-local-storage"
 import { useInteractions } from "@/hooks/use-interactions"
 import { ChatProvider } from "@/context/ChatContext"
 import CardSequence from "@/components/CardSequence"
 import {redirect} from "next/navigation";
+import {readFromStorage} from "@/scripts/local-storage";
 
 
 export default function Home() {
-  const [chapter, setChapter] = useLocalStorage<number>("chapter", 0)
+  const chapter = readFromStorage("chapter") as number
   const {
     state,
     currentInteraction,

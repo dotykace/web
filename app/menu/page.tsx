@@ -3,10 +3,11 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import {redirect, useRouter} from "next/navigation"
 import { motion } from "framer-motion"
 import { Lock, CheckCircle, Triangle, Square, Circle } from "lucide-react"
 import { cn } from "@/lib/utils"
+import {readFromStorage} from "@/scripts/local-storage";
 
 // Define the section types and states
 type SectionState = "locked" | "unlocked" | "completed"
@@ -22,6 +23,7 @@ interface Section {
 
 export default function MenuPage() {
   const router = useRouter()
+  const chapter = readFromStorage("chapter") as number
 
   // Initial sections data with states
   const [sections, setSections] = useState<Section[]>([
@@ -76,6 +78,10 @@ export default function MenuPage() {
       default:
         return null
     }
+  }
+
+  if( chapter == undefined || chapter === 0) {
+    redirect("/")
   }
 
   return (
