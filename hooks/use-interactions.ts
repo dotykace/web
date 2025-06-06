@@ -57,7 +57,10 @@ export function useInteractions<T>(filename:string) {
     }
 
     const timer = setTimeout(() => {
-      goToNextInteraction()
+      if(currentInteraction["timeout-id"]){
+        goToNextInteraction(currentInteraction["timeout-id"])
+      }
+      else goToNextInteraction()
     }, currentInteraction.duration * 1000)
 
     return () => clearTimeout(timer)
