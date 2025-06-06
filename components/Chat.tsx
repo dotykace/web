@@ -7,8 +7,9 @@ import AnimatedDot from "@/components/AnimatedDot";
 import UserInput from "@/components/UserInput";
 import {useChatContext} from "@/context/ChatContext";
 import MobileNotification from "@/components/mobile-notification";
+import {Interaction} from "@/interactions";
 
-export default function Chat({history, processText, currentInteraction, goToNextInteraction}) {
+export default function Chat({ currentInteraction, goToNextInteraction}) {
   const [mode, setMode] = useState<"default"|"overlay">("default")
   const [isVisible, setIsVisible] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement|null>(null)
@@ -17,18 +18,23 @@ export default function Chat({history, processText, currentInteraction, goToNext
   const [showNotification, setShowNotification] = useState(false)
   const [showInput, setShowInput] = useState(false)
 
+  const [history, setHistory] = useState([])
+
   const notificationProps ={
     title: "New Message",
-    message: processText(currentInteraction? currentInteraction?.text : ""),
+    message: currentInteraction?.text() ?? "",
     icon: <MessageSquare className="h-6 w-6 text-white" />,}
 
   useEffect(() => {
-    if(currentInteraction?.id === "1.9"){
-      setMode("overlay")
+    if (!currentInteraction) return;
+    setHistory((prev) => [...prev, currentInteraction])
+    
+    if(currentInteraction.type === "checkpoint"){
+      if( currentInteraction.id === "overlay") {
+        setMode("overlay")
+      }
     }
   }, [currentInteraction]);
-
-
 
   // Scroll to bottom when history updates
   useEffect(() => {
@@ -48,6 +54,16 @@ export default function Chat({history, processText, currentInteraction, goToNext
       console.log("Notification triggered for interaction:", currentInteraction?.id);
     }
   }, [currentInteraction]);
+
+  const addUserInputToHistory = (input: string) => {
+    const userMessage: Interaction = {
+      id: `user-${Date.now()}-${Math.random()}`, // FIXED: Ensure unique IDs
+      type: "user-message",
+      text: input,
+      duration: 0,
+    }
+    setHistory((prev) => [...prev, userMessage]);
+  }
 
   return(
     <div className="w-full max-w-md mx-auto flex flex-col p-2 h-[calc(100vh)] bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
@@ -101,9 +117,8 @@ export default function Chat({history, processText, currentInteraction, goToNext
         )}
       </div>
 
-
       {/* Chat history */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white/5 backdrop-blur-sm">
+      {history.length > 0 && (<div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white/5 backdrop-blur-sm">
         {history.map((interaction, index) => (
           <div
             key={`${interaction.id}-${index}`}
@@ -121,7 +136,7 @@ export default function Chat({history, processText, currentInteraction, goToNext
                   </div>
                 ) : interaction.type === "message" ? (
                   <div className="bg-white/20 text-white p-3 rounded-xl rounded-tl-none">
-                    <p>{processText(interaction.text)}</p>
+                    <p>{interaction.text()}</p>
                   </div>
                 ): interaction.type === "animation" ? (
                   <div className="flex justify-center items-center h-20 w-full max-w-full mx-auto">
@@ -133,19 +148,20 @@ export default function Chat({history, processText, currentInteraction, goToNext
           </div>
         ))}
         <div ref={messagesEndRef} />
-      </div>
+      </div>)}
 
       {/* Input area */}
       {/*
       // todo make it function properly in greater context
       // todo either dont have user input as interaction or make it work properly
-      // todo maybe separate history, user inputs and interactions
+      // todo maybe separate user inputs and interactions
       */}
       <div className="bg-white/10 backdrop-blur-sm rounded-b-xl p-4 border-t border-white/20">
         {showInput && (
           <UserInput onSubmit={(input)=>{
-            //setShowInput(false);
             handleUserInput(input)
+            addUserInputToHistory(input);
+            console.log("User input submitted:", input);
           }}
          placeholder={"Napiš odpověď..."}
          buttonText="Odeslat"

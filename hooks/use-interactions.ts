@@ -1,87 +1,56 @@
 "use client"
 
 import { useEffect, useState, useCallback, useRef } from "react"
-import type {Choice, Interaction, InteractionRecord, InteractionsData, RawInteraction} from "@/interactions"
-import { useLocalStorage } from "@/hooks/use-local-storage"
+import type {Choice, Interaction, InteractionRecord, RawInteraction} from "@/interactions"
+import {redirect} from "next/navigation";
+import {readFromStorage, setToStorage} from "@/scripts/local-storage";
 
-export function useInteractions<T>() {
-  const [interactions, setInteractions] = useState<InteractionRecord>({})
+export function useInteractions<T>(filename:string) {
+  const [interactions, setInteractions] = useState<InteractionRecord|null>(null)
   const [currentInteraction, setCurrentInteraction] = useState<RawInteraction | null>(null)
-  const [username, setUsername] = useLocalStorage<string>("UN", "")
-  const [botName, setBotName] = useLocalStorage<string>("BN", "Bot")
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [initialized, setInitialized] = useState(false)
+  const [state, setState] = useState<"loading"|"initialized"|"error"|null>(null)
 
   const [userInput, setUserInput] = useState("")
-  // todo maybe get rid of history
-  const [history, setHistory] = useState<Interaction[]>([])
 
-  // FIXED: Use refs to prevent infinite loops
-  const firstInteractionSetRef = useRef(false)
-  const currentChapterRef = useRef<number | null>(null)
+  const setCurrent = (current, key) => {
+    const newInteraction = {...current, id: key, text: () => processText(current.text)}
+    setCurrentInteraction(newInteraction)
+  }
 
   // Fetch interactions data
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true)
-        setError(null)
-
+        setState("loading")
         console.log("Starting to load interactions...")
 
-        const data = (await import("@/data/interactions.json")) as InteractionsData
-
+        const data = (await import("@/data/"+filename+".json"))
         console.log("Raw data loaded:", data)
 
         if (!data || !data.interactions) {
+          setState("error")
           throw new Error("Invalid data format - missing interactions")
         }
 
         setInteractions(data.interactions)
         console.log("Interactions set successfully")
+
+        const startOfChapter = data.startInteractionId || "1"
+        const firstInteraction = data.interactions[startOfChapter]
+        if (firstInteraction) {
+          console.log("Found first interaction:", firstInteraction)
+          setState("initialized")
+          setCurrent(firstInteraction, startOfChapter)
+        } else {
+          throw new Error(`Start interaction with ID ${startOfChapter} not found in interactions`)
+        }
       } catch (error) {
         console.error("Error loading interactions:", error)
-        setError(error instanceof Error ? error.message : "Unknown error occurred")
-      } finally {
-        setLoading(false)
       }
     }
-
     fetchData()
   }, [])
 
-  // FIXED: Stable function that doesn't change on every render
-  const setFirstInteraction = useCallback(
-      (startOfChapter: string, forceReset = false) => {
-        if (firstInteractionSetRef.current && !forceReset) {
-          console.log("First interaction already set, skipping...")
-          return
-        }
-
-        console.log("Setting first interaction:", startOfChapter, "Available interactions:", interactions.length)
-
-        const firstInteraction = interactions[startOfChapter]
-        if (firstInteraction) {
-          console.log("Found first interaction:", firstInteraction)
-          setCurrentInteraction(firstInteraction)
-          setHistory([{id:startOfChapter, ...firstInteraction}])
-          setInitialized(true)
-          firstInteractionSetRef.current = true
-        } else {
-          console.error("First interaction not found:", startOfChapter)
-        }
-      },
-      [interactions],
-  )
-
-  // FIXED: Stable clear function
-  const clearChatHistory = useCallback(() => {
-    console.log("Clearing chat history for new chapter")
-    setHistory([])
-    firstInteractionSetRef.current = false
-    setInitialized(false)
-  }, [])
 
   // Handle timeout for interactions with duration
   useEffect(() => {
@@ -90,15 +59,39 @@ export function useInteractions<T>() {
     }
 
     const timer = setTimeout(() => {
-      goToNextInteraction()
+      if(currentInteraction["timeout-id"]){
+        goToNextInteraction(currentInteraction["timeout-id"])
+      }
+      else goToNextInteraction()
     }, currentInteraction.duration * 1000)
 
     return () => clearTimeout(timer)
   }, [currentInteraction])
 
+  // Handle chapter transitions
+  useEffect(() => {
+    if (!currentInteraction) return
+
+    if (currentInteraction.type === "checkpoint") {
+      if (currentInteraction.id === "chapter-1-begin") {
+        console.log("Chapter 1 start interaction reached, setting chapter to 1")
+        setToStorage("chapter", 1)
+        redirect("/menu")
+      } else if (currentInteraction.id === "chapter-2-begin") {
+        console.log("Chapter 2 start interaction reached, setting chapter to 2")
+        setToStorage("chapter", 2)
+        redirect("/menu")
+      }
+    }
+  }, [currentInteraction])
+
   // todo branching od 1.6 nefunguje
   const goToNextInteraction = useCallback(
     (nextId?:string) => {
+      if (!interactions) {
+        console.error("Interactions data is not loaded yet")
+        return
+      }
 
       let localNextId = nextId
       if(!localNextId) {
@@ -109,8 +102,7 @@ export function useInteractions<T>() {
       }
       const next = interactions[localNextId]
       if (next) {
-        setCurrentInteraction(next)
-        setHistory((prev) => [...prev, {id:localNextId, ...next}])
+        setCurrent(next, localNextId)
       }
     },
     [interactions, currentInteraction],
@@ -123,40 +115,27 @@ export function useInteractions<T>() {
         if (currentInteraction?.type === "input") {
           // If this is a username input (id "2")
           if (currentInteraction.id === "2") {
-            setUsername(input)
+            setToStorage("UN", input)
           }
           // If this is a bot name input (id "11a")
           else if (currentInteraction.id === "11a") {
-            setBotName(input)
+            setToStorage("BN", input)
           }
 
-          // Add user's message to history
-          addUserInputToHistory(input)
           goToNextInteraction()
         }
           // todo make it function properly in greater context
           // todo either dont have user input as interaction or make it work properly
-        // todo maybe separate history, user inputs and interactions
+        // todo maybe separate user inputs and interactions
         else if (true){
-          addUserInputToHistory(input)
           if (currentInteraction?.id === "1.6") {
             goToNextInteraction("1.7")
           }
         }
       },
-      [currentInteraction, setUsername, setBotName, goToNextInteraction],
+      [currentInteraction, goToNextInteraction],
   )
-  const addUserInputToHistory = (input: string) => {
-    const userMessage: Interaction = {
-      id: `user-${Date.now()}-${Math.random()}`, // FIXED: Ensure unique IDs
-      type: "user-message",
-      text: input,
-      duration: 0,
-    }
 
-    setHistory((prev) => [...prev, userMessage])
-
-  }
   const handleChoiceSelection = useCallback(
       (choice: Choice) => {
         // Add user's choice to history
@@ -166,8 +145,6 @@ export function useInteractions<T>() {
           text: choice.type,
           duration: 0,
         }
-
-        setHistory((prev) => [...prev, userChoice])
 
         if (choice["next-id"]) {
           goToNextInteraction(choice["next-id"])
@@ -181,31 +158,25 @@ export function useInteractions<T>() {
       (text: string | undefined) => {
         if (!text) return ""
 
+        const username = readFromStorage("UN") as string
+        const botName = readFromStorage("BN") as string
+
         let processed = text.replace(/UN/g, username || "ty")
         processed = processed.replace(/BN/g, botName || "Bot")
         processed = processed.replace(/\{\{user_input\}\}/g, userInput || "")
 
         return processed
       },
-      [username, botName, userInput],
+      [userInput],
   )
 
   // todo vsetko musi ist do pice je tu toho moc vela
   return {
     interactions,
     currentInteraction,
-    username,
-    botName,
-    userInput,
-    history,
-    loading,
-    error,
-    initialized,
-    setFirstInteraction,
-    clearChatHistory,
+    state,
     handleUserInput,
     handleChoiceSelection,
-    processText,
     goToNextInteraction,
   }
 }
