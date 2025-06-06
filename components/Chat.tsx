@@ -8,6 +8,7 @@ import UserInput from "@/components/UserInput";
 import {useChatContext} from "@/context/ChatContext";
 import MobileNotification from "@/components/mobile-notification";
 import {Interaction} from "@/interactions";
+import DotyHappy from '../public/images/doty/doty_happy.svg';
 
 export default function Chat({ currentInteraction, goToNextInteraction}) {
   const [mode, setMode] = useState<"default"|"overlay">("default")
@@ -102,7 +103,8 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
       )}
 
       <div className="bg-white/10 backdrop-blur-sm rounded-t-xl p-3 flex items-center gap-3 border-b border-white/20">
-        <MessageSquare className="w-6 h-6 text-white" />
+        <DotyHappy className=" w-12 h-12"/>
+
         <h1 className="text-xl font-semibold text-white">Interaktivní chat</h1>
       </div>
 
