@@ -31,7 +31,7 @@ export default function MenuPage() {
       id: 1,
       title: "Chapter 1",
       subtitle: "Place & Touch",
-      path: "/chapter1",
+      path: "/chapter/1",
       state: "unlocked",
       icon: <Triangle className="w-6 h-6" />,
     },
