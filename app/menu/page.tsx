@@ -25,7 +25,7 @@ export default function MenuPage() {
   const chapter = readFromStorage("chapter") as number
 
   // Initial sections data with states - upravené cesty na dynamické routy
-  const [sections, setSections] = useState<Section[]>([
+  const [sections] = useState<Section[]>([
     {
       id: 1,
       title: "Chapter 1",
