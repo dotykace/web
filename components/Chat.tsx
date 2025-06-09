@@ -30,19 +30,15 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
     setHistory((prev) => [...prev, currentInteraction])
     
     if(currentInteraction.type === "checkpoint"){
-      if( currentInteraction.id === "overlay") {
-        setMode("overlay")
+      if (currentInteraction.id === "overlay-on") {
+        setMode("overlay");
+      }
+      if (currentInteraction.id === "overlay-off") {
+        console.log("Setting mode to default");
+        setMode("default");
       }
     }
-  }, [currentInteraction]);
-
-  // Scroll to bottom when history updates
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [history])
-
-  useEffect(() => {
-    if (currentInteraction?.type === "notification") {
+    else if (currentInteraction?.type === "notification") {
       if(currentInteraction?.id === "1.5") {
         console.log("opening input")
         setShowInput(true)
@@ -55,6 +51,10 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
     }
   }, [currentInteraction]);
 
+  // Scroll to bottom when history updates
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [history])
   const addUserInputToHistory = (input: string) => {
     const userMessage: Interaction = {
       id: `user-${Date.now()}-${Math.random()}`, // FIXED: Ensure unique IDs
@@ -90,7 +90,9 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
             glowColor={"white"}
             position={{ x: "calc(90% - 20px)", y: "calc(60% - 20px)" }}
             revealComponent={
-              <button className="px-2 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+              <button
+                onClick={() => goToNextInteraction("overlay-off")}
+                className="px-2 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
                 <Send/>
               </button>
             }

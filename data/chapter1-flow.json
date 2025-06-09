@@ -58,12 +58,28 @@
       "type": "message",
       "text": "Když jsme u paměti. Něco ti chci ukázat.",
       "duration": 4,
-      "next-id": "overlay"
+      "next-id": "overlay-on"
     },
-    "overlay": {
+    "overlay-on": {
       "type": "checkpoint",
       "duration": 0,
       "next-id": "1.9"
+    },
+    "overlay-off": {
+      "type": "checkpoint",
+      "duration": 0.5,
+      "next-id": "1.11"
+    },
+    "1.11": {
+      "type": "message",
+      "text": "Díky za procházku po známých místech. (emoji)",
+      "duration": 4,
+      "next-id": "1.12"
+    },
+    "1.12": {
+      "type": "message",
+      "duration": 4,
+      "text": "Jaké to bylo pro tebe?"
     },
     "1.9": {
       "type": "notification",
