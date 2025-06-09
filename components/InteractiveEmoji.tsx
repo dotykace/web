@@ -7,7 +7,7 @@ export interface EmojiParams {
   text: string
   position: { x: number; y: number }
 }
-export default function InteractiveEmoji(emoji: EmojiParams) {
+export default function InteractiveEmoji({emoji, clickCallback}) {
 
   const [clicked, setClicked] = useState(false)
   const [showText, setShowText] = useState(false)
@@ -15,7 +15,7 @@ export default function InteractiveEmoji(emoji: EmojiParams) {
   const handleEmojiClick = (id: number) => {
     if(!clicked){
       setClicked(true)
-      console.log(`Emoji ${id} clicked!`);
+      clickCallback(id)
     }
     setShowText(true)
     // Auto-hide text after 3 seconds
