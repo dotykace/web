@@ -10,6 +10,8 @@ import MobileNotification from "@/components/mobile-notification";
 import {Interaction} from "@/interactions";
 import EmojiReactionButton from "@/components/EmojiReactions";
 
+import CustomSend from "@/components/CustomSend";
+
 export default function Chat({ currentInteraction, goToNextInteraction}) {
   const [mode, setMode] = useState<"default"|"overlay">("default")
   const [isVisible, setIsVisible] = useState(false)
@@ -95,11 +97,7 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
             glowColor={"white"}
             position={{ x: "calc(90% - 20px)", y: "calc(60% - 20px)" }}
             revealComponent={
-              <button
-                onClick={() => goToNextInteraction("overlay-off")}
-                className="px-2 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-                <Send/>
-              </button>
+            <CustomSend/>
             }
             onAnimationComplete={() => {
               goToNextInteraction("1.10")
