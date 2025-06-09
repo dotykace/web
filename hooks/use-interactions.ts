@@ -2,13 +2,15 @@
 
 import { useEffect, useState, useCallback, useRef } from "react"
 import type {Choice, Interaction, InteractionRecord, RawInteraction} from "@/interactions"
-import {redirect} from "next/navigation";
+import {redirect, useRouter} from "next/navigation";
 import {readFromStorage, setToStorage} from "@/scripts/local-storage";
 
 export function useInteractions<T>(filename:string) {
   const [interactions, setInteractions] = useState<InteractionRecord|null>(null)
   const [currentInteraction, setCurrentInteraction] = useState<RawInteraction | null>(null)
   const [state, setState] = useState<"loading"|"initialized"|"error"|null>(null)
+
+  const router = useRouter();
 
   const [userInput, setUserInput] = useState("")
 
@@ -45,6 +47,9 @@ export function useInteractions<T>(filename:string) {
           throw new Error(`Start interaction with ID ${startOfChapter} not found in interactions`)
         }
       } catch (error) {
+        if (error.code === 'MODULE_NOT_FOUND'){
+          router.push('/404');
+        }
         console.error("Error loading interactions:", error)
       }
     }
