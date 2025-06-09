@@ -81,6 +81,16 @@
       "duration": 4,
       "text": "Jaké to bylo pro tebe?"
     },
+    "1.13": {
+      "type": "message",
+      "duration": 4,
+      "text": "Tohle psaní už začíná být trochu otrava. Mám chuť s tebou mluvit.",
+      "next-id": "chapter-1-end"
+    },
+    "chapter-1-end": {
+      "type": "checkpoint",
+      "duration": 0
+    },
     "1.9": {
       "type": "notification",
       "text": "Chci s tebou zavzpomínat na naše oblíbená místa. Jaké vzpomínky máš na tohle místo?",

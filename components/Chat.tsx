@@ -8,6 +8,7 @@ import UserInput from "@/components/UserInput";
 import {useChatContext} from "@/context/ChatContext";
 import MobileNotification from "@/components/mobile-notification";
 import {Interaction} from "@/interactions";
+import EmojiReactionButton from "@/components/EmojiReactions";
 
 export default function Chat({ currentInteraction, goToNextInteraction}) {
   const [mode, setMode] = useState<"default"|"overlay">("default")
@@ -17,6 +18,8 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
   const {handleUserInput} = useChatContext()
   const [showNotification, setShowNotification] = useState(false)
   const [showInput, setShowInput] = useState(false)
+  const [showEmojiReactions, setShowEmojiReactions] = useState(false);
+
 
   const [history, setHistory] = useState([])
 
@@ -28,7 +31,9 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
   useEffect(() => {
     if (!currentInteraction) return;
     setHistory((prev) => [...prev, currentInteraction])
-    
+    if (currentInteraction.id === "1.12") {
+      setShowEmojiReactions(true);
+    }
     if(currentInteraction.type === "checkpoint"){
       if (currentInteraction.id === "overlay-on") {
         setMode("overlay");
@@ -159,7 +164,15 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
       // todo maybe separate user inputs and interactions
       */}
       <div className="bg-white/10 backdrop-blur-sm rounded-b-xl p-4 border-t border-white/20">
-        {showInput && (
+        {showInput && (showEmojiReactions? (
+          <EmojiReactionButton onSelect={(emoji)=>{
+            console.log("Selected emoji:", emoji);
+            setShowEmojiReactions(false)
+            // todo render one big emoji in the chat instead of a message type
+            addUserInputToHistory(emoji)
+            goToNextInteraction("1.13")
+          }}/>
+          ) : (
           <UserInput onSubmit={(input)=>{
             handleUserInput(input)
             addUserInputToHistory(input);
@@ -168,7 +181,7 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
          placeholder={"Napiš odpověď..."}
          buttonText="Odeslat"
           />
-        )}
+        ))}
       </div>
     </div>
   )
