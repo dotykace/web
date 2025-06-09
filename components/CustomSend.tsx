@@ -5,17 +5,17 @@ import { AnimatePresence } from "framer-motion"
 import { Send } from "lucide-react"
 import InteractiveEmoji, {EmojiParams} from "@/components/InteractiveEmoji";
 
-export default function CustomSend() {
+export default function CustomSend({onFinish}) {
   const [state, setState] = useState<"default"|"gray"|"glow">("default")
   const [showEmojis, setShowEmojis] = useState(false)
   const [emojis, setEmojis] = useState<EmojiParams[]>([])
   const [clickedEmojis, setClickedEmojis] = useState<number[]>([])
 
   const emojiData = [
-    { emoji: "❤️", text: "Love it!" },
-    { emoji: "😂", text: "So funny!" },
-    { emoji: "👍", text: "Great job!" },
-    { emoji: "🔥", text: "Amazing!" },
+    { emoji: "😥", text: "Přečte si tu zprávu včas?" },
+    { emoji: "🙏", text: "Odesláno, snad to vyjde..." },
+    { emoji: "😳", text: "Snad si tu mou zprávu nevyloží špatně..." },
+    { emoji: "😈", text: "A máš to! Co asi teď odpoví?" },
   ]
 
   const handleEmojiClick = (id: number) => {
@@ -55,6 +55,7 @@ export default function CustomSend() {
         return
       case "glow":
         setShowEmojis(false)
+        onFinish()
         return;
       case "default":
         setState("gray")

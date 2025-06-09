@@ -97,7 +97,9 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
             glowColor={"white"}
             position={{ x: "calc(90% - 20px)", y: "calc(60% - 20px)" }}
             revealComponent={
-            <CustomSend/>
+            <CustomSend onFinish={() => {
+              goToNextInteraction("overlay-off")
+            }}/>
             }
             onAnimationComplete={() => {
               goToNextInteraction("1.10")
