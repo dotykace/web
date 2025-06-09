@@ -3,8 +3,13 @@
   "name": "Chapter 1 - Chat Experience",
   "description": "First chapter with chat interface and interactive elements",
   "version": "1.0.0",
-  "startInteractionId": "1.1",
+  "startInteractionId": "chapter-1-start",
   "interactions": {
+    "chapter-1-start": {
+      "type": "checkpoint",
+      "duration": 0.5,
+      "next-id": "1.1"
+    },
     "1.1": {
       "type": "message",
       "text": "😲 Wow!",

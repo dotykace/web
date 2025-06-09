@@ -122,10 +122,10 @@
     "12b": {
       "type": "message",
       "duration": 4,
-      "next-id": "chapter-1-begin",
+      "next-id": "intro-end",
       "text": "Ok! UN a BN - jdeme na to."
     },
-    "chapter-1-begin": {
+    "intro-end": {
       "type": "checkpoint",
       "duration": 0
     },
