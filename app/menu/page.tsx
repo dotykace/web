@@ -24,6 +24,16 @@ export default function MenuPage() {
   const router = useRouter()
   const chapter = readFromStorage("chapter") as number
 
+  const getState = (id) => {
+    if (id < chapter){
+      return "completed"
+    }
+    else if (id === chapter){
+      return "unlocked"
+    }
+    else return "locked"
+  }
+
   // Initial sections data with states - upravené cesty na dynamické routy
   const [sections] = useState<Section[]>([
     {
@@ -31,7 +41,7 @@ export default function MenuPage() {
       title: "Chapter 1",
       subtitle: "Place & Touch",
       path: "/chapter/1",
-      state: "unlocked",
+      state: getState(1),
       icon: <Triangle className="w-6 h-6" />,
     },
     {
@@ -39,7 +49,7 @@ export default function MenuPage() {
       title: "Chapter 2",
       subtitle: "Mental & Physical Habits",
       path: "/chapter/2",
-      state: "locked",
+      state: getState(2),
       icon: <Square className="w-6 h-6" />,
     },
     {
@@ -47,7 +57,7 @@ export default function MenuPage() {
       title: "Chapter 3",
       subtitle: "Relationships",
       path: "/chapter/3",
-      state: "locked",
+      state: getState(3),
       icon: <Circle className="w-6 h-6" />,
     },
     {
@@ -55,7 +65,7 @@ export default function MenuPage() {
       title: "Chapter 4",
       subtitle: "Advanced Relationships",
       path: "/chapter/4",
-      state: "locked",
+      state: getState(4),
       icon: <Triangle className="w-6 h-6" />,
     },
   ])

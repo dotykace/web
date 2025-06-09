@@ -2,13 +2,15 @@
 
 import { useEffect, useState, useCallback, useRef } from "react"
 import type {Choice, Interaction, InteractionRecord, RawInteraction} from "@/interactions"
-import {redirect} from "next/navigation";
+import {redirect, useRouter} from "next/navigation";
 import {readFromStorage, setToStorage} from "@/scripts/local-storage";
 
 export function useInteractions<T>(filename:string) {
   const [interactions, setInteractions] = useState<InteractionRecord|null>(null)
   const [currentInteraction, setCurrentInteraction] = useState<RawInteraction | null>(null)
   const [state, setState] = useState<"loading"|"initialized"|"error"|null>(null)
+
+  const router = useRouter();
 
   const [userInput, setUserInput] = useState("")
 
@@ -45,6 +47,9 @@ export function useInteractions<T>(filename:string) {
           throw new Error(`Start interaction with ID ${startOfChapter} not found in interactions`)
         }
       } catch (error) {
+        if (error.code === 'MODULE_NOT_FOUND'){
+          router.push('/404');
+        }
         console.error("Error loading interactions:", error)
       }
     }
@@ -73,12 +78,12 @@ export function useInteractions<T>(filename:string) {
     if (!currentInteraction) return
 
     if (currentInteraction.type === "checkpoint") {
-      if (currentInteraction.id === "chapter-1-begin") {
-        console.log("Chapter 1 start interaction reached, setting chapter to 1")
+      if (currentInteraction.id === "intro-end") {
+        console.log("Introduction end interaction reached, setting chapter to 1")
         setToStorage("chapter", 1)
         redirect("/menu")
-      } else if (currentInteraction.id === "chapter-2-begin") {
-        console.log("Chapter 2 start interaction reached, setting chapter to 2")
+      } else if (currentInteraction.id === "chapter-1-end") {
+        console.log("Chapter 1 end interaction reached, setting chapter to 2")
         setToStorage("chapter", 2)
         redirect("/menu")
       }
@@ -110,7 +115,6 @@ export function useInteractions<T>(filename:string) {
 
   const handleUserInput = useCallback(
       (input: string) => {
-        setUserInput(input)
         // todo id is not really part of currentInteraction, solve it later with further refactoring
         if (currentInteraction?.type === "input") {
           // If this is a username input (id "2")
@@ -128,7 +132,8 @@ export function useInteractions<T>(filename:string) {
           // todo either dont have user input as interaction or make it work properly
         // todo maybe separate user inputs and interactions
         else if (true){
-          if (currentInteraction?.id === "1.6") {
+          if (currentInteraction?.id === "1.6" || currentInteraction?.id === "1.100" || currentInteraction?.id === "1.102") {
+            setToStorage("firstMessage", input)
             goToNextInteraction("1.7")
           }
         }
@@ -160,6 +165,7 @@ export function useInteractions<T>(filename:string) {
 
         const username = readFromStorage("UN") as string
         const botName = readFromStorage("BN") as string
+        const userInput = readFromStorage("firstMessage") as string
 
         let processed = text.replace(/UN/g, username || "ty")
         processed = processed.replace(/BN/g, botName || "Bot")
@@ -167,7 +173,7 @@ export function useInteractions<T>(filename:string) {
 
         return processed
       },
-      [userInput],
+      [],
   )
 
   // todo vsetko musi ist do pice je tu toho moc vela

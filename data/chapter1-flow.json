@@ -3,8 +3,13 @@
   "name": "Chapter 1 - Chat Experience",
   "description": "First chapter with chat interface and interactive elements",
   "version": "1.0.0",
-  "startInteractionId": "1.1",
+  "startInteractionId": "chapter-1-start",
   "interactions": {
+    "chapter-1-start": {
+      "type": "checkpoint",
+      "duration": 0.5,
+      "next-id": "1.1"
+    },
     "1.1": {
       "type": "message",
       "text": "😲 Wow!",
@@ -53,12 +58,38 @@
       "type": "message",
       "text": "Když jsme u paměti. Něco ti chci ukázat.",
       "duration": 4,
-      "next-id": "overlay"
+      "next-id": "overlay-on"
     },
-    "overlay": {
+    "overlay-on": {
       "type": "checkpoint",
       "duration": 0,
       "next-id": "1.9"
+    },
+    "overlay-off": {
+      "type": "checkpoint",
+      "duration": 0.5,
+      "next-id": "1.11"
+    },
+    "1.11": {
+      "type": "message",
+      "text": "Díky za procházku po známých místech. (emoji)",
+      "duration": 4,
+      "next-id": "1.12"
+    },
+    "1.12": {
+      "type": "message",
+      "duration": 4,
+      "text": "Jaké to bylo pro tebe?"
+    },
+    "1.13": {
+      "type": "message",
+      "duration": 4,
+      "text": "Tohle psaní už začíná být trochu otrava. Mám chuť s tebou mluvit.",
+      "next-id": "chapter-1-end"
+    },
+    "chapter-1-end": {
+      "type": "checkpoint",
+      "duration": 0
     },
     "1.9": {
       "type": "notification",

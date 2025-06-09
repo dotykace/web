@@ -8,6 +8,9 @@ import UserInput from "@/components/UserInput";
 import {useChatContext} from "@/context/ChatContext";
 import MobileNotification from "@/components/mobile-notification";
 import {Interaction} from "@/interactions";
+import EmojiReactionButton from "@/components/EmojiReactions";
+
+import CustomSend from "@/components/CustomSend";
 
 export default function Chat({ currentInteraction, goToNextInteraction}) {
   const [mode, setMode] = useState<"default"|"overlay">("default")
@@ -17,6 +20,8 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
   const {handleUserInput} = useChatContext()
   const [showNotification, setShowNotification] = useState(false)
   const [showInput, setShowInput] = useState(false)
+  const [showEmojiReactions, setShowEmojiReactions] = useState(false);
+
 
   const [history, setHistory] = useState([])
 
@@ -28,21 +33,19 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
   useEffect(() => {
     if (!currentInteraction) return;
     setHistory((prev) => [...prev, currentInteraction])
-    
+    if (currentInteraction.id === "1.12") {
+      setShowEmojiReactions(true);
+    }
     if(currentInteraction.type === "checkpoint"){
-      if( currentInteraction.id === "overlay") {
-        setMode("overlay")
+      if (currentInteraction.id === "overlay-on") {
+        setMode("overlay");
+      }
+      if (currentInteraction.id === "overlay-off") {
+        console.log("Setting mode to default");
+        setMode("default");
       }
     }
-  }, [currentInteraction]);
-
-  // Scroll to bottom when history updates
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [history])
-
-  useEffect(() => {
-    if (currentInteraction?.type === "notification") {
+    else if (currentInteraction?.type === "notification") {
       if(currentInteraction?.id === "1.5") {
         console.log("opening input")
         setShowInput(true)
@@ -55,6 +58,10 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
     }
   }, [currentInteraction]);
 
+  // Scroll to bottom when history updates
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [history])
   const addUserInputToHistory = (input: string) => {
     const userMessage: Interaction = {
       id: `user-${Date.now()}-${Math.random()}`, // FIXED: Ensure unique IDs
@@ -90,9 +97,9 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
             glowColor={"white"}
             position={{ x: "calc(90% - 20px)", y: "calc(60% - 20px)" }}
             revealComponent={
-              <button className="px-2 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-                <Send/>
-              </button>
+            <CustomSend onFinish={() => {
+              goToNextInteraction("overlay-off")
+            }}/>
             }
             onAnimationComplete={() => {
               goToNextInteraction("1.10")
@@ -157,7 +164,15 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
       // todo maybe separate user inputs and interactions
       */}
       <div className="bg-white/10 backdrop-blur-sm rounded-b-xl p-4 border-t border-white/20">
-        {showInput && (
+        {showInput && (showEmojiReactions? (
+          <EmojiReactionButton onSelect={(emoji)=>{
+            console.log("Selected emoji:", emoji);
+            setShowEmojiReactions(false)
+            // todo render one big emoji in the chat instead of a message type
+            addUserInputToHistory(emoji)
+            goToNextInteraction("1.13")
+          }}/>
+          ) : (
           <UserInput onSubmit={(input)=>{
             handleUserInput(input)
             addUserInputToHistory(input);
@@ -166,7 +181,7 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
          placeholder={"Napiš odpověď..."}
          buttonText="Odeslat"
           />
-        )}
+        ))}
       </div>
     </div>
   )
