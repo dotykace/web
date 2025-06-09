@@ -7,6 +7,7 @@ import { motion } from "framer-motion"
 import { Lock, CheckCircle, Triangle, Square, Circle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { readFromStorage } from "@/scripts/local-storage"
+import TTSButton from "@/components/ExampleTTS";
 
 // Define the section types and states
 type SectionState = "locked" | "unlocked" | "completed"
@@ -86,6 +87,7 @@ export default function MenuPage() {
   return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4 max-w-md mx-auto">
         {/* Logo placeholder - smaller for mobile */}
+        <TTSButton />
         <div className="flex justify-center mb-6 mt-4">
           <motion.div
               className="w-24 h-24 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg"
