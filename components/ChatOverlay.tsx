@@ -3,6 +3,7 @@ import AnimatedDot from "@/components/AnimatedDot";
 import CustomSend from "@/components/CustomSend";
 import {useEffect, useState} from "react";
 import {MessageSquare} from "lucide-react";
+import CustomPlay from "@/components/CustomPlay";
 
 export default function ChatOverlay({ currentInteraction, goToNextInteraction}) {
   const [isVisible, setIsVisible] = useState(false)
@@ -21,6 +22,12 @@ export default function ChatOverlay({ currentInteraction, goToNextInteraction}) 
         goToNextInteraction("1.10")
       }
     },
+    "place-2": {
+      revealComponent:  <CustomPlay onClick={()=>goToNextInteraction("input-place-2")}/>,
+      onAnimationComplete: () => {
+        goToNextInteraction("1.21")
+      },
+    }
   }
 
   useEffect(() => {
@@ -32,6 +39,10 @@ export default function ChatOverlay({ currentInteraction, goToNextInteraction}) 
     if(currentInteraction?.id === "place-1") {
       setIsVisible(true)
       setPlace(placesMetadata["place-1"])
+    }
+    if(currentInteraction?.id === "place-2") {
+      setIsVisible(true)
+      setPlace(placesMetadata["place-2"])
     }
   }, [currentInteraction]);
 
@@ -48,7 +59,12 @@ export default function ChatOverlay({ currentInteraction, goToNextInteraction}) 
         isOpen={showNotification}
         onClose={() => setShowNotification(false)}
         duration={currentInteraction?.duration * 1000}
-        onNotificationClick={() => console.log("Notification clicked")}
+        onNotificationClick={() => {
+          if(currentInteraction?.id === "input-place-2") {
+            setIsVisible(false)
+            goToNextInteraction("overlay-off")
+          }
+        }}
       />)}
       <AnimatedDot
         animationDuration={

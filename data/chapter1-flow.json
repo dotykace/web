@@ -129,12 +129,11 @@
     "1.21": {
       "type": "notification",
       "duration": 4,
-      "text": "A jak to zvládáš všechno strávit..."
+      "text": "Někdy si říkám, jak to zvládáš všechno strávit..."
     },
-    "1.22": {
+    "input-place-2": {
       "type": "notification",
-      "duration": 4,
-      "text": "Někdy si říkám, jak ti asi všechno, co tu servírujou, chutná..."
+      "text": "A jak ti asi všechno, co tu servírujou, chutná..."
     },
     "1.30": {
       "type": "notification",
