@@ -104,8 +104,7 @@
     "1.9": {
       "type": "notification",
       "text": "Chci s tebou zavzpomínat na naše oblíbená místa. Jaké vzpomínky máš na tohle místo?",
-      "duration": 4,
-      "next-id": "1.10"
+      "duration": 4
     },
     "1.10": {
       "type": "notification",

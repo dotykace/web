@@ -46,6 +46,7 @@ export default function ChatOverlay({ currentInteraction, goToNextInteraction}) 
         <MobileNotification
         {...notificationProps}
         isOpen={showNotification}
+        onClose={() => setShowNotification(false)}
         duration={currentInteraction?.duration * 1000}
         onNotificationClick={() => console.log("Notification clicked")}
       />)}
