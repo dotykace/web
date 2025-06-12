@@ -101,6 +101,60 @@
       "duration": 4,
       "text": "Pro mně je plné očekávání. Všelijakých očekávání..."
     },
+    "1.20": {
+      "type": "notification",
+      "duration": 4,
+      "text": "Kdyby mělo tohle místo jméno, tak za mě jídelna."
+    },
+    "1.21": {
+      "type": "notification",
+      "duration": 4,
+      "text": "A jak to zvládáš všechno strávit..."
+    },
+    "1.22": {
+      "type": "notification",
+      "duration": 4,
+      "text": "Někdy si říkám, jak ti asi všechno, co tu servírujou, chutná..."
+    },
+    "1.30": {
+      "type": "notification",
+      "duration": 4,
+      "text": "Tomuhle místu říkám stopa."
+    },
+    "1.31": {
+      "type": "card",
+      "duration": 4,
+      "text": "Někdy tu z tebe vnímám hodně netrpělivosti, je to tak?"
+    },
+    "1.32": {
+      "type": "card",
+      "duration": 4,
+      "text": "Někdy zvědavost... "
+    },
+    "1.33": {
+      "type": "card",
+      "duration": 4,
+      "text": "Ale vždycky zírám..."
+    },
+    "1.34": {
+      "type": "card",
+      "duration": 4,
+      "text": "...kolik toho zvládnou..."
+    },
+    "1.35": {
+      "type": "card",
+      "duration": 4,
+      "text": "...tvoje prsty."
+    },
+    "finger-choice": {
+      "type": "card",
+      "text": "Kterým prstem vlastně scrolluješ?"
+    },
+    "back-to-chat": {
+      "type": "card",
+      "text": "Zajímavý. A kterým prstem teď odklikneš tohle tlačítko?",
+      "next-id": "overlay-off"
+    },
     "1.100": {
       "type": "message",
       "text": "Ty mě napínáš!",
