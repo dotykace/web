@@ -13,6 +13,7 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
   const [mode, setMode] = useState<"default"|"overlay">("default")
   const messagesEndRef = useRef<HTMLDivElement|null>(null)
 
+  const [showNotification, setShowNotification] = useState(false)
   const {handleUserInput} = useChatContext()
   const [showInput, setShowInput] = useState(false)
   const [showEmojiReactions, setShowEmojiReactions] = useState(false);
@@ -30,6 +31,9 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
     setHistory((prev) => [...prev, currentInteraction])
     if (currentInteraction.id === "1.12") {
       setShowEmojiReactions(true);
+    }
+    if (currentInteraction.id === "1.5"){
+      setShowNotification(true);
     }
     if(currentInteraction.type === "checkpoint"){
       if (currentInteraction.id === "overlay-on") {
@@ -72,7 +76,9 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
         {currentInteraction?.type === "notification" && (
           <MobileNotification
             {...notificationProps}
-            isOpen={true}
+            isOpen={showNotification}
+            duration={currentInteraction?.duration * 1000}
+            onClose={() => setShowNotification(false)}
             onNotificationClick={() => console.log("Notification clicked")}
           />
         )}
