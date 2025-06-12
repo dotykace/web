@@ -37,9 +37,7 @@ export function useInteractions<T>(filename:string) {
         setInteractions(data.interactions)
         console.log("Interactions set successfully")
 
-        const latestCheckpoint = readFromStorage("checkpoint") as string
-
-        const startOfChapter = latestCheckpoint?? (data.startInteractionId || "1")
+        const startOfChapter = data.startInteractionId || "1"
         const firstInteraction = data.interactions[startOfChapter]
         if (firstInteraction) {
           console.log("Found first interaction:", firstInteraction)
@@ -89,7 +87,6 @@ export function useInteractions<T>(filename:string) {
         setToStorage("chapter", 2)
         redirect("/menu")
       }
-      setToStorage("checkpoint", currentInteraction.id)
     }
   }, [currentInteraction])
 
