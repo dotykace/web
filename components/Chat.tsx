@@ -1,24 +1,19 @@
 import {useEffect, useRef, useState} from "react";
-import {MessageSquare, Send} from "lucide-react";
+import {MessageSquare} from "lucide-react";
 import {AnimatePresence, motion} from "framer-motion";
-import InputArea from "@/components/InputArea";
-import {Button} from "@/components/ui/button";
-import AnimatedDot from "@/components/AnimatedDot";
 import UserInput from "@/components/UserInput";
 import {useChatContext} from "@/context/ChatContext";
 import MobileNotification from "@/components/mobile-notification";
 import {Interaction} from "@/interactions";
 import EmojiReactionButton from "@/components/EmojiReactions";
 
-import CustomSend from "@/components/CustomSend";
+import ChatOverlay from "@/components/ChatOverlay";
 
 export default function Chat({ currentInteraction, goToNextInteraction}) {
   const [mode, setMode] = useState<"default"|"overlay">("default")
-  const [isVisible, setIsVisible] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement|null>(null)
 
   const {handleUserInput} = useChatContext()
-  const [showNotification, setShowNotification] = useState(false)
   const [showInput, setShowInput] = useState(false)
   const [showEmojiReactions, setShowEmojiReactions] = useState(false);
 
@@ -44,17 +39,10 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
         console.log("Setting mode to default");
         setMode("default");
       }
-    }
-    else if (currentInteraction?.type === "notification") {
-      if(currentInteraction?.id === "1.5") {
+      if(currentInteraction?.id === "input-on") {
         console.log("opening input")
         setShowInput(true)
       }
-      if(currentInteraction?.id === "1.9") {
-        setIsVisible(true)
-      }
-      setShowNotification(true)
-      console.log("Notification triggered for interaction:", currentInteraction?.id);
     }
   }, [currentInteraction]);
 
@@ -74,40 +62,7 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
 
   return(
     <div className="w-full max-w-md mx-auto flex flex-col p-2 h-[calc(100vh)] bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
-      {(mode==="overlay" )&& (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
-          {showNotification && (
-            <MobileNotification
-              {...notificationProps}
-              isOpen={showNotification}
-              duration={currentInteraction?.duration * 1000}
-              onClose={() => setShowNotification(false)}
-              onNotificationClick={() => console.log("Notification clicked")}
-            />
-          )}
-          <AnimatedDot
-            animationDuration={
-              {grow: currentInteraction.duration,
-                pulse: currentInteraction.duration * 0.5,
-                reveal: currentInteraction.duration * 0.5,
-                expand: currentInteraction.duration * 1.5}
-            }
-            isVisible={isVisible}
-            dotColor={"white"}
-            glowColor={"white"}
-            position={{ x: "calc(90% - 20px)", y: "calc(60% - 20px)" }}
-            revealComponent={
-            <CustomSend onFinish={() => {
-              goToNextInteraction("overlay-off")
-            }}/>
-            }
-            onAnimationComplete={() => {
-              goToNextInteraction("1.10")
-            }}
-          />
-        </div>
-      )}
-
+      {(mode==="overlay" )&& <ChatOverlay currentInteraction={currentInteraction} goToNextInteraction={goToNextInteraction}/>}
       <div className="bg-white/10 backdrop-blur-sm rounded-t-xl p-3 flex items-center gap-3 border-b border-white/20">
         <MessageSquare className="w-6 h-6 text-white" />
         <h1 className="text-xl font-semibold text-white">Interaktivní chat</h1>
@@ -117,8 +72,7 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
         {currentInteraction?.type === "notification" && (
           <MobileNotification
             {...notificationProps}
-            isOpen={showNotification}
-            onClose={() => setShowNotification(false)}
+            isOpen={true}
             onNotificationClick={() => console.log("Notification clicked")}
           />
         )}

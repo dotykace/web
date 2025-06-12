@@ -32,13 +32,18 @@
       "type": "message",
       "text": "😅 Jaj, promiň. Zapnu ti chat.",
       "duration": 3,
-      "next-id": "1.5"
+      "next-id": "input-on"
     },
     "1.5": {
       "type": "notification",
       "text": "🔔 Chat pro UN spuštěn.",
       "duration": 2,
       "next-id": "1.6"
+    },
+    "input-on": {
+      "type": "checkpoint",
+      "duration": 0,
+      "next-id": "1.5"
     },
     "1.6": {
       "type": "message",
@@ -94,12 +99,23 @@
     "1.9": {
       "type": "notification",
       "text": "Chci s tebou zavzpomínat na naše oblíbená místa. Jaké vzpomínky máš na tohle místo?",
-      "duration": 4
+      "duration": 4,
+      "next-id": "1.10"
     },
     "1.10": {
       "type": "notification",
       "duration": 4,
       "text": "Pro mně je plné očekávání. Všelijakých očekávání..."
+    },
+    "place-2": {
+      "type": "checkpoint",
+      "duration": 0,
+      "next-id": "1.20"
+    },
+    "place-3": {
+      "type": "checkpoint",
+      "duration": 0,
+      "next-id": "1.30"
     },
     "1.20": {
       "type": "notification",
