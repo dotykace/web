@@ -8,14 +8,30 @@ export default function ChatOverlay({ currentInteraction, goToNextInteraction}) 
   const [isVisible, setIsVisible] = useState(false)
   const [showNotification, setShowNotification] = useState(false)
 
+  const [place, setPlace] = useState({})
+
+  const placesMetadata = {
+    "place-1": {
+      revealComponent:  <CustomSend onFinish={() => {
+        setIsVisible(false)
+        goToNextInteraction("place-2")
+      }}/>,
+      position: { x: "calc(90% - 20px)", y: "calc(60% - 20px)" },
+      onAnimationComplete: () => {
+        goToNextInteraction("1.10")
+      }
+    },
+  }
+
   useEffect(() => {
-    if(currentInteraction?.id === "1.9") {
-      setIsVisible(true)
-    }
     if (currentInteraction?.type === "notification") {
       setShowNotification(true)
     } else {
       setShowNotification(false)
+    }
+    if(currentInteraction?.id === "place-1") {
+      setIsVisible(true)
+      setPlace(placesMetadata["place-1"])
     }
   }, [currentInteraction]);
 
@@ -43,15 +59,9 @@ export default function ChatOverlay({ currentInteraction, goToNextInteraction}) 
         isVisible={isVisible}
         dotColor={"white"}
         glowColor={"white"}
-        position={{ x: "calc(90% - 20px)", y: "calc(60% - 20px)" }}
-        revealComponent={
-          <CustomSend onFinish={() => {
-            goToNextInteraction("place-2")
-          }}/>
-        }
-        onAnimationComplete={() => {
-          goToNextInteraction("1.10")
-        }}
+        position={place.position ?? { x: "50%", y: "50%" }}
+        revealComponent={ place.revealComponent??<div/>}
+        onAnimationComplete={ place.onAnimationComplete ?? (() => goToNextInteraction()) }
       />
     </div>
   );

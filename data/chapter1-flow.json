@@ -68,7 +68,7 @@
     "overlay-on": {
       "type": "checkpoint",
       "duration": 0,
-      "next-id": "1.9"
+      "next-id": "place-1"
     },
     "overlay-off": {
       "type": "checkpoint",
@@ -95,6 +95,11 @@
     "chapter-1-end": {
       "type": "checkpoint",
       "duration": 0
+    },
+    "place-1": {
+      "type": "checkpoint",
+      "duration": 0,
+      "next-id": "1.9"
     },
     "1.9": {
       "type": "notification",
