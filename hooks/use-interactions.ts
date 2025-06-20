@@ -160,19 +160,28 @@ export function useInteractions<T>(filename:string) {
 
   // Replace placeholders in text
   const processText = useCallback(
-      (text: string | undefined) => {
-        if (!text) return ""
+    (text: string | undefined) => {
+      if (!text) return "";
 
-        const username = readFromStorage("UN") as string
-        const botName = readFromStorage("BN") as string
-        const userInput = readFromStorage("firstMessage") as string
+      let processed = text;
 
-        let processed = text.replace(/UN/g, username || "ty")
-        processed = processed.replace(/BN/g, botName || "Bot")
-        processed = processed.replace(/\{\{user_input\}\}/g, userInput || "")
+      if (/UN/.test(text)) {
+        const username = readFromStorage("UN") as string;
+        processed = processed.replace(/UN/g, username || "ty");
+      }
 
-        return processed
-      },
+      if (/BN/.test(text)) {
+        const botName = readFromStorage("BN") as string;
+        processed = processed.replace(/BN/g, botName || "Bot");
+      }
+
+      if (/\{\{user_input\}\}/.test(text)) {
+        const userInput = readFromStorage("firstMessage") as string;
+        processed = processed.replace(/\{\{user_input\}\}/g, userInput || "");
+      }
+
+      return processed;
+    },
       [],
   )
 

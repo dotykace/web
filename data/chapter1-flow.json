@@ -32,13 +32,18 @@
       "type": "message",
       "text": "😅 Jaj, promiň. Zapnu ti chat.",
       "duration": 3,
-      "next-id": "1.5"
+      "next-id": "input-on"
     },
     "1.5": {
       "type": "notification",
       "text": "🔔 Chat pro UN spuštěn.",
       "duration": 2,
       "next-id": "1.6"
+    },
+    "input-on": {
+      "type": "checkpoint",
+      "duration": 0,
+      "next-id": "1.5"
     },
     "1.6": {
       "type": "message",
@@ -63,7 +68,7 @@
     "overlay-on": {
       "type": "checkpoint",
       "duration": 0,
-      "next-id": "1.9"
+      "next-id": "place-1"
     },
     "overlay-off": {
       "type": "checkpoint",
@@ -91,6 +96,11 @@
       "type": "checkpoint",
       "duration": 0
     },
+    "place-1": {
+      "type": "checkpoint",
+      "duration": 0,
+      "next-id": "1.9"
+    },
     "1.9": {
       "type": "notification",
       "text": "Chci s tebou zavzpomínat na naše oblíbená místa. Jaké vzpomínky máš na tohle místo?",
@@ -100,6 +110,69 @@
       "type": "notification",
       "duration": 4,
       "text": "Pro mně je plné očekávání. Všelijakých očekávání..."
+    },
+    "place-2": {
+      "type": "checkpoint",
+      "duration": 0,
+      "next-id": "1.20"
+    },
+    "place-3": {
+      "type": "checkpoint",
+      "duration": 0,
+      "next-id": "1.30"
+    },
+    "1.20": {
+      "type": "notification",
+      "duration": 4,
+      "text": "Kdyby mělo tohle místo jméno, tak za mě jídelna."
+    },
+    "1.21": {
+      "type": "notification",
+      "duration": 4,
+      "text": "Někdy si říkám, jak to zvládáš všechno strávit..."
+    },
+    "input-place-2": {
+      "type": "notification",
+      "text": "A jak ti asi všechno, co tu servírujou, chutná..."
+    },
+    "1.30": {
+      "type": "notification",
+      "duration": 4,
+      "text": "Tomuhle místu říkám stopa."
+    },
+    "1.31": {
+      "type": "card",
+      "duration": 4,
+      "text": "Někdy tu z tebe vnímám hodně netrpělivosti, je to tak?"
+    },
+    "1.32": {
+      "type": "card",
+      "duration": 4,
+      "text": "Někdy zvědavost... "
+    },
+    "1.33": {
+      "type": "card",
+      "duration": 4,
+      "text": "Ale vždycky zírám..."
+    },
+    "1.34": {
+      "type": "card",
+      "duration": 4,
+      "text": "...kolik toho zvládnou..."
+    },
+    "1.35": {
+      "type": "card",
+      "duration": 4,
+      "text": "...tvoje prsty."
+    },
+    "finger-choice": {
+      "type": "card",
+      "text": "Kterým prstem vlastně scrolluješ?"
+    },
+    "back-to-chat": {
+      "type": "card",
+      "text": "Zajímavý. A kterým prstem teď odklikneš tohle tlačítko?",
+      "next-id": "overlay-off"
     },
     "1.100": {
       "type": "message",
