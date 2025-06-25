@@ -99,19 +99,18 @@ export default function ScrollCardsPage({currentCard, onScroll}) {
       });
     }, intervalMs);
 
-    const timeout = setTimeout(()=>{
-      changeCard()
-    }, autoScrollDelay)
-
-    return () => {
-      clearInterval(interval)
-      clearTimeout(timeout)
-    }
+    return () => clearInterval(interval)
   }, [currentCard, isAutoScrolling])
+
+  useEffect(() => {
+    if (progress === 100 ) {
+      changeCard()
+    }
+  }, [progress]);
 
   return (
     <div className="h-screen bg-gray-50 overflow-hidden touch-none">
-      <div className="absolute bottom-4 left-4 right-4 z-20 flex items-center justify-end gap-2">
+      <div className="absolute bottom-10  left-4 right-4 z-20 flex items-center justify-end gap-2">
         <Progress value={progress} />
         {/* Auto-scroll Toggle */}
         <button
