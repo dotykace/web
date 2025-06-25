@@ -2,37 +2,9 @@
 
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import SocialMediaPost from "@/components/SocialMediaPost";
 
-const cardData = [
-  {
-    id: 1,
-    title: "First Card",
-    content: "This is the first card. Scroll down to see the next one!",
-    color: "bg-blue-500",
-  },
-  {
-    id: 2,
-    title: "Second Card",
-    content: "Welcome to the second card. Keep scrolling for more!",
-    color: "bg-green-500",
-  },
-  {
-    id: 3,
-    title: "Third Card",
-    content: "You've reached the third card. One more to go!",
-    color: "bg-purple-500",
-  },
-  {
-    id: 4,
-    title: "Fourth Card",
-    content: "This is the final card. You can scroll back up too!",
-    color: "bg-red-500",
-  },
-]
-
-export default function ScrollCardsPage() {
-  const [currentCardIndex, setCurrentCardIndex] = useState(0)
+export default function ScrollCardsPage({currentCard, onScroll}) {
   const [isTransitioning, setIsTransitioning] = useState(false)
   const lastWheelTime = useRef(0)
   const wheelCooldown = 800 // milliseconds between card changes
@@ -45,11 +17,9 @@ export default function ScrollCardsPage() {
     if (isTransitioning) return
     const now = Date.now()
     if (now - lastWheelTime.current < wheelCooldown) return
-    const newIndex = currentCardIndex + 1
-    if(newIndex >= cardData.length) return;
     setIsTransitioning(true)
-    setCurrentCardIndex(newIndex)
     lastWheelTime.current = now
+    onScroll()
     setTimeout(() => {
       setIsTransitioning(false)
     }, 600)
@@ -96,9 +66,7 @@ export default function ScrollCardsPage() {
       window.removeEventListener("touchmove", handleTouchMove)
       window.removeEventListener("touchend", handleTouchEnd)
     }
-  }, [currentCardIndex, isTransitioning])
-
-  const currentCard = cardData[currentCardIndex]
+  }, [currentCard, isTransitioning])
 
   return (
     <div className="h-screen bg-gray-50 overflow-hidden touch-none">
@@ -133,14 +101,7 @@ export default function ScrollCardsPage() {
               className="w-full h-full"
               style={{ perspective: "1000px" }}
             >
-              <Card className="w-full h-full shadow-2xl border-0">
-                <CardHeader className={`${currentCard.color} text-white rounded-t-lg`}>
-                  <CardTitle className="text-2xl font-bold text-center">{currentCard.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="p-8 bg-white rounded-b-lg flex items-center justify-center">
-                  <p className="text-gray-700 text-center text-lg leading-relaxed">{currentCard.content}</p>
-                </CardContent>
-              </Card>
+              <SocialMediaPost username={"Bot"} avatar={"Bot"} content={currentCard.content} timestamp={currentCard.title}/>
             </motion.div>
           </AnimatePresence>
         </div>
