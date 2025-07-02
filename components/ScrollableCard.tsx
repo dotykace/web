@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import SocialMediaPost from "@/components/SocialMediaPost";
 import {Progress} from "@/components/ui/progress";
 import {Pause, Play} from "lucide-react";
+import ScrollLine from "@/components/ScrollLine";
 
 export default function ScrollCardsPage({currentCard, onScroll}) {
   const [isTransitioning, setIsTransitioning] = useState(false)
@@ -109,7 +110,7 @@ export default function ScrollCardsPage({currentCard, onScroll}) {
   }, [progress]);
 
   return (
-    <div className="h-screen bg-gray-50 overflow-hidden touch-none">
+    <div className="h-screen bg-gray-500 overflow-hidden touch-none">
       <div className="absolute bottom-10  left-4 right-4 z-20 flex items-center justify-end gap-2">
         <Progress value={progress} />
         {/* Auto-scroll Toggle */}
@@ -120,9 +121,9 @@ export default function ScrollCardsPage({currentCard, onScroll}) {
           {isAutoScrolling ? <Pause className="w-4 h-4 text-white" /> : <Play className="w-4 h-4 text-white" />}
         </button>
       </div>
-      {/* Fixed container for the card */}
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className="w-96 h-64">
+      <div className="flex row justify-center items-center pr-3 pl-5 gap-5">
+        {/* Fixed container for the card */}
+        <div className="inset-0 flex items-center justify-center">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentCard.id}
@@ -155,7 +156,9 @@ export default function ScrollCardsPage({currentCard, onScroll}) {
             </motion.div>
           </AnimatePresence>
         </div>
+        <ScrollLine />
       </div>
+
     </div>
   )
 }
