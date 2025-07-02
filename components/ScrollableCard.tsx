@@ -7,12 +7,12 @@ import {Progress} from "@/components/ui/progress";
 import {Pause, Play} from "lucide-react";
 import ScrollLine from "@/components/ScrollLine";
 
-export default function ScrollCardsPage({currentCard, onScroll}) {
+export default function ScrollCardsPage({currentCard, onScroll, nextCard}) {
   const [isTransitioning, setIsTransitioning] = useState(false)
   const lastWheelTime = useRef(0)
   const wheelCooldown = 800 // milliseconds between card changes
 
-  const autoScrollDelay = currentCard.delay ?? 4000 // 4 seconds
+  const autoScrollDelay = currentCard?.delay ?? 4000 // 4 seconds
   const intervalMs = (autoScrollDelay/100)*0.75;
 
   const [isAutoScrolling, setIsAutoScrolling] = useState(true)
@@ -86,6 +86,7 @@ export default function ScrollCardsPage({currentCard, onScroll}) {
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {
+    if (!currentCard || !nextCard) return
     if (!isAutoScrolling ) return
     console.log("automate")
 
@@ -111,19 +112,22 @@ export default function ScrollCardsPage({currentCard, onScroll}) {
 
   return (
     <div className="h-screen bg-gray-500 overflow-hidden touch-none">
-      <div className="absolute bottom-10  left-4 right-11 z-20 flex items-center justify-end gap-2">
-        <Progress value={progress} />
-        {/* Auto-scroll Toggle */}
-        <button
-          onClick={toggleAutoScroll}
-          className="bg-black/50 backdrop-blur-sm rounded-full p-2 border border-white/20"
-        >
-          {isAutoScrolling ? <Pause className="w-4 h-4 text-white" /> : <Play className="w-4 h-4 text-white" />}
-        </button>
-      </div>
-      <div className="flex row justify-between items-center">
+      {
+        currentCard && nextCard && (<div className="absolute bottom-10  left-4 right-11 z-20 flex items-center justify-end gap-2">
+          <Progress value={progress} />
+          {/* Auto-scroll Toggle */}
+          <button
+            onClick={toggleAutoScroll}
+            className="bg-black/50 backdrop-blur-sm rounded-full p-2 border border-white/20"
+          >
+            {isAutoScrolling ? <Pause className="w-4 h-4 text-white" /> : <Play className="w-4 h-4 text-white" />}
+          </button>
+        </div>)
+      }
+      <div className="flex flex-row-reverse justify-between items-center ">
+        {nextCard && <ScrollLine />}
         {/* Fixed container for the card */}
-        <div className="flex items-center justify-center">
+        {currentCard && (<div className="flex items-center justify-center">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentCard.id}
@@ -152,11 +156,10 @@ export default function ScrollCardsPage({currentCard, onScroll}) {
               className="w-full h-full"
               style={{ perspective: "1000px" }}
             >
-              <SocialMediaPost username={currentCard.name} avatar={"Bot"} content={currentCard.content} timestamp={currentCard.title}/>
+              <SocialMediaPost username={currentCard.name} avatar={""} content={currentCard.content} timestamp={currentCard.title}/>
             </motion.div>
           </AnimatePresence>
-        </div>
-        <ScrollLine />
+        </div>)}
       </div>
 
     </div>

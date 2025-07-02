@@ -13,12 +13,14 @@ export default function ScrollLine() {
         }}
         animate={{
           y: ["100vh", 0],
+          opacity: [0.1, 1, 1, 0.1],
         }}
         transition={{
-          duration: 2,
+          duration: 1,
           ease: "easeInOut",
+          times: [0, 0.1, 0.9, 1],
           repeat: Number.POSITIVE_INFINITY,
-          repeatDelay: 0.5,
+          repeatDelay: 0.8,
         }}
       />
     </div>

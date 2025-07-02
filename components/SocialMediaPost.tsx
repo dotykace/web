@@ -15,8 +15,6 @@ export default function SocialMediaPost({
                                           username,
                                           avatar,
                                           content,
-                                          timestamp,
-                                          isActive = false,
                                         }: SocialMediaPostProps) {
 
   return (
