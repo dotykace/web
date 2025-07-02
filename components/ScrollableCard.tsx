@@ -111,7 +111,7 @@ export default function ScrollCardsPage({currentCard, onScroll}) {
 
   return (
     <div className="h-screen bg-gray-500 overflow-hidden touch-none">
-      <div className="absolute bottom-10  left-4 right-4 z-20 flex items-center justify-end gap-2">
+      <div className="absolute bottom-10  left-4 right-11 z-20 flex items-center justify-end gap-2">
         <Progress value={progress} />
         {/* Auto-scroll Toggle */}
         <button
@@ -121,9 +121,9 @@ export default function ScrollCardsPage({currentCard, onScroll}) {
           {isAutoScrolling ? <Pause className="w-4 h-4 text-white" /> : <Play className="w-4 h-4 text-white" />}
         </button>
       </div>
-      <div className="flex row justify-center items-center pr-3 pl-5 gap-5">
+      <div className="flex row justify-between items-center">
         {/* Fixed container for the card */}
-        <div className="inset-0 flex items-center justify-center">
+        <div className="flex items-center justify-center">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentCard.id}

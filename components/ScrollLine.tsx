@@ -1,11 +1,12 @@
 "use client"
 import { motion } from "framer-motion"
+
 export default function ScrollLine() {
   return (
-    <div className="w-5 h-screen bg-white opacity-30">
+    <div className="w-4 h-screen bg-white opacity-30 mr-3">
       {/* Glowing effect */}
       <motion.div
-        className="w-5 h-20  bg-white rounded-full"
+        className="w-4 h-20  bg-white rounded-full"
         style={{
           boxShadow:
             "0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 0.9), 0 0 30px rgba(255, 255, 255, 0.8)",
