@@ -1,10 +1,12 @@
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function GlowingDot({ position = { top: 0, left: 0 }, size = 30, color = "white", visible = true }) {
+export default function GlowingDot({ onClick, position = { top: 0, left: 0 }, size = 30, color = "white", visible = true }) {
+
   return (
     <AnimatePresence mode="wait">
       {visible && (
         <motion.div
+          onClick={onClick}
           key="dot"
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -18,8 +20,7 @@ export default function GlowingDot({ position = { top: 0, left: 0 }, size = 30, 
             height: size,
             backgroundColor: color,
             borderRadius: "50%",
-            zIndex: 10,
-            pointerEvents: "none",
+            zIndex: 49,
           }}
         >
           {/* Pulsating Glow */}
