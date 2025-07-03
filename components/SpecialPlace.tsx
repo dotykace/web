@@ -29,6 +29,7 @@ function Testing({currentInteraction, goToNextInteraction}) {
       avatar: "/placeholder.svg",
       username: botName,
       content: interaction.text(),
+      delay: interaction.duration * 1000 || 0,
     }
   }
 

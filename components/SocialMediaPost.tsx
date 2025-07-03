@@ -17,7 +17,7 @@ export default function SocialMediaPost({
 
   return (
     <Card
-      className={`m-5 h-full border-0 rounded-xl transition-all duration-300 ring-2 ring-blue-500 shadow-xl bg-white`}
+      className={`m-5 h-full rounded-xl transition-all duration-300 ring-2 ring-blue-500 shadow-xl bg-white`}
     >
       <CardHeader className="pb-3">
         <div className="flex items-center space-x-3">

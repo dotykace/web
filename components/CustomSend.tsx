@@ -19,10 +19,8 @@ export default function CustomSend({onClick, onFinish}) {
   ]
 
   const handleEmojiClick = (id: number) => {
-    console.log(clickedEmojis, emojiData)
     if (!clickedEmojis.includes(id)) {
       setClickedEmojis((prev) => [...prev, id])
-      console.log("Emoji clicked:", id)
       if (clickedEmojis.length + 1  === emojiData.length) {
         setState("glow")
       }

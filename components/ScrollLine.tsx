@@ -3,7 +3,7 @@ import { motion } from "framer-motion"
 
 export default function ScrollLine() {
   return (
-    <div className="w-4 h-screen bg-white opacity-30 mr-3">
+    <div className="w-4 h-screen bg-white opacity-30 mr-3 items-center">
       {/* Glowing effect */}
       <motion.div
         className="w-4 h-20  bg-white rounded-full"

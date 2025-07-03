@@ -34,11 +34,11 @@ export default function ChatOverlay({ currentInteraction, goToNextInteraction}) 
       setDotPosition({left: "50%", top: "50%"})
       setShowDot(true)
     }
-    // if(currentInteraction?.id === "place-3") {
-    //   setPlace("place-3")
-    //   setDotPosition({left: "calc(80% - 4px)", top: "50%"})
-    //   setShowDot(true)
-    // }
+    if(currentInteraction?.id === "place-3") {
+      setPlace("place-3")
+      setDotPosition({left: "calc(80% - 4px)", top: "50%"})
+      setShowDot(true)
+    }
   }, [currentInteraction]);
 
   const notificationProps ={
