@@ -1,7 +1,7 @@
 import CustomSend from "@/components/CustomSend";
 import CustomPlay from "@/components/CustomPlay";
 import {useEffect, useState} from "react";
-import {readFromStorage} from "@/scripts/local-storage";
+import {readFromStorage, setToStorage} from "@/scripts/local-storage";
 import ScrollableCards from "@/components/ScrollableCard";
 
 export default function SpecialPlace({ currentInteraction, goToNextInteraction, visible, place, onFinish }) {
@@ -25,12 +25,33 @@ function Testing({currentInteraction, goToNextInteraction}) {
   const botName = readFromStorage("BN") ?? "Bot"
 
   const createCard = (interaction) => {
-    return {
+    let newCard = {
       avatar: "/placeholder.svg",
       username: botName,
       content: interaction.text(),
       delay: interaction.duration * 1000 || 0,
     }
+
+    if (currentInteraction.id === "finger-choice") {
+      console.log("Creating card for finger-choice interaction")
+      newCard = {
+        ...newCard,
+        choices: [
+          {text: "palec", callback: () => choiceCallback("palec")},
+          {text: "ukazovák", callback: () => choiceCallback("ukazovák")},
+          {text: "prostředníček", callback: () => choiceCallback("prostředníček")},
+          {text: "prsteníček", callback: () => choiceCallback("prsteníček")},
+          {text: "malíček", callback: () => choiceCallback("malíček")},
+        ],
+      }
+    }
+    return newCard;
+  }
+
+  const choiceCallback = (choice) => {
+    setToStorage("finger-choice", choice);
+    console.log("Choice selected:", choice);
+    goToNextInteraction("back-to-chat");
   }
 
   const onScrollCard = () => {

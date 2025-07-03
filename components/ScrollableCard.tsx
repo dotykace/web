@@ -156,7 +156,7 @@ export default function ScrollableCards({currentCard, onScroll, nextCard}) {
               className="w-full h-full"
               style={{ perspective: "1000px" }}
             >
-              <SocialMediaPost username={currentCard?.name ?? ""} avatar={""} content={currentCard.content} timestamp={currentCard.title}/>
+              <SocialMediaPost username={currentCard?.name ?? ""} avatar={""} content={currentCard.content} timestamp={currentCard.title} choices={currentCard.choices}/>
             </motion.div>
           </AnimatePresence>
         </div>)}

@@ -176,8 +176,7 @@
     },
     "back-to-chat": {
       "type": "notification",
-      "text": "Zajímavý. A kterým prstem teď odklikneš tohle tlačítko?",
-      "next-id": "overlay-off"
+      "text": "Zajímavý. A kterým prstem teď odklikneš tohle tlačítko?"
     },
     "1.100": {
       "type": "message",

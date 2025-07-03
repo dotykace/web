@@ -6,13 +6,15 @@ import { Heart, MessageCircle, Share, Bookmark } from "lucide-react"
 interface SocialMediaPostProps {
   username: string
   avatar: string
-  content: string
+  content: string,
+  choices?: {text: string, callback: () => {}} []
 }
 
 export default function SocialMediaPost({
                                           username,
                                           avatar,
                                           content,
+  choices,
                                         }: SocialMediaPostProps) {
 
   return (
@@ -35,6 +37,20 @@ export default function SocialMediaPost({
       <CardContent className="pt-0">
         <div className="mb-6">
           <p className="text-sm leading-relaxed text-gray-800">{content}</p>
+          {choices && choices.length > 0 && (
+            <div className="mt-4 flex flex-col space-y-2 rounded-xl">
+              {choices.map((choice, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  className="flex-1"
+                  onClick={choice.callback}
+                >
+                  {choice.text}
+                </Button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Action buttons */}

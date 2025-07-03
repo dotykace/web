@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import {MessageSquare} from "lucide-react";
 import GlowingDot from "@/components/GlowingDot";
 import SpecialPlace from "@/components/SpecialPlace";
+import {Button} from "@/components/ui/button";
 
 export default function ChatOverlay({ currentInteraction, goToNextInteraction}) {
   const [showNotification, setShowNotification] = useState(false)
@@ -12,6 +13,8 @@ export default function ChatOverlay({ currentInteraction, goToNextInteraction}) 
 
   const [showPlace, setShowPlace] = useState(false)
   const [place, setPlace] = useState("")
+
+  const [showBackToChat, setShowBackToChat] = useState(false)
 
   const resetDot = () => {
     setShowDot(false);
@@ -23,6 +26,11 @@ export default function ChatOverlay({ currentInteraction, goToNextInteraction}) 
       setShowNotification(true)
     } else {
       setShowNotification(false)
+    }
+    if (currentInteraction?.id === "back-to-chat") {
+      setShowDot(false);
+      setShowPlace(false);
+      setShowBackToChat(true);
     }
     if(currentInteraction?.id === "place-1") {
       setPlace("place-1")
@@ -61,6 +69,25 @@ export default function ChatOverlay({ currentInteraction, goToNextInteraction}) 
           }
         }}
       />)}
+      {showBackToChat && (
+        <Button
+          style={
+            {
+              position: "absolute",
+              bottom: "50%",
+              left: "5%",
+              width: "90%",
+            }
+          }
+          key={"back-to-chat-button"}
+          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out"
+          onClick={() => goToNextInteraction("overlay-off")}
+        >
+          Zpět do chatu
+        </Button>
+
+      )}
+
       <GlowingDot visible={showDot} position={dotPosition} onClick={() => resetDot()}/>
       <div
         style={{
