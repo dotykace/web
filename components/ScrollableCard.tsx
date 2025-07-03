@@ -7,7 +7,7 @@ import {Progress} from "@/components/ui/progress";
 import {Pause, Play} from "lucide-react";
 import ScrollLine from "@/components/ScrollLine";
 
-export default function ScrollCardsPage({currentCard, onScroll, nextCard}) {
+export default function ScrollableCards({currentCard, onScroll, nextCard}) {
   const [isTransitioning, setIsTransitioning] = useState(false)
   const lastWheelTime = useRef(0)
   const wheelCooldown = 800 // milliseconds between card changes
@@ -111,7 +111,7 @@ export default function ScrollCardsPage({currentCard, onScroll, nextCard}) {
   }, [progress]);
 
   return (
-    <div className="h-screen bg-gray-500 overflow-hidden touch-none">
+    <div className="h-screen overflow-hidden touch-none w-screen fixed top-0 left-0">
       {
         currentCard && nextCard && (<div className="absolute bottom-10  left-4 right-11 z-20 flex items-center justify-end gap-2">
           <Progress value={progress} />
@@ -156,7 +156,7 @@ export default function ScrollCardsPage({currentCard, onScroll, nextCard}) {
               className="w-full h-full"
               style={{ perspective: "1000px" }}
             >
-              <SocialMediaPost username={currentCard.name} avatar={""} content={currentCard.content} timestamp={currentCard.title}/>
+              <SocialMediaPost username={currentCard?.name ?? ""} avatar={""} content={currentCard.content} timestamp={currentCard.title}/>
             </motion.div>
           </AnimatePresence>
         </div>)}

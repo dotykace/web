@@ -7,8 +7,6 @@ interface SocialMediaPostProps {
   username: string
   avatar: string
   content: string
-    timestamp: string
-  isActive?: boolean
 }
 
 export default function SocialMediaPost({

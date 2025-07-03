@@ -1,33 +1,21 @@
 import MobileNotification from "@/components/mobile-notification";
-import AnimatedDot from "@/components/AnimatedDot";
-import CustomSend from "@/components/CustomSend";
 import {useEffect, useState} from "react";
 import {MessageSquare} from "lucide-react";
-import CustomPlay from "@/components/CustomPlay";
+import GlowingDot from "@/components/GlowingDot";
+import SpecialPlace from "@/components/SpecialPlace";
 
 export default function ChatOverlay({ currentInteraction, goToNextInteraction}) {
-  const [isVisible, setIsVisible] = useState(false)
   const [showNotification, setShowNotification] = useState(false)
 
-  const [place, setPlace] = useState({})
+  const [showDot, setShowDot] = useState(false)
+  const [dotPosition, setDotPosition] = useState({ left: "50%", top: "50%" })
 
-  const placesMetadata = {
-    "place-1": {
-      revealComponent:  <CustomSend onFinish={() => {
-        setIsVisible(false)
-        goToNextInteraction("place-2")
-      }}/>,
-      position: { x: "calc(90% - 20px)", y: "calc(60% - 20px)" },
-      onAnimationComplete: () => {
-        goToNextInteraction("1.10")
-      }
-    },
-    "place-2": {
-      revealComponent:  <CustomPlay onClick={()=>goToNextInteraction("input-place-2")}/>,
-      onAnimationComplete: () => {
-        goToNextInteraction("1.21")
-      },
-    }
+  const [showPlace, setShowPlace] = useState(false)
+  const [place, setPlace] = useState("")
+
+  const resetDot = () => {
+    setShowDot(false);
+    setShowPlace(true);
   }
 
   useEffect(() => {
@@ -37,13 +25,20 @@ export default function ChatOverlay({ currentInteraction, goToNextInteraction}) 
       setShowNotification(false)
     }
     if(currentInteraction?.id === "place-1") {
-      setIsVisible(true)
-      setPlace(placesMetadata["place-1"])
+      setPlace("place-1")
+      setDotPosition({left: "calc(90% - 20px)", top: "calc(60% - 20px)"})
+      setShowDot(true)
     }
     if(currentInteraction?.id === "place-2") {
-      setIsVisible(true)
-      setPlace(placesMetadata["place-2"])
+      setPlace("place-2")
+      setDotPosition({left: "50%", top: "50%"})
+      setShowDot(true)
     }
+    // if(currentInteraction?.id === "place-3") {
+    //   setPlace("place-3")
+    //   setDotPosition({left: "calc(80% - 4px)", top: "50%"})
+    //   setShowDot(true)
+    // }
   }, [currentInteraction]);
 
   const notificationProps ={
@@ -61,25 +56,22 @@ export default function ChatOverlay({ currentInteraction, goToNextInteraction}) 
         duration={currentInteraction?.duration * 1000}
         onNotificationClick={() => {
           if(currentInteraction?.id === "input-place-2") {
-            setIsVisible(false)
-            goToNextInteraction("overlay-off")
+            setShowPlace(false)
+            goToNextInteraction("place-3")
           }
         }}
       />)}
-      <AnimatedDot
-        animationDuration={
-          {grow: currentInteraction.duration,
-            pulse: currentInteraction.duration * 0.5,
-            reveal: currentInteraction.duration * 0.5,
-            expand: currentInteraction.duration * 1.5}
-        }
-        isVisible={isVisible}
-        dotColor={"white"}
-        glowColor={"white"}
-        position={place.position ?? { x: "50%", y: "50%" }}
-        revealComponent={ place.revealComponent??<div/>}
-        onAnimationComplete={ place.onAnimationComplete ?? (() => goToNextInteraction()) }
-      />
+      <GlowingDot visible={showDot} position={dotPosition} onClick={() => resetDot()}/>
+      <div
+        style={{
+          position: "absolute",
+          left: dotPosition.left,
+          top: dotPosition.top,
+        }}
+      >
+        <SpecialPlace visible={showPlace} place={place} goToNextInteraction={goToNextInteraction} currentInteraction={currentInteraction} onFinish={()=>setShowPlace(false)}/>
+      </div>
+
     </div>
   );
 }
