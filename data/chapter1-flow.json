@@ -143,34 +143,39 @@
     "1.31": {
       "type": "card",
       "duration": 4,
-      "text": "Někdy tu z tebe vnímám hodně netrpělivosti, je to tak?"
+      "text": "Někdy tu z tebe vnímám hodně netrpělivosti, je to tak?",
+      "next-id": "1.32"
     },
     "1.32": {
       "type": "card",
       "duration": 4,
-      "text": "Někdy zvědavost... "
+      "text": "Někdy zvědavost... ",
+      "next-id": "1.33"
     },
     "1.33": {
       "type": "card",
       "duration": 4,
-      "text": "Ale vždycky zírám..."
+      "text": "Ale vždycky zírám...",
+      "next-id": "1.34"
     },
     "1.34": {
       "type": "card",
       "duration": 4,
-      "text": "...kolik toho zvládnou..."
+      "text": "...kolik toho zvládnou...",
+      "next-id": "1.35"
     },
     "1.35": {
       "type": "card",
       "duration": 4,
-      "text": "...tvoje prsty."
+      "text": "...tvoje prsty.",
+      "next-id": "finger-choice"
     },
     "finger-choice": {
       "type": "card",
       "text": "Kterým prstem vlastně scrolluješ?"
     },
     "back-to-chat": {
-      "type": "card",
+      "type": "notification",
       "text": "Zajímavý. A kterým prstem teď odklikneš tohle tlačítko?",
       "next-id": "overlay-off"
     },

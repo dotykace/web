@@ -5,7 +5,7 @@ import { AnimatePresence } from "framer-motion"
 import { Send } from "lucide-react"
 import InteractiveEmoji, {EmojiParams} from "@/components/InteractiveEmoji";
 
-export default function CustomSend({onFinish}) {
+export default function CustomSend({onClick, onFinish}) {
   const [state, setState] = useState<"default"|"gray"|"glow">("default")
   const [showEmojis, setShowEmojis] = useState(false)
   const [emojis, setEmojis] = useState<EmojiParams[]>([])
@@ -61,6 +61,7 @@ export default function CustomSend({onFinish}) {
         setState("gray")
         generateEmojiList()
         setShowEmojis(true)
+        onClick()
         break
     }
   }

@@ -5,7 +5,7 @@ import {AnimatePresence, motion} from "framer-motion"
 import {Pause, Play} from "lucide-react"
 import InteractiveEmoji from "@/components/InteractiveEmoji";
 
-export default function CustomPlay({onClick}) {
+export default function CustomPlay({onClick, onFinish}) {
   const [showLogos, setShowLogos] = useState(false)
   const [logos, setLogos] = useState<>([])
 
@@ -38,9 +38,17 @@ export default function CustomPlay({onClick}) {
   const handleClick = () =>{
     generateLogoList()
     setShowLogos(prevState => !prevState)
-    if (onClick) {
-      onClick()
+    if (!showLogos) {
+      if (onClick) {
+        onClick()
+      }
     }
+    else {
+      if (onFinish) {
+        onFinish()
+      }
+    }
+
   }
 
   return (
