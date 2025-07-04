@@ -124,10 +124,10 @@ export default function ScrollableCards({currentCard, onScroll, nextCard}) {
           </button>
         </div>)
       }
-      <div className="flex flex-row-reverse justify-between items-center ">
+      <div className="flex flex-row-reverse justify-evenly items-center h-full w-full">
         {nextCard && <ScrollLine />}
         {/* Fixed container for the card */}
-        {currentCard && (<div className="flex items-center justify-center">
+        {currentCard && (<div className="items-center justify-center w-[400px]">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentCard.id}
@@ -156,7 +156,7 @@ export default function ScrollableCards({currentCard, onScroll, nextCard}) {
               className="w-full h-full"
               style={{ perspective: "1000px" }}
             >
-              <SocialMediaPost username={currentCard?.name ?? ""} avatar={""} content={currentCard.content} timestamp={currentCard.title} choices={currentCard.choices}/>
+              <SocialMediaPost username={currentCard?.name} avatar={""} content={currentCard.content} timestamp={currentCard.title} choices={currentCard.choices}/>
             </motion.div>
           </AnimatePresence>
         </div>)}

@@ -17,10 +17,10 @@ export default function SpecialPlace({ currentInteraction, goToNextInteraction, 
     case "place-2":
       return <CustomPlay onClick={()=>goToNextInteraction("1.21")} onFinish={()=>goToNextInteraction("input-place-2")}/>
     case "place-3":
-      return <Testing currentInteraction={currentInteraction} goToNextInteraction={goToNextInteraction}/>
+      return <Testing currentInteraction={currentInteraction} goToNextInteraction={goToNextInteraction} onFinish={onFinish}/>
   }
 }
-function Testing({currentInteraction, goToNextInteraction}) {
+function Testing({currentInteraction, goToNextInteraction, onFinish}) {
   const [currentCard, setCurrentCard] = useState<{}|undefined>(undefined)
   const botName = readFromStorage("BN") ?? "Bot"
 
@@ -51,6 +51,7 @@ function Testing({currentInteraction, goToNextInteraction}) {
   const choiceCallback = (choice) => {
     setToStorage("finger-choice", choice);
     console.log("Choice selected:", choice);
+    onFinish();
     goToNextInteraction("back-to-chat");
   }
 

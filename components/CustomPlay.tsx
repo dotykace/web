@@ -53,7 +53,7 @@ export default function CustomPlay({onClick, onFinish}) {
     <div
       className="relative"
       style={{
-        transform: "translate(-50%, -50%)"
+        transform: "translate(-50%, 0)"
       }}
     >
       <button

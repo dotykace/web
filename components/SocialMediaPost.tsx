@@ -4,19 +4,23 @@ import { Button } from "@/components/ui/button"
 import { Heart, MessageCircle, Share, Bookmark } from "lucide-react"
 
 interface SocialMediaPostProps {
-  username: string
+  username?: string
   avatar: string
   content: string,
   choices?: {text: string, callback: () => {}} []
 }
 
 export default function SocialMediaPost({
-                                          username,
+                                          username= "Mobil",
                                           avatar,
                                           content,
   choices,
                                         }: SocialMediaPostProps) {
 
+  const timestamp = new Date().toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
   return (
     <Card
       className={`m-5 h-full rounded-xl transition-all duration-300 ring-2 ring-blue-500 shadow-xl bg-white`}
@@ -29,7 +33,7 @@ export default function SocialMediaPost({
           </Avatar>
           <div className="flex-1">
             <h3 className="font-semibold text-sm">{username}</h3>
-            <p className="text-xs text-gray-500">Just now</p>
+            <p className="text-xs text-gray-500">{timestamp}</p>
           </div>
         </div>
       </CardHeader>
@@ -42,8 +46,7 @@ export default function SocialMediaPost({
               {choices.map((choice, index) => (
                 <Button
                   key={index}
-                  variant="outline"
-                  className="flex-1"
+                  className="flex-1 rounded-full bg-gray-800"
                   onClick={choice.callback}
                 >
                   {choice.text}
@@ -56,17 +59,17 @@ export default function SocialMediaPost({
         {/* Action buttons */}
         <div className="flex items-center justify-between pt-2 border-t">
           <div className="flex items-center space-x-4">
-            <Button size="sm" className="p-2 h-auto">
+            <Button size="sm" variant="outline" className="p-2 h-auto rounded-[5px]">
               <Heart className="w-5 h-5" />
             </Button>
-            <Button size="sm" className="p-2 h-auto">
+            <Button size="sm" variant="outline" className="p-2 h-auto rounded-[5px]">
               <MessageCircle className="w-5 h-5" />
             </Button>
-            <Button size="sm" className="p-2 h-auto">
+            <Button size="sm" variant="outline" className="p-2 h-auto rounded-[5px]">
               <Share className="w-5 h-5" />
             </Button>
           </div>
-          <Button size="sm" className="p-2 h-auto">
+          <Button size="sm" variant="outline" className="p-2 h-auto rounded-[5px]">
             <Bookmark className="w-5 h-5" />
           </Button>
         </div>
