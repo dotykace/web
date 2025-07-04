@@ -83,7 +83,7 @@ export default function ChatOverlay({ currentInteraction, goToNextInteraction}) 
     }
   }
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50">
       {showNotification && (
         <MobileNotification
         {...notificationProps}
