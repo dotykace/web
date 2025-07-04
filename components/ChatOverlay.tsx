@@ -4,6 +4,7 @@ import {MessageSquare} from "lucide-react";
 import GlowingDot from "@/components/GlowingDot";
 import SpecialPlace from "@/components/SpecialPlace";
 import {Button} from "@/components/ui/button";
+import EmojiList from "@/components/EmojiList";
 
 export default function ChatOverlay({ currentInteraction, goToNextInteraction}) {
   const [showNotification, setShowNotification] = useState(false)
@@ -54,6 +55,33 @@ export default function ChatOverlay({ currentInteraction, goToNextInteraction}) 
     message: currentInteraction?.text() ?? "",
     icon: <MessageSquare className="h-6 w-6 text-white" />,}
 
+  const PREDEFINED_EMOJIS = ["🍽","️😋","🤤","🥴","🤢","☠️"]
+  const [animatingEmoji, setAnimatingEmoji] = useState<string | null>(null)
+  const [isAnimating, setIsAnimating] = useState(false)
+  const handleEmojiClick = (emoji: string) => {
+    setAnimatingEmoji(emoji)
+    setIsAnimating(true)
+    setShowNotification(false)
+    setShowPlace(false)
+
+    // Reset animation after completion
+    setTimeout(() => {
+      setIsAnimating(false)
+      setAnimatingEmoji(null)
+      goToNextInteraction("place-3")
+    }, 1500)
+  }
+
+  const callBackForContent = () => {
+    console.log(currentInteraction)
+    if (currentInteraction?.id === "input-place-2") {
+      return (
+        () => <EmojiList onEmojiClick={handleEmojiClick} emojis={PREDEFINED_EMOJIS} />
+      );
+    } else {
+      return undefined;
+    }
+  }
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
       {showNotification && (
@@ -62,13 +90,8 @@ export default function ChatOverlay({ currentInteraction, goToNextInteraction}) 
         isOpen={showNotification}
         onClose={() => setShowNotification(false)}
         duration={currentInteraction?.duration * 1000}
-        onNotificationClick={() => {
-          if(currentInteraction?.id === "input-place-2") {
-            setShowPlace(false)
-            goToNextInteraction("place-3")
-          }
-        }}
-      />)}
+        content={callBackForContent()}
+          />)}
       {showBackToChat && (
         <Button
           style={
@@ -98,6 +121,35 @@ export default function ChatOverlay({ currentInteraction, goToNextInteraction}) 
       >
         <SpecialPlace visible={showPlace} place={place} goToNextInteraction={goToNextInteraction} currentInteraction={currentInteraction} onFinish={()=>setShowPlace(false)}/>
       </div>
+      {isAnimating && animatingEmoji && (
+        <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
+          <div
+            className="text-8xl animate-emoji-explosion"
+            style={{
+              animation: "emojiExplosion 1.5s ease-out forwards",
+            }}
+          >
+            {animatingEmoji}
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes emojiExplosion {
+          0% {
+            transform: scale(1);
+            opacity: 1;
+          }
+          50% {
+            transform: scale(8);
+            opacity: 0.8;
+          }
+          100% {
+            transform: scale(12);
+            opacity: 0;
+          }
+        }
+      `}</style>
 
     </div>
   );

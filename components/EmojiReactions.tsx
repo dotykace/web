@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRightIcon } from "lucide-react";
+import EmojiList from "@/components/EmojiList";
 
 export default function EmojiReactionButton({onSelect}) {
   const [showEmojis, setShowEmojis] = useState(false);
@@ -45,25 +46,9 @@ export default function EmojiReactionButton({onSelect}) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="absolute left-0 right-0 top-[-70px] bg-white rounded-full p-2 flex justify-around shadow-lg"
+            className="absolute left-0 right-0 top-[-50px]"
           >
-            {emojis.map((emoji, index) => (
-              <motion.button
-                key={emoji}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                  transition: { delay: index * 0.05 },
-                }}
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => handleEmojiClick(emoji)}
-                className="text-2xl cursor-pointer p-2"
-              >
-                {emoji}
-              </motion.button>
-            ))}
+            <EmojiList onEmojiClick={handleEmojiClick} emojis={emojis} />
           </motion.div>
         )}
       </AnimatePresence>

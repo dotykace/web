@@ -79,7 +79,6 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
             isOpen={showNotification}
             duration={currentInteraction?.duration * 1000}
             onClose={() => setShowNotification(false)}
-            onNotificationClick={() => console.log("Notification clicked")}
           />
         )}
       </div>
@@ -134,7 +133,6 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
           <EmojiReactionButton onSelect={(emoji)=>{
             console.log("Selected emoji:", emoji);
             setShowEmojiReactions(false)
-            // todo render one big emoji in the chat instead of a message type
             addUserInputToHistory(emoji, "emoji");
             goToNextInteraction("1.13")
           }}/>
