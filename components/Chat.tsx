@@ -54,10 +54,10 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [history])
-  const addUserInputToHistory = (input: string) => {
+  const addUserInputToHistory = (input: string, type?: string) => {
     const userMessage: Interaction = {
       id: `user-${Date.now()}-${Math.random()}`, // FIXED: Ensure unique IDs
-      type: "user-message",
+      type: "user-message"+ (type ? `-${type}` : ""),
       text: input,
       duration: 0,
     }
@@ -89,7 +89,7 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
         {history.map((interaction, index) => (
           <div
             key={`${interaction.id}-${index}`}
-            className={`max-w-[80%] ${interaction.type === "user-message" ? "ml-auto" : "mr-auto"}`}
+            className={`max-w-[80%] ${interaction.type.includes("user-message")  ? "ml-auto" : "mr-auto"}`}
           >
             <AnimatePresence mode="wait">
               <motion.div
@@ -101,7 +101,13 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
                   <div className="bg-indigo-600 text-white p-3 rounded-xl rounded-tr-none">
                     <p>{interaction.text}</p>
                   </div>
-                ) : interaction.type === "message" ? (
+                ) : interaction.type === "user-message-emoji" ? (
+                  <div className="flex justify-end items-center h-20 w-full max-w-full mx-auto">
+                    <div className="text-5xl border-indigo-600 border-4 bg-indigo-600/50 rounded-xl rounded-tr-none p-3">
+                      {interaction.text}
+                    </div>
+                  </div>
+                ): interaction.type === "message" ? (
                   <div className="bg-white/20 text-white p-3 rounded-xl rounded-tl-none">
                     <p>{interaction.text()}</p>
                   </div>
@@ -129,7 +135,7 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
             console.log("Selected emoji:", emoji);
             setShowEmojiReactions(false)
             // todo render one big emoji in the chat instead of a message type
-            addUserInputToHistory(emoji)
+            addUserInputToHistory(emoji, "emoji");
             goToNextInteraction("1.13")
           }}/>
           ) : (
