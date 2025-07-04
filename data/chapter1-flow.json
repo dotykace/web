@@ -182,31 +182,17 @@
       "type": "message",
       "text": "Ty mě napínáš!",
       "duration": 3,
-      "next-id": "1.101"
+      "next-id": "1.7",
+      "timeout-id": "1.101"
     },
     "1.101": {
-      "type": "input",
-      "text": "",
-      "answer": "",
-      "duration": 10,
+      "type": "message",
+      "text": "Dáváš si záležet, viď?",
+      "duration": 3,
       "next-id": "1.7",
       "timeout-id": "1.102"
     },
     "1.102": {
-      "type": "message",
-      "text": "Dáváš si záležet, viď?",
-      "duration": 3,
-      "next-id": "1.103"
-    },
-    "1.103": {
-      "type": "input",
-      "text": "",
-      "answer": "",
-      "duration": 7,
-      "next-id": "1.7",
-      "timeout-id": "1.104"
-    },
-    "1.104": {
       "type": "message",
       "text": "Víš co, netrap se tím. Tohle je pro mě stejně nezapomenutelný.",
       "duration": 4,

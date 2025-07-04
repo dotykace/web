@@ -125,18 +125,14 @@ export function useInteractions<T>(filename:string) {
           else if (currentInteraction.id === "11a") {
             setToStorage("BN", input)
           }
-
-          goToNextInteraction()
         }
-          // todo make it function properly in greater context
-          // todo either dont have user input as interaction or make it work properly
+        // todo make it function properly in greater context
+        // todo either dont have user input as interaction or make it work properly
         // todo maybe separate user inputs and interactions
-        else if (true){
-          if (currentInteraction?.id === "1.6" || currentInteraction?.id === "1.100" || currentInteraction?.id === "1.102") {
-            setToStorage("firstMessage", input)
-            goToNextInteraction("1.7")
-          }
+        if (currentInteraction?.id === "1.6" || currentInteraction?.id === "1.100" || currentInteraction?.id === "1.101") {
+          setToStorage("firstMessage", input)
         }
+        goToNextInteraction()
       },
       [currentInteraction, goToNextInteraction],
   )
