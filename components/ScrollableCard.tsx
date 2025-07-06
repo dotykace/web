@@ -1,40 +1,75 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import {useState, useEffect, useRef, useCallback} from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import SocialMediaPost from "@/components/SocialMediaPost";
 import {Progress} from "@/components/ui/progress";
 import {Pause, Play} from "lucide-react";
 import ScrollLine from "@/components/ScrollLine";
+import AnimatedCard from "@/components/AnimatedCard";
+import {readFromStorage} from "@/scripts/local-storage";
+const generateChoiceObject = (text,callback) => {
+  return {
+    text: text,
+    callback: () => callback(text)
+  }
+}
+const FINGERS = [
+  "palec",
+  "ukazovák",
+  "prostředníček",
+  "prsteníček",
+  "malíček"
+]
+const createCard = (interaction, botName, onFinish) => {
+  let newCard = {
+    avatar: "/placeholder.svg",
+    username: botName,
+    content: interaction.text(),
+  }
 
-export default function ScrollableCards({currentCard, onScroll, nextCard}) {
+  if (interaction.id === "finger-choice") {
+    newCard = {
+      ...newCard,
+      choices: FINGERS.map((text) => generateChoiceObject(text,onFinish)),
+    }
+  }
+  return newCard;
+}
+export default function ScrollableCards({currentInteraction, onScroll, onFinish}) {
+  // scrolling cooldown
   const [isTransitioning, setIsTransitioning] = useState(false)
   const lastWheelTime = useRef(0)
   const wheelCooldown = 800 // milliseconds between card changes
 
-  const autoScrollDelay = currentCard?.delay ?? 4000 // 4 seconds
+  const nextCard = (()=> currentInteraction.id !== "finger-choice");
+  const validCard = (() => currentInteraction.type === "card")
+
+  const botName = readFromStorage("BN") ?? "Bot"
+
+
+  const autoScrollDelay = currentInteraction.duration * 1000 ?? 4000 // 4 seconds
   const intervalMs = (autoScrollDelay/100)*0.75;
-
   const [isAutoScrolling, setIsAutoScrolling] = useState(true)
-
-
+  const toggleAutoScroll = () => {
+    setIsAutoScrolling(!isAutoScrolling)
+  }
   // Touch handling
   const touchStartY = useRef(0)
   const touchEndY = useRef(0)
   const minSwipeDistance = 50 // minimum distance for a swipe
 
-  const toggleAutoScroll = () => {
-    setIsAutoScrolling(!isAutoScrolling)
-  }
-
   const changeCard = () => {
+    // cooldown logic
     if (isTransitioning) return
     const now = Date.now()
     if (now - lastWheelTime.current < wheelCooldown) return
     setIsTransitioning(true)
     lastWheelTime.current = now
+    // here goes actual change of card
     setProgress(0)
     onScroll()
+    // here is cooldown again
     setTimeout(() => {
       setIsTransitioning(false)
     }, 600)
@@ -86,9 +121,8 @@ export default function ScrollableCards({currentCard, onScroll, nextCard}) {
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {
-    if (!currentCard || !nextCard) return
+    if (!validCard() || !nextCard()) return
     if (!isAutoScrolling ) return
-    console.log("automate")
 
     const interval = setInterval(() => {
       setProgress((prev) => {
@@ -102,7 +136,7 @@ export default function ScrollableCards({currentCard, onScroll, nextCard}) {
     }, intervalMs);
 
     return () => clearInterval(interval)
-  }, [currentCard, isAutoScrolling])
+  }, [isAutoScrolling, currentInteraction])
 
   useEffect(() => {
     if (progress === 100 ) {
@@ -113,7 +147,8 @@ export default function ScrollableCards({currentCard, onScroll, nextCard}) {
   return (
     <div className="h-screen overflow-hidden touch-none w-screen fixed top-0 left-0">
       {
-        currentCard && nextCard && (<div className="absolute bottom-10  left-4 right-11 z-20 flex items-center justify-end gap-2">
+        validCard() && nextCard() && (
+          <div className="absolute bottom-10  left-4 right-11 z-20 flex items-center justify-end gap-2">
           <Progress value={progress} />
           {/* Auto-scroll Toggle */}
           <button
@@ -125,43 +160,9 @@ export default function ScrollableCards({currentCard, onScroll, nextCard}) {
         </div>)
       }
       <div className="flex flex-row-reverse justify-evenly items-center h-full w-full">
-        {nextCard && <ScrollLine />}
-        {/* Fixed container for the card */}
-        {currentCard && (<div className="items-center justify-center w-[400px]">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentCard.id}
-              initial={{
-                y: 100,
-                opacity: 0,
-                rotateX:  15,
-              }}
-              animate={{
-                y: 0,
-                opacity: 1,
-                scale: 1,
-                rotateX: 0,
-              }}
-              exit={{
-                y:  -100 ,
-                opacity: 0,
-                rotateX: -15,
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 200,
-                damping: 25,
-                duration: 0.8,
-              }}
-              className="w-full h-full"
-              style={{ perspective: "1000px" }}
-            >
-              <SocialMediaPost username={currentCard?.name} avatar={""} content={currentCard.content} timestamp={currentCard.title} choices={currentCard.choices}/>
-            </motion.div>
-          </AnimatePresence>
-        </div>)}
+        {nextCard() && <ScrollLine />}
+        {validCard() && <AnimatedCard currentCard={createCard(currentInteraction,botName, onFinish)}/> }
       </div>
-
     </div>
   )
 }

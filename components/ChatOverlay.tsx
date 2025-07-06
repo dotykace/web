@@ -73,7 +73,6 @@ export default function ChatOverlay({ currentInteraction, goToNextInteraction}) 
   }
 
   const callBackForContent = () => {
-    console.log(currentInteraction)
     if (currentInteraction?.id === "input-place-2") {
       return (
         () => <EmojiList onEmojiClick={handleEmojiClick} emojis={PREDEFINED_EMOJIS} />
@@ -119,7 +118,7 @@ export default function ChatOverlay({ currentInteraction, goToNextInteraction}) 
           top: dotPosition.top,
         }}
       >
-        <SpecialPlace visible={showPlace} place={place} goToNextInteraction={goToNextInteraction} currentInteraction={currentInteraction} onFinish={()=>setShowPlace(false)}/>
+        <SpecialPlace visible={showPlace} place={place} onFinish={()=>setShowPlace(false)}/>
       </div>
       {isAnimating && animatingEmoji && (
         <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
