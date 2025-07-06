@@ -2,8 +2,11 @@ import {AnimatePresence, motion} from "framer-motion";
 import Card from "@/components/Card";
 import InputArea from "@/components/InputArea";
 import {useEffect, useState} from "react";
+import {useChatContext} from "@/context/ChatContext";
 
-export default function CardSequence({currentInteraction, goToNextInteraction}){
+export default function CardSequence(){
+
+  const {currentInteraction, goToNextInteraction} = useChatContext()
 
   const [history, setHistory] = useState([])
 
@@ -35,7 +38,7 @@ export default function CardSequence({currentInteraction, goToNextInteraction}){
                 <p className="text-lg mb-4">{currentInteraction?.text()}</p>
 
                 {(currentInteraction?.type === "input" || currentInteraction?.type === "multiple-choice") && (
-                  <InputArea currentInteraction={currentInteraction} goToNextInteraction={goToNextInteraction}/>
+                  <InputArea/>
                 )}
 
                 {/*{!showInput && <div className="text-center text-sm text-gray-500 mt-4">Klikni pro pokračování ✨</div>}*/}

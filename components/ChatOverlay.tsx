@@ -5,8 +5,11 @@ import GlowingDot from "@/components/GlowingDot";
 import SpecialPlace from "@/components/SpecialPlace";
 import {Button} from "@/components/ui/button";
 import EmojiList from "@/components/EmojiList";
+import {useChatContext} from "@/context/ChatContext";
 
-export default function ChatOverlay({ currentInteraction, goToNextInteraction}) {
+export default function ChatOverlay() {
+
+  const { currentInteraction, goToNextInteraction} = useChatContext()
   const [showNotification, setShowNotification] = useState(false)
 
   const [showDot, setShowDot] = useState(false)

@@ -9,7 +9,9 @@ import EmojiReactionButton from "@/components/EmojiReactions";
 
 import ChatOverlay from "@/components/ChatOverlay";
 
-export default function Chat({ currentInteraction, goToNextInteraction}) {
+export default function Chat() {
+  const { currentInteraction, goToNextInteraction} = useChatContext()
+
   const [mode, setMode] = useState<"default"|"overlay">("default")
   const messagesEndRef = useRef<HTMLDivElement|null>(null)
 
@@ -66,7 +68,7 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
 
   return(
     <div className="w-full max-w-md mx-auto flex flex-col p-2 h-[calc(100vh)] bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
-      {(mode==="overlay" )&& <ChatOverlay currentInteraction={currentInteraction} goToNextInteraction={goToNextInteraction}/>}
+      {(mode==="overlay" )&& <ChatOverlay/>}
       <div className="bg-white/10 backdrop-blur-sm rounded-t-xl p-3 flex items-center gap-3 border-b border-white/20">
         <MessageSquare className="w-6 h-6 text-white" />
         <h1 className="text-xl font-semibold text-white">Interaktivní chat</h1>

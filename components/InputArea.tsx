@@ -4,9 +4,9 @@ import {useEffect} from "react";
 import {Interaction} from "@/interactions";
 import {useChatContext} from "@/context/ChatContext";
 
-export default function InputArea({currentInteraction, goToNextInteraction}) {
+export default function InputArea() {
 
-  const {handleUserInput, handleChoiceSelection} = useChatContext();
+  const {handleUserInput, handleChoiceSelection, currentInteraction} = useChatContext();
 
   switch (currentInteraction?.type) {
     case "input":
