@@ -1,6 +1,6 @@
 import CustomSend from "@/components/CustomSend";
 import CustomPlay from "@/components/CustomPlay";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {readFromStorage, setToStorage} from "@/scripts/local-storage";
 import ScrollableCards from "@/components/ScrollableCard";
 
@@ -21,7 +21,6 @@ export default function SpecialPlace({ currentInteraction, goToNextInteraction, 
   }
 }
 function Testing({currentInteraction, goToNextInteraction, onFinish}) {
-  const [currentCard, setCurrentCard] = useState<{}|undefined>(undefined)
   const botName = readFromStorage("BN") ?? "Bot"
 
   const createCard = (interaction) => {
@@ -57,26 +56,30 @@ function Testing({currentInteraction, goToNextInteraction, onFinish}) {
 
   const onScrollCard = () => {
     console.log("onScrollCard")
-    if( !currentCard ) {
+    if( currentInteraction.id === "1.30" ) {
       console.log("No current card, skipping interaction")
       goToNextInteraction("1.31")
       return
     }
-    goToNextInteraction()
+    else {
+      if (currentInteraction.type === "card" && currentInteraction.nextCard) {
+        console.log("Scrolling card, changing interaction")
+        goToNextInteraction(currentInteraction.nextCard)
+      }
+    }
   }
 
   useEffect(() => {
-    console.log(currentCard)
-  }, [currentCard]);
-
-  useEffect(() => {
-    if (currentInteraction?.type === "card") {
-      console.log("PICE2")
-      const newCard = createCard(currentInteraction);
-      console.log("New Card:", newCard);
-      setCurrentCard(newCard);
-    }
+    console.log("Testing component mounted with interaction:", currentInteraction);
   }, [currentInteraction]);
 
-  return <ScrollableCards currentCard={ currentCard} onScroll={onScrollCard} nextCard={currentInteraction.id !== "finger-choice"} />
+  const getCurrentCard = useCallback(() => {
+    if (currentInteraction?.type === "card") {
+      console.log("Creating card for interaction:", currentInteraction);
+      return createCard(currentInteraction);
+    }
+    return undefined;
+  },[currentInteraction])
+
+  return <ScrollableCards currentCard={ getCurrentCard()} onScroll={onScrollCard} nextCard={currentInteraction.id !== "finger-choice"} />
 }

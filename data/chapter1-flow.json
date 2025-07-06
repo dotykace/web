@@ -144,31 +144,31 @@
       "type": "card",
       "duration": 4,
       "text": "Někdy tu z tebe vnímám hodně netrpělivosti, je to tak?",
-      "next-id": "1.32"
+      "nextCard": "1.32"
     },
     "1.32": {
       "type": "card",
       "duration": 4,
       "text": "Někdy zvědavost... ",
-      "next-id": "1.33"
+      "nextCard": "1.33"
     },
     "1.33": {
       "type": "card",
       "duration": 4,
       "text": "Ale vždycky zírám...",
-      "next-id": "1.34"
+      "nextCard": "1.34"
     },
     "1.34": {
       "type": "card",
       "duration": 4,
       "text": "...kolik toho zvládnou...",
-      "next-id": "1.35"
+      "nextCard": "1.35"
     },
     "1.35": {
       "type": "card",
       "duration": 4,
       "text": "...tvoje prsty.",
-      "next-id": "finger-choice"
+      "nextCard": "finger-choice"
     },
     "finger-choice": {
       "type": "card",
