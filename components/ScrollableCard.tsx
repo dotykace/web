@@ -22,7 +22,9 @@ const FINGERS = [
   "malíček"
 ]
 const createCard = (interaction, botName, onFinish) => {
+  if (interaction.type !== "card") return undefined
   let newCard = {
+    id: interaction.id,
     avatar: "/placeholder.svg",
     username: botName,
     content: interaction.text(),
@@ -161,7 +163,7 @@ export default function ScrollableCards({currentInteraction, onScroll, onFinish}
       }
       <div className="flex flex-row-reverse justify-evenly items-center h-full w-full">
         {nextCard() && <ScrollLine />}
-        {validCard() && <AnimatedCard currentCard={createCard(currentInteraction,botName, onFinish)}/> }
+        <AnimatedCard currentCard={createCard(currentInteraction,botName,onFinish)} visible={validCard()}/>
       </div>
     </div>
   )

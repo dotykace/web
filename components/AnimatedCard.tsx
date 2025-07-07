@@ -1,11 +1,12 @@
 import {AnimatePresence, motion} from "framer-motion";
 import SocialMediaPost from "@/components/SocialMediaPost";
 
-export default function AnimatedCard({currentCard}){
+export default function AnimatedCard({currentCard, visible}){
   return (
     <div className="items-center justify-center w-[400px]">
       <AnimatePresence mode="wait">
-        <motion.div
+        {visible && (
+          <motion.div
           key={currentCard.id}
           initial={{
             y: 100,
@@ -33,7 +34,8 @@ export default function AnimatedCard({currentCard}){
           style={{ perspective: "1000px" }}
         >
           <SocialMediaPost username={currentCard?.name} avatar={""} content={currentCard.content} timestamp={currentCard.title} choices={currentCard.choices}/>
-        </motion.div>
+        </motion.div>)}
+
       </AnimatePresence>
     </div>
   )
