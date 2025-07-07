@@ -12,8 +12,8 @@ interface NotificationProps {
   message: string
   icon?: React.ReactNode
   duration?: number
-  onClose?: () => void
-  isOpen?: boolean
+  onClose: () => void
+  isOpen: boolean
   content?: ()=>JSX.Element | undefined
 }
 
@@ -23,26 +23,18 @@ export default function MobileNotification({
                                              icon = <Bell className="h-6 w-6 text-primary" />,
                                              duration = 5000,
                                              onClose,
-                                             isOpen: controlledIsOpen,
+                                             isOpen,
   content = undefined,
                                            }: NotificationProps) {
-  const [isOpen, setIsOpen] = useState(controlledIsOpen !== undefined ? controlledIsOpen : true)
 
   const [showQuickReply, setShowQuickReply] = useState(false)
-
-  useEffect(() => {
-    if (controlledIsOpen !== undefined) {
-      setIsOpen(controlledIsOpen)
-    }
-  }, [controlledIsOpen])
 
   useEffect(() => {
     let timer: number
 
     if (isOpen && duration > 0) {
       timer = setTimeout(() => {
-        setIsOpen(false)
-        if (onClose) onClose()
+        onClose()
       }, duration)
     }
 
@@ -51,16 +43,14 @@ export default function MobileNotification({
     }
   }, [isOpen, duration, onClose])
 
-  const handleClose = (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation()
-    setIsOpen(false)
-    if (onClose) onClose()
-  }
-
   const timestapm = new Date().toLocaleTimeString([], {
     hour: '2-digit',
     minute: '2-digit',
   })
+
+  useEffect(() => {
+    console.log("isOpen", isOpen)
+  }, [isOpen]);
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none">

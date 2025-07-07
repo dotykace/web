@@ -86,14 +86,15 @@ export default function ChatOverlay() {
   }
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50">
-      {showNotification && (
-        <MobileNotification
+      <MobileNotification
         {...notificationProps}
         isOpen={showNotification}
-        onClose={() => setShowNotification(false)}
+        onClose={() => {
+          setShowNotification(false)
+        }}
         duration={currentInteraction?.duration * 1000}
         content={callBackForContent()}
-          />)}
+      />
       {showBackToChat && (
         <Button
           style={
