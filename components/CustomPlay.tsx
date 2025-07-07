@@ -3,21 +3,20 @@
 import { useState } from "react"
 import {AnimatePresence, motion} from "framer-motion"
 import {Pause, Play} from "lucide-react"
-import InteractiveEmoji from "@/components/InteractiveEmoji";
 
-export default function CustomPlay({onClick}) {
+export default function CustomPlay({onClick, onFinish}) {
   const [showLogos, setShowLogos] = useState(false)
   const [logos, setLogos] = useState<>([])
 
   const logoData = [
-    { emoji: "😥", text: "Přečte si tu zprávu včas?" },
-    { emoji: "🙏", text: "Odesláno, snad to vyjde..." },
-    { emoji: "😳", text: "Snad si tu mou zprávu nevyloží špatně..." },
-    { emoji: "😈", text: "A máš to! Co asi teď odpoví?" },
+    "Facebook",
+    "Instagram",
+    "TikTok",
+    "YouTube",
   ]
 
   const generateLogoList = () => {
-    const radius = 120
+    const radius = 110
     const angleStep = Math.PI / (logoData.length + 1)
 
     const newEmojis = logoData.map((data, index) => {
@@ -27,8 +26,7 @@ export default function CustomPlay({onClick}) {
 
       return {
         id: index,
-        emoji: data.emoji,
-        text: data.text,
+        text: data,
         position: { x, y },
       }
     })
@@ -38,16 +36,29 @@ export default function CustomPlay({onClick}) {
   const handleClick = () =>{
     generateLogoList()
     setShowLogos(prevState => !prevState)
-    if (onClick) {
-      onClick()
+    if (!showLogos) {
+      if (onClick) {
+        onClick()
+      }
     }
+    else {
+      if (onFinish) {
+        onFinish()
+      }
+    }
+
   }
 
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      style={{
+        transform: "translate(-50%, 0)"
+      }}
+    >
       <button
         onClick={handleClick}
-        className="flex items-center justify-center w-14 h-14 rounded-full bg-white/40 text-black hover:bg-green-600 transition-colors shadow-lg"
+        className="flex items-center justify-center w-14 h-14 rounded-full bg-white/50 text-black shadow-lg"
         aria-label="Play or Pause"
       >
         {showLogos ? <Pause size={24} /> : <Play size={24} />}
@@ -73,9 +84,10 @@ export default function CustomPlay({onClick}) {
                     opacity: 1,
                   }}
                   exit={{
-                    scale: 0,
                     opacity: 0,
                     transition: { duration: 0.2 },
+                    x: 0,
+                    y: 0,
                   }}
                   transition={{
                     delay: Math.random() * 0.1,
@@ -83,21 +95,9 @@ export default function CustomPlay({onClick}) {
                     stiffness: 200,
                     damping: 10 * Math.random() +10,
                   }}
-                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                  className="absolute top-0 left-0 "
                 >
-                  <div className="relative">
-                    {/* Emoji Button */}
-                    <motion.button
-                      className={`
-                      relative text-3xl p-3 rounded-full bg-white shadow-lg
-                      transition-all duration-300 hover:scale-110
-                    `}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <span className="relative z-10">{emoji.emoji}</span>
-                    </motion.button>
-                  </div>
+                  <img src={"/logos/" + emoji.text +"_logo.svg"} alt={"My Icon "+emoji.text} className="w-20 h-20" />
                 </motion.div>
               </div>
             </div>

@@ -9,7 +9,9 @@ import EmojiReactionButton from "@/components/EmojiReactions";
 
 import ChatOverlay from "@/components/ChatOverlay";
 
-export default function Chat({ currentInteraction, goToNextInteraction}) {
+export default function Chat() {
+  const { currentInteraction, goToNextInteraction} = useChatContext()
+
   const [mode, setMode] = useState<"default"|"overlay">("default")
   const messagesEndRef = useRef<HTMLDivElement|null>(null)
 
@@ -21,7 +23,8 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
 
   const [history, setHistory] = useState([])
 
-  const notificationProps ={
+  const notificationProps = {
+    id: currentInteraction.id,
     title: "New Message",
     message: currentInteraction?.text() ?? "",
     icon: <MessageSquare className="h-6 w-6 text-white" />,}
@@ -54,10 +57,10 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [history])
-  const addUserInputToHistory = (input: string) => {
+  const addUserInputToHistory = (input: string, type?: string) => {
     const userMessage: Interaction = {
       id: `user-${Date.now()}-${Math.random()}`, // FIXED: Ensure unique IDs
-      type: "user-message",
+      type: "user-message"+ (type ? `-${type}` : ""),
       text: input,
       duration: 0,
     }
@@ -66,7 +69,7 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
 
   return(
     <div className="w-full max-w-md mx-auto flex flex-col p-2 h-[calc(100vh)] bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
-      {(mode==="overlay" )&& <ChatOverlay currentInteraction={currentInteraction} goToNextInteraction={goToNextInteraction}/>}
+      {(mode==="overlay" )&& <ChatOverlay/>}
       <div className="bg-white/10 backdrop-blur-sm rounded-t-xl p-3 flex items-center gap-3 border-b border-white/20">
         <MessageSquare className="w-6 h-6 text-white" />
         <h1 className="text-xl font-semibold text-white">Interaktivní chat</h1>
@@ -79,7 +82,6 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
             isOpen={showNotification}
             duration={currentInteraction?.duration * 1000}
             onClose={() => setShowNotification(false)}
-            onNotificationClick={() => console.log("Notification clicked")}
           />
         )}
       </div>
@@ -89,7 +91,7 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
         {history.map((interaction, index) => (
           <div
             key={`${interaction.id}-${index}`}
-            className={`max-w-[80%] ${interaction.type === "user-message" ? "ml-auto" : "mr-auto"}`}
+            className={`max-w-[80%] ${interaction.type.includes("user-message")  ? "ml-auto" : "mr-auto"}`}
           >
             <AnimatePresence mode="wait">
               <motion.div
@@ -101,7 +103,13 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
                   <div className="bg-indigo-600 text-white p-3 rounded-xl rounded-tr-none">
                     <p>{interaction.text}</p>
                   </div>
-                ) : interaction.type === "message" ? (
+                ) : interaction.type === "user-message-emoji" ? (
+                  <div className="flex justify-end items-center h-20 w-full max-w-full mx-auto">
+                    <div className="text-5xl border-indigo-600 border-4 bg-indigo-600/50 rounded-xl rounded-tr-none p-3">
+                      {interaction.text}
+                    </div>
+                  </div>
+                ): interaction.type === "message" ? (
                   <div className="bg-white/20 text-white p-3 rounded-xl rounded-tl-none">
                     <p>{interaction.text()}</p>
                   </div>
@@ -128,8 +136,7 @@ export default function Chat({ currentInteraction, goToNextInteraction}) {
           <EmojiReactionButton onSelect={(emoji)=>{
             console.log("Selected emoji:", emoji);
             setShowEmojiReactions(false)
-            // todo render one big emoji in the chat instead of a message type
-            addUserInputToHistory(emoji)
+            addUserInputToHistory(emoji, "emoji");
             goToNextInteraction("1.13")
           }}/>
           ) : (

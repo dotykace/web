@@ -34,8 +34,8 @@ export default function ChapterPage({ chapterNumber, interactionsFileName, ViewC
   }
 
   return (
-      <ChatProvider handleUserInput={handleUserInput} handleChoiceSelection={handleChoiceSelection}>
-        <ViewComponent currentInteraction={currentInteraction} goToNextInteraction={goToNextInteraction} />
+      <ChatProvider handleUserInput={handleUserInput} handleChoiceSelection={handleChoiceSelection} currentInteraction={currentInteraction} goToNextInteraction={goToNextInteraction}>
+        <ViewComponent/>
       </ChatProvider>
   )
 }
