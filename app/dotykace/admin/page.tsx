@@ -22,7 +22,7 @@ export default function AdminPage() {
     useEffect(() => {
         const storedAdminId = localStorage.getItem("dotykace_adminId")
         if (!storedAdminId) {
-            router.push("/dotykace")
+            router.push("/")
             return
         }
         setAdminId(storedAdminId)
@@ -64,7 +64,7 @@ export default function AdminPage() {
             })
             setNewRoomName("")
         } catch (error) {
-            console.error("Error creating room:", error)
+            console.error("❌ Error creating room:", error)
         } finally {
             setLoading(false)
         }
@@ -72,21 +72,19 @@ export default function AdminPage() {
 
     const deleteRoom = async (roomDocId: string) => {
         try {
-            console.log("Deleting room with document ID:", roomDocId)
             await deleteDoc(doc(db, "rooms", roomDocId))
         } catch (error) {
-            console.error("Error deleting room:", error)
+            console.error("❌ Error deleting room:", error)
         }
     }
 
     const startRoom = async (roomDocId: string) => {
         try {
-            console.log("Starting room with document ID:", roomDocId)
             await updateDoc(doc(db, "rooms", roomDocId), {
                 isStarted: true,
             })
         } catch (error) {
-            console.error("Error starting room:", error)
+            console.error("❌ Error starting room:", error)
         }
     }
 
@@ -117,7 +115,7 @@ export default function AdminPage() {
 
     const logout = () => {
         localStorage.removeItem("dotykace_adminId")
-        router.push("/") // Zmenené z "/dotykace" na "/"
+        router.push("/")
     }
 
     return (
@@ -180,11 +178,11 @@ export default function AdminPage() {
                                         <Button
                                             size="sm"
                                             onClick={() => startRoom(room.docId!)}
-                                            disabled={room.isStarted || room.participants?.length === 0}
+                                            disabled={room.isStarted}
                                             className="bg-green-600 hover:bg-green-700"
                                         >
                                             <Play className="w-4 h-4 mr-1" />
-                                            Začať
+                                            {room.isStarted ? "Spustená" : "Začať"}
                                         </Button>
                                         <Button size="sm" variant="outline" onClick={() => exportData(room)}>
                                             <Download className="w-4 h-4 mr-1" />

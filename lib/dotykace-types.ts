@@ -26,15 +26,5 @@ export interface DotykaceParticipant {
 }
 
 export interface DotykaceUserResponses {
-    botName?: string
-    phoneUsage?: {
-        question1: string
-        question2: string
-        question3: string
-    }
-    experienceRating?: {
-        question1: string
-        question2: string
-    }
     isComplete: boolean
 }
