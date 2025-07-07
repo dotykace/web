@@ -54,6 +54,7 @@ export default function ChatOverlay() {
   }, [currentInteraction]);
 
   const notificationProps ={
+    id: currentInteraction.id,
     title: "New Message",
     message: currentInteraction?.text() ?? "",
     icon: <MessageSquare className="h-6 w-6 text-white" />,}

@@ -77,7 +77,7 @@
     },
     "1.11": {
       "type": "message",
-      "text": "Díky za procházku po známých místech. (emoji)",
+      "text": "Díky za procházku po známých místech. \uD83D\uDE4F \uD83E\uDD1D",
       "duration": 4,
       "next-id": "1.12"
     },
