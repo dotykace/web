@@ -46,9 +46,9 @@ export default function EmojiReactionButton({onSelect}) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="absolute left-0 right-0 top-[-50px]"
+            className="absolute left-0 right-0 top-[-65px]"
           >
-            <EmojiList onEmojiClick={handleEmojiClick} emojis={emojis} />
+            <EmojiList className="p-2" onEmojiClick={handleEmojiClick} emojis={emojis} />
           </motion.div>
         )}
       </AnimatePresence>

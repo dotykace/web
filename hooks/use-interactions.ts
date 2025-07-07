@@ -27,7 +27,7 @@ export function useInteractions<T>(filename:string) {
         console.log("Starting to load interactions...")
 
         const data = (await import("@/data/"+filename+".json"))
-        console.log("Raw data loaded:", data)
+        console.log("Raw data loaded")
 
         if (!data || !data.interactions) {
           setState("error")

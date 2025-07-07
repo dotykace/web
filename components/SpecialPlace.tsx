@@ -42,15 +42,12 @@ function CustomScroll({goToNextInteraction, onFinish}) {
   const onScrollCard = useCallback(() => {
 
     const interaction = interactionRef.current;
-    console.log("📌 onScrollCard called");
-    console.log("currentInteraction at onScrollCard:", interaction);
     if( interaction.id === "1.30" ) {
       goToNextInteraction("1.31")
       return
     }
     else {
       if (interaction.type === "card" && interaction.nextCard) {
-        console.log("nextCard", interaction.nextCard)
         goToNextInteraction(interaction.nextCard)
       }
     }

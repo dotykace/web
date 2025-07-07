@@ -48,10 +48,6 @@ export default function MobileNotification({
     minute: '2-digit',
   })
 
-  useEffect(() => {
-    console.log("isOpen", isOpen)
-  }, [isOpen]);
-
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
       <AnimatePresence>
