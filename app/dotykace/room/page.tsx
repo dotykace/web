@@ -64,6 +64,9 @@ export default function DotykaceRoomPage() {
                     const existingParticipant = roomData.participants?.find((p) => p.name === storedPlayerName)
                     if (!existingParticipant) {
                         addPlayerToRoom(storedRoomId, storedPlayerName)
+                    } else {
+                        // Store player ID for later use
+                        localStorage.setItem("dotykace_playerId", existingParticipant.id)
                     }
 
                     // Check if game started and redirect directly to TouchThePhone chapter 0
@@ -93,20 +96,43 @@ export default function DotykaceRoomPage() {
     const addPlayerToRoom = async (roomId: string, playerName: string) => {
         try {
             console.log("➕ Adding player to room:", { roomId, playerName })
+
+            // First check if player already exists
             const roomRef = doc(db, "rooms", roomId)
+            const roomSnap = await getDoc(roomRef)
+
+            if (!roomSnap.exists()) return
+
+            const roomData = roomSnap.data() as DotykaceRoom
+            const existingParticipant = roomData.participants?.find((p) => p.name === playerName)
+
+            if (existingParticipant) {
+                // Player already exists, just store the ID
+                localStorage.setItem("dotykace_playerId", existingParticipant.id)
+                console.log("✅ Player already exists, using existing ID:", existingParticipant.id)
+                return
+            }
+
+            // Player doesn't exist, create new one
+            const playerId = Date.now().toString()
             const newParticipant: DotykaceParticipant = {
-                id: Date.now().toString(),
+                id: playerId,
                 name: playerName,
                 roomId,
                 joinedAt: new Date(),
                 responses: {
                     isComplete: false,
                 },
+                currentChapter: 0,
+                completedChapters: [],
             }
 
             await updateDoc(roomRef, {
                 participants: arrayUnion(newParticipant),
             })
+
+            // Store player ID for later use
+            localStorage.setItem("dotykace_playerId", playerId)
             console.log("✅ Player added successfully")
         } catch (error) {
             console.error("❌ Error adding player to room:", error)

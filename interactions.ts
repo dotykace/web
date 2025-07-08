@@ -52,3 +52,8 @@ export interface CardSequenceProps {
   goToNextInteraction: (nextId: string) => void
   processText: (text: string | undefined) => string
 }
+
+export interface ProcessedInteraction extends Omit<RawInteraction, "text"> {
+  id: string
+  text: () => string
+}
