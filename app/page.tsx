@@ -147,23 +147,30 @@ export default function HomePage() {
               {isLogin ? (
                   <>
                     <div className="space-y-2">
-                      <Label htmlFor="username">Používateľské meno</Label>
+                      <Label htmlFor="username" className="text-gray-900 font-medium">
+                        Používateľské meno
+                      </Label>
                       <Input
                           id="username"
                           type="text"
                           value={username}
                           onChange={(e) => setUsername(e.target.value)}
                           placeholder="Zadajte používateľské meno"
+                          className="bg-white border-2 border-gray-300 text-gray-900 placeholder-gray-500"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="password">Heslo</Label>
+                      <Label htmlFor="password" className="text-gray-900 font-medium">
+                        Heslo
+                      </Label>
                       <Input
                           id="password"
                           type="password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="Zadajte heslo"
+                          onKeyPress={(e) => e.key === "Enter" && handleAdminLogin()}
+                          className="bg-white border-2 border-gray-300 text-gray-900 placeholder-gray-500"
                       />
                     </div>
                     <Button onClick={handleAdminLogin} disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700">
@@ -174,25 +181,30 @@ export default function HomePage() {
               ) : (
                   <>
                     <div className="space-y-2">
-                      <Label htmlFor="roomCode">Kód miestnosti</Label>
+                      <Label htmlFor="roomCode" className="text-gray-900 font-medium">
+                        Kód miestnosti
+                      </Label>
                       <Input
                           id="roomCode"
                           type="text"
                           value={roomCode}
                           onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-                          className="text-center text-lg font-mono"
+                          className="text-center text-lg font-mono bg-white border-2 border-gray-300 text-gray-900 placeholder-gray-500"
                           placeholder="ABCD"
                           maxLength={4}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="playerName">Vaše meno</Label>
+                      <Label htmlFor="playerName" className="text-gray-900 font-medium">
+                        Vaše meno
+                      </Label>
                       <Input
                           id="playerName"
                           type="text"
                           value={playerName}
                           onChange={(e) => setPlayerName(e.target.value)}
                           placeholder="Zadajte vaše meno"
+                          className="bg-white border-2 border-gray-300 text-gray-900 placeholder-gray-500"
                       />
                     </div>
                     <Button onClick={handleUserJoin} disabled={loading} className="w-full bg-green-600 hover:bg-green-700">

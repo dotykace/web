@@ -1,11 +1,14 @@
 "use client"
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { redirect, useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Lock, Triangle, Square, Circle, CheckCircle2 } from "lucide-react"
 import { readFromStorage } from "@/scripts/local-storage"
 import { Card } from "@/components/ui/card"
+import { doc, onSnapshot } from "firebase/firestore"
+import { db } from "@/lib/firebase"
+import type { DotykaceRoom } from "@/lib/dotykace-types"
 
 // Define the section types and states
 type SectionState = "locked" | "unlocked" | "completed"
@@ -23,16 +26,50 @@ export default function MenuPage() {
   const router = useRouter()
   const chapter = readFromStorage("chapter") as number
   const userName = (readFromStorage("userName") as string) || ""
+  const roomId = localStorage.getItem("dotykace_roomId")
+  const playerId = localStorage.getItem("dotykace_playerId")
+
+  const [allowedChapters, setAllowedChapters] = useState<number[]>([0])
+  const [completedChapters, setCompletedChapters] = useState<number[]>([])
+
+  // Listen to room changes to get updated permissions
+  useEffect(() => {
+    if (!roomId || !playerId) {
+      // Fallback to local storage if not in dotykace mode
+      return
+    }
+
+    const roomRef = doc(db, "rooms", roomId)
+    const unsubscribe = onSnapshot(roomRef, (doc) => {
+      if (doc.exists()) {
+        const roomData = doc.data() as DotykaceRoom
+        const participant = roomData.participants?.find((p) => p.id === playerId)
+        const permissions = roomData.chapterPermissions?.[playerId]
+
+        if (permissions) {
+          setAllowedChapters(permissions.allowedChapters)
+        }
+
+        if (participant) {
+          setCompletedChapters(participant.completedChapters || [])
+        }
+      }
+    })
+
+    return () => unsubscribe()
+  }, [roomId, playerId])
 
   const getState = (id: number): SectionState => {
-    if (id < chapter) {
+    if (completedChapters.includes(id)) {
       return "completed"
-    } else if (id === chapter) {
+    } else if (allowedChapters.includes(id)) {
       return "unlocked"
-    } else return "locked"
+    } else {
+      return "locked"
+    }
   }
 
-  // Initial sections data with states - upravené cesty na dynamické routy
+  // Initial sections data with states
   const [sections] = useState<Section[]>([
     {
       id: 1,
@@ -68,9 +105,16 @@ export default function MenuPage() {
     },
   ])
 
+  // Update section states when permissions change
+  const updatedSections = sections.map((section) => ({
+    ...section,
+    state: getState(section.id),
+  }))
+
   // Handle section click
   const handleSectionClick = (section: Section) => {
-    if (section.state !== "locked") {
+    const currentState = getState(section.id)
+    if (currentState !== "locked") {
       router.push(section.path)
     }
   }
@@ -78,9 +122,6 @@ export default function MenuPage() {
   if (chapter == undefined || chapter === 0) {
     redirect("/")
   }
-
-  const completedChapters = sections.filter((s) => s.state === "completed").map((s) => s.id)
-  const unlockedChapters = sections.filter((s) => s.state !== "locked").map((s) => s.id)
 
   return (
       <div className="min-h-screen bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex flex-col items-center justify-center p-4">
@@ -128,7 +169,7 @@ export default function MenuPage() {
 
         {/* Chapters Grid */}
         <div className="grid grid-cols-2 gap-6 max-w-md w-full">
-          {sections.map((section, index) => {
+          {updatedSections.map((section, index) => {
             const isUnlocked = section.state !== "locked"
             const isCompleted = section.state === "completed"
 
@@ -181,10 +222,28 @@ export default function MenuPage() {
           })}
         </div>
 
+        {/* Admin waiting message */}
+        {roomId && (
+            <motion.div
+                className="mt-8 text-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1 }}
+            >
+              <div className="bg-white/80 backdrop-blur-sm rounded-xl px-4 py-2 shadow-lg">
+                <p className="text-sky-700 text-sm">
+                  {allowedChapters.length === 1
+                      ? "Čakáte na povolenie od administrátora pre ďalšie kapitoly"
+                      : `Máte povolené kapitoly: ${allowedChapters.join(", ")}`}
+                </p>
+              </div>
+            </motion.div>
+        )}
+
         {/* Debug info */}
         <div className="mt-8 text-white/70 text-sm text-center">
           <div>Dokončené kapitoly: {completedChapters.join(", ") || "žiadne"}</div>
-          <div>Odomknuté kapitoly: {unlockedChapters.join(", ")}</div>
+          <div>Povolené kapitoly: {allowedChapters.join(", ")}</div>
         </div>
       </div>
   )
