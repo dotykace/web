@@ -24,17 +24,39 @@ interface Section {
 
 export default function MenuPage() {
   const router = useRouter()
-  const chapter = readFromStorage("chapter") as number
-  const userName = (readFromStorage("userName") as string) || ""
-  const roomId = localStorage.getItem("dotykace_roomId")
-  const playerId = localStorage.getItem("dotykace_playerId")
+  const [chapter, setChapter] = useState<number | null>(null)
+  const [userName, setUserName] = useState<string>("")
+  const [roomId, setRoomId] = useState<string | null>(null)
+  const [playerId, setPlayerId] = useState<string | null>(null)
+  const [isClient, setIsClient] = useState(false)
 
   const [allowedChapters, setAllowedChapters] = useState<number[]>([0])
   const [completedChapters, setCompletedChapters] = useState<number[]>([])
 
+  // Initialize client-side data
+  useEffect(() => {
+    setIsClient(true)
+
+    // Only access localStorage after component mounts on client
+    const storedChapter = readFromStorage("chapter") as number
+    const storedUserName = (readFromStorage("userName") as string) || ""
+    const storedRoomId = typeof window !== "undefined" ? localStorage.getItem("dotykace_roomId") : null
+    const storedPlayerId = typeof window !== "undefined" ? localStorage.getItem("dotykace_playerId") : null
+
+    setChapter(storedChapter)
+    setUserName(storedUserName)
+    setRoomId(storedRoomId)
+    setPlayerId(storedPlayerId)
+
+    // Redirect if chapter is not set properly
+    if (storedChapter === undefined || storedChapter === 0) {
+      redirect("/")
+    }
+  }, [])
+
   // Listen to room changes to get updated permissions
   useEffect(() => {
-    if (!roomId || !playerId) {
+    if (!isClient || !roomId || !playerId) {
       // Fallback to local storage if not in dotykace mode
       return
     }
@@ -57,7 +79,7 @@ export default function MenuPage() {
     })
 
     return () => unsubscribe()
-  }, [roomId, playerId])
+  }, [roomId, playerId, isClient])
 
   const getState = (id: number): SectionState => {
     if (completedChapters.includes(id)) {
@@ -76,7 +98,7 @@ export default function MenuPage() {
       title: "Chapter 1",
       subtitle: "Place & Touch",
       path: "/chapter/1",
-      state: getState(1),
+      state: "locked", // Will be updated by getState
       icon: <Triangle className="w-6 h-6" />,
     },
     {
@@ -84,7 +106,7 @@ export default function MenuPage() {
       title: "Chapter 2",
       subtitle: "Mental & Physical Habits",
       path: "/chapter/2",
-      state: getState(2),
+      state: "locked",
       icon: <Square className="w-6 h-6" />,
     },
     {
@@ -92,7 +114,7 @@ export default function MenuPage() {
       title: "Chapter 3",
       subtitle: "Relationships",
       path: "/chapter/3",
-      state: getState(3),
+      state: "locked",
       icon: <Circle className="w-6 h-6" />,
     },
     {
@@ -100,7 +122,7 @@ export default function MenuPage() {
       title: "Chapter 4",
       subtitle: "Advanced Relationships",
       path: "/chapter/4",
-      state: getState(4),
+      state: "locked",
       icon: <Triangle className="w-6 h-6" />,
     },
   ])
@@ -119,8 +141,16 @@ export default function MenuPage() {
     }
   }
 
-  if (chapter == undefined || chapter === 0) {
-    redirect("/")
+  // Show loading state while client-side data is being loaded
+  if (!isClient || chapter === null) {
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex items-center justify-center">
+          <div className="text-white text-center">
+            <div className="animate-spin rounded-full border-2 border-white border-t-transparent h-8 w-8 mx-auto mb-4" />
+            <p>Načítavam...</p>
+          </div>
+        </div>
+    )
   }
 
   return (
