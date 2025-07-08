@@ -12,34 +12,43 @@ export function useInteractions<T>(filename: string) {
     const [interactions, setInteractions] = useState<InteractionRecord | null>(null)
     const [currentInteraction, setCurrentInteraction] = useState<ProcessedInteraction | null>(null)
     const [state, setState] = useState<"loading" | "initialized" | "error" | null>(null)
+    const [isClient, setIsClient] = useState(false)
 
     const router = useRouter()
 
     const [userInput, setUserInput] = useState("")
 
-    // Replace placeholders in text
-    const processText = useCallback((text: string | undefined) => {
-        if (!text) return ""
-
-        let processed = text
-
-        if (/UN/.test(text)) {
-            const username = readFromStorage("UN") as string
-            processed = processed.replace(/UN/g, username || "ty")
-        }
-
-        if (/BN/.test(text)) {
-            const botName = readFromStorage("BN") as string
-            processed = processed.replace(/BN/g, botName || "Bot")
-        }
-
-        if (/\{\{user_input\}\}/.test(text)) {
-            const userInput = readFromStorage("firstMessage") as string
-            processed = processed.replace(/\{\{user_input\}\}/g, userInput || "")
-        }
-
-        return processed
+    // Ensure we're on the client side
+    useEffect(() => {
+        setIsClient(true)
     }, [])
+
+    // Replace placeholders in text
+    const processText = useCallback(
+        (text: string | undefined) => {
+            if (!text || !isClient) return ""
+
+            let processed = text
+
+            if (/UN/.test(text)) {
+                const username = readFromStorage("UN") as string
+                processed = processed.replace(/UN/g, username || "ty")
+            }
+
+            if (/BN/.test(text)) {
+                const botName = readFromStorage("BN") as string
+                processed = processed.replace(/BN/g, botName || "Bot")
+            }
+
+            if (/\{\{user_input\}\}/.test(text)) {
+                const userInput = readFromStorage("firstMessage") as string
+                processed = processed.replace(/\{\{user_input\}\}/g, userInput || "")
+            }
+
+            return processed
+        },
+        [isClient],
+    )
 
     const setCurrent = (current: RawInteraction, key: string) => {
         const newInteraction: ProcessedInteraction = {
@@ -52,6 +61,8 @@ export function useInteractions<T>(filename: string) {
 
     // Update player progress in database
     const updatePlayerProgress = async (currentChapter: number, completedChapters: number[]) => {
+        if (!isClient) return
+
         const roomId = localStorage.getItem("dotykace_roomId")
         const playerId = localStorage.getItem("dotykace_playerId")
         const playerName = localStorage.getItem("dotykace_playerName")
@@ -98,6 +109,8 @@ export function useInteractions<T>(filename: string) {
 
     // Fetch interactions data
     useEffect(() => {
+        if (!isClient) return
+
         const fetchData = async () => {
             try {
                 setState("loading")
@@ -133,7 +146,7 @@ export function useInteractions<T>(filename: string) {
             }
         }
         fetchData()
-    }, [filename, router, processText])
+    }, [filename, router, processText, isClient])
 
     // Handle timeout for interactions with duration
     useEffect(() => {
@@ -154,7 +167,7 @@ export function useInteractions<T>(filename: string) {
 
     // Handle chapter transitions
     useEffect(() => {
-        if (!currentInteraction) return
+        if (!currentInteraction || !isClient) return
 
         // Check if interaction is a checkpoint by type or by specific checkpoint IDs
         const isCheckpoint =
@@ -207,7 +220,7 @@ export function useInteractions<T>(filename: string) {
                 redirect("/menu")
             }
         }
-    }, [currentInteraction])
+    }, [currentInteraction, isClient])
 
     const goToNextInteraction = useCallback(
         (nextId?: string) => {
@@ -233,6 +246,8 @@ export function useInteractions<T>(filename: string) {
 
     const handleUserInput = useCallback(
         (input: string) => {
+            if (!isClient) return
+
             // todo id is not really part of currentInteraction, solve it later with further refactoring
             if (currentInteraction?.type === "input") {
                 // If this is a username input (id "2")
@@ -256,7 +271,7 @@ export function useInteractions<T>(filename: string) {
             }
             goToNextInteraction()
         },
-        [currentInteraction, goToNextInteraction],
+        [currentInteraction, goToNextInteraction, isClient],
     )
 
     const handleChoiceSelection = useCallback(
@@ -284,5 +299,6 @@ export function useInteractions<T>(filename: string) {
         handleUserInput,
         handleChoiceSelection,
         goToNextInteraction,
+        isClient,
     }
 }
