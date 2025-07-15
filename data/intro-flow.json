@@ -7,56 +7,56 @@
   "interactions": {
     "1": {
       "type": "message",
-      "duration": 4,
+      "duration": 9,
       "next-id": "2",
       "text": "Ahoj, já jsem appka. Jsem kus softwaru, víš jak: 0-1-1-0-0-1...\n"
     },
     "2": {
       "type": "input",
-      "duration": 10,
+      "duration": 15,
       "next-id": "3",
       "answer": "",
       "text": "Co ty? Jak ti mám říkat?"
     },
     "3": {
       "type": "message",
-      "duration": 4,
+      "duration": 9,
       "next-id": "4",
       "text": "Ok, UN! Řeknu ti, proč mě naprogramovali, jo?"
     },
     "4": {
       "type": "message",
-      "duration": 4,
+      "duration": 9,
       "next-id": "5",
       "text": "Jsem tu, abychom spolu hráli hru."
     },
     "5": {
       "type": "message",
-      "duration": 4,
+      "duration": 12,
       "next-id": "6",
       "text": "Ty, UN, jsi v téhle hře prostě ty, jasný?"
     },
     "6": {
       "type": "message",
-      "duration": 4,
+      "duration": 9,
       "next-id": "7",
       "text": "Já si hraju na to, že jsem tvůj mobil, který jakoby na chvíli obživnul."
     },
     "7": {
       "type": "message",
-      "duration": 5,
+      "duration": 10,
       "next-id": "8",
       "text": "Dovedeš si to představit? Že chatuješ s vlastním mobilem?"
     },
     "8": {
       "type": "message",
-      "duration": 5,
+      "duration": 10,
       "next-id": "9",
       "text": "Většinou ti za sebe píšu jenom: 'battery is low', nakrm mě! Jinak toho moc neřeknu."
     },
     "9": {
       "type": "multiple-choice",
-      "duration": 6,
+      "duration": 11,
       "text": "Teď s tebou chci ale řešit to, co spolu my dva zažíváme, ok?",
       "choices": [
         {
@@ -75,27 +75,27 @@
     },
     "10a": {
       "type": "message",
-      "duration": 2,
+      "duration": 7,
       "next-id": "11a",
       "text": "Bezva, hrajeme!"
     },
     "11a": {
       "type": "input",
-      "duration": 10,
+      "duration": 15,
       "next-id": "12b",
       "answer": "",
       "text": "Už vím, jak ti mám říkat, UN. Ale jak ty říkáš mně, svému mobilu?"
     },
     "10c": {
       "type": "message",
-      "duration": 6,
+      "duration": 11,
       "next-id": "11c",
       "text": "Chápu, tahle hra je dobrovolná. Jestli ji nechceš hrát, pustím ti pár videí o lidech a mobilech."
     },
     "11c": {
       "type": "multiple-choice",
-      "duration": 5,
-      "text": "Můžeš si vybrat: (videa z poslední části)",
+      "duration": 10,
+      "text": "Můžeš si vybrat:",
       "choices": [
         {
           "type": "Hraju",
@@ -109,19 +109,19 @@
     },
     "10b": {
       "type": "message",
-      "duration": 6,
+      "duration": 11,
       "next-id": "11b",
-      "text": "(zopakovat info, které U dostal od lektorů)"
+      "text": "Jde o to podívat se na to, jaké návyky máš s telefonem."
     },
     "11b": {
       "type": "message",
-      "duration": 6,
+      "duration": 11,
       "next-id": "confirm-play",
-      "text": "(pokračování info)"
+      "text": "A skrz tuhle hru si trochu líp uvědomit, jaký máš k mobilu vztah."
     },
     "12b": {
       "type": "message",
-      "duration": 4,
+      "duration": 9,
       "next-id": "intro-end",
       "text": "Ok! UN a BN - jdeme na to."
     },
@@ -131,7 +131,7 @@
     },
     "confirm-play": {
       "type": "multiple-choice",
-      "duration": 4,
+      "duration": 9,
       "text": "Tak co, jdeš do toho?",
       "choices": [
         {
@@ -146,12 +146,12 @@
     },
     "videos": {
       "type": "message",
-      "duration": 10,
+      "duration": 15,
       "text": "Zde jsou videa o lidech a mobilech."
     },
     "exit": {
       "type": "message",
-      "duration": 3,
+      "duration": 8,
       "text": "Děkuji za tvůj čas. Nashledanou!"
     }
   }
