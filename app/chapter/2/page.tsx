@@ -6,7 +6,7 @@ import { db } from "@/lib/firebase"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Volume2, VolumeX } from "lucide-react"
+import { Volume2, VolumeX, SkipForward } from "lucide-react"
 
 interface Interaction {
     type: string
@@ -55,9 +55,12 @@ export default function Chapter2() {
     const [audioEnabled, setAudioEnabled] = useState(true)
     const [isTyping, setIsTyping] = useState(false)
 
-    const audioRef = useRef<HTMLAudioElement | null>(null)
+    const backgroundAudioRef = useRef<HTMLAudioElement | null>(null)
+    const sfxAudioRef = useRef<HTMLAudioElement | null>(null)
     const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-    const intervalRef = useRef<NodeJS.Timeout | null>(null) // Používame pre typing interval
+    const typingIntervalRef = useRef<NodeJS.Timeout | null>(null)
+    const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
+    const skipFlagRef = useRef(false)
 
     useEffect(() => {
         loadFlowData()
@@ -94,58 +97,94 @@ export default function Chapter2() {
         setIsTyping(true)
         setDisplayText("") // Vyčistí predchádzajúci text
 
+        if (typingIntervalRef.current) {
+            clearInterval(typingIntervalRef.current)
+        }
+
+        if (skipFlagRef.current) {
+            setDisplayText(text)
+            setIsTyping(false)
+            skipFlagRef.current = false
+            if (callback) callback()
+            return
+        }
+
         let charIndex = 0
         let currentTypedText = ""
 
-        // Vyčistí akýkoľvek existujúci interval písania, aby sa zabránilo viacerým spusteniam
-        if (intervalRef.current) {
-            clearInterval(intervalRef.current)
-        }
-
-        intervalRef.current = setInterval(() => {
+        typingIntervalRef.current = setInterval(() => {
             if (charIndex < text.length) {
                 currentTypedText += text[charIndex]
                 setDisplayText(currentTypedText)
                 charIndex++
             } else {
-                clearInterval(intervalRef.current!) // Používame ! pretože sme ho už skontrolovali
+                clearInterval(typingIntervalRef.current!)
                 setIsTyping(false)
                 if (callback) callback()
             }
         }, 30)
     }
 
-    const playAudio = (src: string, loop = false) => {
+    const playAudio = (src: string, type: "background" | "sfx", loop = false) => {
         if (!audioEnabled) return
 
-        if (audioRef.current) {
-            audioRef.current.pause()
+        if (type === "background") {
+            if (backgroundAudioRef.current) {
+                backgroundAudioRef.current.pause()
+            }
+            backgroundAudioRef.current = new Audio(`/audio/${src}`)
+            backgroundAudioRef.current.loop = loop
+            backgroundAudioRef.current.volume = 0.3
+            backgroundAudioRef.current.play().catch(console.error)
+        } else {
+            if (sfxAudioRef.current) {
+                sfxAudioRef.current.pause()
+                sfxAudioRef.current.currentTime = 0
+            }
+            sfxAudioRef.current = new Audio(`/audio/${src}`)
+            sfxAudioRef.current.loop = loop
+            sfxAudioRef.current.volume = 0.7
+            sfxAudioRef.current.play().catch(console.error)
         }
-
-        audioRef.current = new Audio(`/audio/${src}`)
-        audioRef.current.loop = loop
-        audioRef.current.play().catch(console.error)
     }
 
-    const stopAudio = () => {
-        if (audioRef.current) {
-            audioRef.current.pause()
-            audioRef.current = null
+    const stopSfxAudio = () => {
+        if (sfxAudioRef.current) {
+            sfxAudioRef.current.pause()
+            sfxAudioRef.current = null
+        }
+    }
+
+    const stopAllAudio = () => {
+        if (backgroundAudioRef.current) {
+            backgroundAudioRef.current.pause()
+            backgroundAudioRef.current = null
+        }
+        if (sfxAudioRef.current) {
+            sfxAudioRef.current.pause()
+            sfxAudioRef.current = null
         }
     }
 
     const processInteraction = (interaction: Interaction) => {
+        console.log("Processing interaction:", currentInteractionId, interaction.type, interaction.text)
+
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current)
         }
-        if (intervalRef.current) {
-            // Clear typing interval as well
-            clearInterval(intervalRef.current)
+        if (typingIntervalRef.current) {
+            clearInterval(typingIntervalRef.current)
         }
+        if (countdownIntervalRef.current) {
+            clearInterval(countdownIntervalRef.current)
+        }
+        stopSfxAudio()
 
         setShowButtons(false)
         setTimeLeft(null)
         setShowWarning(false)
+        skipFlagRef.current = false
+        setIsTyping(false) // Reset isTyping for non-typing interactions
 
         switch (interaction.type) {
             case "message":
@@ -177,7 +216,11 @@ export default function Chapter2() {
 
             case "music":
                 if (interaction.src) {
-                    playAudio(interaction.src, interaction.loop)
+                    if (interaction.src === "playful_intro_loop.mp3") {
+                        playAudio(interaction.src, "background", true)
+                    } else {
+                        playAudio(interaction.src, "sfx", interaction.loop)
+                    }
                 }
                 if (interaction["next-id"]) {
                     timeoutRef.current = setTimeout(
@@ -187,6 +230,7 @@ export default function Chapter2() {
                         (interaction.duration || 1) * 1000,
                     )
                 }
+                setDisplayText("Prehrávam hudbu...")
                 break
 
             case "pause":
@@ -213,7 +257,7 @@ export default function Chapter2() {
 
                 if (interaction.duration) {
                     setTimeLeft(interaction.duration)
-                    intervalRef.current = setInterval(() => {
+                    countdownIntervalRef.current = setInterval(() => {
                         setTimeLeft((prev) => {
                             if (prev === null) return null
                             if (prev <= 1) {
@@ -232,9 +276,7 @@ export default function Chapter2() {
                 break
 
             case "show-message":
-                if (interaction.source === "saved-user-message") {
-                    setDisplayText(savedUserMessage || "Žiadny vzkaz")
-                }
+                setDisplayText(savedUserMessage || "Žiadny vzkaz")
                 if (interaction["next-id"]) {
                     timeoutRef.current = setTimeout(
                         () => {
@@ -248,8 +290,8 @@ export default function Chapter2() {
     }
 
     const handleInputSave = async (interaction: Interaction) => {
-        if (intervalRef.current) {
-            clearInterval(intervalRef.current)
+        if (countdownIntervalRef.current) {
+            clearInterval(countdownIntervalRef.current)
         }
 
         if (inputValue.trim()) {
@@ -269,8 +311,27 @@ export default function Chapter2() {
     }
 
     const handleButtonClick = (nextId: string) => {
-        stopAudio()
+        stopSfxAudio()
         setCurrentInteractionId(nextId)
+    }
+
+    const handleSkip = () => {
+        if (!flowData || !currentInteractionId) return
+        const currentInteraction = flowData.interactions[currentInteractionId]
+
+        if (isTyping && typingIntervalRef.current && currentInteraction.type === "message") {
+            skipFlagRef.current = true
+            typeText(currentInteraction.text || "")
+        }
+
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current)
+            timeoutRef.current = null
+        }
+
+        if (currentInteraction["next-id"]) {
+            setCurrentInteractionId(currentInteraction["next-id"])
+        }
     }
 
     useEffect(() => {
@@ -280,10 +341,20 @@ export default function Chapter2() {
     }, [currentInteractionId, flowData])
 
     useEffect(() => {
+        if (backgroundAudioRef.current) {
+            backgroundAudioRef.current.muted = !audioEnabled
+        }
+        if (sfxAudioRef.current) {
+            sfxAudioRef.current.muted = !audioEnabled
+        }
+    }, [audioEnabled])
+
+    useEffect(() => {
         return () => {
             if (timeoutRef.current) clearTimeout(timeoutRef.current)
-            if (intervalRef.current) clearInterval(intervalRef.current)
-            stopAudio()
+            if (typingIntervalRef.current) clearInterval(typingIntervalRef.current)
+            if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current)
+            stopAllAudio()
         }
     }, [])
 
@@ -313,7 +384,7 @@ export default function Chapter2() {
                         <h2 className="text-2xl font-bold text-white mb-4">Chapter 2 Dokončený</h2>
                         <p className="text-white/80 mb-6">Ďakujem za účasť v tejto kapitole!</p>
                         <Button
-                            onClick={() => (window.location.href = "/")}
+                            onClick={() => (window.location.href = "/menu")}
                             className="bg-white/20 hover:bg-white/30 text-white border-white/30"
                         >
                             Späť na hlavnú stránku
@@ -324,10 +395,17 @@ export default function Chapter2() {
         )
     }
 
+    const showSkipButton =
+        currentInteraction &&
+        currentInteraction["next-id"] &&
+        !currentInteraction.animation?.buttons &&
+        currentInteraction.type !== "input" &&
+        currentInteraction.type !== "loop"
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col">
             {/* Audio Control */}
-            <div className="absolute top-4 right-4 z-10">
+            <div className="absolute top-4 right-4 z-20">
                 <Button
                     variant="ghost"
                     size="icon"
@@ -337,6 +415,19 @@ export default function Chapter2() {
                     {audioEnabled ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
                 </Button>
             </div>
+
+            {/* Skip Button */}
+            {showSkipButton && (
+                <div className="absolute bottom-4 right-4 z-20">
+                    <Button
+                        onClick={handleSkip}
+                        className="bg-white/20 hover:bg-white/30 text-white border-white/30 flex items-center gap-1"
+                    >
+                        <SkipForward className="h-4 w-4" />
+                        Preskočiť
+                    </Button>
+                </div>
+            )}
 
             {/* Main Content */}
             <div className="flex-1 flex items-center justify-center p-4">
