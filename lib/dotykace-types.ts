@@ -50,14 +50,3 @@ export interface ChapterPermissions {
         playerName: string
     }
 }
-
-// Helper type for chapter titles
-export type ChapterNumber = 0 | 1 | 2 | 3 | 4
-
-export const CHAPTER_TITLES: Record<ChapterNumber, string> = {
-    0: "Introduction",
-    1: "Place & Touch",
-    2: "Mental & Physical Habits",
-    3: "Relationships",
-    4: "Advanced Relationships",
-} as const
