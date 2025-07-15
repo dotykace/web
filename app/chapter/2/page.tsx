@@ -8,7 +8,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Volume2, VolumeX, SkipForward } from "lucide-react"
 import { useRouter } from "next/navigation" // Import useRouter
-import type { DotykaceRoom } from "@/lib/dotykace-types" // Import typov
+import type { DotykaceRoom } from "@/lib/dotykace-types"
+import {Modal} from "@/components/ModalSetting"; // Import typov
 
 interface Interaction {
     type: string
@@ -64,6 +65,9 @@ export default function Chapter2() {
     const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
     const skipFlagRef = useRef(false)
     const router = useRouter() // Inicializácia routera
+
+    const [showSettings, setShowSettings] = useState(true)
+    const [selectedVoice, setSelectedVoice] = useState<string|null>(null)
 
     useEffect(() => {
         loadFlowData()
@@ -389,10 +393,10 @@ export default function Chapter2() {
     }
 
     useEffect(() => {
-        if (flowData && currentInteractionId && flowData.interactions[currentInteractionId]) {
+        if (selectedVoice && flowData && currentInteractionId && flowData.interactions[currentInteractionId]) {
             processInteraction(flowData.interactions[currentInteractionId])
         }
-    }, [currentInteractionId, flowData])
+    }, [currentInteractionId, flowData, selectedVoice])
 
     // Spusti aktualizáciu Firestore, keď sa kapitola dokončí
     useEffect(() => {
@@ -418,6 +422,18 @@ export default function Chapter2() {
             stopAllAudio()
         }
     }, [])
+
+    if (!selectedVoice){
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+              <Modal children={
+                  <p className="text-gray-600">
+                      Zatím dokážu mluvit jen jako muž, ale chystáme možnost vybrat pro mně i jiný hlas. Ještě to není hotové, ale já se na to těším. Promyslí si, jak se ohledem toho cítíš.
+                  </p>
+              } title={"Jak na tebe mám mluvit?"} isOpen={showSettings} onClose={()=>{setShowSettings(false); setSelectedVoice("male")}}/>
+          </div>
+        )
+    }
 
     if (isLoading) {
         return (
