@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Volume2, VolumeX, SkipForward, Star } from "lucide-react"
 import { useRouter } from "next/navigation"
 import type { DotykaceRoom } from "@/lib/dotykace-types"
+import {Modal} from "@/components/ModalSetting";
 
 // Animated Voice Visualization Component (unchanged)
 const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
@@ -331,6 +332,9 @@ export default function Chapter2() {
             console.warn("Audio initialization failed:", error)
         }
     }, [audioInitialized])
+
+    const [showSettings, setShowSettings] = useState(true)
+    const [selectedVoice, setSelectedVoice] = useState<string|null>(null)
 
     useEffect(() => {
         const loadFlowData = async () => {
@@ -824,10 +828,10 @@ export default function Chapter2() {
 
     // Process current interaction only if experience has started
     useEffect(() => {
-        if (hasStartedExperience && flowData && currentInteractionId && flowData.interactions[currentInteractionId]) {
+        if (selectedVoice && hasStartedExperience && flowData && currentInteractionId && flowData.interactions[currentInteractionId]) {
             processInteraction(flowData.interactions[currentInteractionId])
         }
-    }, [currentInteractionId, flowData, processInteraction, hasStartedExperience])
+    }, [currentInteractionId, flowData, processInteraction, hasStartedExperience, selectedVoice])
 
     // Handle chapter completion
     useEffect(() => {
@@ -854,6 +858,18 @@ export default function Chapter2() {
         await initializeAudio()
         setHasStartedExperience(true)
         setCurrentInteractionId(flowData!.startInteractionId) // Set initial interaction after start
+    }
+
+    if (!selectedVoice){
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+              <Modal children={
+                  <p className="text-gray-600">
+                      Zatím dokážu mluvit jen jako muž, ale chystáme možnost vybrat pro mně i jiný hlas. Ještě to není hotové, ale já se na to těším. Promyslí si, jak se ohledem toho cítíš.
+                  </p>
+              } title={"Jak na tebe mám mluvit?"} isOpen={showSettings} onClose={()=>{setShowSettings(false); setSelectedVoice("male")}}/>
+          </div>
+        )
     }
 
     if (isLoading) {
