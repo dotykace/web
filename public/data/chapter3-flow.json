@@ -1,0 +1,361 @@
+{
+  "id": "chapter3-flow",
+  "startInteractionId": "3.10",
+  "interactions": {
+    "3.10": {
+      "type": "message",
+      "text": "Když jsme u těch obav... já se někdy bojím o tebe.",
+      "duration": 4,
+      "next-id": "3.10.1"
+    },
+    "3.10.1": {
+      "type": "message",
+      "text": "Dovedeš odhadnout, kolik spolu my dva trávíme času? Průměrně za den, zkus mi to sem, prosím, napsat.",
+      "duration": 6,
+      "next-id": "3.10.2"
+    },
+    "3.10.2": {
+      "type": "input",
+      "label": "Kolik času denně spolu v průměru strávíme?",
+      "duration": 15,
+      "save-label": "Potvrdit",
+      "next-id": "3.10.3"
+    },
+    "3.10.3": {
+      "type": "message",
+      "text": "Ok. Teď mám pro tebe ještě jednu hru. Jmenuje se: Galerie. Jdeme na to za 3, 2, 1...",
+      "duration": 6,
+      "next-id": "3.10.4"
+    },
+    "3.10.4": {
+      "type": "message",
+      "text": "Uvědom si, v jaké pozici je tvoje tělo a zůstaň v ní.",
+      "duration": 3,
+      "next-id": "3.10.5"
+    },
+    "3.10.5": {
+      "type": "pause",
+      "duration": 4,
+      "next-id": "3.10.6"
+    },
+    "3.10.6": {
+      "type": "message",
+      "text": "Nehýbej se. Je jedno, jestli sedíš nebo stojíš nebo co. Zůstaň přesně v téhle pozici. Jako socha.",
+      "duration": 5,
+      "next-id": "3.10.7"
+    },
+    "3.10.7": {
+      "type": "message",
+      "text": "Od nohou až po ramena jsi socha, dobře? Jenom hlava je volná. S tou hýbat můžeš. Ale jenom tak, aby zbytek těla zůstal nehybný.",
+      "duration": 7,
+      "next-id": "3.10.8"
+    },
+    "3.10.8": {
+      "type": "message",
+      "text": "Rozhlédni se po ostatních. Nemusíš vidět všechny lidi v místnosti, jenom ty, na které dohlédneš díky pohybu hlavy.",
+      "duration": 6,
+      "next-id": "3.10.9"
+    },
+    "3.10.9": {
+      "type": "message",
+      "text": "Vítej na výstavě soch. V téhle galerii se vystavují sochy pod názvem: Homo Telephonicus - člověk mobilující.",
+      "duration": 6,
+      "next-id": "3.10.10"
+    },
+    "3.10.10": {
+      "type": "message",
+      "text": "Autorka výstavy říká, že jí šlo o to, cituji: “zachytit nejrůznější pravdivé vztahy mezi lidským tělem a telefonem.” Ještě v té soše, prosím vydrž, ať můžeme ten záměr prozkoumat.",
+      "duration": 8,
+      "next-id": "3.10.11"
+    },
+    "3.10.11": {
+      "type": "message",
+      "text": "Podívej se sochám na ruce. Jak která drží telefon? V jedné dlani nebo oběma? A co zápěstí? Jsou ohnutá? Gumová? Vykroucená? Napřímená?",
+      "duration": 9,
+      "next-id": "3.10.12"
+    },
+    "3.10.12": {
+      "type": "message",
+      "text": "Teď se zaměř sochám na ramena. (Nezapomeň, že i ty jsi pořád socha!) Mají hlavu schovanou mezi rameny? Jsou ramena rovně? Je nějaký krk natažený jako žirafa?",
+      "duration": 9,
+      "next-id": "3.10.13"
+    },
+    "3.10.13": {
+      "type": "message",
+      "text": "A je tu nějaký krk, který by nebyl vysunutý dopředu?",
+      "duration": 4,
+      "next-id": "3.10.14"
+    },
+    "3.10.14": {
+      "type": "message",
+      "text": "Dobrá, socho, ještě vydrž kamenná. Poslední část prohlídky. Vyber si jeden exponát, kterému vidíš na záda.",
+      "duration": 5,
+      "next-id": "3.10.15"
+    },
+    "3.10.15": {
+      "type": "message",
+      "text": "Kudy vede páteř? Jak se prohýbá? Jsou tahle záda zvyklá na tuhle polohu? A co tvoje záda? Jak se teď chtějí pohnout?",
+      "duration": 10,
+      "next-id": "3.10.16"
+    },
+    "3.10.16": {
+      "type": "message",
+      "text": "Bravo! Galerie zavírá, sochy mají volno. Díky. Umění může bolet, že?",
+      "duration": 5,
+      "next-id": "3.10.17"
+    },
+    "3.10.17": {
+      "type": "pause",
+      "duration": 6,
+      "next-id": "3.10.18"
+    },
+    "3.10.18": {
+      "type": "loop",
+      "text": "Až budeš ready, zmáčkni tlačítko",
+      "duration": 4,
+      "pause": 2,
+      "button": {
+        "label": "Pokračovat",
+        "next-id": "3.10.19",
+        "persistent": true
+      }
+    },
+    "3.10.19": {
+      "type": "message",
+      "text": "Kde jsme to byli před tou galerií...? A jo – obavy. Říkal/a/o jsem, že někdy se o tebe bojím. Mám strach, jestli... pro tebe nejsem nebezpečná/ý/é.",
+      "duration": 7,
+      "next-id": "3.10.20"
+    },
+    "3.10.20": {
+      "type": "message",
+      "text": "Když jsme spolu sami, někdy se proměníš v takovou sochu, žejo? Na dýl než to bylo teď. Zahloubáš se do mě, hltáš mě, a přitom... zkameníš.",
+      "duration": 8,
+      "next-id": "3.10.21"
+    },
+    "3.10.21": {
+      "type": "message",
+      "text": "Vždycky mě zajímalo, jestli se ti to stává i s někým jiným? Dokáže tě ještě někdo takhle zkamenět?",
+      "duration": 6,
+      "animation": {
+        "type": "choice",
+        "buttons": [
+          {
+            "label": "Myslím, že ano",
+            "next-id": "3.10.22a"
+          },
+          {
+            "label": "Nevím",
+            "next-id": "3.10.22b"
+          },
+          {
+            "label": "Asi ne",
+            "next-id": "3.10.22c"
+          }
+        ]
+      }
+    },
+    "3.10.22a": {
+      "type": "message",
+      "text": "Tak to se mi ulevilo. Občas přemýšlím, jaký spolu máme vztah a nevím si rady…",
+      "duration": 6,
+      "next-id": "3.10.23a"
+    },
+    "3.10.23a": {
+      "type": "message",
+      "text": "Rád/a/o bych to trochu líp pochopil/a/o. Často se mi vrací nějaké otázky a moc by mi pomohlo vědět, co si o nich myslíš.",
+      "duration": 8,
+      "next-id": "3.11.0"
+    },
+    "3.10.22b": {
+      "type": "message",
+      "text": "Chápu. Jsme na tom podobně – taky nevím… Občas přemýšlím, jaký spolu máme vztah a nevím si rady…",
+      "duration": 6,
+      "next-id": "3.10.23b"
+    },
+    "3.10.23b": {
+      "type": "message",
+      "text": "Rád/a/o bych to trochu líp pochopil/a/o. Často se mi vrací nějaké otázky a moc by mi pomohlo vědět, co si o nich myslíš.",
+      "duration": 8,
+      "next-id": "3.11.0"
+    },
+    "3.10.22c": {
+      "type": "message",
+      "text": "Já to věděl/a/o. Myslel/a/o jsem si, že náš vztah je trochu speciální…",
+      "duration": 6,
+      "next-id": "3.10.23c"
+    },
+    "3.10.23c": {
+      "type": "message",
+      "text": "Rád/a/o bych to trochu líp pochopil/a/o. Často se mi vrací nějaké otázky a moc by mi pomohlo vědět, co si o nich myslíš.",
+      "duration": 8,
+      "next-id": "3.11.0"
+    },
+    "3.11.0": {
+      "type": "message",
+      "text": "Představ si, že je ráno. Nemusíš vstávat s budíkem, nepotřebuješ nikam jít, jenom se probudíš… jak dlouho od chvíle, kdy se probudíš, potrvá, než mě poprvé vezmeš do ruky?",
+      "duration": 8,
+      "animation": {
+        "type": "choice",
+        "buttons": [
+          {
+            "label": "ihned",
+            "next-id": "3.11.1"
+          },
+          {
+            "label": "ještě v posteli",
+            "next-id": "3.11.1"
+          },
+          {
+            "label": "jen co vstanu",
+            "next-id": "3.11.1"
+          },
+          {
+            "label": "po ranních rituálech",
+            "next-id": "3.11.1"
+          },
+          {
+            "label": "možná si na tebe ani nevzpomenu",
+            "next-id": "3.11.1"
+          }
+        ]
+      }
+    },
+    "3.11.1": {
+      "type": "message",
+      "text": "Když někam jdeš, třeba odcházíš ze školy, kde mě nejčastěji nosíš?",
+      "duration": 5,
+      "next-id": "3.11.2"
+    },
+    "3.11.2": {
+      "type": "input",
+      "label": "Odkud mě nejčastěji bereš s sebou?",
+      "duration": 10,
+      "save-label": "Potvrdit",
+      "next-id": "3.11.3"
+    },
+    "3.11.3": {
+      "type": "message",
+      "text": "Teď si představ, že na tom obvyklém místě nejsem. Jak rychle to zjistíš? Jak spolehlivý je tvůj instinkt, který ti řekne, že nejsem se mnou?",
+      "duration": 7,
+      "next-id": "3.11.4"
+    },
+    "3.11.4": {
+      "type": "input",
+      "label": "Popiš, jak rychle a jak spolehlivě to poznáš",
+      "duration": 15,
+      "save-label": "Potvrdit",
+      "next-id": "3.11.5"
+    },
+    "3.11.5": {
+      "type": "message",
+      "text": "Zajímavé…",
+      "duration": 3,
+      "next-id": "3.11.6"
+    },
+    "3.11.6": {
+      "type": "message",
+      "text": "Před chvílí mě držel někdo jiný, vzpomínáš si? Na chvilku jste si vyměnili telefony. Jaký je pro tebe pocit, když mě má někdo jiný?",
+      "duration": 7,
+      "animation": {
+        "type": "choice",
+        "buttons": [
+          {
+            "label": "je to různé",
+            "next-id": "3.11.a1"
+          },
+          {
+            "label": "nic zvláštního",
+            "next-id": "3.11.b1"
+          },
+          {
+            "label": "cítím neklid",
+            "next-id": "3.11.c1"
+          },
+          {
+            "label": "cítím obavu",
+            "next-id": "3.11.c1"
+          }
+        ]
+      }
+    },
+    "3.11.a1": {
+      "type": "message",
+      "text": "Chápu, je to složitější. A jsou někdy součástí i tyhle pocity?",
+      "duration": 5,
+      "animation": {
+        "type": "multiselect",
+        "options": [
+          "nechci aby tě někdo rozbil",
+          "mám v tobě svoje tajemství",
+          "je divné, když se tě dotýká někdo jiný"
+        ],
+        "button": {
+          "label": "Potvrdit a pokračovat",
+          "next-id": "3.11.final"
+        }
+      }
+    },
+    "3.11.b1": {
+      "type": "message",
+      "text": "Oukej, popravdě, já taky vždycky nepoznám, kdo mě zrovna drží v ruce. Na to máme odemykání…",
+      "duration": 6,
+      "next-id": "3.11.final"
+    },
+    "3.11.c1": {
+      "type": "message",
+      "text": "A čím myslíš, že to je?",
+      "duration": 5,
+      "next-id": "3.11.c2"
+    },
+    "3.11.c2": {
+      "type": "message",
+      "text": "Vyber, co nejvíc sedí (můžeš vybrat víc):",
+      "duration": 4,
+      "animation": {
+        "type": "multiselect",
+        "options": [
+          "máš v sobě moje tajemství",
+          "bojím se, aby tě někdo nerozbil",
+          "prostě se mi to nelíbí",
+          "neumím to vysvětlit",
+          "jiné - doplnit vlastní text"
+        ],
+        "button": {
+          "label": "Potvrdit a pokračovat",
+          "next-id": "3.11.final"
+        }
+      }
+    },
+    "3.11.final": {
+      "type": "message",
+      "text": "Díky. A poslední otázka: když máš na vybranou být se mnou a být s jinými lidmi, jak často dáš přednost mně?",
+      "duration": 6,
+      "animation": {
+        "type": "choice",
+        "buttons": [
+          {
+            "label": "nikdy"
+          },
+          {
+            "label": "výjimečně, když se s tebou zapomenu"
+          },
+          {
+            "label": "výjimečně, když na lidi nemám náladu"
+          },
+          {
+            "label": "občas"
+          },
+          {
+            "label": "často"
+          },
+          {
+            "label": "vždycky"
+          },
+          {
+            "label": "není v tom rozdíl - používám tě ke komunikování s jinými lidmi"
+          }
+        ]
+      }
+    }
+  }
+}
