@@ -133,10 +133,6 @@
         {
           "type": "Hraju",
           "next-id": "10a"
-        },
-        {
-          "type": "Nehraju",
-          "next-id": "exit"
         }
       ]
     },
