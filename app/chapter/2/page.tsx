@@ -1,12 +1,14 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { collection, addDoc, serverTimestamp } from "firebase/firestore"
+import { collection, addDoc, serverTimestamp, doc, runTransaction } from "firebase/firestore" // Pridané doc, runTransaction
 import { db } from "@/lib/firebase"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Volume2, VolumeX, SkipForward } from "lucide-react"
+import { useRouter } from "next/navigation" // Import useRouter
+import type { DotykaceRoom } from "@/lib/dotykace-types" // Import typov
 
 interface Interaction {
     type: string
@@ -61,6 +63,7 @@ export default function Chapter2() {
     const typingIntervalRef = useRef<NodeJS.Timeout | null>(null)
     const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
     const skipFlagRef = useRef(false)
+    const router = useRouter() // Inicializácia routera
 
     useEffect(() => {
         loadFlowData()
@@ -95,7 +98,7 @@ export default function Chapter2() {
 
     const typeText = (text: string, callback?: () => void) => {
         setIsTyping(true)
-        setDisplayText("") // Vyčistí predchádzajúci text
+        setDisplayText("")
 
         if (typingIntervalRef.current) {
             clearInterval(typingIntervalRef.current)
@@ -184,7 +187,7 @@ export default function Chapter2() {
         setTimeLeft(null)
         setShowWarning(false)
         skipFlagRef.current = false
-        setIsTyping(false) // Reset isTyping for non-typing interactions
+        setIsTyping(false)
 
         switch (interaction.type) {
             case "message":
@@ -334,11 +337,69 @@ export default function Chapter2() {
         }
     }
 
+    // Nová funkcia pre aktualizáciu stavu kapitoly vo Firestore
+    const updateChapterCompletionStatus = async () => {
+        const storedRoomId = localStorage.getItem("dotykace_roomId")
+        const storedPlayerId = localStorage.getItem("dotykace_playerId")
+
+        if (!storedRoomId || !storedPlayerId) {
+            console.warn("Room ID or Player ID not found in localStorage. Cannot update Firestore.")
+            return
+        }
+
+        const roomRef = doc(db, "rooms", storedRoomId)
+
+        try {
+            await runTransaction(db, async (transaction) => {
+                const roomDoc = await transaction.get(roomRef)
+
+                if (!roomDoc.exists()) {
+                    throw "Room document does not exist!"
+                }
+
+                const roomData = roomDoc.data() as DotykaceRoom
+                const updatedParticipants = [...(roomData.participants || [])]
+                const updatedChapterPermissions = { ...(roomData.chapterPermissions || {}) }
+
+                // Nájsť a aktualizovať účastníka
+                const participantIndex = updatedParticipants.findIndex((p) => p.id === storedPlayerId)
+                if (participantIndex !== -1) {
+                    const participant = updatedParticipants[participantIndex]
+                    const completedChapters = new Set(participant.completedChapters || [])
+                    completedChapters.add(2) // Pridať Kapitolu 2 ako dokončenú
+                    participant.completedChapters = Array.from(completedChapters).sort((a, b) => a - b)
+                    participant.currentChapter = 3 // Nastaviť aktuálnu kapitolu na 3
+                    updatedParticipants[participantIndex] = participant
+                } else {
+                    console.warn(`Participant with ID ${storedPlayerId} not found in room.`)
+                }
+
+                // Aktualizovať dokument miestnosti
+                transaction.update(roomRef, {
+                    participants: updatedParticipants,
+                    chapterPermissions: updatedChapterPermissions,
+                })
+            })
+            console.log("Firestore updated successfully: Chapter 2 completed, Chapter 3 unlocked.")
+            router.push("/menu") // Presmerovať na menu po úspešnej aktualizácii
+        } catch (e) {
+            console.error("Firestore transaction failed: ", e)
+            // Môžeš zobraziť chybovú správu používateľovi
+        }
+    }
+
     useEffect(() => {
         if (flowData && currentInteractionId && flowData.interactions[currentInteractionId]) {
             processInteraction(flowData.interactions[currentInteractionId])
         }
     }, [currentInteractionId, flowData])
+
+    // Spusti aktualizáciu Firestore, keď sa kapitola dokončí
+    useEffect(() => {
+        if (flowData && currentInteractionId === "end") {
+            updateChapterCompletionStatus()
+        }
+    }, [currentInteractionId, flowData]) // Závislosti pre efekt
 
     useEffect(() => {
         if (backgroundAudioRef.current) {
@@ -382,13 +443,8 @@ export default function Chapter2() {
                 <Card className="w-full max-w-md bg-white/10 backdrop-blur-lg border-white/20">
                     <CardContent className="p-8 text-center">
                         <h2 className="text-2xl font-bold text-white mb-4">Chapter 2 Dokončený</h2>
-                        <p className="text-white/80 mb-6">Ďakujem za účasť v tejto kapitole!</p>
-                        <Button
-                            onClick={() => (window.location.href = "/menu")}
-                            className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-                        >
-                            Späť na hlavnú stránku
-                        </Button>
+                        <p className="text-white/80 mb-6">Aktualizujem stav...</p>
+                        {/* Tlačidlo "Späť na hlavnú stránku" sa zobrazí až po presmerovaní */}
                     </CardContent>
                 </Card>
             </div>
