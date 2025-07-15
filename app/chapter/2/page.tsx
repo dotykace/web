@@ -7,12 +7,12 @@ import { collection, addDoc, serverTimestamp, doc, runTransaction } from "fireba
 import { db } from "@/lib/firebase"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Textarea } from "@/components/ui/textarea"
-import { Volume2, VolumeX, SkipForward } from "lucide-react"
+import {Textarea} from "@/components/ui/textarea"
+import { Volume2, VolumeX, SkipForward, Star } from "lucide-react" // Import Star icon
 import { useRouter } from "next/navigation"
 import type { DotykaceRoom } from "@/lib/dotykace-types"
 
-// Animated Voice Visualization Component
+// Animated Voice Visualization Component (unchanged)
 const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
     return (
         <div className="relative w-full h-48 flex items-center justify-center overflow-hidden">
@@ -134,17 +134,61 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
     )
 }
 
+// New Music Star Animation Component
+const MusicStarAnimation = ({ isActive }: { isActive: boolean }) => {
+    if (!isActive) return null
+
+    return (
+        <div className="relative w-full h-full flex items-center justify-center">
+            <Star
+                className="text-yellow-300 drop-shadow-lg animate-star-scale-pulse"
+                size={100} // Base size for the star
+            />
+            {/* Subtle glowing rings around the star */}
+            <div className="absolute w-24 h-24 rounded-full bg-yellow-300/30 animate-ping-slow" />
+            <div
+                className="absolute w-32 h-32 rounded-full bg-orange-300/20 animate-ping-slow"
+                style={{ animationDelay: "0.5s" }}
+            />
+        </div>
+    )
+}
+
 const AnimationStyles = () => (
     <style jsx>{`
-    @keyframes twinkle {
-      0%, 100% { opacity: 0.3; transform: scale(0.8); }
-      50% { opacity: 1; transform: scale(1.2); }
-    }
-    
-    .animate-twinkle {
-      animation: twinkle 1.5s ease-in-out infinite;
-    }
-  `}</style>
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .animate-twinkle {
+            animation: twinkle 1.5s ease-in-out infinite;
+        }
+
+        @keyframes star-scale-pulse {
+            0% { transform: scale(0.1); opacity: 0; }
+            20% { transform: scale(1.2); opacity: 1; } /* Rapid growth */
+            50% { transform: scale(1); opacity: 1; }
+            75% { transform: scale(1.05); opacity: 1; } /* Subtle pulse */
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-star-scale-pulse {
+            animation: star-scale-pulse 1.5s ease-out forwards, pulse-opacity 2s infinite alternate 1.5s; /* Initial growth, then continuous pulse */
+        }
+
+        @keyframes pulse-opacity {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        @keyframes ping-slow {
+            0% { transform: scale(0.5); opacity: 0.5; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        .animate-ping-slow {
+            animation: ping-slow 2s ease-out infinite;
+        }
+    `}</style>
 )
 
 interface Interaction {
@@ -196,10 +240,10 @@ export default function Chapter2() {
     const [audioEnabled, setAudioEnabled] = useState(true)
     const [isTyping, setIsTyping] = useState(false)
     const [audioInitialized, setAudioInitialized] = useState(false)
-    const [hasStartedExperience, setHasStartedExperience] = useState(false) // New state for initial start
+    const [hasStartedExperience, setHasStartedExperience] = useState(false)
+    const [isMusicPlaying, setIsMusicPlaying] = useState(false) // New state for music star animation
 
-    // Three separate audio channels
-    const backgroundAudioRef = useRef<HTMLAudioElement | null>(null) // For forever background music
+    // Only two audio channels now: voice and sfx
     const voiceAudioRef = useRef<HTMLAudioElement | null>(null) // For voice tracks
     const sfxAudioRef = useRef<HTMLAudioElement | null>(null) // For sound effects
 
@@ -225,8 +269,8 @@ export default function Chapter2() {
             clearInterval(countdownIntervalRef.current)
             countdownIntervalRef.current = null
         }
-        // Clean up all audio channels
-        ;[backgroundAudioRef, voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
+        // Clean up all remaining audio channels
+        ;[voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
             if (audioRef.current) {
                 audioRef.current.pause()
                 audioRef.current.src = ""
@@ -270,7 +314,6 @@ export default function Chapter2() {
             if (!mountedRef.current) return
 
             setFlowData(data)
-            // Do NOT set currentInteractionId here directly, wait for user to click "Start"
             setIsLoading(false)
         } catch (error) {
             console.error("Error loading flow data:", error)
@@ -352,7 +395,7 @@ export default function Chapter2() {
 
     // Multi-channel audio playback
     const playAudio = useCallback(
-        async (src: string, channel: "background" | "voice" | "sfx", loop = false) => {
+        async (src: string, channel: "voice" | "sfx", loop = false) => {
             if (!audioEnabled || !audioInitialized) {
                 console.warn(
                     `Audio playback skipped for ${channel} channel (${src}): audioEnabled=${audioEnabled}, audioInitialized=${audioInitialized}`,
@@ -364,10 +407,6 @@ export default function Chapter2() {
             let volume: number
 
             switch (channel) {
-                case "background":
-                    audioRef = backgroundAudioRef
-                    volume = 0.3
-                    break
                 case "voice":
                     audioRef = voiceAudioRef
                     volume = 1.0
@@ -409,8 +448,8 @@ export default function Chapter2() {
         [audioEnabled, audioInitialized],
     )
 
-    // Stop voice and SFX but keep background music
-    const stopVoiceAndSfxAudio = useCallback(() => {
+    // Stop all audio (voice and SFX)
+    const stopAllAudio = useCallback(() => {
         ;[voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
             if (audioRef.current) {
                 audioRef.current.pause()
@@ -440,13 +479,14 @@ export default function Chapter2() {
                 countdownIntervalRef.current = null
             }
 
-            // Stop voice and SFX but keep background music
-            stopVoiceAndSfxAudio()
+            // Stop all audio
+            stopAllAudio()
             setShowButtons(false)
             setTimeLeft(null)
             setShowWarning(false)
             skipFlagRef.current = false
             setIsTyping(false)
+            setIsMusicPlaying(false) // Reset music animation state
 
             switch (interaction.type) {
                 case "voice":
@@ -508,18 +548,14 @@ export default function Chapter2() {
 
                 case "music":
                     if (interaction.src) {
-                        if (interaction.forever) {
-                            // Play on background channel for forever music
-                            playAudio(interaction.src, "background", interaction.loop)
-                        } else {
-                            // Play on SFX channel for regular music
-                            playAudio(interaction.src, "sfx", interaction.loop)
-                        }
+                        playAudio(interaction.src, "sfx", interaction.loop)
+                        setIsMusicPlaying(true) // Start star animation
                     }
                     if (interaction["next-id"]) {
                         timeoutRef.current = setTimeout(
                             () => {
                                 if (mountedRef.current) {
+                                    setIsMusicPlaying(false) // Stop star animation when music duration ends
                                     setCurrentInteractionId(interaction["next-id"]!)
                                 }
                             },
@@ -585,7 +621,7 @@ export default function Chapter2() {
                     break
             }
         },
-        [currentInteractionId, typeText, playAudio, stopVoiceAndSfxAudio, savedUserMessage],
+        [currentInteractionId, typeText, playAudio, stopAllAudio, savedUserMessage],
     )
 
     const handleInputSave = useCallback(
@@ -616,7 +652,7 @@ export default function Chapter2() {
     const handleButtonClick = useCallback(
         async (button: { label: string; "next-id": string }) => {
             await initializeAudio() // Ensure audio is initialized on any user interaction
-            stopVoiceAndSfxAudio()
+            stopAllAudio()
 
             // Save choice to Firestore
             await saveToFirestore("", currentInteractionId, {
@@ -626,7 +662,7 @@ export default function Chapter2() {
 
             setCurrentInteractionId(button["next-id"])
         },
-        [initializeAudio, stopVoiceAndSfxAudio, currentInteractionId],
+        [initializeAudio, stopAllAudio, currentInteractionId],
     )
 
     const handleSkip = useCallback(() => {
@@ -708,7 +744,7 @@ export default function Chapter2() {
 
     // Handle audio muting
     useEffect(() => {
-        ;[backgroundAudioRef, voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
+        ;[voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
             if (audioRef.current) {
                 audioRef.current.muted = !audioEnabled
             }
@@ -783,6 +819,7 @@ export default function Chapter2() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col">
             <AnimationStyles />
+
             {/* Audio Control */}
             <div className="absolute top-4 right-4 z-20">
                 <Button
@@ -815,7 +852,7 @@ export default function Chapter2() {
             <div className="flex-1 flex items-center justify-center p-4">
                 <Card className="w-full max-w-lg bg-white/10 backdrop-blur-lg border-white/20 shadow-2xl">
                     <CardContent className="p-6 space-y-6">
-                        {/* Display Text with Voice Visualization */}
+                        {/* Display Text with Voice/Music Visualization */}
                         <div className="min-h-[200px] flex flex-col items-center justify-center">
                             {currentInteraction?.type === "voice" ? (
                                 <>
@@ -823,6 +860,11 @@ export default function Chapter2() {
                                     {displayText && (
                                         <p className="text-white text-sm leading-relaxed text-center mt-4 px-4 opacity-80">{displayText}</p>
                                     )}
+                                </>
+                            ) : currentInteraction?.type === "music" ? (
+                                <>
+                                    <MusicStarAnimation isActive={isMusicPlaying} />
+                                    {displayText && <p className="text-white text-lg leading-relaxed text-center">{displayText}</p>}
                                 </>
                             ) : (
                                 <div className="min-h-[120px] flex items-center justify-center px-4">
