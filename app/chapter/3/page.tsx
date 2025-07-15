@@ -281,9 +281,6 @@ export default function Chapter3() {
                 if (!updatedChapterPermissions[playerId]) {
                     updatedChapterPermissions[playerId] = { allowedChapters: [], playerName: "" }
                 }
-                const allowedChapters = new Set(updatedChapterPermissions[playerId].allowedChapters || [])
-                allowedChapters.add(4)
-                updatedChapterPermissions[playerId].allowedChapters = Array.from(allowedChapters).sort()
 
                 transaction.update(roomRef, {
                     participants: updatedParticipants,
