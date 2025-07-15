@@ -12,6 +12,141 @@ import { Volume2, VolumeX, SkipForward } from "lucide-react"
 import { useRouter } from "next/navigation"
 import type { DotykaceRoom } from "@/lib/dotykace-types"
 
+// Animated Voice Visualization Component
+const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
+    return (
+        <div className="relative w-full h-48 flex items-center justify-center overflow-hidden">
+            {/* Background animated circles */}
+            <div className="absolute inset-0">
+                {[...Array(6)].map((_, i) => (
+                    <div
+                        key={i}
+                        className={`absolute rounded-full bg-gradient-to-r from-purple-400/20 to-pink-400/20 animate-pulse`}
+                        style={{
+                            width: `${60 + i * 20}px`,
+                            height: `${60 + i * 20}px`,
+                            left: "50%",
+                            top: "50%",
+                            transform: "translate(-50%, -50%)",
+                            animationDelay: `${i * 0.3}s`,
+                            animationDuration: `${2 + i * 0.5}s`,
+                        }}
+                    />
+                ))}
+            </div>
+
+            {/* Floating emojis */}
+            <div className="absolute inset-0">
+                {["💫", "✨", "🌟", "💝", "🎵", "🎶"].map((emoji, i) => (
+                    <div
+                        key={i}
+                        className={`absolute text-2xl animate-bounce ${isActive ? "opacity-80" : "opacity-40"}`}
+                        style={{
+                            left: `${20 + ((i * 15) % 60)}%`,
+                            top: `${15 + ((i * 20) % 50)}%`,
+                            animationDelay: `${i * 0.5}s`,
+                            animationDuration: `${1.5 + (i % 3) * 0.5}s`,
+                        }}
+                    >
+                        {emoji}
+                    </div>
+                ))}
+            </div>
+
+            {/* Central phone character with pulsing effect */}
+            <div className="relative z-10">
+                <div className={`relative transition-all duration-1000 ${isActive ? "animate-pulse scale-110" : "scale-100"}`}>
+                    <img src="/images/phone-character-simple.png" alt="Phone Character" className="w-24 h-24 drop-shadow-lg" />
+
+                    {/* Animated rings around character */}
+                    {isActive && (
+                        <>
+                            <div className="absolute inset-0 rounded-full border-2 border-yellow-300/50 animate-ping" />
+                            <div
+                                className="absolute inset-0 rounded-full border-2 border-orange-300/50 animate-ping"
+                                style={{ animationDelay: "0.5s" }}
+                            />
+                            <div
+                                className="absolute inset-0 rounded-full border-2 border-pink-300/50 animate-ping"
+                                style={{ animationDelay: "1s" }}
+                            />
+                        </>
+                    )}
+                </div>
+
+                {/* Sound waves */}
+                {isActive && (
+                    <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
+                        {[...Array(3)].map((_, i) => (
+                            <div
+                                key={i}
+                                className="absolute w-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full animate-pulse"
+                                style={{
+                                    height: `${20 + i * 8}px`,
+                                    right: `${i * 8}px`,
+                                    top: "50%",
+                                    transform: "translateY(-50%)",
+                                    animationDelay: `${i * 0.2}s`,
+                                    animationDuration: "0.8s",
+                                }}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* Floating hearts */}
+            <div className="absolute inset-0 pointer-events-none">
+                {["💕", "💖", "💗"].map((heart, i) => (
+                    <div
+                        key={i}
+                        className={`absolute text-lg animate-bounce ${isActive ? "opacity-60" : "opacity-20"}`}
+                        style={{
+                            left: `${70 + i * 10}%`,
+                            top: `${30 + i * 15}%`,
+                            animationDelay: `${i * 0.7}s`,
+                            animationDuration: `${2 + i * 0.3}s`,
+                        }}
+                    >
+                        {heart}
+                    </div>
+                ))}
+            </div>
+
+            {/* Gentle sparkles */}
+            <div className="absolute inset-0">
+                {[...Array(8)].map((_, i) => (
+                    <div
+                        key={i}
+                        className={`absolute w-1 h-1 bg-yellow-300 rounded-full animate-twinkle ${
+                            isActive ? "opacity-80" : "opacity-30"
+                        }`}
+                        style={{
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            animationDelay: `${Math.random() * 2}s`,
+                            animationDuration: `${1 + Math.random()}s`,
+                        }}
+                    />
+                ))}
+            </div>
+        </div>
+    )
+}
+
+const AnimationStyles = () => (
+    <style jsx>{`
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+    
+    .animate-twinkle {
+      animation: twinkle 1.5s ease-in-out infinite;
+    }
+  `}</style>
+)
+
 interface Interaction {
     type: string
     text?: string
@@ -647,6 +782,7 @@ export default function Chapter2() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col">
+            <AnimationStyles />
             {/* Audio Control */}
             <div className="absolute top-4 right-4 z-20">
                 <Button
@@ -679,12 +815,23 @@ export default function Chapter2() {
             <div className="flex-1 flex items-center justify-center p-4">
                 <Card className="w-full max-w-lg bg-white/10 backdrop-blur-lg border-white/20 shadow-2xl">
                     <CardContent className="p-6 space-y-6">
-                        {/* Display Text */}
-                        <div className="min-h-[120px] flex items-center justify-center">
-                            <p className="text-white text-lg leading-relaxed text-center">
-                                {displayText}
-                                {isTyping && <span className="animate-pulse">|</span>}
-                            </p>
+                        {/* Display Text with Voice Visualization */}
+                        <div className="min-h-[200px] flex flex-col items-center justify-center">
+                            {currentInteraction?.type === "voice" ? (
+                                <>
+                                    <VoiceVisualization isActive={!isTyping} />
+                                    {displayText && (
+                                        <p className="text-white text-sm leading-relaxed text-center mt-4 px-4 opacity-80">{displayText}</p>
+                                    )}
+                                </>
+                            ) : (
+                                <div className="min-h-[120px] flex items-center justify-center px-4">
+                                    <p className="text-white text-lg leading-relaxed text-center">
+                                        {displayText}
+                                        {isTyping && <span className="animate-pulse">|</span>}
+                                    </p>
+                                </div>
+                            )}
                         </div>
 
                         {/* Input Field */}
