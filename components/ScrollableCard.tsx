@@ -33,7 +33,13 @@ const createCard = (interaction, botName, onFinish) => {
   if (interaction.id === "finger-choice") {
     newCard = {
       ...newCard,
-      choices: FINGERS.map((text) => generateChoiceObject(text,onFinish)),
+      choices: FINGERS.map((text) => generateChoiceObject(text,(choice) => onFinish("choice", choice))),
+    }
+  }
+  if (interaction.id === "finger-compare"){
+    newCard = {
+      ...newCard,
+      choices: [generateChoiceObject("Pokračovat\n",() => onFinish("compare"))],
     }
   }
   return newCard;
@@ -44,7 +50,7 @@ export default function ScrollableCards({currentInteraction, onScroll, onFinish}
   const lastWheelTime = useRef(0)
   const wheelCooldown = 800 // milliseconds between card changes
 
-  const nextCard = (()=> currentInteraction.id !== "finger-choice");
+  const nextCard = (()=> currentInteraction.id !== "finger-choice" && currentInteraction.id!== "finger-compare");
   const validCard = (() => currentInteraction.type === "card")
 
   const botName = readFromStorage("BN") ?? "Bot"

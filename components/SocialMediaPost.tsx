@@ -57,22 +57,22 @@ export default function SocialMediaPost({
         </div>
 
         {/* Action buttons */}
-        <div className="flex items-center justify-between pt-2 border-t">
-          <div className="flex items-center space-x-4">
-            <Button size="sm" variant="outline" className="p-2 h-auto rounded-[5px]">
-              <Heart className="w-5 h-5" />
-            </Button>
-            <Button size="sm" variant="outline" className="p-2 h-auto rounded-[5px]">
-              <MessageCircle className="w-5 h-5" />
-            </Button>
-            <Button size="sm" variant="outline" className="p-2 h-auto rounded-[5px]">
-              <Share className="w-5 h-5" />
-            </Button>
-          </div>
-          <Button size="sm" variant="outline" className="p-2 h-auto rounded-[5px]">
-            <Bookmark className="w-5 h-5" />
-          </Button>
-        </div>
+        {/*<div className="flex items-center justify-between pt-2 border-t">*/}
+        {/*  <div className="flex items-center space-x-4">*/}
+        {/*    <Button size="sm" variant="outline" className="p-2 h-auto rounded-[5px]">*/}
+        {/*      <Heart className="w-5 h-5" />*/}
+        {/*    </Button>*/}
+        {/*    <Button size="sm" variant="outline" className="p-2 h-auto rounded-[5px]">*/}
+        {/*      <MessageCircle className="w-5 h-5" />*/}
+        {/*    </Button>*/}
+        {/*    <Button size="sm" variant="outline" className="p-2 h-auto rounded-[5px]">*/}
+        {/*      <Share className="w-5 h-5" />*/}
+        {/*    </Button>*/}
+        {/*  </div>*/}
+        {/*  <Button size="sm" variant="outline" className="p-2 h-auto rounded-[5px]">*/}
+        {/*    <Bookmark className="w-5 h-5" />*/}
+        {/*  </Button>*/}
+        {/*</div>*/}
       </CardContent>
     </Card>
   )
