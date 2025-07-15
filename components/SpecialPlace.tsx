@@ -33,10 +33,17 @@ function CustomScroll({goToNextInteraction, onFinish}) {
     interactionRef.current = currentInteraction;
   }, [currentInteraction]);
 
-  const choiceCallback = (choice) => {
-    setToStorage("finger-choice", choice);
-    onFinish();
-    goToNextInteraction("back-to-chat");
+  const choiceCallback = (option, choice) => {
+    console.log(option)
+    if (option === "compare") {
+      onFinish();
+      goToNextInteraction("back-to-chat");
+      return;
+    }
+    if (option === "choice") {
+      setToStorage("finger-choice", choice);
+      goToNextInteraction("finger-compare");
+    }
   }
 
   const onScrollCard = useCallback(() => {
