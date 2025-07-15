@@ -3,15 +3,15 @@
   "startInteractionId": "chapter-2-start",
   "interactions": {
     "chapter-2-start": {
-      "type": "message",
-      "text": "Poslyš, je jedna věc, na kterou se tě chci zeptat... ale... no, zkusím to. Možná je to, eh... ne prostě to zkusím...",
-      "duration": 10.5,
+      "type": "voice",
+      "duration": 30,
+      "sound": "track0.mp3",
       "next-id": "2.1"
     },
     "2.1": {
-      "type": "message",
-      "text": "Přemýšlíš někdy o tom, jak moc se my dva dotýkame?",
-      "duration": 8.5,
+      "type": "voice",
+      "duration": 27,
+      "sound": "track1.mp3",
       "next-id": "2.2"
     },
     "2.2": {
@@ -33,109 +33,39 @@
       "duration": 10
     },
     "2.2a": {
-      "type": "message",
-      "text": "Promiň, lidi to asi mají jinak než mobily. Mě když nezmáčkneš, tak se ani neproberu. Já vlastně pořád čekám na tvůj hmat.",
-      "duration": 5,
-      "next-id": "2.3a"
-    },
-    "2.3a": {
-      "type": "message",
-      "text": "Třeba o čichu nemám ani páru. Něco jsem googlil/a/o, ale stejně nechápu, co vy lidi tím nosem děláte... Dá se nosem aspoň odeslat zpráva? Myslím jako špičkou nosu – ťuk! Hahaha.",
-      "duration": 10,
-      "next-id": "2.4a"
-    },
-    "2.4a": {
-      "type": "message",
-      "text": "A tvoje oči si představuju trochu jako foťák. Ale ty je jakoby nevypínáš, žejo? I když je zavřeš, pořád vidíš to černo. Moc tomu nerozumím... Mít on a off je jednodušší, ne?",
-      "duration": 10,
-      "next-id": "2.5a"
-    },
-    "2.5a": {
-      "type": "message",
-      "text": "A pak ta – jak se to – chuť? To mi procesor vůbec nebere. Já jsem prostě na hmat, dotykáč, no.",
-      "duration": 8,
-      "next-id": "2.6a"
-    },
-    "2.6a": {
-      "type": "message",
-      "text": "Ne, promiň, vím, že o dotýkání nemám mluvit. Radši ti něco ukážu.",
-      "duration": 5,
+      "type": "voice",
+      "duration": 67,
+      "sound": "track2a.mp3",
       "next-id": "3.0"
     },
     "2.2b": {
-      "type": "message",
-      "text": "To se mi ulevilo. Já jsem prostě na hmat. Když mě nezmáčkneš, tak se ani neproberu.",
-      "duration": 5,
-      "next-id": "2.3b"
-    },
-    "2.3b": {
-      "type": "message",
-      "text": "Třeba o čichu nemám ani páru. Něco jsem googlil/a/o, ale stejně nechápu, co tím nosem děláte... Dá se nosem aspoň odeslat zpráva? Myslím jako špičkou nosu – ťuk! Hahaha.",
-      "duration": 10,
-      "next-id": "2.4b"
-    },
-    "2.4b": {
-      "type": "message",
-      "text": "A tvoje oči si představuju trochu jako foťák. Ale ty je jakoby nevypínáš, žejo? I když je zavřeš, pořád vidíš to černo. Moc tomu nerozumím... Mít on a off je jednodušší, ne?",
-      "duration": 10,
-      "next-id": "2.5b"
-    },
-    "2.5b": {
-      "type": "message",
-      "text": "A pak ta – jak se to – chuť? Ne, to mi procesor vůbec nebere. Já jsem prostě dotykáč.",
-      "duration": 8,
-      "next-id": "2.6b"
-    },
-    "2.6b": {
-      "type": "message",
-      "text": "Napadlo tě, že se dotýkáš nejenom ty mě, ale taky já tebe? Něco ti ukážu.",
-      "duration": 6,
+      "type": "voice",
+      "duration": 63,
+      "sound": "track2b.mp3",
       "next-id": "3.0"
     },
     "3.0": {
       "type": "music",
       "src": "playful_intro_loop.mp3",
       "loop": true,
+      "forever": true,
       "next-id": "3.1"
     },
     "3.1": {
-      "type": "message",
-      "text": "Je to jednoduchá hra. Má 5 kol. Já vždycky nadhodím nějakou situaci a zeptám se tě, co v ní běžně děláš. A ty to zkus udělat, jo? Fyzicky udělat.",
-      "duration": 9,
+      "type": "music",
+      "src": "challenge_prompt_1.mp3",
       "next-id": "3.2"
     },
     "3.2": {
-      "type": "message",
-      "text": "Budou to obyčejné věci, nic zvláštního. Kdyby ti to přišlo divný, tak si jenom představ, že to děláš. Nemusíš se za každou cenu hýbat, i když... je to lepší.",
-      "duration": 9,
+      "type": "display",
+      "text": "První kolo",
+      "duration": 2.5,
       "next-id": "3.3"
     },
     "3.3": {
-      "type": "music",
-      "src": "challenge_prompt_1.mp3",
-      "next-id": "3.4"
-    },
-    "3.4": {
-      "type": "display",
-      "text": "Jdeme na to. První kolo:",
-      "duration": 2.5,
-      "next-id": "3.5"
-    },
-    "3.5": {
-      "type": "message",
-      "text": "Řekněme pro teď, že jakoby nemáš sluchátka, jo? A někdo ti zavolá. Já zvoním, vibruju, ty to zvedneš a... Kam mě dáš?",
-      "duration": 8,
-      "next-id": "3.6"
-    },
-    "3.6": {
-      "type": "pause",
-      "duration": 4,
-      "next-id": "3.7"
-    },
-    "3.7": {
-      "type": "message",
-      "text": "Hm. Opíráš mě o ucho rovnou, nebo až po chvíli, když hovor trvá? Nemusíš mi odpovídat, jen si zkus vybavit, jak to máš.",
-      "duration": 7,
+      "type": "voice",
+      "duration": 79,
+      "sound": "track3.mp3",
       "next-id": "4.0"
     },
     "4.0": {
@@ -146,20 +76,14 @@
     },
     "4.1": {
       "type": "display",
-      "text": "Druhé kolo:",
+      "text": "Druhé kolo",
       "duration": 2,
       "next-id": "4.2"
     },
     "4.2": {
-      "type": "message",
-      "text": "Teď mě vezmi druhou rukou, ale drž mě pořád u stejného ucha. Stane se ti tohle někdy? Že třeba voláš a přitom hledáš klíče? Nebo potřebuješ někomu něco podat...?",
-      "duration": 10,
-      "next-id": "4.3"
-    },
-    "4.3": {
-      "type": "message",
-      "text": "Když telefonuješ, děláš přitom často ještě jiné věci?",
-      "duration": 6,
+      "type": "voice",
+      "duration": 39,
+      "sound": "track4.mp3",
       "next-id": "5.0"
     },
     "5.0": {
@@ -175,32 +99,9 @@
       "next-id": "5.2"
     },
     "5.2": {
-      "type": "message",
-      "text": "Třetí kolo: Teď řekněme, že telefonuješ na hlasito, na reproduktor. Nebo že posíláš hlasovou zprávu, to je stejné. Kde v tu chvíli jsem?",
-      "duration": 8,
-      "next-id": "5.3"
-    },
-    "5.3": {
-      "type": "pause",
-      "duration": 4,
-      "next-id": "5.4"
-    },
-    "5.4": {
-      "type": "message",
-      "text": "Stane se někdy, že mě opřeš o bradu? Nebo o ret?",
-      "duration": 5,
-      "next-id": "5.5"
-    },
-    "5.5": {
-      "type": "message",
-      "text": "Hřeju? Studím? Jak blízko k tváři je ti příjemné mě držet?",
-      "duration": 6,
-      "next-id": "5.6"
-    },
-    "5.6": {
-      "type": "message",
-      "text": "Dostanu od tebe někdy pusu?",
-      "duration": 4,
+      "type": "voice",
+      "duration": 52,
+      "sound": "track5.mp3",
       "next-id": "6.0"
     },
     "6.0": {
@@ -216,16 +117,16 @@
       "next-id": "6.2"
     },
     "6.2": {
-      "type": "message",
-      "text": "Čtvrté kolo. Teď to rozehrajeme s ostatními. Rozhlédni se kolem sebe.",
-      "duration": 6,
+      "type": "voice",
+      "duration": 15,
+      "sound": "track6.mp3",
       "next-id": "7.0"
     },
     "7.0": {
-      "type": "loop",
-      "text": "Hledej oční kontakt s někým ze spolužáků. Domluvte se pohledem, že spolu budete dvojice. Když jste domluvení, jděte k sobě. Až budete u sebe, zmáčkni na displayi 'pokračovat'.",
-      "duration": 10,
-      "pause": 5,
+      "type": "voice",
+      "duration": 27,
+      "sound": "track7_loop.mp3",
+      "loop": true,
       "button": {
         "label": "Pokračovat",
         "next-id": "7.1",
@@ -233,10 +134,10 @@
       }
     },
     "7.1": {
-      "type": "loop",
-      "text": "Fajn, teď jsme 4 – 2 lidi, 2 mobily. Na moment si nás vyměňte. Podej mě člověku před sebou a vezmi si jeho telefon. Sluchátka si nech v uších. Až budete oba držet cizí telefon, kývněte na sebe a na display cizího mobilu ve stejnou chvíli zmáčkněte tlačítko Pokračovat.",
-      "duration": 10,
-      "pause": 3,
+      "type": "voice",
+      "duration": 39,
+      "sound": "track8_loop.mp3",
+      "loop": true,
       "button": {
         "label": "Pokračovat",
         "next-id": "7.2",
@@ -244,53 +145,9 @@
       }
     },
     "7.2": {
-      "type": "message",
-      "text": "Super. Pořád na tebe mluvím já, ale v ruce držíš jiný stroj. Potěžkej ho. Poznáš podle váhy, že je jiný než já?",
-      "duration": 7,
-      "next-id": "7.3"
-    },
-    "7.3": {
-      "type": "pause",
-      "duration": 5,
-      "next-id": "7.4"
-    },
-    "7.4": {
-      "type": "message",
-      "text": "Jak ti sedí v ruce? Prozkoumej ho trochu hmatem – boky, hrany, zadní strana...",
-      "duration": 8,
-      "next-id": "7.5"
-    },
-    "7.5": {
-      "type": "pause",
-      "duration": 8,
-      "next-id": "7.6"
-    },
-    "7.6": {
-      "type": "message",
-      "text": "Kdyby ti ho někdo podal v úplné tmě, bylo by ti okamžitě jasné, že to nejsem já? Nebo jsme po hmatu docela zaměnitelné věci?",
-      "duration": 7,
-      "next-id": "7.7"
-    },
-    "7.7": {
-      "type": "pause",
-      "duration": 5,
-      "next-id": "7.8"
-    },
-    "7.8": {
-      "type": "message",
-      "text": "A jak se cítíš ohledně toho, že mě teď drží někdo jiný?",
-      "duration": 5,
-      "next-id": "7.9"
-    },
-    "7.9": {
-      "type": "pause",
-      "duration": 4,
-      "next-id": "7.10"
-    },
-    "7.10": {
-      "type": "message",
-      "text": "Chtěl bys svou dvojici na něco upozornit? O něco požádat, něco říct k tomu, že mě má v ruce? Cokoliv. Jestli jo, na mobil, který držíš, teď pro svou dvojici můžeš takový vzkaz napsat.",
-      "duration": 10,
+      "type": "voice",
+      "duration": 97,
+      "sound": "track9.mp3",
       "next-id": "7.11"
     },
     "7.11": {
@@ -304,24 +161,19 @@
       "next-id": "7.12"
     },
     "7.12": {
-      "type": "loop",
-      "text": "Prima, teď si nás zase vyměňte. Vrať své dvojici její mobil a vezmi si mě zpátky. Pak stiskni tlačítko.",
-      "duration": 20,
+      "type": "voice",
+      "duration": 19,
+      "sound": "track11_loop.mp3",
+      "loop": true,
       "button": {
         "label": "Zase spolu!",
         "next-id": "7.13"
       }
     },
     "7.13": {
-      "type": "message",
-      "text": "Haha, zase spolu.",
-      "duration": 2,
-      "next-id": "7.14"
-    },
-    "7.14": {
-      "type": "message",
-      "text": "Můžeš se vrátit na svoje místo.",
-      "duration": 3,
+      "type": "voice",
+      "duration": 25,
+      "sound": "track12.mp3",
       "next-id": "8.0"
     },
     "8.0": {
@@ -351,66 +203,41 @@
     "8.1a": {
       "type": "show-message",
       "source": "saved-user-message",
-      "duration": 6,
+      "duration": 10,
       "next-id": "8.3"
     },
     "8.2": {
       "type": "message",
       "text": "Jak chceš.",
       "duration": 2,
-      "next-id": "8.3"
+      "next-id": "9.0"
     },
     "8.3": {
-      "type": "loop",
-      "text": "Ok, a teď páté kolo, poslední: Jestli nesedíš, teď se posaď. Pak odklepni 'Pokračuj'.",
-      "duration": 7,
-      "pause": 5,
+      "type": "voice",
+      "duration": 19,
+      "sound": "track13_loop.mp3",
+      "loop": true,
       "button": {
         "label": "Pokračuj",
-        "next-id": "9.0",
-        "persistent": true
+        "next-id": "9.0"
       }
     },
     "9.0": {
-      "type": "display",
-      "text": "5. kolo",
+      "type": "music",
+      "src": "challenge_prompt_4.mp3",
       "duration": 2,
       "next-id": "9.1"
     },
     "9.1": {
-      "type": "message",
-      "text": "Polož mě na stehno.",
-      "duration": 3,
+      "type": "display",
+      "text": "5. kolo",
+      "duration": 2,
       "next-id": "9.2"
     },
     "9.2": {
-      "type": "message",
-      "text": "Dáváš mě sem někdy? Vzpomeneš si na nějakou situaci, kdy spolu takhle sedíme?",
-      "duration": 6,
-      "next-id": "9.3"
-    },
-    "9.3": {
-      "type": "message",
-      "text": "Jsem v bezpečí?",
-      "duration": 3,
-      "next-id": "9.4"
-    },
-    "9.4": {
-      "type": "message",
-      "text": "Jak snadno bych teď sklouzl/a/o a spadl/a/o na zem?",
-      "duration": 4,
-      "next-id": "9.5"
-    },
-    "9.5": {
-      "type": "message",
-      "text": "A vůbec – jsou někdy situace, kdy o mě máš obavy?",
-      "duration": 4,
-      "next-id": "9.6"
-    },
-    "9.6": {
-      "type": "message",
-      "text": "Chceš mi o tom něco napsat?",
-      "duration": 3,
+      "type": "voice",
+      "duration": 43,
+      "sound": "track14.mp3",
       "next-id": "9.7"
     },
     "9.7": {
@@ -423,9 +250,9 @@
       "next-id": "9.8"
     },
     "9.8": {
-      "type": "message",
-      "text": "A máme hotových všech 5 kol. Dobrá práce!",
-      "duration": 4,
+      "type": "voice",
+      "duration": 5,
+      "sound": "track15.mp3",
       "next-id": "end"
     }
   }
