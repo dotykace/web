@@ -4,7 +4,7 @@
   "interactions": {
     "chapter-2-start": {
       "type": "voice",
-      "duration": 30,
+      "duration": 29,
       "sound": "track0.mp3",
       "next-id": "2.1"
     },

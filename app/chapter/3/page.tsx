@@ -1,6 +1,8 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import type React from "react"
+
+import { useState, useEffect, useRef, useCallback } from "react"
 import { collection, addDoc, serverTimestamp, doc, runTransaction } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Button } from "@/components/ui/button"
@@ -10,7 +12,141 @@ import { Volume2, VolumeX, SkipForward, Check } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import type { DotykaceRoom } from "@/lib/dotykace-types"
-import Image from "next/image"
+
+// Voice Visualization Component (similar to Chapter 2)
+const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
+    return (
+        <div className="relative w-full h-48 flex items-center justify-center overflow-hidden">
+            {/* Background animated circles */}
+            <div className="absolute inset-0">
+                {[...Array(6)].map((_, i) => (
+                    <div
+                        key={i}
+                        className={`absolute rounded-full bg-gradient-to-r from-orange-400/20 to-pink-400/20 animate-pulse`}
+                        style={{
+                            width: `${60 + i * 20}px`,
+                            height: `${60 + i * 20}px`,
+                            left: "50%",
+                            top: "50%",
+                            transform: "translate(-50%, -50%)",
+                            animationDelay: `${i * 0.3}s`,
+                            animationDuration: `${2 + i * 0.5}s`,
+                        }}
+                    />
+                ))}
+            </div>
+
+            {/* Floating emojis */}
+            <div className="absolute inset-0">
+                {["🌟", "✨", "💫", "🎵", "🎶", "💝"].map((emoji, i) => (
+                    <div
+                        key={i}
+                        className={`absolute text-2xl animate-bounce ${isActive ? "opacity-80" : "opacity-40"}`}
+                        style={{
+                            left: `${20 + ((i * 15) % 60)}%`,
+                            top: `${15 + ((i * 20) % 50)}%`,
+                            animationDelay: `${i * 0.5}s`,
+                            animationDuration: `${1.5 + (i % 3) * 0.5}s`,
+                        }}
+                    >
+                        {emoji}
+                    </div>
+                ))}
+            </div>
+
+            {/* Central phone character with pulsing effect */}
+            <div className="relative z-10">
+                <div className={`relative transition-all duration-1000 ${isActive ? "animate-pulse scale-110" : "scale-100"}`}>
+                    <img src="/images/phone-character-simple.png" alt="Phone Character" className="w-24 h-24 drop-shadow-lg" />
+
+                    {/* Animated rings around character */}
+                    {isActive && (
+                        <>
+                            <div className="absolute inset-0 rounded-full border-2 border-orange-300/50 animate-ping" />
+                            <div
+                                className="absolute inset-0 rounded-full border-2 border-pink-300/50 animate-ping"
+                                style={{ animationDelay: "0.5s" }}
+                            />
+                            <div
+                                className="absolute inset-0 rounded-full border-2 border-yellow-300/50 animate-ping"
+                                style={{ animationDelay: "1s" }}
+                            />
+                        </>
+                    )}
+                </div>
+
+                {/* Sound waves */}
+                {isActive && (
+                    <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
+                        {[...Array(3)].map((_, i) => (
+                            <div
+                                key={i}
+                                className="absolute w-2 bg-gradient-to-r from-orange-400 to-pink-400 rounded-full animate-pulse"
+                                style={{
+                                    height: `${20 + i * 8}px`,
+                                    right: `${i * 8}px`,
+                                    top: "50%",
+                                    transform: "translateY(-50%)",
+                                    animationDelay: `${i * 0.2}s`,
+                                    animationDuration: "0.8s",
+                                }}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* Floating hearts */}
+            <div className="absolute inset-0 pointer-events-none">
+                {["💕", "💖", "💗"].map((heart, i) => (
+                    <div
+                        key={i}
+                        className={`absolute text-lg animate-bounce ${isActive ? "opacity-60" : "opacity-20"}`}
+                        style={{
+                            left: `${70 + i * 10}%`,
+                            top: `${30 + i * 15}%`,
+                            animationDelay: `${i * 0.7}s`,
+                            animationDuration: `${2 + i * 0.3}s`,
+                        }}
+                    >
+                        {heart}
+                    </div>
+                ))}
+            </div>
+
+            {/* Gentle sparkles */}
+            <div className="absolute inset-0">
+                {[...Array(8)].map((_, i) => (
+                    <div
+                        key={i}
+                        className={`absolute w-1 h-1 bg-yellow-300 rounded-full animate-twinkle ${
+                            isActive ? "opacity-80" : "opacity-30"
+                        }`}
+                        style={{
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            animationDelay: `${Math.random() * 2}s`,
+                            animationDuration: `${1 + Math.random()}s`,
+                        }}
+                    />
+                ))}
+            </div>
+        </div>
+    )
+}
+
+const AnimationStyles = () => (
+    <style jsx>{`
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .animate-twinkle {
+            animation: twinkle 1.5s ease-in-out infinite;
+        }
+    `}</style>
+)
 
 interface Interaction {
     type: string
@@ -30,6 +166,7 @@ interface Interaction {
         }
     }
     src?: string
+    sound?: string // For voice type
     loop?: boolean
     label?: string
     "save-label"?: string
@@ -53,7 +190,7 @@ interface FlowData {
 
 export default function Chapter3() {
     const [flowData, setFlowData] = useState<FlowData | null>(null)
-    const [currentStep, setCurrentStep] = useState<string>("")
+    const [currentInteractionId, setCurrentInteractionId] = useState<string>("")
     const [isLoading, setIsLoading] = useState(true)
     const [displayText, setDisplayText] = useState("")
     const [showButtons, setShowButtons] = useState(false)
@@ -62,304 +199,121 @@ export default function Chapter3() {
     const [showWarning, setShowWarning] = useState(false)
     const [audioEnabled, setAudioEnabled] = useState(true)
     const [isTyping, setIsTyping] = useState(false)
+    const [audioInitialized, setAudioInitialized] = useState(false)
+    const [hasStartedExperience, setHasStartedExperience] = useState(false)
     const [selectedOptions, setSelectedOptions] = useState<string[]>([])
-    const [isCompleted, setIsCompleted] = useState(false)
-    const [currentCharacterImage, setCurrentCharacterImage] = useState("/images/phone-character-simple.png")
 
-    const backgroundAudioRef = useRef<HTMLAudioElement | null>(null)
+    // Audio channels
+    const voiceAudioRef = useRef<HTMLAudioElement | null>(null)
     const sfxAudioRef = useRef<HTMLAudioElement | null>(null)
+
     const timeoutRef = useRef<NodeJS.Timeout | null>(null)
     const typingIntervalRef = useRef<NodeJS.Timeout | null>(null)
     const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
     const skipFlagRef = useRef(false)
+    const mountedRef = useRef(true)
+
     const router = useRouter()
 
-    // Load flow data
-    useEffect(() => {
-        const loadData = async () => {
-            try {
-                const response = await fetch("/data/chapter3-flow.json")
-                if (!response.ok) throw new Error("Failed to fetch")
-                const data: FlowData = await response.json()
-                setFlowData(data)
-                setCurrentStep(data.startInteractionId)
-                setIsLoading(false)
-            } catch (error) {
-                console.error("Error loading flow data:", error)
-                setIsLoading(false)
-            }
+    // Cleanup function
+    const cleanup = useCallback(() => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current)
+            timeoutRef.current = null
         }
-        loadData()
-    }, [])
-
-    // Process current step
-    useEffect(() => {
-        if (!flowData || !currentStep || isCompleted) return
-
-        const interaction = flowData.interactions[currentStep]
-        if (!interaction) {
-            console.error(`Step ${currentStep} not found`)
-            return
+        if (typingIntervalRef.current) {
+            clearInterval(typingIntervalRef.current)
+            typingIntervalRef.current = null
         }
-
-        processStep(interaction)
-    }, [currentStep, flowData, isCompleted])
-
-    const processStep = (interaction: Interaction) => {
-        console.log("Processing step:", currentStep, interaction.type)
-
-        // Clear previous timeouts
-        clearAllTimeouts()
-
-        // Reset UI state
-        setShowButtons(false)
-        setTimeLeft(null)
-        setShowWarning(false)
-        setSelectedOptions([])
-        skipFlagRef.current = false
-
-        // Set character image based on interaction type
-        updateCharacterImage(interaction)
-
-        switch (interaction.type) {
-            case "message":
-                handleMessage(interaction)
-                break
-            case "display":
-                handleDisplay(interaction)
-                break
-            case "input":
-                handleInput(interaction)
-                break
-            case "pause":
-                handlePause(interaction)
-                break
-            case "loop":
-                handleLoop(interaction)
-                break
-            case "music":
-                handleMusic(interaction)
-                break
-            default:
-                console.warn("Unknown interaction type:", interaction.type)
+        if (countdownIntervalRef.current) {
+            clearInterval(countdownIntervalRef.current)
+            countdownIntervalRef.current = null
         }
-    }
-
-    const updateCharacterImage = (interaction: Interaction) => {
-        if (interaction.animation?.type === "choice" || interaction.animation?.type === "multiselect") {
-            setCurrentCharacterImage("/images/phone-character-question.png")
-        } else if (interaction.type === "input") {
-            setCurrentCharacterImage("/images/phone-character-thinking.png")
-        } else if (interaction.type === "pause") {
-            setCurrentCharacterImage("/images/phone-character-thinking.png")
-        } else {
-            setCurrentCharacterImage("/images/phone-character-simple.png")
-        }
-    }
-
-    const handleMessage = (interaction: Interaction) => {
-        typeText(interaction.text || "", () => {
-            if (interaction.animation?.type === "choice" || interaction.animation?.type === "multiselect") {
-                setTimeout(() => setShowButtons(true), 500)
-            } else if (interaction["next-id"]) {
-                const delay = (interaction.duration || 3) * 1000
-                timeoutRef.current = setTimeout(() => {
-                    moveToNext(interaction["next-id"]!)
-                }, delay)
+        // Clean up all remaining audio channels
+        ;[voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
+            if (audioRef.current) {
+                audioRef.current.pause()
+                audioRef.current.src = ""
+                audioRef.current = null
             }
         })
-    }
+    }, [])
 
-    const handleDisplay = (interaction: Interaction) => {
-        setDisplayText(interaction.text || "")
-        if (interaction["next-id"]) {
-            const delay = (interaction.duration || 2) * 1000
-            timeoutRef.current = setTimeout(() => {
-                moveToNext(interaction["next-id"]!)
-            }, delay)
-        }
-    }
-
-    const handleInput = (interaction: Interaction) => {
-        setDisplayText(interaction.text || interaction.label || "")
-        setInputValue("")
-        setShowButtons(true)
-
-        if (interaction.duration) {
-            setTimeLeft(interaction.duration)
-            countdownIntervalRef.current = setInterval(() => {
-                setTimeLeft((prev) => {
-                    if (prev === null || prev <= 1) {
-                        handleInputSave(interaction)
-                        return null
-                    }
-                    if (interaction["warning-after"] && prev === interaction["warning-after"]) {
-                        setShowWarning(true)
-                    }
-                    return prev - 1
-                })
-            }, 1000)
-        }
-    }
-
-    const handlePause = (interaction: Interaction) => {
-        setDisplayText("...")
-        if (interaction["next-id"]) {
-            const delay = (interaction.duration || 3) * 1000
-            timeoutRef.current = setTimeout(() => {
-                moveToNext(interaction["next-id"]!)
-            }, delay)
-        }
-    }
-
-    const handleLoop = (interaction: Interaction) => {
-        setDisplayText(interaction.text || "")
-        setShowButtons(true)
-    }
-
-    const handleMusic = (interaction: Interaction) => {
-        if (interaction.src && audioEnabled) {
-            playAudio(interaction.src, "background", interaction.loop)
-        }
-        setDisplayText("Prehrávam hudbu...")
-        if (interaction["next-id"]) {
-            const delay = (interaction.duration || 1) * 1000
-            timeoutRef.current = setTimeout(() => {
-                moveToNext(interaction["next-id"]!)
-            }, delay)
-        }
-    }
-
-    const moveToNext = (nextId: string) => {
-        if (nextId === "end") {
-            completeChapter()
-        } else {
-            setCurrentStep(nextId)
-        }
-    }
-
-    const completeChapter = async () => {
-        setIsCompleted(true)
-        setDisplayText("Kapitola 3 dokončená!")
-        setCurrentCharacterImage("/images/phone-character-simple.png")
-
-        // Update Firestore
-        await updateChapterStatus()
-
-        // Redirect after delay
-        setTimeout(() => {
-            router.push("/menu")
-        }, 2000)
-    }
-
-    const updateChapterStatus = async () => {
-        const roomId = localStorage.getItem("dotykace_roomId")
-        const playerId = localStorage.getItem("dotykace_playerId")
-
-        if (!roomId || !playerId) return
+    // Initialize audio context for mobile Safari
+    const initializeAudio = useCallback(async () => {
+        if (audioInitialized) return
 
         try {
-            const roomRef = doc(db, "rooms", roomId)
-            await runTransaction(db, async (transaction) => {
-                const roomDoc = await transaction.get(roomRef)
-                if (!roomDoc.exists()) return
-
-                const roomData = roomDoc.data() as DotykaceRoom
-                const updatedParticipants = [...(roomData.participants || [])]
-                const updatedChapterPermissions = { ...(roomData.chapterPermissions || {}) }
-
-                const participantIndex = updatedParticipants.findIndex((p) => p.id === playerId)
-                if (participantIndex !== -1) {
-                    const participant = updatedParticipants[participantIndex]
-                    const completedChapters = new Set(participant.completedChapters || [])
-                    completedChapters.add(3)
-                    participant.completedChapters = Array.from(completedChapters).sort()
-                    participant.currentChapter = 4
-                    updatedParticipants[participantIndex] = participant
-                }
-
-                if (!updatedChapterPermissions[playerId]) {
-                    updatedChapterPermissions[playerId] = { allowedChapters: [], playerName: "" }
-                }
-
-                transaction.update(roomRef, {
-                    participants: updatedParticipants,
-                    chapterPermissions: updatedChapterPermissions,
-                })
-            })
+            // Play a silent audio to unlock audio context
+            const silentAudio = new Audio(
+                "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OSNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT",
+            )
+            silentAudio.volume = 0
+            await silentAudio.play()
+            silentAudio.pause()
+            setAudioInitialized(true)
         } catch (error) {
-            console.error("Error updating chapter status:", error)
+            console.warn("Audio initialization failed:", error)
+        }
+    }, [audioInitialized])
+
+    useEffect(() => {
+        loadFlowData()
+        return () => {
+            mountedRef.current = false
+            cleanup()
+        }
+    }, [cleanup])
+
+    const loadFlowData = async () => {
+        try {
+            const response = await fetch("/data/chapter3-flow.json")
+            if (!response.ok) throw new Error("Failed to load flow data")
+            const data: FlowData = await response.json()
+
+            if (!mountedRef.current) return
+
+            setFlowData(data)
+            setIsLoading(false)
+        } catch (error) {
+            console.error("Error loading flow data:", error)
+            if (mountedRef.current) {
+                setIsLoading(false)
+            }
         }
     }
 
-    const saveToFirestore = async (interactionId: string, responseValue: string | string[], interactionType: string) => {
+    // Enhanced saveToFirestore to include choice data
+    const saveToFirestore = async (
+        inputData: string | string[],
+        interactionId: string,
+        interactionType: string,
+        choiceData?: { label: string; nextId: string },
+    ) => {
         try {
-            await addDoc(collection(db, "chapter3"), {
+            const docData: any = {
                 interactionId,
-                responseValue,
+                responseValue: inputData,
                 interactionType,
                 timestamp: serverTimestamp(),
                 sessionId: `session_${Date.now()}`,
                 chapter: "chapter3",
-            })
+            }
+
+            // Add choice data if provided
+            if (choiceData) {
+                docData.choice = choiceData
+            }
+
+            await addDoc(collection(db, "chapter3"), docData)
         } catch (error) {
             console.error("Error saving to Firestore:", error)
         }
     }
 
-    const handleInputSave = async (interaction: Interaction) => {
-        clearInterval(countdownIntervalRef.current!)
+    const typeText = useCallback((text: string, callback?: () => void) => {
+        if (!mountedRef.current) return
 
-        if (inputValue.trim()) {
-            await saveToFirestore(currentStep, inputValue, "input")
-        }
-
-        setTimeLeft(null)
-        setShowWarning(false)
-
-        if (interaction["next-id"]) {
-            moveToNext(interaction["next-id"])
-        }
-    }
-
-    const handleButtonClick = async (nextId: string, buttonLabel?: string) => {
-        if (buttonLabel) {
-            await saveToFirestore(currentStep, buttonLabel, "choice")
-        }
-        moveToNext(nextId)
-    }
-
-    const handleMultiselectSave = async (interaction: Interaction) => {
-        await saveToFirestore(currentStep, selectedOptions, "multiselect")
-        if (interaction.animation?.button?.["next-id"]) {
-            moveToNext(interaction.animation.button["next-id"])
-        }
-    }
-
-    const handleOptionToggle = (option: string) => {
-        setSelectedOptions((prev) => (prev.includes(option) ? prev.filter((item) => item !== option) : [...prev, option]))
-    }
-
-    const handleSkip = () => {
-        if (!flowData || !currentStep) return
-
-        const interaction = flowData.interactions[currentStep]
-        if (!interaction) return
-
-        if (isTyping && typingIntervalRef.current) {
-            skipFlagRef.current = true
-            typeText(interaction.text || "")
-            return
-        }
-
-        clearAllTimeouts()
-
-        if (interaction["next-id"]) {
-            moveToNext(interaction["next-id"])
-        }
-    }
-
-    const typeText = (text: string, callback?: () => void) => {
         setIsTyping(true)
         setDisplayText("")
 
@@ -376,46 +330,377 @@ export default function Chapter3() {
         }
 
         let charIndex = 0
+        let currentTypedText = ""
+
         typingIntervalRef.current = setInterval(() => {
+            if (!mountedRef.current) {
+                if (typingIntervalRef.current) {
+                    clearInterval(typingIntervalRef.current)
+                }
+                return
+            }
+
             if (charIndex < text.length) {
-                setDisplayText(text.slice(0, charIndex + 1))
+                currentTypedText += text[charIndex]
+                setDisplayText(currentTypedText)
                 charIndex++
             } else {
-                clearInterval(typingIntervalRef.current!)
+                if (typingIntervalRef.current) {
+                    clearInterval(typingIntervalRef.current)
+                    typingIntervalRef.current = null
+                }
                 setIsTyping(false)
                 if (callback) callback()
             }
         }, 30)
-    }
-
-    const playAudio = (src: string, type: "background" | "sfx", loop = false) => {
-        if (!audioEnabled) return
-
-        if (type === "background") {
-            if (backgroundAudioRef.current) {
-                backgroundAudioRef.current.pause()
-            }
-            backgroundAudioRef.current = new Audio(`/audio/${src}`)
-            backgroundAudioRef.current.loop = loop
-            backgroundAudioRef.current.volume = 0.3
-            backgroundAudioRef.current.play().catch(console.error)
-        }
-    }
-
-    const clearAllTimeouts = () => {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
-        if (typingIntervalRef.current) clearInterval(typingIntervalRef.current)
-        if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current)
-    }
-
-    // Cleanup
-    useEffect(() => {
-        return () => {
-            clearAllTimeouts()
-            if (backgroundAudioRef.current) backgroundAudioRef.current.pause()
-            if (sfxAudioRef.current) sfxAudioRef.current.pause()
-        }
     }, [])
+
+    // Multi-channel audio playback
+    const playAudio = useCallback(
+        async (src: string, channel: "voice" | "sfx", loop = false, onEnded?: () => void) => {
+            if (!audioEnabled || !audioInitialized) {
+                console.warn(
+                    `Audio playback skipped for ${channel} channel (${src}): audioEnabled=${audioEnabled}, audioInitialized=${audioInitialized}`,
+                )
+                return
+            }
+
+            let audioRef: React.MutableRefObject<HTMLAudioElement | null>
+            let volume: number
+
+            switch (channel) {
+                case "voice":
+                    audioRef = voiceAudioRef
+                    volume = 1.0
+                    break
+                case "sfx":
+                    audioRef = sfxAudioRef
+                    volume = 0.7
+                    break
+            }
+
+            // Stop current audio on this channel
+            if (audioRef.current) {
+                audioRef.current.pause()
+                audioRef.current.src = ""
+            }
+
+            try {
+                const audio = new Audio(`/audio/${src}`)
+                audio.loop = loop
+                audio.volume = volume
+                audio.preload = "auto"
+
+                // Handle audio end event
+                audio.onended = () => {
+                    if (mountedRef.current && audioRef.current === audio) {
+                        if (loop) {
+                            audio.currentTime = 0
+                            audio.play().catch(console.error)
+                        } else if (onEnded) {
+                            onEnded()
+                        }
+                    }
+                }
+
+                audioRef.current = audio
+                await audio.play()
+            } catch (error) {
+                console.warn(`Audio playback failed for ${channel} channel (${src}):`, error)
+            }
+        },
+        [audioEnabled, audioInitialized],
+    )
+
+    // Stop all audio
+    const stopAllAudio = useCallback(() => {
+        ;[voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
+            if (audioRef.current) {
+                audioRef.current.pause()
+                audioRef.current.src = ""
+                audioRef.current = null
+            }
+        })
+    }, [])
+
+    const processInteraction = useCallback(
+        (interaction: Interaction) => {
+            if (!mountedRef.current) return
+
+            console.log("Processing interaction:", currentInteractionId, interaction.type)
+
+            // Clear timeouts and intervals
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current)
+                timeoutRef.current = null
+            }
+            if (typingIntervalRef.current) {
+                clearInterval(typingIntervalRef.current)
+                typingIntervalRef.current = null
+            }
+            if (countdownIntervalRef.current) {
+                clearInterval(countdownIntervalRef.current)
+                countdownIntervalRef.current = null
+            }
+
+            // Stop all audio
+            stopAllAudio()
+            setShowButtons(false)
+            setTimeLeft(null)
+            setShowWarning(false)
+            setSelectedOptions([])
+            skipFlagRef.current = false
+            setIsTyping(false)
+
+            switch (interaction.type) {
+                case "voice":
+                    if (interaction.sound) {
+                        const onAudioEnd = () => {
+                            if (!mountedRef.current) return
+
+                            if (interaction.animation?.type === "choice" || interaction.animation?.type === "multiselect") {
+                                setShowButtons(true)
+                            } else if (interaction["next-id"]) {
+                                setCurrentInteractionId(interaction["next-id"]!)
+                            }
+                        }
+
+                        playAudio(interaction.sound, "voice", interaction.loop, onAudioEnd)
+                    }
+
+                    // Voice interactions show text immediately if present
+                    setDisplayText(interaction.text || "")
+
+                    // Handle button display for looping voice (immediate for persistent buttons)
+                    if (interaction.button) {
+                        setShowButtons(true)
+                    }
+                    break
+
+                case "message":
+                    typeText(interaction.text || "", () => {
+                        if (!mountedRef.current) return
+
+                        if (interaction.animation?.type === "choice" || interaction.animation?.type === "multiselect") {
+                            timeoutRef.current = setTimeout(() => {
+                                if (mountedRef.current) setShowButtons(true)
+                            }, 500)
+                        } else if (interaction["next-id"]) {
+                            timeoutRef.current = setTimeout(
+                                () => {
+                                    if (mountedRef.current) {
+                                        setCurrentInteractionId(interaction["next-id"]!)
+                                    }
+                                },
+                                (interaction.duration || 3) * 1000,
+                            )
+                        }
+                    })
+                    break
+
+                case "display":
+                    setDisplayText(interaction.text || "")
+                    if (interaction["next-id"]) {
+                        timeoutRef.current = setTimeout(
+                            () => {
+                                if (mountedRef.current) {
+                                    setCurrentInteractionId(interaction["next-id"]!)
+                                }
+                            },
+                            (interaction.duration || 2) * 1000,
+                        )
+                    }
+                    break
+
+                case "input":
+                    setDisplayText(interaction.text || interaction.label || "")
+                    setInputValue("")
+                    setShowButtons(true)
+                    if (interaction.duration) {
+                        setTimeLeft(interaction.duration)
+                        countdownIntervalRef.current = setInterval(() => {
+                            setTimeLeft((prev) => {
+                                if (!mountedRef.current || prev === null) return null
+
+                                if (prev <= 1) {
+                                    handleInputSave(interaction)
+                                    return null
+                                }
+                                if (interaction["warning-after"] && prev === interaction["warning-after"]) {
+                                    setShowWarning(true)
+                                }
+                                return prev - 1
+                            })
+                        }, 1000)
+                    }
+                    break
+
+                case "pause":
+                    setDisplayText("...")
+                    if (interaction["next-id"]) {
+                        timeoutRef.current = setTimeout(
+                            () => {
+                                if (mountedRef.current) {
+                                    setCurrentInteractionId(interaction["next-id"]!)
+                                }
+                            },
+                            (interaction.duration || 3) * 1000,
+                        )
+                    }
+                    break
+
+                case "loop":
+                    setDisplayText(interaction.text || "")
+                    setShowButtons(true)
+                    break
+            }
+        },
+        [currentInteractionId, typeText, playAudio, stopAllAudio],
+    )
+
+    const handleInputSave = useCallback(
+        async (interaction: Interaction) => {
+            if (countdownIntervalRef.current) {
+                clearInterval(countdownIntervalRef.current)
+                countdownIntervalRef.current = null
+            }
+
+            if (inputValue.trim()) {
+                await saveToFirestore(inputValue, currentInteractionId, "input")
+            }
+
+            setTimeLeft(null)
+            setShowWarning(false)
+
+            if (interaction["next-id"]) {
+                setCurrentInteractionId(interaction["next-id"])
+            }
+        },
+        [inputValue, currentInteractionId],
+    )
+
+    // Enhanced handleButtonClick to save choice data
+    const handleButtonClick = useCallback(
+        async (button: { label: string; "next-id": string }) => {
+            await initializeAudio() // Ensure audio is initialized on any user interaction
+            stopAllAudio()
+
+            // Save choice to Firestore
+            await saveToFirestore("", currentInteractionId, "choice", {
+                label: button.label,
+                nextId: button["next-id"],
+            })
+
+            setCurrentInteractionId(button["next-id"])
+        },
+        [initializeAudio, stopAllAudio, currentInteractionId],
+    )
+
+    const handleOptionToggle = useCallback((option: string) => {
+        setSelectedOptions((prev) => (prev.includes(option) ? prev.filter((item) => item !== option) : [...prev, option]))
+    }, [])
+
+    const handleMultiselectSave = useCallback(
+        async (interaction: Interaction) => {
+            await saveToFirestore(selectedOptions, currentInteractionId, "multiselect")
+            if (interaction.animation?.button?.["next-id"]) {
+                setCurrentInteractionId(interaction.animation.button["next-id"])
+            }
+        },
+        [selectedOptions, currentInteractionId],
+    )
+
+    const handleSkip = useCallback(() => {
+        if (!flowData || !currentInteractionId) return
+
+        const currentInteraction = flowData.interactions[currentInteractionId]
+
+        if (isTyping && typingIntervalRef.current && currentInteraction.type === "message") {
+            skipFlagRef.current = true
+            typeText(currentInteraction.text || "")
+        }
+
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current)
+            timeoutRef.current = null
+        }
+
+        if (currentInteraction["next-id"]) {
+            setCurrentInteractionId(currentInteraction["next-id"])
+        }
+    }, [flowData, currentInteractionId, isTyping, typeText])
+
+    const updateChapterCompletionStatus = useCallback(async () => {
+        const storedRoomId = localStorage.getItem("dotykace_roomId")
+        const storedPlayerId = localStorage.getItem("dotykace_playerId")
+
+        if (!storedRoomId || !storedPlayerId) {
+            console.warn("Room ID or Player ID not found in localStorage. Cannot update Firestore.")
+            return
+        }
+
+        const roomRef = doc(db, "rooms", storedRoomId)
+
+        try {
+            await runTransaction(db, async (transaction) => {
+                const roomDoc = await transaction.get(roomRef)
+                if (!roomDoc.exists()) {
+                    throw "Room document does not exist!"
+                }
+
+                const roomData = roomDoc.data() as DotykaceRoom
+                const updatedParticipants = [...(roomData.participants || [])]
+
+                const participantIndex = updatedParticipants.findIndex((p) => p.id === storedPlayerId)
+                if (participantIndex !== -1) {
+                    const participant = updatedParticipants[participantIndex]
+                    const completedChapters = new Set(participant.completedChapters || [])
+                    completedChapters.add(3)
+                    participant.completedChapters = Array.from(completedChapters).sort((a, b) => a - b)
+                    participant.currentChapter = 4
+                    updatedParticipants[participantIndex] = participant
+                }
+
+                transaction.update(roomRef, {
+                    participants: updatedParticipants,
+                })
+            })
+
+            console.log("Firestore updated successfully: Chapter 3 completed, Chapter 4 unlocked.")
+            router.push("/menu")
+        } catch (e) {
+            console.error("Firestore transaction failed: ", e)
+        }
+    }, [router])
+
+    // Process current interaction only if experience has started
+    useEffect(() => {
+        if (hasStartedExperience && flowData && currentInteractionId && flowData.interactions[currentInteractionId]) {
+            processInteraction(flowData.interactions[currentInteractionId])
+        }
+    }, [currentInteractionId, flowData, processInteraction, hasStartedExperience])
+
+    // Handle chapter completion
+    useEffect(() => {
+        if (flowData && currentInteractionId === "end") {
+            updateChapterCompletionStatus()
+        }
+    }, [currentInteractionId, flowData, updateChapterCompletionStatus])
+
+    // Handle audio muting
+    useEffect(() => {
+        ;[voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
+            if (audioRef.current) {
+                audioRef.current.muted = !audioEnabled
+            }
+        })
+    }, [audioEnabled])
+
+    const handleStartExperience = async () => {
+        await initializeAudio()
+        setHasStartedExperience(true)
+        setCurrentInteractionId(flowData!.startInteractionId) // Set initial interaction after start
+    }
 
     if (isLoading) {
         return (
@@ -431,18 +716,42 @@ export default function Chapter3() {
         )
     }
 
-    if (isCompleted) {
+    if (!flowData) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 flex items-center justify-center">
+                <div className="text-white text-xl">Chyba pri načítaní</div>
+            </div>
+        )
+    }
+
+    // Show start button if experience hasn't started
+    if (!hasStartedExperience) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 flex items-center justify-center p-4">
+                <Card className="w-full max-w-md bg-white/10 backdrop-blur-lg border-white/20 shadow-2xl">
+                    <CardContent className="p-8 text-center">
+                        <h2 className="text-2xl font-bold text-white mb-4">Vitajte v Kapitole 3</h2>
+                        <p className="text-white/80 mb-6">Pre spustenie zážitku kliknite na tlačidlo.</p>
+                        <Button
+                            onClick={handleStartExperience}
+                            className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30 transition-all duration-200 hover:scale-105"
+                        >
+                            Spustiť
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        )
+    }
+
+    const currentInteraction = flowData.interactions[currentInteractionId]
+
+    if (currentInteractionId === "end") {
         return (
             <div className="min-h-screen bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 flex items-center justify-center p-4">
                 <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center">
                     <div className="mb-6">
-                        <Image
-                            src="/images/phone-character-simple.png"
-                            alt="Phone Character"
-                            width={120}
-                            height={120}
-                            className="mx-auto"
-                        />
+                        <img src="/images/phone-character-simple.png" alt="Phone Character" className="w-30 h-30 mx-auto" />
                     </div>
                     <Card className="bg-white/20 backdrop-blur-lg border-white/30 shadow-2xl">
                         <CardContent className="p-8 text-center">
@@ -455,32 +764,19 @@ export default function Chapter3() {
         )
     }
 
-    if (!flowData || !currentStep) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 flex items-center justify-center">
-                <div className="text-white text-xl">Chyba pri načítaní kapitoly</div>
-            </div>
-        )
-    }
-
-    const currentInteraction = flowData.interactions[currentStep]
-    if (!currentInteraction) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 flex items-center justify-center">
-                <div className="text-white text-xl">Neplatná interakcia: {currentStep}</div>
-            </div>
-        )
-    }
-
     const showSkipButton =
+        currentInteraction &&
         currentInteraction["next-id"] &&
         !currentInteraction.animation?.buttons &&
         currentInteraction.type !== "input" &&
         currentInteraction.type !== "loop" &&
+        !currentInteraction.button &&
         currentInteraction.animation?.type !== "multiselect"
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 flex flex-col relative overflow-hidden">
+            <AnimationStyles />
+
             {/* Decorative background pattern */}
             <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-300 rounded-full"></div>
@@ -494,7 +790,10 @@ export default function Chapter3() {
                 <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => setAudioEnabled(!audioEnabled)}
+                    onClick={() => {
+                        initializeAudio() // Ensure audio is initialized even if toggling mute
+                        setAudioEnabled(!audioEnabled)
+                    }}
                     className="text-white hover:bg-white/20 backdrop-blur-sm"
                 >
                     {audioEnabled ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
@@ -506,9 +805,9 @@ export default function Chapter3() {
                 <div className="absolute bottom-4 right-4 z-20">
                     <Button
                         onClick={handleSkip}
-                        className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm"
+                        className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm flex items-center gap-1"
                     >
-                        <SkipForward className="h-4 w-4 mr-2" />
+                        <SkipForward className="h-4 w-4" />
                         Preskočiť
                     </Button>
                 </div>
@@ -517,27 +816,10 @@ export default function Chapter3() {
             {/* Main Content */}
             <div className="flex-1 flex items-center justify-center p-4 relative z-10">
                 <div className="w-full max-w-lg">
-                    {/* Character Image */}
-                    <motion.div
-                        key={currentCharacterImage}
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ duration: 0.3 }}
-                        className="text-center mb-6"
-                    >
-                        <Image
-                            src={currentCharacterImage || "/placeholder.svg"}
-                            alt="Phone Character"
-                            width={100}
-                            height={100}
-                            className="mx-auto"
-                        />
-                    </motion.div>
-
                     {/* Content Card */}
                     <AnimatePresence mode="wait">
                         <motion.div
-                            key={currentStep}
+                            key={currentInteractionId}
                             initial={{ y: 20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             exit={{ y: -20, opacity: 0 }}
@@ -545,12 +827,25 @@ export default function Chapter3() {
                         >
                             <Card className="bg-white/20 backdrop-blur-lg border-white/30 shadow-2xl rounded-3xl">
                                 <CardContent className="p-6 space-y-6">
-                                    {/* Display Text */}
-                                    <div className="min-h-[120px] flex items-center justify-center">
-                                        <p className="text-white text-lg leading-relaxed text-center font-medium">
-                                            {displayText}
-                                            {isTyping && <span className="animate-pulse ml-1">|</span>}
-                                        </p>
+                                    {/* Display Text with Voice Visualization */}
+                                    <div className="min-h-[200px] flex flex-col items-center justify-center">
+                                        {currentInteraction?.type === "voice" ? (
+                                            <>
+                                                <VoiceVisualization isActive={!isTyping} />
+                                                {displayText && (
+                                                    <p className="text-white text-sm leading-relaxed text-center mt-4 px-4 opacity-80">
+                                                        {displayText}
+                                                    </p>
+                                                )}
+                                            </>
+                                        ) : (
+                                            <div className="min-h-[120px] flex items-center justify-center px-4">
+                                                <p className="text-white text-lg leading-relaxed text-center font-medium">
+                                                    {displayText}
+                                                    {isTyping && <span className="animate-pulse ml-1">|</span>}
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Input Field */}
@@ -563,7 +858,6 @@ export default function Chapter3() {
                                                 className="bg-white/30 border-white/40 text-white placeholder:text-white/70 resize-none rounded-2xl"
                                                 rows={3}
                                             />
-
                                             {timeLeft !== null && (
                                                 <div className="text-center">
                                                     <div className="text-white/90 text-sm font-medium">
@@ -576,7 +870,6 @@ export default function Chapter3() {
                                                     )}
                                                 </div>
                                             )}
-
                                             <Button
                                                 onClick={() => handleInputSave(currentInteraction)}
                                                 className="w-full bg-white/30 hover:bg-white/40 text-white border-white/40 rounded-2xl font-medium"
@@ -600,7 +893,7 @@ export default function Chapter3() {
                                                         transition={{ delay: index * 0.1 }}
                                                     >
                                                         <Button
-                                                            onClick={() => handleButtonClick(button["next-id"], button.label)}
+                                                            onClick={() => handleButtonClick(button)}
                                                             className="w-full bg-white/30 hover:bg-white/40 text-white border-white/40 rounded-2xl font-medium py-3 h-auto whitespace-normal"
                                                         >
                                                             {button.label}
@@ -651,7 +944,7 @@ export default function Chapter3() {
                                     {/* Loop/Continue Button */}
                                     {showButtons && currentInteraction?.button && (
                                         <Button
-                                            onClick={() => handleButtonClick(currentInteraction.button!["next-id"])}
+                                            onClick={() => handleButtonClick(currentInteraction.button!)}
                                             className="w-full bg-white/30 hover:bg-white/40 text-white border-white/40 rounded-2xl font-medium"
                                         >
                                             {currentInteraction.button.label}
@@ -672,7 +965,7 @@ export default function Chapter3() {
                             className="h-full bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full"
                             initial={{ width: 0 }}
                             animate={{
-                                width: `${Math.min(100, (Object.keys(flowData.interactions).indexOf(currentStep) / Object.keys(flowData.interactions).length) * 100)}%`,
+                                width: `${Math.min(100, (Object.keys(flowData.interactions).indexOf(currentInteractionId) / Object.keys(flowData.interactions).length) * 100)}%`,
                             }}
                             transition={{ duration: 0.5 }}
                         />
