@@ -333,34 +333,37 @@ export default function Chapter2() {
     }, [audioInitialized])
 
     useEffect(() => {
-        loadFlowData()
-    }, [])
+        const loadFlowData = async () => {
+            try {
+                const response = await fetch("/data/chapter2-flow.json");
+                if (!response.ok) throw new Error("Failed to load flow data");
+                const data: FlowData = await response.json();
+                if (!mountedRef.current) return;
 
-    const loadFlowData = async () => {
-        try {
-            const response = await fetch("/data/chapter2-flow.json")
-            if (!response.ok) throw new Error("Failed to load flow data")
-            const data: FlowData = await response.json()
-            if (!mountedRef.current) return
+                setFlowData(data);
 
-            setFlowData(data)
+                const savedProgress = loadProgressFromLocalStorage();
+                if (savedProgress) {
+                    setCurrentInteractionId(savedProgress.currentInteractionId);
+                    setSavedUserMessage(savedProgress.savedUserMessage);
+                    setHasStartedExperience(savedProgress.hasStartedExperience);
 
-            // Load progress from localStorage after flow data is loaded
-            const savedProgress = loadProgressFromLocalStorage()
-            if (savedProgress) {
-                setCurrentInteractionId(savedProgress.currentInteractionId)
-                setSavedUserMessage(savedProgress.savedUserMessage)
-                setHasStartedExperience(savedProgress.hasStartedExperience)
+                    // nastav príznak, že je potrebná nová interakcia
+                    setAudioInitialized(false);
+                }
+
+                setIsLoading(false);
+            } catch (error) {
+                console.error("Error loading flow data:", error);
+                if (mountedRef.current) {
+                    setIsLoading(false);
+                }
             }
+        };
 
-            setIsLoading(false)
-        } catch (error) {
-            console.error("Error loading flow data:", error)
-            if (mountedRef.current) {
-                setIsLoading(false)
-            }
-        }
-    }
+        loadFlowData();
+    }, []);
+
 
     // Enhanced saveToFirestore to include choice data
     const saveToFirestore = async (
@@ -888,6 +891,30 @@ export default function Chapter2() {
             </div>
         )
     }
+
+    if (hasStartedExperience && !audioInitialized) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
+                <Card className="w-full max-w-md bg-white/10 backdrop-blur-lg border-white/20 shadow-2xl">
+                    <CardContent className="p-8 text-center">
+                        <h2 className="text-2xl font-bold text-white mb-4">Pokračovať v zážitku?</h2>
+                        <p className="text-white/80 mb-6">Klikni na tlačidlo nižšie pre pokračovanie.</p>
+                        <Button
+                            onClick={async () => {
+                                await initializeAudio();
+                                setAudioInitialized(true);
+                                processInteraction(flowData!.interactions[currentInteractionId]);
+                            }}
+                            className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30 transition-all duration-200 hover:scale-105"
+                        >
+                            Pokračovať
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
 
     const currentInteraction = flowData.interactions[currentInteractionId]
 
