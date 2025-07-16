@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect, useRef, useCallback } from "react"
 import { collection, addDoc, serverTimestamp, doc, runTransaction } from "firebase/firestore"
 import { db } from "@/lib/firebase"
@@ -35,7 +34,6 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
                     />
                 ))}
             </div>
-
             {/* Floating emojis */}
             <div className="absolute inset-0">
                 {["🌟", "✨", "💫", "🎵", "🎶", "💝"].map((emoji, i) => (
@@ -53,12 +51,10 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
                     </div>
                 ))}
             </div>
-
             {/* Central phone character with pulsing effect */}
             <div className="relative z-10">
                 <div className={`relative transition-all duration-1000 ${isActive ? "animate-pulse scale-110" : "scale-100"}`}>
                     <img src="/images/phone-character-simple.png" alt="Phone Character" className="w-24 h-24 drop-shadow-lg" />
-
                     {/* Animated rings around character */}
                     {isActive && (
                         <>
@@ -74,7 +70,6 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
                         </>
                     )}
                 </div>
-
                 {/* Sound waves */}
                 {isActive && (
                     <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
@@ -95,7 +90,6 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
                     </div>
                 )}
             </div>
-
             {/* Floating hearts */}
             <div className="absolute inset-0 pointer-events-none">
                 {["💕", "💖", "💗"].map((heart, i) => (
@@ -113,7 +107,6 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
                     </div>
                 ))}
             </div>
-
             {/* Gentle sparkles */}
             <div className="absolute inset-0">
                 {[...Array(8)].map((_, i) => (
@@ -141,7 +134,6 @@ const AnimationStyles = () => (
             0%, 100% { opacity: 0.3; transform: scale(0.8); }
             50% { opacity: 1; transform: scale(1.2); }
         }
-
         .animate-twinkle {
             animation: twinkle 1.5s ease-in-out infinite;
         }
@@ -202,18 +194,36 @@ export default function Chapter3() {
     const [audioInitialized, setAudioInitialized] = useState(false)
     const [hasStartedExperience, setHasStartedExperience] = useState(false)
     const [selectedOptions, setSelectedOptions] = useState<string[]>([])
+    const [isDesktop, setIsDesktop] = useState(false)
 
     // Audio channels
     const voiceAudioRef = useRef<HTMLAudioElement | null>(null)
     const sfxAudioRef = useRef<HTMLAudioElement | null>(null)
-
     const timeoutRef = useRef<NodeJS.Timeout | null>(null)
     const typingIntervalRef = useRef<NodeJS.Timeout | null>(null)
     const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
     const skipFlagRef = useRef(false)
     const mountedRef = useRef(true)
-
     const router = useRouter()
+
+    // Detect if device is desktop/laptop
+    useEffect(() => {
+        const checkIsDesktop = () => {
+            // Check screen width (notebooks are typically 1024px+)
+            const isLargeScreen = window.innerWidth >= 1024
+            // Check if device has hover capability (typically desktop/laptop)
+            const hasHover = window.matchMedia("(hover: hover)").matches
+            // Check if device has fine pointer (mouse)
+            const hasFinePointer = window.matchMedia("(pointer: fine)").matches
+
+            setIsDesktop(isLargeScreen && hasHover && hasFinePointer)
+        }
+
+        checkIsDesktop()
+        window.addEventListener("resize", checkIsDesktop)
+
+        return () => window.removeEventListener("resize", checkIsDesktop)
+    }, [])
 
     // Cleanup function
     const cleanup = useCallback(() => {
@@ -242,7 +252,6 @@ export default function Chapter3() {
     // Initialize audio context for mobile Safari
     const initializeAudio = useCallback(async () => {
         if (audioInitialized) return
-
         try {
             // Play a silent audio to unlock audio context
             const silentAudio = new Audio(
@@ -270,9 +279,7 @@ export default function Chapter3() {
             const response = await fetch("/data/chapter3-flow.json")
             if (!response.ok) throw new Error("Failed to load flow data")
             const data: FlowData = await response.json()
-
             if (!mountedRef.current) return
-
             setFlowData(data)
             setIsLoading(false)
         } catch (error) {
@@ -299,12 +306,10 @@ export default function Chapter3() {
                 sessionId: `session_${Date.now()}`,
                 chapter: "chapter3",
             }
-
             // Add choice data if provided
             if (choiceData) {
                 docData.choice = choiceData
             }
-
             await addDoc(collection(db, "chapter3"), docData)
         } catch (error) {
             console.error("Error saving to Firestore:", error)
@@ -313,14 +318,11 @@ export default function Chapter3() {
 
     const typeText = useCallback((text: string, callback?: () => void) => {
         if (!mountedRef.current) return
-
         setIsTyping(true)
         setDisplayText("")
-
         if (typingIntervalRef.current) {
             clearInterval(typingIntervalRef.current)
         }
-
         if (skipFlagRef.current) {
             setDisplayText(text)
             setIsTyping(false)
@@ -328,10 +330,8 @@ export default function Chapter3() {
             if (callback) callback()
             return
         }
-
         let charIndex = 0
         let currentTypedText = ""
-
         typingIntervalRef.current = setInterval(() => {
             if (!mountedRef.current) {
                 if (typingIntervalRef.current) {
@@ -339,7 +339,6 @@ export default function Chapter3() {
                 }
                 return
             }
-
             if (charIndex < text.length) {
                 currentTypedText += text[charIndex]
                 setDisplayText(currentTypedText)
@@ -364,10 +363,8 @@ export default function Chapter3() {
                 )
                 return
             }
-
             let audioRef: React.MutableRefObject<HTMLAudioElement | null>
             let volume: number
-
             switch (channel) {
                 case "voice":
                     audioRef = voiceAudioRef
@@ -378,19 +375,16 @@ export default function Chapter3() {
                     volume = 0.7
                     break
             }
-
             // Stop current audio on this channel
             if (audioRef.current) {
                 audioRef.current.pause()
                 audioRef.current.src = ""
             }
-
             try {
                 const audio = new Audio(`/audio/${src}`)
                 audio.loop = loop
                 audio.volume = volume
                 audio.preload = "auto"
-
                 // Handle audio end event
                 audio.onended = () => {
                     if (mountedRef.current && audioRef.current === audio) {
@@ -402,7 +396,6 @@ export default function Chapter3() {
                         }
                     }
                 }
-
                 audioRef.current = audio
                 await audio.play()
             } catch (error) {
@@ -426,9 +419,7 @@ export default function Chapter3() {
     const processInteraction = useCallback(
         (interaction: Interaction) => {
             if (!mountedRef.current) return
-
             console.log("Processing interaction:", currentInteractionId, interaction.type)
-
             // Clear timeouts and intervals
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current)
@@ -442,7 +433,6 @@ export default function Chapter3() {
                 clearInterval(countdownIntervalRef.current)
                 countdownIntervalRef.current = null
             }
-
             // Stop all audio
             stopAllAudio()
             setShowButtons(false)
@@ -451,36 +441,29 @@ export default function Chapter3() {
             setSelectedOptions([])
             skipFlagRef.current = false
             setIsTyping(false)
-
             switch (interaction.type) {
                 case "voice":
                     if (interaction.sound) {
                         const onAudioEnd = () => {
                             if (!mountedRef.current) return
-
                             if (interaction.animation?.type === "choice" || interaction.animation?.type === "multiselect") {
                                 setShowButtons(true)
                             } else if (interaction["next-id"]) {
                                 setCurrentInteractionId(interaction["next-id"]!)
                             }
                         }
-
                         playAudio(interaction.sound, "voice", interaction.loop, onAudioEnd)
                     }
-
                     // Voice interactions show text immediately if present
                     setDisplayText(interaction.text || "")
-
                     // Handle button display for looping voice (immediate for persistent buttons)
                     if (interaction.button) {
                         setShowButtons(true)
                     }
                     break
-
                 case "message":
                     typeText(interaction.text || "", () => {
                         if (!mountedRef.current) return
-
                         if (interaction.animation?.type === "choice" || interaction.animation?.type === "multiselect") {
                             timeoutRef.current = setTimeout(() => {
                                 if (mountedRef.current) setShowButtons(true)
@@ -497,7 +480,6 @@ export default function Chapter3() {
                         }
                     })
                     break
-
                 case "display":
                     setDisplayText(interaction.text || "")
                     if (interaction["next-id"]) {
@@ -511,7 +493,6 @@ export default function Chapter3() {
                         )
                     }
                     break
-
                 case "input":
                     setDisplayText(interaction.text || interaction.label || "")
                     setInputValue("")
@@ -521,7 +502,6 @@ export default function Chapter3() {
                         countdownIntervalRef.current = setInterval(() => {
                             setTimeLeft((prev) => {
                                 if (!mountedRef.current || prev === null) return null
-
                                 if (prev <= 1) {
                                     handleInputSave(interaction)
                                     return null
@@ -534,7 +514,6 @@ export default function Chapter3() {
                         }, 1000)
                     }
                     break
-
                 case "pause":
                     setDisplayText("...")
                     if (interaction["next-id"]) {
@@ -548,7 +527,6 @@ export default function Chapter3() {
                         )
                     }
                     break
-
                 case "loop":
                     setDisplayText(interaction.text || "")
                     setShowButtons(true)
@@ -564,14 +542,11 @@ export default function Chapter3() {
                 clearInterval(countdownIntervalRef.current)
                 countdownIntervalRef.current = null
             }
-
             if (inputValue.trim()) {
                 await saveToFirestore(inputValue, currentInteractionId, "input")
             }
-
             setTimeLeft(null)
             setShowWarning(false)
-
             if (interaction["next-id"]) {
                 setCurrentInteractionId(interaction["next-id"])
             }
@@ -584,13 +559,11 @@ export default function Chapter3() {
         async (button: { label: string; "next-id": string }) => {
             await initializeAudio() // Ensure audio is initialized on any user interaction
             stopAllAudio()
-
             // Save choice to Firestore
             await saveToFirestore("", currentInteractionId, "choice", {
                 label: button.label,
                 nextId: button["next-id"],
             })
-
             setCurrentInteractionId(button["next-id"])
         },
         [initializeAudio, stopAllAudio, currentInteractionId],
@@ -612,19 +585,15 @@ export default function Chapter3() {
 
     const handleSkip = useCallback(() => {
         if (!flowData || !currentInteractionId) return
-
         const currentInteraction = flowData.interactions[currentInteractionId]
-
         if (isTyping && typingIntervalRef.current && currentInteraction.type === "message") {
             skipFlagRef.current = true
             typeText(currentInteraction.text || "")
         }
-
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current)
             timeoutRef.current = null
         }
-
         if (currentInteraction["next-id"]) {
             setCurrentInteractionId(currentInteraction["next-id"])
         }
@@ -633,24 +602,19 @@ export default function Chapter3() {
     const updateChapterCompletionStatus = useCallback(async () => {
         const storedRoomId = localStorage.getItem("dotykace_roomId")
         const storedPlayerId = localStorage.getItem("dotykace_playerId")
-
         if (!storedRoomId || !storedPlayerId) {
             console.warn("Room ID or Player ID not found in localStorage. Cannot update Firestore.")
             return
         }
-
         const roomRef = doc(db, "rooms", storedRoomId)
-
         try {
             await runTransaction(db, async (transaction) => {
                 const roomDoc = await transaction.get(roomRef)
                 if (!roomDoc.exists()) {
                     throw "Room document does not exist!"
                 }
-
                 const roomData = roomDoc.data() as DotykaceRoom
                 const updatedParticipants = [...(roomData.participants || [])]
-
                 const participantIndex = updatedParticipants.findIndex((p) => p.id === storedPlayerId)
                 if (participantIndex !== -1) {
                     const participant = updatedParticipants[participantIndex]
@@ -660,12 +624,10 @@ export default function Chapter3() {
                     participant.currentChapter = 4
                     updatedParticipants[participantIndex] = participant
                 }
-
                 transaction.update(roomRef, {
                     participants: updatedParticipants,
                 })
             })
-
             console.log("Firestore updated successfully: Chapter 3 completed, Chapter 4 unlocked.")
             router.push("/menu")
         } catch (e) {
@@ -745,7 +707,6 @@ export default function Chapter3() {
     }
 
     const currentInteraction = flowData.interactions[currentInteractionId]
-
     if (currentInteractionId === "end") {
         return (
             <div className="min-h-screen bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 flex items-center justify-center p-4">
@@ -765,6 +726,7 @@ export default function Chapter3() {
     }
 
     const showSkipButton =
+        isDesktop && // Only show on desktop/laptop devices
         currentInteraction &&
         currentInteraction["next-id"] &&
         !currentInteraction.animation?.buttons &&
@@ -776,7 +738,6 @@ export default function Chapter3() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 flex flex-col relative overflow-hidden">
             <AnimationStyles />
-
             {/* Decorative background pattern */}
             <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-300 rounded-full"></div>
@@ -800,7 +761,7 @@ export default function Chapter3() {
                 </Button>
             </div>
 
-            {/* Skip Button */}
+            {/* Skip Button - Only visible on desktop/laptop */}
             {showSkipButton && (
                 <div className="absolute bottom-4 right-4 z-20">
                     <Button
