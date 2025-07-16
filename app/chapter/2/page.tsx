@@ -1,14 +1,13 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect, useRef, useCallback } from "react"
 import { collection, addDoc, serverTimestamp, doc, runTransaction } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import {Textarea} from "@/components/ui/textarea"
-import { Volume2, VolumeX, SkipForward, Star } from "lucide-react" // Import Star icon
+import { Textarea } from "@/components/ui/textarea"
+import { Volume2, VolumeX, SkipForward, Star } from "lucide-react"
 import { useRouter } from "next/navigation"
 import type { DotykaceRoom } from "@/lib/dotykace-types"
 
@@ -34,7 +33,6 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
                     />
                 ))}
             </div>
-
             {/* Floating emojis */}
             <div className="absolute inset-0">
                 {["💫", "✨", "🌟", "💝", "🎵", "🎶"].map((emoji, i) => (
@@ -52,12 +50,10 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
                     </div>
                 ))}
             </div>
-
             {/* Central phone character with pulsing effect */}
             <div className="relative z-10">
                 <div className={`relative transition-all duration-1000 ${isActive ? "animate-pulse scale-110" : "scale-100"}`}>
                     <img src="/images/phone-character-simple.png" alt="Phone Character" className="w-24 h-24 drop-shadow-lg" />
-
                     {/* Animated rings around character */}
                     {isActive && (
                         <>
@@ -73,7 +69,6 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
                         </>
                     )}
                 </div>
-
                 {/* Sound waves */}
                 {isActive && (
                     <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
@@ -94,7 +89,6 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
                     </div>
                 )}
             </div>
-
             {/* Floating hearts */}
             <div className="absolute inset-0 pointer-events-none">
                 {["💕", "💖", "💗"].map((heart, i) => (
@@ -112,7 +106,6 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
                     </div>
                 ))}
             </div>
-
             {/* Gentle sparkles */}
             <div className="absolute inset-0">
                 {[...Array(8)].map((_, i) => (
@@ -160,11 +153,9 @@ const AnimationStyles = () => (
             0%, 100% { opacity: 0.3; transform: scale(0.8); }
             50% { opacity: 1; transform: scale(1.2); }
         }
-
         .animate-twinkle {
             animation: twinkle 1.5s ease-in-out infinite;
         }
-
         @keyframes star-scale-pulse {
             0% { transform: scale(0.1); opacity: 0; }
             20% { transform: scale(1.2); opacity: 1; } /* Rapid growth */
@@ -175,12 +166,10 @@ const AnimationStyles = () => (
         .animate-star-scale-pulse {
             animation: star-scale-pulse 1.5s ease-out forwards, pulse-opacity 2s infinite alternate 1.5s; /* Initial growth, then continuous pulse */
         }
-
         @keyframes pulse-opacity {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.8; }
         }
-
         @keyframes ping-slow {
             0% { transform: scale(0.5); opacity: 0.5; }
             100% { transform: scale(1.5); opacity: 0; }
@@ -217,6 +206,8 @@ interface Interaction {
         label: string
         "next-id": string
         persistent?: boolean
+        "show-after-first-play"?: boolean // New property for delayed button display
+        wait_to_show?: number // New property for timed button display
     }
     source?: string
 }
@@ -225,6 +216,15 @@ interface FlowData {
     id: string
     startInteractionId: string
     interactions: Record<string, Interaction>
+}
+
+// LocalStorage keys
+const CHAPTER2_PROGRESS_KEY = "chapter2_progress"
+
+interface Chapter2Progress {
+    currentInteractionId: string
+    savedUserMessage: string
+    hasStartedExperience: boolean
 }
 
 export default function Chapter2() {
@@ -242,21 +242,53 @@ export default function Chapter2() {
     const [audioInitialized, setAudioInitialized] = useState(false)
     const [hasStartedExperience, setHasStartedExperience] = useState(false)
     const [isMusicPlaying, setIsMusicPlaying] = useState(false) // New state for music star animation
+    const [hasPlayedOnce, setHasPlayedOnce] = useState(false) // Track if audio has played once for delayed button
 
     // Only two audio channels now: voice and sfx
     const voiceAudioRef = useRef<HTMLAudioElement | null>(null) // For voice tracks
     const sfxAudioRef = useRef<HTMLAudioElement | null>(null) // For sound effects
-
     const timeoutRef = useRef<NodeJS.Timeout | null>(null)
     const typingIntervalRef = useRef<NodeJS.Timeout | null>(null)
     const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
+    const buttonTimeoutRef = useRef<NodeJS.Timeout | null>(null) // New ref for button timing
     const skipFlagRef = useRef(false)
     const mountedRef = useRef(true)
-
     const router = useRouter()
 
+    // LocalStorage functions
+    const saveProgressToLocalStorage = useCallback((interactionId: string, message: string, started: boolean) => {
+        if (typeof window !== "undefined") {
+            const progress: Chapter2Progress = {
+                currentInteractionId: interactionId,
+                savedUserMessage: message,
+                hasStartedExperience: started,
+            }
+            localStorage.setItem(CHAPTER2_PROGRESS_KEY, JSON.stringify(progress))
+        }
+    }, [])
+
+    const loadProgressFromLocalStorage = useCallback((): Chapter2Progress | null => {
+        if (typeof window !== "undefined") {
+            try {
+                const saved = localStorage.getItem(CHAPTER2_PROGRESS_KEY)
+                if (saved) {
+                    return JSON.parse(saved) as Chapter2Progress
+                }
+            } catch (error) {
+                console.warn("Failed to load progress from localStorage:", error)
+            }
+        }
+        return null
+    }, [])
+
+    const clearProgressFromLocalStorage = useCallback(() => {
+        if (typeof window !== "undefined") {
+            localStorage.removeItem(CHAPTER2_PROGRESS_KEY)
+        }
+    }, [])
+
     // Cleanup function
-    const cleanup = useCallback(() => {
+    useCallback(() => {
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current)
             timeoutRef.current = null
@@ -269,6 +301,10 @@ export default function Chapter2() {
             clearInterval(countdownIntervalRef.current)
             countdownIntervalRef.current = null
         }
+        if (buttonTimeoutRef.current) {
+            clearTimeout(buttonTimeoutRef.current)
+            buttonTimeoutRef.current = null
+        }
         // Clean up all remaining audio channels
         ;[voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
             if (audioRef.current) {
@@ -277,9 +313,8 @@ export default function Chapter2() {
                 audioRef.current = null
             }
         })
-    }, [])
-
-    // Initialize audio context for mobile Safari
+    }, []);
+// Initialize audio context for mobile Safari
     const initializeAudio = useCallback(async () => {
         if (audioInitialized) return
 
@@ -299,21 +334,25 @@ export default function Chapter2() {
 
     useEffect(() => {
         loadFlowData()
-        return () => {
-            mountedRef.current = false
-            cleanup()
-        }
-    }, [cleanup])
+    }, [])
 
     const loadFlowData = async () => {
         try {
             const response = await fetch("/data/chapter2-flow.json")
             if (!response.ok) throw new Error("Failed to load flow data")
             const data: FlowData = await response.json()
-
             if (!mountedRef.current) return
 
             setFlowData(data)
+
+            // Load progress from localStorage after flow data is loaded
+            const savedProgress = loadProgressFromLocalStorage()
+            if (savedProgress) {
+                setCurrentInteractionId(savedProgress.currentInteractionId)
+                setSavedUserMessage(savedProgress.savedUserMessage)
+                setHasStartedExperience(savedProgress.hasStartedExperience)
+            }
+
             setIsLoading(false)
         } catch (error) {
             console.error("Error loading flow data:", error)
@@ -417,10 +456,11 @@ export default function Chapter2() {
                     break
             }
 
-            // Stop current audio on this channel
+            // Stop current audio on this channel and clear previous onended handler
             if (audioRef.current) {
                 audioRef.current.pause()
                 audioRef.current.src = ""
+                audioRef.current.onended = null // Clear previous onended handler
             }
 
             try {
@@ -428,17 +468,6 @@ export default function Chapter2() {
                 audio.loop = loop
                 audio.volume = volume
                 audio.preload = "auto"
-
-                // Handle voice looping
-                if (channel === "voice" && loop) {
-                    audio.onended = () => {
-                        if (mountedRef.current && audioRef.current === audio) {
-                            audio.currentTime = 0
-                            audio.play().catch(console.error)
-                        }
-                    }
-                }
-
                 audioRef.current = audio
                 await audio.play()
             } catch (error) {
@@ -478,6 +507,10 @@ export default function Chapter2() {
                 clearInterval(countdownIntervalRef.current)
                 countdownIntervalRef.current = null
             }
+            if (buttonTimeoutRef.current) {
+                clearTimeout(buttonTimeoutRef.current)
+                buttonTimeoutRef.current = null
+            }
 
             // Stop all audio
             stopAllAudio()
@@ -487,18 +520,43 @@ export default function Chapter2() {
             skipFlagRef.current = false
             setIsTyping(false)
             setIsMusicPlaying(false) // Reset music animation state
+            setHasPlayedOnce(false) // Reset first play tracking for the new interaction
 
             switch (interaction.type) {
                 case "voice":
                     if (interaction.sound) {
                         playAudio(interaction.sound, "voice", interaction.loop)
-                    }
-                    // Voice interactions show text immediately if present
-                    setDisplayText(interaction.text || "")
 
-                    // Handle button display for looping voice
+                        // Special handling for looping voice with delayed button
+                        if (interaction.loop && interaction.button?.["show-after-first-play"]) {
+                            // Set onended handler *after* playAudio has set voiceAudioRef.current
+                            if (voiceAudioRef.current) {
+                                voiceAudioRef.current.onended = () => {
+                                    if (mountedRef.current && voiceAudioRef.current) {
+                                        setHasPlayedOnce(true) // This will trigger the button display
+                                        voiceAudioRef.current.currentTime = 0 // Reset for next loop
+                                        voiceAudioRef.current.play().catch(console.error)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    setDisplayText(interaction.text || "")
                     if (interaction.button) {
-                        setShowButtons(true)
+                        // Handle different button display modes
+                        if (interaction.button["show-after-first-play"]) {
+                            // Don't show button immediately, wait for first play to complete
+                        } else if (interaction.button["wait_to_show"]) {
+                            // Show button after specified seconds
+                            buttonTimeoutRef.current = setTimeout(() => {
+                                if (mountedRef.current) {
+                                    setShowButtons(true)
+                                }
+                            }, interaction.button["wait_to_show"] * 1000)
+                        } else {
+                            // Show button immediately
+                            setShowButtons(true)
+                        }
                     } else if (interaction["next-id"]) {
                         timeoutRef.current = setTimeout(
                             () => {
@@ -587,6 +645,7 @@ export default function Chapter2() {
                     setDisplayText(interaction.text || interaction.label || "")
                     setInputValue("")
                     setShowButtons(true)
+
                     if (interaction.duration) {
                         setTimeLeft(interaction.duration)
                         countdownIntervalRef.current = setInterval(() => {
@@ -597,9 +656,11 @@ export default function Chapter2() {
                                     handleInputSave(interaction)
                                     return null
                                 }
+
                                 if (interaction["warning-after"] && prev === interaction["warning-after"]) {
                                     setShowWarning(true)
                                 }
+
                                 return prev - 1
                             })
                         }, 1000)
@@ -623,6 +684,30 @@ export default function Chapter2() {
         },
         [currentInteractionId, typeText, playAudio, stopAllAudio, savedUserMessage],
     )
+
+    // Effect to handle delayed button display for voice interactions
+    useEffect(() => {
+        if (!flowData || !currentInteractionId) return
+
+        const currentInteraction = flowData.interactions[currentInteractionId]
+        if (currentInteraction?.type === "voice" && currentInteraction.button?.["show-after-first-play"] && hasPlayedOnce) {
+            setShowButtons(true)
+        }
+    }, [hasPlayedOnce, currentInteractionId, flowData])
+
+    // Save progress to localStorage whenever currentInteractionId or savedUserMessage changes
+    useEffect(() => {
+        if (currentInteractionId && hasStartedExperience) {
+            saveProgressToLocalStorage(currentInteractionId, savedUserMessage, hasStartedExperience)
+        }
+    }, [currentInteractionId, savedUserMessage, hasStartedExperience, saveProgressToLocalStorage])
+
+    // Auto-initialize audio and process interaction when loading from localStorage
+    useEffect(() => {
+        if (hasStartedExperience && !audioInitialized) {
+            initializeAudio()
+        }
+    }, [hasStartedExperience, audioInitialized, initializeAudio])
 
     const handleInputSave = useCallback(
         async (interaction: Interaction) => {
@@ -690,7 +775,9 @@ export default function Chapter2() {
         const storedPlayerId = localStorage.getItem("dotykace_playerId")
 
         if (!storedRoomId || !storedPlayerId) {
-            console.warn("Room ID or Player ID not found in localStorage. Cannot update Firestore.")
+            console.warn("Room ID or Player ID not found in localStorage. Redirecting to menu anyway.")
+            clearProgressFromLocalStorage()
+            router.push("/menu")
             return
         }
 
@@ -700,13 +787,13 @@ export default function Chapter2() {
             await runTransaction(db, async (transaction) => {
                 const roomDoc = await transaction.get(roomRef)
                 if (!roomDoc.exists()) {
-                    throw "Room document does not exist!"
+                    throw new Error("Room document does not exist!")
                 }
 
                 const roomData = roomDoc.data() as DotykaceRoom
                 const updatedParticipants = [...(roomData.participants || [])]
-
                 const participantIndex = updatedParticipants.findIndex((p) => p.id === storedPlayerId)
+
                 if (participantIndex !== -1) {
                     const participant = updatedParticipants[participantIndex]
                     const completedChapters = new Set(participant.completedChapters || [])
@@ -722,11 +809,15 @@ export default function Chapter2() {
             })
 
             console.log("Firestore updated successfully: Chapter 2 completed, Chapter 3 unlocked.")
-            router.push("/menu")
         } catch (e) {
             console.error("Firestore transaction failed: ", e)
+            // Continue anyway - don't block user progression
+        } finally {
+            // Always clear progress and redirect, regardless of Firestore success/failure
+            clearProgressFromLocalStorage()
+            router.push("/menu")
         }
-    }, [router])
+    }, [router, clearProgressFromLocalStorage])
 
     // Process current interaction only if experience has started
     useEffect(() => {
@@ -738,7 +829,12 @@ export default function Chapter2() {
     // Handle chapter completion
     useEffect(() => {
         if (flowData && currentInteractionId === "end") {
-            updateChapterCompletionStatus()
+            // Add a small delay before updating completion status to ensure UI shows completion message
+            const completionTimeout = setTimeout(() => {
+                updateChapterCompletionStatus()
+            }, 2000)
+
+            return () => clearTimeout(completionTimeout)
         }
     }, [currentInteractionId, flowData, updateChapterCompletionStatus])
 
@@ -801,13 +897,14 @@ export default function Chapter2() {
                 <Card className="w-full max-w-md bg-white/10 backdrop-blur-lg border-white/20">
                     <CardContent className="p-8 text-center">
                         <h2 className="text-2xl font-bold text-white mb-4">Chapter 2 Dokončený</h2>
-                        <p className="text-white/80 mb-6">Aktualizujem stav...</p>
+                        <p className="text-white/80 mb-6">Presmerovávam do menu...</p>
                     </CardContent>
                 </Card>
             </div>
         )
     }
 
+    // Show skip button only for desktop/laptop screens (lg and above)
     const showSkipButton =
         currentInteraction &&
         currentInteraction["next-id"] &&
@@ -835,9 +932,9 @@ export default function Chapter2() {
                 </Button>
             </div>
 
-            {/* Skip Button */}
+            {/* Skip Button - Only visible on desktop/laptop screens (lg and above) */}
             {showSkipButton && (
-                <div className="absolute bottom-4 right-4 z-20">
+                <div className="absolute bottom-4 right-4 z-20 hidden lg:block">
                     <Button
                         onClick={handleSkip}
                         className="bg-white/20 hover:bg-white/30 text-white border-white/30 flex items-center gap-1"
