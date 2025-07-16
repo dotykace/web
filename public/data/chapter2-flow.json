@@ -36,7 +36,7 @@
       "type": "voice",
       "duration": 67,
       "sound": "track2a.mp3",
-      "next-id": "3.0"
+      "next-id": "3.1"
     },
     "2.2b": {
       "type": "voice",
@@ -121,6 +121,7 @@
       "sound": "track7_loop.mp3",
       "loop": true,
       "button": {
+        "wait_to_show": 25,
         "label": "Pokračovat",
         "next-id": "7.1",
         "persistent": true
@@ -132,6 +133,7 @@
       "sound": "track8_loop.mp3",
       "loop": true,
       "button": {
+        "wait_to_show": 30,
         "label": "Pokračovat",
         "next-id": "7.2",
         "persistent": true
@@ -159,6 +161,7 @@
       "sound": "track11_loop.mp3",
       "loop": true,
       "button": {
+        "wait_to_show": 15,
         "label": "Zase spolu!",
         "next-id": "7.13"
       }
@@ -211,6 +214,7 @@
       "sound": "track13_loop.mp3",
       "loop": true,
       "button": {
+        "wait_to_show": 15,
         "label": "Pokračuj",
         "next-id": "9.0"
       }
