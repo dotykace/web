@@ -18,6 +18,7 @@ export interface DotykaceRoom {
     createdAt: Timestamp | Date
     participants: DotykaceParticipant[]
     chapterPermissions?: ChapterPermissions
+    globalUnlockedChapters?: number[] // Nové pole pre sledovanie globálne odomknutých kapitol
 }
 
 export interface DotykaceParticipant {

@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { collection, addDoc, onSnapshot, updateDoc, doc, deleteDoc, query, where } from "firebase/firestore"
+import { collection, addDoc, onSnapshot, updateDoc, doc, deleteDoc, query, where, Timestamp } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import type { DotykaceRoom, ChapterPermissions } from "@/lib/dotykace-types"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
@@ -17,6 +17,7 @@ export default function AdminPage() {
     const [newRoomName, setNewRoomName] = useState("")
     const [loading, setLoading] = useState(false)
     const [adminId, setAdminId] = useState<string | null>(null)
+    const processedRooms = useRef(new Set<string>())
     const router = useRouter()
 
     useEffect(() => {
@@ -27,10 +28,8 @@ export default function AdminPage() {
         }
         setAdminId(storedAdminId)
 
-        // Listen to rooms changes using Firestore real-time listener
         const roomsRef = collection(db, "rooms")
         const q = query(roomsRef, where("adminId", "==", storedAdminId))
-
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const roomsData = snapshot.docs.map((doc) => ({
                 docId: doc.id,
@@ -43,13 +42,66 @@ export default function AdminPage() {
         return () => unsubscribe()
     }, [router])
 
+    const ensurePlayerPermissions = async (room: DotykaceRoom) => {
+        if (!room.globalUnlockedChapters || room.globalUnlockedChapters.length === 0) return
+        if (!room.docId) return
+
+        const roomStateKey = `${room.docId}-${room.participants?.length || 0}-${room.globalUnlockedChapters.join(",")}`
+
+        if (processedRooms.current.has(roomStateKey)) return
+
+        const currentPermissions = room.chapterPermissions || {}
+        let needsUpdate = false
+        const updatedPermissions: ChapterPermissions = { ...currentPermissions }
+
+        room.participants.forEach((participant) => {
+            const playerPermissions = updatedPermissions[participant.id] || {
+                allowedChapters: [],
+                playerName: participant.name,
+            }
+
+            room.globalUnlockedChapters!.forEach((chapter) => {
+                if (!playerPermissions.allowedChapters.includes(chapter)) {
+                    playerPermissions.allowedChapters.push(chapter)
+                    needsUpdate = true
+                }
+            })
+
+            playerPermissions.allowedChapters.sort((a, b) => a - b)
+            updatedPermissions[participant.id] = playerPermissions
+        })
+
+        if (needsUpdate) {
+            try {
+                processedRooms.current.add(roomStateKey)
+                await updateDoc(doc(db, "rooms", room.docId), {
+                    chapterPermissions: updatedPermissions,
+                })
+            } catch (error) {
+                console.error("❌ Error updating player permissions:", error)
+                processedRooms.current.delete(roomStateKey)
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (processedRooms.current.size > 50) {
+            const entries = Array.from(processedRooms.current)
+            processedRooms.current.clear()
+            entries.slice(-25).forEach((entry) => processedRooms.current.add(entry))
+        }
+
+        rooms.forEach((room) => {
+            ensurePlayerPermissions(room)
+        })
+    }, [rooms])
+
     const generateRoomCode = () => {
         return Math.random().toString(36).substring(2, 6).toUpperCase()
     }
 
     const createRoom = async () => {
         if (!newRoomName.trim() || !adminId) return
-
         setLoading(true)
         try {
             const roomCode = generateRoomCode()
@@ -62,6 +114,7 @@ export default function AdminPage() {
                 createdAt: new Date(),
                 participants: [],
                 chapterPermissions: {},
+                globalUnlockedChapters: [],
             })
             setNewRoomName("")
         } catch (error) {
@@ -74,6 +127,8 @@ export default function AdminPage() {
     const deleteRoom = async (roomDocId: string) => {
         try {
             await deleteDoc(doc(db, "rooms", roomDocId))
+            const keysToDelete = Array.from(processedRooms.current).filter((key) => key.startsWith(roomDocId))
+            keysToDelete.forEach((key) => processedRooms.current.delete(key))
         } catch (error) {
             console.error("❌ Error deleting room:", error)
         }
@@ -81,8 +136,10 @@ export default function AdminPage() {
 
     const startRoom = async (roomDocId: string) => {
         try {
+            // Spusti room a automaticky odomkni introduction (kapitolu 0)
             await updateDoc(doc(db, "rooms", roomDocId), {
                 isStarted: true,
+                globalUnlockedChapters: [0],
             })
         } catch (error) {
             console.error("❌ Error starting room:", error)
@@ -93,31 +150,38 @@ export default function AdminPage() {
         try {
             const currentPermissions = room.chapterPermissions || {}
             const updatedPermissions: ChapterPermissions = { ...currentPermissions }
+            const currentGlobalUnlocked = room.globalUnlockedChapters || []
+            const updatedGlobalUnlocked = [...currentGlobalUnlocked]
 
-            // Update permissions for all participants who have completed the previous chapter
+            if (!updatedGlobalUnlocked.includes(nextChapter)) {
+                updatedGlobalUnlocked.push(nextChapter)
+                updatedGlobalUnlocked.sort((a, b) => a - b)
+            }
+
             room.participants.forEach((participant) => {
                 const completedChapters = participant.completedChapters || []
                 const previousChapter = nextChapter - 1
 
-                // Only allow next chapter if they completed the previous one
                 if (completedChapters.includes(previousChapter) || nextChapter === 1) {
                     const playerPermissions = updatedPermissions[participant.id] || {
-                        allowedChapters: [0],
+                        allowedChapters: [],
                         playerName: participant.name,
                     }
-
                     if (!playerPermissions.allowedChapters.includes(nextChapter)) {
                         playerPermissions.allowedChapters.push(nextChapter)
                         playerPermissions.allowedChapters.sort((a, b) => a - b)
                     }
-
                     updatedPermissions[participant.id] = playerPermissions
                 }
             })
 
             await updateDoc(doc(db, "rooms", room.docId!), {
                 chapterPermissions: updatedPermissions,
+                globalUnlockedChapters: updatedGlobalUnlocked,
             })
+
+            const keysToDelete = Array.from(processedRooms.current).filter((key) => key.startsWith(room.docId!))
+            keysToDelete.forEach((key) => processedRooms.current.delete(key))
         } catch (error) {
             console.error("❌ Error updating chapter permissions for all:", error)
         }
@@ -130,7 +194,7 @@ export default function AdminPage() {
 
             const currentPermissions = room.chapterPermissions || {}
             const playerPermissions = currentPermissions[participantId] || {
-                allowedChapters: [0],
+                allowedChapters: [],
                 playerName: participant.name,
             }
 
@@ -154,21 +218,23 @@ export default function AdminPage() {
 
     const exportData = async (room: DotykaceRoom) => {
         try {
-            // Create CSV data from participants
             const csvData = [
                 ["Meno", "Čas pripojenia", "Aktuálna kapitola", "Dokončené kapitoly", "Povolené kapitoly"],
                 ...room.participants.map((p) => {
                     const permissions = room.chapterPermissions?.[p.id]
                     return [
                         p.name,
-                        p.joinedAt?.toDate?.()?.toLocaleString() || "N/A",
+                        p.joinedAt
+                            ? p.joinedAt instanceof Timestamp
+                                ? p.joinedAt.toDate().toLocaleString()
+                                : p.joinedAt.toLocaleString()
+                            : "N/A",
                         p.currentChapter?.toString() || "0",
                         p.completedChapters?.join(", ") || "žiadne",
-                        permissions?.allowedChapters?.join(", ") || "0",
+                        permissions?.allowedChapters?.join(", ") || "žiadne",
                     ]
                 }),
             ]
-
             const csvContent = csvData.map((row) => row.join(",")).join("\n")
             const blob = new Blob([csvContent], { type: "text/csv" })
             const url = window.URL.createObjectURL(blob)
@@ -193,25 +259,12 @@ export default function AdminPage() {
         return titles[chapterNum] || `Chapter ${chapterNum}`
     }
 
-    const getNextChapterToUnlock = (room: DotykaceRoom) => {
-        // Find the most common completed chapter among all participants
-        const allCompletedChapters = room.participants.flatMap((p) => p.completedChapters || [])
-        const chapterCounts = allCompletedChapters.reduce(
-            (acc, chapter) => {
-                acc[chapter] = (acc[chapter] || 0) + 1
-                return acc
-            },
-            {} as Record<number, number>,
-        )
-
-        // Find the highest chapter that at least one person has completed
-        const maxCompletedChapter = Math.max(...Object.keys(chapterCounts).map(Number), -1)
-        return maxCompletedChapter + 1
+    const canUnlockChapterForAll = (room: DotykaceRoom, chapter: number) => {
+        return room.participants.some((p) => (p.completedChapters || []).includes(chapter - 1) || chapter === 1)
     }
 
-    const canUnlockChapterForAll = (room: DotykaceRoom, chapter: number) => {
-        // Check if at least one participant has completed the previous chapter
-        return room.participants.some((p) => (p.completedChapters || []).includes(chapter - 1) || chapter === 1)
+    const isChapterGloballyUnlocked = (room: DotykaceRoom, chapter: number) => {
+        return room.globalUnlockedChapters?.includes(chapter) || false
     }
 
     const logout = () => {
@@ -274,6 +327,13 @@ export default function AdminPage() {
                                         <CardDescription>
                                             Kód miestnosti: <span className="font-mono font-bold text-lg">{room.id}</span>
                                         </CardDescription>
+                                        {room.globalUnlockedChapters && room.globalUnlockedChapters.length > 0 && (
+                                            <div className="mt-2">
+                        <span className="text-sm text-green-600 font-medium">
+                          Globálne odomknuté kapitoly: {room.globalUnlockedChapters.join(", ")}
+                        </span>
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="flex gap-2">
                                         <Button
@@ -302,21 +362,31 @@ export default function AdminPage() {
                                 </div>
 
                                 {/* Bulk Actions */}
-                                {room.participants && room.participants.length > 0 && (
+                                {room.participants && room.participants.length > 0 && room.isStarted && (
                                     <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-                                        <h4 className="font-semibold text-sm mb-3 text-blue-900">Hromadné akcie:</h4>
+                                        <h4 className="font-semibold text-sm mb-3 text-blue-900">Hromadné akcie - Kapitoly:</h4>
                                         <div className="flex flex-wrap gap-2">
                                             {[1, 2, 3, 4].map((chapterNum) => (
                                                 <Button
                                                     key={chapterNum}
                                                     size="sm"
-                                                    variant="outline"
-                                                    className="bg-blue-100 hover:bg-blue-200 border-blue-300"
+                                                    variant={isChapterGloballyUnlocked(room, chapterNum) ? "default" : "outline"}
+                                                    className={
+                                                        isChapterGloballyUnlocked(room, chapterNum)
+                                                            ? "bg-green-600 hover:bg-green-700"
+                                                            : "bg-blue-100 hover:bg-blue-200 border-blue-300"
+                                                    }
                                                     onClick={() => allowNextChapterForAll(room, chapterNum)}
                                                     disabled={!canUnlockChapterForAll(room, chapterNum)}
                                                 >
-                                                    <UnlockKeyhole className="w-3 h-3 mr-1" />
-                                                    Povoliť kapitolu {chapterNum} všetkým
+                                                    {isChapterGloballyUnlocked(room, chapterNum) ? (
+                                                        <CheckCircle className="w-3 h-3 mr-1" />
+                                                    ) : (
+                                                        <UnlockKeyhole className="w-3 h-3 mr-1" />
+                                                    )}
+                                                    {isChapterGloballyUnlocked(room, chapterNum)
+                                                        ? `Kapitola ${chapterNum} odomknutá`
+                                                        : `Povoliť kapitolu ${chapterNum} všetkým`}
                                                 </Button>
                                             ))}
                                         </div>
@@ -330,7 +400,7 @@ export default function AdminPage() {
                                         <div className="grid gap-3">
                                             {room.participants.map((participant) => {
                                                 const permissions = room.chapterPermissions?.[participant.id]
-                                                const allowedChapters = permissions?.allowedChapters || [0]
+                                                const allowedChapters = permissions?.allowedChapters || []
                                                 const currentChapter = participant.currentChapter || 0
                                                 const completedChapters = participant.completedChapters || []
 
@@ -343,7 +413,6 @@ export default function AdminPage() {
                                                             </div>
                                                         </div>
 
-                                                        {/* Chapter Progress */}
                                                         <div className="space-y-2">
                                                             <div className="flex flex-wrap gap-2">
                                                                 {[0, 1, 2, 3, 4].map((chapterNum) => {
@@ -380,8 +449,6 @@ export default function AdminPage() {
                                                                                 {isCompleted && <CheckCircle className="w-3 h-3 mr-1" />}
                                                                                 {chapterNum}
                                                                             </Badge>
-
-                                                                            {/* Allow next chapter button */}
                                                                             {canUnlock && !isAllowed && chapterNum > 0 && (
                                                                                 <Button
                                                                                     size="sm"
@@ -396,7 +463,6 @@ export default function AdminPage() {
                                                                     )
                                                                 })}
                                                             </div>
-
                                                             <div className="text-xs text-gray-500">
                                 <span className="inline-flex items-center gap-1 mr-3">
                                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>

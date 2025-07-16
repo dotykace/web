@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { doc, onSnapshot, updateDoc, arrayUnion, getDoc } from "firebase/firestore"
+import { doc, onSnapshot, updateDoc, arrayUnion } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import type { DotykaceRoom, DotykaceParticipant } from "@/lib/dotykace-types"
 import { useRouter } from "next/navigation"
@@ -12,13 +12,14 @@ export default function DotykaceRoomPage() {
     const [room, setRoom] = useState<DotykaceRoom | null>(null)
     const [playerName, setPlayerName] = useState("")
     const [roomId, setRoomId] = useState("")
-    const [hasStarted, setHasStarted] = useState(false)
     const [connectionError, setConnectionError] = useState(false)
+    const hasAddedPlayer = useRef(false)
     const router = useRouter()
 
     useEffect(() => {
         const storedPlayerName = localStorage.getItem("dotykace_playerName")
         const storedRoomId = localStorage.getItem("dotykace_roomId")
+        const storedPlayerId = localStorage.getItem("dotykace_playerId")
 
         if (!storedPlayerName || !storedRoomId) {
             router.push("/")
@@ -28,29 +29,6 @@ export default function DotykaceRoomPage() {
         setPlayerName(storedPlayerName)
         setRoomId(storedRoomId)
 
-        // Fallback: Check room status every 5 seconds if real-time listener fails
-        const fallbackInterval = setInterval(async () => {
-            try {
-                const roomRef = doc(db, "rooms", storedRoomId)
-                const roomSnap = await getDoc(roomRef)
-
-                if (roomSnap.exists()) {
-                    const roomData = roomSnap.data() as DotykaceRoom
-
-                    if (roomData.isStarted && !hasStarted) {
-                        setHasStarted(true)
-                        localStorage.setItem("userName", storedPlayerName)
-                        localStorage.setItem("chapter", "0")
-                        clearInterval(fallbackInterval)
-                        router.push("/chapter/0")
-                    }
-                }
-            } catch (error) {
-                console.error("Connection check failed:", error)
-            }
-        }, 5000)
-
-        // Listen to room changes using Firestore real-time listener
         const roomRef = doc(db, "rooms", storedRoomId)
         const unsubscribe = onSnapshot(
             roomRef,
@@ -60,21 +38,21 @@ export default function DotykaceRoomPage() {
                     setRoom(roomData)
                     setConnectionError(false)
 
-                    // Check if player is already in participants
-                    const existingParticipant = roomData.participants?.find((p) => p.name === storedPlayerName)
-                    if (!existingParticipant) {
+                    // Skontroluj či hráč už existuje v miestnosti
+                    const existingParticipant = roomData.participants?.find(
+                        (p) => p.id === storedPlayerId || p.name === storedPlayerName,
+                    )
+
+                    // Pridaj hráča len ak neexistuje a ešte nebol pridaný
+                    if (!existingParticipant && !hasAddedPlayer.current) {
+                        hasAddedPlayer.current = true
                         addPlayerToRoom(storedRoomId, storedPlayerName)
-                    } else {
-                        // Store player ID for later use
-                        localStorage.setItem("dotykace_playerId", existingParticipant.id)
                     }
 
-                    // Check if game started and redirect directly to TouchThePhone chapter 0
-                    if (roomData.isStarted && !hasStarted) {
-                        setHasStarted(true)
+                    // Ak sa miestnosť spustila, automaticky začni introduction
+                    if (roomData.isStarted) {
                         localStorage.setItem("userName", storedPlayerName)
                         localStorage.setItem("chapter", "0")
-                        clearInterval(fallbackInterval)
                         router.push("/chapter/0")
                     }
                 } else {
@@ -87,36 +65,16 @@ export default function DotykaceRoomPage() {
             },
         )
 
-        return () => {
-            unsubscribe()
-            clearInterval(fallbackInterval)
-        }
-    }, [router, hasStarted])
+        return () => unsubscribe()
+    }, [router])
 
     const addPlayerToRoom = async (roomId: string, playerName: string) => {
         try {
-            console.log("➕ Adding player to room:", { roomId, playerName })
+            const newPlayerId = Date.now().toString()
+            localStorage.setItem("dotykace_playerId", newPlayerId)
 
-            // First check if player already exists
-            const roomRef = doc(db, "rooms", roomId)
-            const roomSnap = await getDoc(roomRef)
-
-            if (!roomSnap.exists()) return
-
-            const roomData = roomSnap.data() as DotykaceRoom
-            const existingParticipant = roomData.participants?.find((p) => p.name === playerName)
-
-            if (existingParticipant) {
-                // Player already exists, just store the ID
-                localStorage.setItem("dotykace_playerId", existingParticipant.id)
-                console.log("✅ Player already exists, using existing ID:", existingParticipant.id)
-                return
-            }
-
-            // Player doesn't exist, create new one
-            const playerId = Date.now().toString()
             const newParticipant: DotykaceParticipant = {
-                id: playerId,
+                id: newPlayerId,
                 name: playerName,
                 roomId,
                 joinedAt: new Date(),
@@ -127,15 +85,15 @@ export default function DotykaceRoomPage() {
                 completedChapters: [],
             }
 
+            const roomRef = doc(db, "rooms", roomId)
             await updateDoc(roomRef, {
                 participants: arrayUnion(newParticipant),
             })
 
-            // Store player ID for later use
-            localStorage.setItem("dotykace_playerId", playerId)
             console.log("✅ Player added successfully")
         } catch (error) {
-            console.error("❌ Error adding player to room:", error)
+            console.error("❌ Error adding player:", error)
+            hasAddedPlayer.current = false
         }
     }
 
@@ -173,6 +131,7 @@ export default function DotykaceRoomPage() {
                         <Clock className="w-16 h-16 mx-auto text-blue-500 mb-4" />
                         <h3 className="text-xl font-semibold text-gray-900 mb-2">Čakáme na začiatok</h3>
                         <p className="text-gray-600 mb-4">Administrátor ešte nespustil TouchThePhone zážitok</p>
+
                         <div className="text-sm text-gray-500 mb-4">
                             Pripojený ako: <span className="font-semibold">{playerName}</span>
                         </div>
@@ -183,7 +142,10 @@ export default function DotykaceRoomPage() {
                                 <h4 className="text-sm font-semibold text-gray-700 mb-2">Pripojení hráči:</h4>
                                 <div className="flex flex-wrap gap-2 justify-center">
                                     {room.participants.map((participant, index) => (
-                                        <div key={index} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                                        <div
+                                            key={participant.id || index}
+                                            className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                                        >
                                             {participant.name}
                                         </div>
                                     ))}
