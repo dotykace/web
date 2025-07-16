@@ -7,10 +7,189 @@ import { collection, addDoc, serverTimestamp, doc, runTransaction } from "fireba
 import { db } from "@/lib/firebase"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Textarea } from "@/components/ui/textarea"
-import { Volume2, VolumeX, SkipForward } from "lucide-react"
+import {Textarea} from "@/components/ui/textarea"
+import { Volume2, VolumeX, SkipForward, Star } from "lucide-react" // Import Star icon
 import { useRouter } from "next/navigation"
 import type { DotykaceRoom } from "@/lib/dotykace-types"
+
+// Animated Voice Visualization Component (unchanged)
+const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
+    return (
+        <div className="relative w-full h-48 flex items-center justify-center overflow-hidden">
+            {/* Background animated circles */}
+            <div className="absolute inset-0">
+                {[...Array(6)].map((_, i) => (
+                    <div
+                        key={i}
+                        className={`absolute rounded-full bg-gradient-to-r from-purple-400/20 to-pink-400/20 animate-pulse`}
+                        style={{
+                            width: `${60 + i * 20}px`,
+                            height: `${60 + i * 20}px`,
+                            left: "50%",
+                            top: "50%",
+                            transform: "translate(-50%, -50%)",
+                            animationDelay: `${i * 0.3}s`,
+                            animationDuration: `${2 + i * 0.5}s`,
+                        }}
+                    />
+                ))}
+            </div>
+
+            {/* Floating emojis */}
+            <div className="absolute inset-0">
+                {["💫", "✨", "🌟", "💝", "🎵", "🎶"].map((emoji, i) => (
+                    <div
+                        key={i}
+                        className={`absolute text-2xl animate-bounce ${isActive ? "opacity-80" : "opacity-40"}`}
+                        style={{
+                            left: `${20 + ((i * 15) % 60)}%`,
+                            top: `${15 + ((i * 20) % 50)}%`,
+                            animationDelay: `${i * 0.5}s`,
+                            animationDuration: `${1.5 + (i % 3) * 0.5}s`,
+                        }}
+                    >
+                        {emoji}
+                    </div>
+                ))}
+            </div>
+
+            {/* Central phone character with pulsing effect */}
+            <div className="relative z-10">
+                <div className={`relative transition-all duration-1000 ${isActive ? "animate-pulse scale-110" : "scale-100"}`}>
+                    <img src="/images/phone-character-simple.png" alt="Phone Character" className="w-24 h-24 drop-shadow-lg" />
+
+                    {/* Animated rings around character */}
+                    {isActive && (
+                        <>
+                            <div className="absolute inset-0 rounded-full border-2 border-yellow-300/50 animate-ping" />
+                            <div
+                                className="absolute inset-0 rounded-full border-2 border-orange-300/50 animate-ping"
+                                style={{ animationDelay: "0.5s" }}
+                            />
+                            <div
+                                className="absolute inset-0 rounded-full border-2 border-pink-300/50 animate-ping"
+                                style={{ animationDelay: "1s" }}
+                            />
+                        </>
+                    )}
+                </div>
+
+                {/* Sound waves */}
+                {isActive && (
+                    <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
+                        {[...Array(3)].map((_, i) => (
+                            <div
+                                key={i}
+                                className="absolute w-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full animate-pulse"
+                                style={{
+                                    height: `${20 + i * 8}px`,
+                                    right: `${i * 8}px`,
+                                    top: "50%",
+                                    transform: "translateY(-50%)",
+                                    animationDelay: `${i * 0.2}s`,
+                                    animationDuration: "0.8s",
+                                }}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* Floating hearts */}
+            <div className="absolute inset-0 pointer-events-none">
+                {["💕", "💖", "💗"].map((heart, i) => (
+                    <div
+                        key={i}
+                        className={`absolute text-lg animate-bounce ${isActive ? "opacity-60" : "opacity-20"}`}
+                        style={{
+                            left: `${70 + i * 10}%`,
+                            top: `${30 + i * 15}%`,
+                            animationDelay: `${i * 0.7}s`,
+                            animationDuration: `${2 + i * 0.3}s`,
+                        }}
+                    >
+                        {heart}
+                    </div>
+                ))}
+            </div>
+
+            {/* Gentle sparkles */}
+            <div className="absolute inset-0">
+                {[...Array(8)].map((_, i) => (
+                    <div
+                        key={i}
+                        className={`absolute w-1 h-1 bg-yellow-300 rounded-full animate-twinkle ${
+                            isActive ? "opacity-80" : "opacity-30"
+                        }`}
+                        style={{
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            animationDelay: `${Math.random() * 2}s`,
+                            animationDuration: `${1 + Math.random()}s`,
+                        }}
+                    />
+                ))}
+            </div>
+        </div>
+    )
+}
+
+// New Music Star Animation Component
+const MusicStarAnimation = ({ isActive }: { isActive: boolean }) => {
+    if (!isActive) return null
+
+    return (
+        <div className="relative w-full h-full flex items-center justify-center">
+            <Star
+                className="text-yellow-300 drop-shadow-lg animate-star-scale-pulse"
+                size={100} // Base size for the star
+            />
+            {/* Subtle glowing rings around the star */}
+            <div className="absolute w-24 h-24 rounded-full bg-yellow-300/30 animate-ping-slow" />
+            <div
+                className="absolute w-32 h-32 rounded-full bg-orange-300/20 animate-ping-slow"
+                style={{ animationDelay: "0.5s" }}
+            />
+        </div>
+    )
+}
+
+const AnimationStyles = () => (
+    <style jsx>{`
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .animate-twinkle {
+            animation: twinkle 1.5s ease-in-out infinite;
+        }
+
+        @keyframes star-scale-pulse {
+            0% { transform: scale(0.1); opacity: 0; }
+            20% { transform: scale(1.2); opacity: 1; } /* Rapid growth */
+            50% { transform: scale(1); opacity: 1; }
+            75% { transform: scale(1.05); opacity: 1; } /* Subtle pulse */
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-star-scale-pulse {
+            animation: star-scale-pulse 1.5s ease-out forwards, pulse-opacity 2s infinite alternate 1.5s; /* Initial growth, then continuous pulse */
+        }
+
+        @keyframes pulse-opacity {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        @keyframes ping-slow {
+            0% { transform: scale(0.5); opacity: 0.5; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        .animate-ping-slow {
+            animation: ping-slow 2s ease-out infinite;
+        }
+    `}</style>
+)
 
 interface Interaction {
     type: string
@@ -61,10 +240,10 @@ export default function Chapter2() {
     const [audioEnabled, setAudioEnabled] = useState(true)
     const [isTyping, setIsTyping] = useState(false)
     const [audioInitialized, setAudioInitialized] = useState(false)
-    const [hasStartedExperience, setHasStartedExperience] = useState(false) // New state for initial start
+    const [hasStartedExperience, setHasStartedExperience] = useState(false)
+    const [isMusicPlaying, setIsMusicPlaying] = useState(false) // New state for music star animation
 
-    // Three separate audio channels
-    const backgroundAudioRef = useRef<HTMLAudioElement | null>(null) // For forever background music
+    // Only two audio channels now: voice and sfx
     const voiceAudioRef = useRef<HTMLAudioElement | null>(null) // For voice tracks
     const sfxAudioRef = useRef<HTMLAudioElement | null>(null) // For sound effects
 
@@ -90,8 +269,8 @@ export default function Chapter2() {
             clearInterval(countdownIntervalRef.current)
             countdownIntervalRef.current = null
         }
-        // Clean up all audio channels
-        ;[backgroundAudioRef, voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
+        // Clean up all remaining audio channels
+        ;[voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
             if (audioRef.current) {
                 audioRef.current.pause()
                 audioRef.current.src = ""
@@ -135,7 +314,6 @@ export default function Chapter2() {
             if (!mountedRef.current) return
 
             setFlowData(data)
-            // Do NOT set currentInteractionId here directly, wait for user to click "Start"
             setIsLoading(false)
         } catch (error) {
             console.error("Error loading flow data:", error)
@@ -217,7 +395,7 @@ export default function Chapter2() {
 
     // Multi-channel audio playback
     const playAudio = useCallback(
-        async (src: string, channel: "background" | "voice" | "sfx", loop = false) => {
+        async (src: string, channel: "voice" | "sfx", loop = false) => {
             if (!audioEnabled || !audioInitialized) {
                 console.warn(
                     `Audio playback skipped for ${channel} channel (${src}): audioEnabled=${audioEnabled}, audioInitialized=${audioInitialized}`,
@@ -229,10 +407,6 @@ export default function Chapter2() {
             let volume: number
 
             switch (channel) {
-                case "background":
-                    audioRef = backgroundAudioRef
-                    volume = 0.3
-                    break
                 case "voice":
                     audioRef = voiceAudioRef
                     volume = 1.0
@@ -274,8 +448,8 @@ export default function Chapter2() {
         [audioEnabled, audioInitialized],
     )
 
-    // Stop voice and SFX but keep background music
-    const stopVoiceAndSfxAudio = useCallback(() => {
+    // Stop all audio (voice and SFX)
+    const stopAllAudio = useCallback(() => {
         ;[voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
             if (audioRef.current) {
                 audioRef.current.pause()
@@ -305,13 +479,14 @@ export default function Chapter2() {
                 countdownIntervalRef.current = null
             }
 
-            // Stop voice and SFX but keep background music
-            stopVoiceAndSfxAudio()
+            // Stop all audio
+            stopAllAudio()
             setShowButtons(false)
             setTimeLeft(null)
             setShowWarning(false)
             skipFlagRef.current = false
             setIsTyping(false)
+            setIsMusicPlaying(false) // Reset music animation state
 
             switch (interaction.type) {
                 case "voice":
@@ -373,18 +548,14 @@ export default function Chapter2() {
 
                 case "music":
                     if (interaction.src) {
-                        if (interaction.forever) {
-                            // Play on background channel for forever music
-                            playAudio(interaction.src, "background", interaction.loop)
-                        } else {
-                            // Play on SFX channel for regular music
-                            playAudio(interaction.src, "sfx", interaction.loop)
-                        }
+                        playAudio(interaction.src, "sfx", interaction.loop)
+                        setIsMusicPlaying(true) // Start star animation
                     }
                     if (interaction["next-id"]) {
                         timeoutRef.current = setTimeout(
                             () => {
                                 if (mountedRef.current) {
+                                    setIsMusicPlaying(false) // Stop star animation when music duration ends
                                     setCurrentInteractionId(interaction["next-id"]!)
                                 }
                             },
@@ -450,7 +621,7 @@ export default function Chapter2() {
                     break
             }
         },
-        [currentInteractionId, typeText, playAudio, stopVoiceAndSfxAudio, savedUserMessage],
+        [currentInteractionId, typeText, playAudio, stopAllAudio, savedUserMessage],
     )
 
     const handleInputSave = useCallback(
@@ -481,7 +652,7 @@ export default function Chapter2() {
     const handleButtonClick = useCallback(
         async (button: { label: string; "next-id": string }) => {
             await initializeAudio() // Ensure audio is initialized on any user interaction
-            stopVoiceAndSfxAudio()
+            stopAllAudio()
 
             // Save choice to Firestore
             await saveToFirestore("", currentInteractionId, {
@@ -491,7 +662,7 @@ export default function Chapter2() {
 
             setCurrentInteractionId(button["next-id"])
         },
-        [initializeAudio, stopVoiceAndSfxAudio, currentInteractionId],
+        [initializeAudio, stopAllAudio, currentInteractionId],
     )
 
     const handleSkip = useCallback(() => {
@@ -573,7 +744,7 @@ export default function Chapter2() {
 
     // Handle audio muting
     useEffect(() => {
-        ;[backgroundAudioRef, voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
+        ;[voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
             if (audioRef.current) {
                 audioRef.current.muted = !audioEnabled
             }
@@ -647,6 +818,8 @@ export default function Chapter2() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col">
+            <AnimationStyles />
+
             {/* Audio Control */}
             <div className="absolute top-4 right-4 z-20">
                 <Button
@@ -679,12 +852,28 @@ export default function Chapter2() {
             <div className="flex-1 flex items-center justify-center p-4">
                 <Card className="w-full max-w-lg bg-white/10 backdrop-blur-lg border-white/20 shadow-2xl">
                     <CardContent className="p-6 space-y-6">
-                        {/* Display Text */}
-                        <div className="min-h-[120px] flex items-center justify-center">
-                            <p className="text-white text-lg leading-relaxed text-center">
-                                {displayText}
-                                {isTyping && <span className="animate-pulse">|</span>}
-                            </p>
+                        {/* Display Text with Voice/Music Visualization */}
+                        <div className="min-h-[200px] flex flex-col items-center justify-center">
+                            {currentInteraction?.type === "voice" ? (
+                                <>
+                                    <VoiceVisualization isActive={!isTyping} />
+                                    {displayText && (
+                                        <p className="text-white text-sm leading-relaxed text-center mt-4 px-4 opacity-80">{displayText}</p>
+                                    )}
+                                </>
+                            ) : currentInteraction?.type === "music" ? (
+                                <>
+                                    <MusicStarAnimation isActive={isMusicPlaying} />
+                                    {displayText && <p className="text-white text-lg leading-relaxed text-center">{displayText}</p>}
+                                </>
+                            ) : (
+                                <div className="min-h-[120px] flex items-center justify-center px-4">
+                                    <p className="text-white text-lg leading-relaxed text-center">
+                                        {displayText}
+                                        {isTyping && <span className="animate-pulse">|</span>}
+                                    </p>
+                                </div>
+                            )}
                         </div>
 
                         {/* Input Field */}

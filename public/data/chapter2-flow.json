@@ -4,7 +4,7 @@
   "interactions": {
     "chapter-2-start": {
       "type": "voice",
-      "duration": 30,
+      "duration": 29,
       "sound": "track0.mp3",
       "next-id": "2.1"
     },
@@ -42,13 +42,6 @@
       "type": "voice",
       "duration": 63,
       "sound": "track2b.mp3",
-      "next-id": "3.0"
-    },
-    "3.0": {
-      "type": "music",
-      "src": "playful_intro_loop.mp3",
-      "loop": true,
-      "forever": true,
       "next-id": "3.1"
     },
     "3.1": {
