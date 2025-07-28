@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Volume2, VolumeX, SkipForward, Star } from "lucide-react"
 import { useRouter } from "next/navigation"
 import type { DotykaceRoom } from "@/lib/dotykace-types"
-import {Modal} from "@/components/ModalSetting";
+import {VoicePickerModal} from "@/components/VoicePickerModal";
 
 // Animated Voice Visualization Component (unchanged)
 const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
@@ -863,11 +863,7 @@ export default function Chapter2() {
     if (!selectedVoice){
         return (
           <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-              <Modal children={
-                  <p className="text-gray-600">
-                      Zatím dokážu mluvit jen jako muž, ale chystáme možnost vybrat pro mně i jiný hlas. Ještě to není hotové, ale já se na to těším. Promyslí si, jak se ohledem toho cítíš.
-                  </p>
-              } title={"Jak na tebe mám mluvit?"} isOpen={showSettings} onClose={()=>{setShowSettings(false); setSelectedVoice("male")}}/>
+              <VoicePickerModal isOpen={showSettings} onClose={(voiceId)=>{setShowSettings(false); setSelectedVoice(voiceId)}}/>
           </div>
         )
     }

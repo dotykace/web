@@ -2,21 +2,41 @@
 
 import type React from "react"
 
-import { useEffect } from "react"
+import {useEffect, useState} from "react"
+import VoicePicker from "@/components/VoicePicker";
 
 interface ModalProps {
   isOpen: boolean
-  onClose: () => void
+  onClose: (voiceId) => void
   title?: string
   children?: React.ReactNode
 }
 
-export function Modal({ isOpen, onClose, title = "Modal Title", children }: ModalProps) {
+const sampleVoices = [
+  {
+    id: "female",
+    name: "Ženský hlas",
+    audioUrl: "/placeholder.mp3?voice=sarah",
+  },
+  {
+    id: "male",
+    name: "Mužský hlas",
+    audioUrl: "/placeholder.mp3?voice=james",
+  },
+  {
+    id: "neutral",
+    name: "Neutrální hlas",
+    audioUrl: "/placeholder.mp3?voice=emma",
+  },
+]
+
+export function VoicePickerModal({ isOpen, onClose}: ModalProps) {
+  const [selectedVoice, setSelectedVoice] = useState<string>("male")
   // Handle escape key press
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        onClose()
+        onClose(selectedVoice)
       }
     }
 
@@ -49,33 +69,21 @@ export function Modal({ isOpen, onClose, title = "Modal Title", children }: Moda
         {/* Modal Header */}
         <div className="mb-4">
           <h2 id="modal-title" className="text-xl font-semibold text-gray-900 text-center">
-            {title}
+            Jak na tebe mám mluvit?
           </h2>
         </div>
 
-        {/* Modal Body */}
-        <div className="mb-6">
-          {children || (
-            <p className="text-gray-600">
-              This is a modal window that covers everything underneath. You can customize this text and add any content
-              you need.
-            </p>
-          )}
+        <div className={"mb-6"} >
+          <VoicePicker voices={sampleVoices} selectedVoice={selectedVoice} onVoiceSelect={setSelectedVoice} />
         </div>
 
         {/* Modal Footer with Buttons */}
         <div className="flex justify-center space-x-3">
           <button
-            disabled
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-gray-500 rounded-xl cursor-not-allowed opacity-50"
-          >
-            ženský hlas
-          </button>
-          <button
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
           >
-            mužský hlas
+            Pokračovat
           </button>
         </div>
       </div>
