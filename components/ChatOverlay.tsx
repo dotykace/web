@@ -1,5 +1,5 @@
 import MobileNotification from "@/components/mobile-notification";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {MessageSquare} from "lucide-react";
 import GlowingDot from "@/components/GlowingDot";
 import SpecialPlace from "@/components/SpecialPlace";
@@ -7,6 +7,7 @@ import {Button} from "@/components/ui/button";
 import EmojiList from "@/components/EmojiList";
 import {useChatContext} from "@/context/ChatContext";
 import {LocalSvgRenderer} from "@/components/LocalSvgRenderer";
+import HelpButton from "@/components/HelpButton";
 
 export default function ChatOverlay() {
 
@@ -93,6 +94,7 @@ export default function ChatOverlay() {
   }
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50">
+      <HelpButton />
       <MobileNotification
         {...notificationProps}
         isOpen={showNotification}

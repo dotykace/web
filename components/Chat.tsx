@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {MessageSquare} from "lucide-react";
 import {AnimatePresence, motion} from "framer-motion";
 import UserInput from "@/components/UserInput";
@@ -10,6 +10,7 @@ import EmojiReactionButton from "@/components/EmojiReactions";
 import ChatOverlay from "@/components/ChatOverlay";
 import ChatBubble from "@/components/ChatBubble";
 import {LocalSvgRenderer} from "@/components/LocalSvgRenderer";
+import HelpButton from "@/components/HelpButton";
 
 export default function Chat() {
   const { currentInteraction, goToNextInteraction} = useChatContext()
@@ -76,6 +77,7 @@ export default function Chat() {
 
   return(
     <div className="w-full max-w-md mx-auto flex flex-col p-2 h-[calc(100vh)] bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
+      <HelpButton />
       {(mode==="overlay" )&& <ChatOverlay/>}
       <div className="bg-white/10 backdrop-blur-sm rounded-t-xl p-3 flex items-center gap-3 border-b border-white/20">
         <LocalSvgRenderer filename={dotyFace} className="w-8 h-8" />
