@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card"
 import { doc, onSnapshot } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import type { DotykaceRoom } from "@/lib/dotykace-types"
+import HelpButton from "@/components/HelpButton";
 
 // Define the section types and states
 type SectionState = "locked" | "unlocked" | "completed"
@@ -156,6 +157,7 @@ export default function MenuPage() {
 
   return (
       <div className="min-h-screen bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex flex-col items-center justify-center p-4">
+        <HelpButton />
         {/* Welcome message */}
         {userName && (
             <motion.div
