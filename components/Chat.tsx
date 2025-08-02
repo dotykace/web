@@ -9,9 +9,12 @@ import EmojiReactionButton from "@/components/EmojiReactions";
 
 import ChatOverlay from "@/components/ChatOverlay";
 import ChatBubble from "@/components/ChatBubble";
+import {LocalSvgRenderer} from "@/components/LocalSvgRenderer";
 
 export default function Chat() {
   const { currentInteraction, goToNextInteraction} = useChatContext()
+
+  const [dotyFace, setDotyFace] = useState("happy_1")
 
   const [mode, setMode] = useState<"default"|"overlay">("default")
   const messagesEndRef = useRef<HTMLDivElement|null>(null)
@@ -33,6 +36,9 @@ export default function Chat() {
   useEffect(() => {
     if (!currentInteraction) return;
     setHistory((prev) => [...prev, currentInteraction])
+    if (currentInteraction.face && currentInteraction.face !== dotyFace) {
+      setDotyFace(currentInteraction.face);
+    }
     if (currentInteraction.id === "1.12") {
       setShowEmojiReactions(true);
     }
@@ -72,7 +78,7 @@ export default function Chat() {
     <div className="w-full max-w-md mx-auto flex flex-col p-2 h-[calc(100vh)] bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
       {(mode==="overlay" )&& <ChatOverlay/>}
       <div className="bg-white/10 backdrop-blur-sm rounded-t-xl p-3 flex items-center gap-3 border-b border-white/20">
-        <MessageSquare className="w-6 h-6 text-white" />
+        <LocalSvgRenderer filename={dotyFace} className="w-8 h-8" />
         <h1 className="text-xl font-semibold text-white">Interaktivní chat</h1>
       </div>
 
