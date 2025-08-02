@@ -7,6 +7,7 @@ import { db } from "@/lib/firebase"
 import type { DotykaceRoom, DotykaceParticipant } from "@/lib/dotykace-types"
 import { useRouter } from "next/navigation"
 import { Clock, Users } from "lucide-react"
+import {readFromStorage, setToStorage} from "@/scripts/local-storage";
 
 export default function DotykaceRoomPage() {
     const [room, setRoom] = useState<DotykaceRoom | null>(null)
@@ -51,9 +52,19 @@ export default function DotykaceRoomPage() {
 
                     // Ak sa miestnosť spustila, automaticky začni introduction
                     if (roomData.isStarted) {
+                        console.log("Room has started, redirecting to introduction chapter")
                         localStorage.setItem("userName", storedPlayerName)
-                        localStorage.setItem("chapter", "0")
-                        router.push("/chapter/0")
+                        let currentChapter = readFromStorage("chapter") ?? existingParticipant?.currentChapter ?? 0
+                        localStorage.setItem("chapter", currentChapter.toString())
+                        if(currentChapter > 0) {
+                            console.log("Current chapter from existing participant:", currentChapter)
+                            router.push(`/menu`)
+                        }
+                        else {
+                            console.log("Current chapter is 0, redirecting to chapter 0")
+                            router.push("/chapter/0")
+                        }
+
                     }
                 } else {
                     router.push("/")

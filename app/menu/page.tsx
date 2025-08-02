@@ -49,8 +49,9 @@ export default function MenuPage() {
     setPlayerId(storedPlayerId)
 
     // Redirect if chapter is not set properly
-    if (storedChapter === undefined || storedChapter === 0) {
-      redirect("/")
+    if (storedChapter === 0) {
+      console.log("Redirecting to chapter 0 from the menu")
+      redirect("/chapter/0")
     }
   }, [])
 
