@@ -13,6 +13,7 @@ export interface Interaction {
   answer?: string // For input type interactions
   choices?: Choice[]
   [key: string]: any // For additional attributes
+  face?: string // For doty's face
 }
 
 // Type for the raw interaction data from JSON (without id)
