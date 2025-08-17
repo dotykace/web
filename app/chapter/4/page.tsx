@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
+import HelpButton from "@/components/HelpButton";
 
 interface VideoItem {
     id: number
@@ -47,6 +48,7 @@ export default function Chapter4Page() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col items-center p-4 sm:p-6 md:p-8">
+            <HelpButton/>
             {/* Back Button */}
             <div className="absolute top-4 left-4 z-20">
                 <Button

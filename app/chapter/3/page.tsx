@@ -11,6 +11,7 @@ import { Volume2, VolumeX, SkipForward, Check } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import type { DotykaceRoom } from "@/lib/dotykace-types"
+import HelpButton from "@/components/HelpButton";
 
 // Voice Visualization Component (similar to Chapter 2)
 const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
@@ -180,7 +181,7 @@ interface FlowData {
     interactions: Record<string, Interaction>
 }
 
-export default function Chapter3() {
+function Chapter3Content() {
     const [flowData, setFlowData] = useState<FlowData | null>(null)
     const [currentInteractionId, setCurrentInteractionId] = useState<string>("")
     const [isLoading, setIsLoading] = useState(true)
@@ -747,7 +748,7 @@ export default function Chapter3() {
             </div>
 
             {/* Audio Control */}
-            <div className="absolute top-4 right-4 z-20">
+            <div className="absolute top-4 left-4 z-20">
                 <Button
                     variant="ghost"
                     size="icon"
@@ -934,5 +935,14 @@ export default function Chapter3() {
                 </div>
             </div>
         </div>
+    )
+}
+
+export default function Chapter3(){
+    return (
+      <>
+          <HelpButton />
+          <Chapter3Content />
+      </>
     )
 }

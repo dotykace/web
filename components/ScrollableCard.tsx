@@ -1,10 +1,6 @@
 "use client"
 
-import {useState, useEffect, useRef, useCallback} from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import SocialMediaPost from "@/components/SocialMediaPost";
-import {Progress} from "@/components/ui/progress";
-import {Pause, Play} from "lucide-react";
+import {useState, useEffect, useRef} from "react"
 import ScrollLine from "@/components/ScrollLine";
 import AnimatedCard from "@/components/AnimatedCard";
 import {readFromStorage} from "@/scripts/local-storage";
@@ -55,14 +51,17 @@ export default function ScrollableCards({currentInteraction, onScroll, onFinish}
 
   const botName = readFromStorage("BN") ?? "Bot"
 
+  const [dotyFace, setDotyFace] = useState("happy_1")
+
+  useEffect(() => {
+    if (currentInteraction.face && currentInteraction.face !== dotyFace) {
+      setDotyFace(currentInteraction.face);
+    }
+  }, [currentInteraction]);
+
 
   const autoScrollDelay = currentInteraction.duration * 1000 ?? 4000 // 4 seconds
   const intervalMs = (autoScrollDelay/100)*0.75;
-  const [isAutoScrolling, setIsAutoScrolling] = useState(true)
-  const toggleAutoScroll = () => {
-    setIsAutoScrolling(!isAutoScrolling)
-  }
-  // Touch handling
   const touchStartY = useRef(0)
   const touchEndY = useRef(0)
   const minSwipeDistance = 50 // minimum distance for a swipe
@@ -130,7 +129,7 @@ export default function ScrollableCards({currentInteraction, onScroll, onFinish}
 
   useEffect(() => {
     if (!validCard() || !nextCard()) return
-    if (!isAutoScrolling ) return
+    // if (!isAutoScrolling ) return
 
     const interval = setInterval(() => {
       setProgress((prev) => {
@@ -144,7 +143,7 @@ export default function ScrollableCards({currentInteraction, onScroll, onFinish}
     }, intervalMs);
 
     return () => clearInterval(interval)
-  }, [isAutoScrolling, currentInteraction])
+  }, [currentInteraction])
 
   useEffect(() => {
     if (progress === 100 ) {
@@ -154,22 +153,9 @@ export default function ScrollableCards({currentInteraction, onScroll, onFinish}
 
   return (
     <div className="h-screen overflow-hidden touch-none w-screen fixed top-0 left-0">
-      {
-        validCard() && nextCard() && (
-          <div className="absolute bottom-10  left-4 right-11 z-20 flex items-center justify-end gap-2">
-          <Progress value={progress} />
-          {/* Auto-scroll Toggle */}
-          <button
-            onClick={toggleAutoScroll}
-            className="bg-black/50 backdrop-blur-sm rounded-full p-2 border border-white/20"
-          >
-            {isAutoScrolling ? <Pause className="w-4 h-4 text-white" /> : <Play className="w-4 h-4 text-white" />}
-          </button>
-        </div>)
-      }
       <div className="flex flex-row-reverse justify-evenly items-center h-full w-full">
         {nextCard() && <ScrollLine />}
-        <AnimatedCard currentCard={createCard(currentInteraction,botName,onFinish)} visible={validCard()}/>
+        <AnimatedCard currentCard={createCard(currentInteraction,botName,onFinish)} visible={validCard()} dotyFace={dotyFace}/>
       </div>
     </div>
   )

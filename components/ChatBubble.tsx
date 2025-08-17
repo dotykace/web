@@ -1,25 +1,42 @@
 "use client"
 
-import { motion } from "framer-motion"
+import {AnimatePresence, motion} from "framer-motion"
+import {Interaction} from "@/interactions";
 
 interface ChatBubbleProps {
-  text: string
-  isUser: boolean
+  type: string
+  text: string | (() => string)
 }
 
-export default function ChatBubble({ text, isUser }: ChatBubbleProps) {
+export default function ChatBubble({ text, type }: ChatBubbleProps) {
+  const renderText = typeof text === "function" ? text() : text;
   return (
-    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+    <AnimatePresence mode="wait">
       <motion.div
-        initial={{ scale: 0.8 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 0.2 }}
-        className={`max-w-[80%] p-3 rounded-2xl ${
-          isUser ? "bg-purple-600 text-white rounded-tr-none" : "bg-white text-gray-800 rounded-tl-none shadow-md"
-        }`}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
       >
-        {text}
+        {type === "user-message" ? (
+          <div className="bg-indigo-600 text-white p-3 rounded-xl rounded-tr-none">
+            <p>{renderText}</p>
+          </div>
+        ) : type === "user-message-emoji" ? (
+          <div className="flex justify-end items-center h-20 w-full max-w-full mx-auto">
+            <div className="text-5xl border-indigo-600 border-4 bg-indigo-600/50 rounded-xl rounded-tr-none p-3">
+              {renderText}
+            </div>
+          </div>
+        ): type === "message" ? (
+          <div className="bg-white/20 text-white p-3 rounded-xl rounded-tl-none">
+            <p>{renderText}</p>
+          </div>
+        ): type === "animation" ? (
+          <div className="flex justify-center items-center h-20 w-full max-w-full mx-auto">
+            <div className="animate-bounce text-4xl">✨</div>
+          </div>
+        ) : null}
       </motion.div>
-    </div>
+    </AnimatePresence>
   )
 }

@@ -1,11 +1,13 @@
 import MobileNotification from "@/components/mobile-notification";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {MessageSquare} from "lucide-react";
 import GlowingDot from "@/components/GlowingDot";
 import SpecialPlace from "@/components/SpecialPlace";
 import {Button} from "@/components/ui/button";
 import EmojiList from "@/components/EmojiList";
 import {useChatContext} from "@/context/ChatContext";
+import {LocalSvgRenderer} from "@/components/LocalSvgRenderer";
+import HelpButton from "@/components/HelpButton";
 
 export default function ChatOverlay() {
 
@@ -20,12 +22,17 @@ export default function ChatOverlay() {
 
   const [showBackToChat, setShowBackToChat] = useState(false)
 
+  const [dotyFace, setDotyFace] = useState("happy_1")
+
   const resetDot = () => {
     setShowDot(false);
     setShowPlace(true);
   }
 
   useEffect(() => {
+    if (currentInteraction.face && currentInteraction.face !== dotyFace) {
+      setDotyFace(currentInteraction.face);
+    }
     if (currentInteraction?.type === "notification") {
       setShowNotification(true)
     } else {
@@ -57,7 +64,7 @@ export default function ChatOverlay() {
     id: currentInteraction.id,
     title: "New Message",
     message: currentInteraction?.text() ?? "",
-    icon: <MessageSquare className="h-6 w-6 text-white" />,}
+    icon: <LocalSvgRenderer filename={dotyFace} className="w-8 h-8"/>,}
 
   const PREDEFINED_EMOJIS = ["🍽","️😋","🤤","🥴","🤢","☠️"]
   const [animatingEmoji, setAnimatingEmoji] = useState<string | null>(null)
@@ -87,6 +94,7 @@ export default function ChatOverlay() {
   }
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50">
+      <HelpButton />
       <MobileNotification
         {...notificationProps}
         isOpen={showNotification}

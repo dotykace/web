@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card"
 import { doc, onSnapshot } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import type { DotykaceRoom } from "@/lib/dotykace-types"
+import HelpButton from "@/components/HelpButton";
 
 // Define the section types and states
 type SectionState = "locked" | "unlocked" | "completed"
@@ -49,8 +50,9 @@ export default function MenuPage() {
     setPlayerId(storedPlayerId)
 
     // Redirect if chapter is not set properly
-    if (storedChapter === undefined || storedChapter === 0) {
-      redirect("/")
+    if (storedChapter === 0) {
+      console.log("Redirecting to chapter 0 from the menu")
+      redirect("/chapter/0")
     }
   }, [])
 
@@ -155,6 +157,7 @@ export default function MenuPage() {
 
   return (
       <div className="min-h-screen bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex flex-col items-center justify-center p-4">
+        <HelpButton />
         {/* Welcome message */}
         {userName && (
             <motion.div
@@ -198,57 +201,64 @@ export default function MenuPage() {
         </motion.div>
 
         {/* Chapters Grid */}
-        <div className="grid grid-cols-2 gap-6 max-w-md w-full">
+        <div className="grid grid-cols-2 gap-6 max-w-md w-full items-stretch">
           {updatedSections.map((section, index) => {
             const isUnlocked = section.state !== "locked"
             const isCompleted = section.state === "completed"
 
             return (
-                <motion.div
-                    key={section.id}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3, delay: 0.4 + index * 0.1 }}
+              <motion.div
+                key={section.id}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: 0.4 + index * 0.1 }}
+                className="h-full"
+              >
+                <Card
+                  className={`relative overflow-hidden cursor-pointer border-2 transition-all duration-200 h-full ${
+                    isUnlocked
+                      ? "border-amber-300 bg-gradient-to-br from-amber-100 to-amber-200 hover:from-amber-200 hover:to-amber-300 shadow-lg hover:shadow-xl"
+                      : "border-gray-300 bg-gradient-to-br from-gray-200 to-gray-300 opacity-60"
+                  } rounded-2xl`}
+                  onClick={() => handleSectionClick(section)}
                 >
-                  <Card
-                      className={`relative overflow-hidden cursor-pointer border-2 transition-all duration-200 ${
-                          isUnlocked
-                              ? "border-amber-300 bg-gradient-to-br from-amber-100 to-amber-200 hover:from-amber-200 hover:to-amber-300 shadow-lg hover:shadow-xl"
-                              : "border-gray-300 bg-gradient-to-br from-gray-200 to-gray-300 opacity-60"
-                      } rounded-2xl`}
-                      onClick={() => handleSectionClick(section)}
-                  >
-                    <div className="p-6 flex flex-col items-center relative">
-                      {/* Icon */}
-                      <div className="bg-amber-200 p-3 rounded-lg mb-2 text-amber-700">{section.icon}</div>
-
-                      <div className="text-amber-900 font-semibold text-center text-sm">{section.title}</div>
-                      <div className="text-amber-700 text-xs text-center mt-1">{section.subtitle}</div>
-
-                      {/* Completed checkmark */}
-                      {isCompleted && (
-                          <motion.div
-                              className="absolute top-2 right-2 bg-green-500 rounded-full p-1 shadow-lg"
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                          >
-                            <CheckCircle2 className="w-4 h-4 text-white" />
-                          </motion.div>
-                      )}
-
-                      {/* Locked overlay */}
-                      {!isUnlocked && (
-                          <div className="absolute inset-0 bg-gray-500/30 backdrop-blur-sm flex items-center justify-center rounded-2xl">
-                            <div className="bg-gray-600 rounded-full p-2 shadow-lg">
-                              <Lock className="w-6 h-6 text-white" />
-                            </div>
-                          </div>
-                      )}
+                  <div className="p-6 flex flex-col items-center relative h-full">
+                    <div className="bg-amber-200 p-3 rounded-lg mb-2 text-amber-700">
+                      {section.icon}
                     </div>
-                  </Card>
-                </motion.div>
-            )
+                    <div className="text-amber-900 font-semibold text-center text-sm">
+                      {section.title}
+                    </div>
+                    <div className="text-amber-700 text-xs text-center mt-1">
+                      {section.subtitle}
+                    </div>
+
+                    {isCompleted && (
+                      <motion.div
+                        className="absolute top-2 right-2 bg-green-500 rounded-full p-1 shadow-lg"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 500,
+                          damping: 30,
+                        }}
+                      >
+                        <CheckCircle2 className="w-4 h-4 text-white" />
+                      </motion.div>
+                    )}
+
+                    {!isUnlocked && (
+                      <div className="absolute inset-0 bg-gray-500/30 backdrop-blur-sm flex items-center justify-center rounded-2xl">
+                        <div className="bg-gray-600 rounded-full p-2 shadow-lg">
+                          <Lock className="w-6 h-6 text-white" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              </motion.div>
+            );
           })}
         </div>
 

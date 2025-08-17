@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {Card, CardContent, CardHeader} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Heart, MessageCircle, Share, Bookmark } from "lucide-react"
+import {LocalSvgRenderer} from "@/components/LocalSvgRenderer";
 
 interface SocialMediaPostProps {
   username?: string
@@ -27,10 +28,7 @@ export default function SocialMediaPost({
     >
       <CardHeader className="pb-3">
         <div className="flex items-center space-x-3">
-          <Avatar className="w-10 h-10">
-            <AvatarImage src={avatar || "/placeholder.svg"} alt={username} />
-            <AvatarFallback>{username.charAt(0).toUpperCase()}</AvatarFallback>
-          </Avatar>
+          <LocalSvgRenderer filename={avatar} className="w-10 h-10" />
           <div className="flex-1">
             <h3 className="font-semibold text-sm">{username}</h3>
             <p className="text-xs text-gray-500">{timestamp}</p>

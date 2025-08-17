@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {MessageSquare} from "lucide-react";
 import {AnimatePresence, motion} from "framer-motion";
 import UserInput from "@/components/UserInput";
@@ -8,9 +8,14 @@ import {Interaction} from "@/interactions";
 import EmojiReactionButton from "@/components/EmojiReactions";
 
 import ChatOverlay from "@/components/ChatOverlay";
+import ChatBubble from "@/components/ChatBubble";
+import {LocalSvgRenderer} from "@/components/LocalSvgRenderer";
+import HelpButton from "@/components/HelpButton";
 
 export default function Chat() {
   const { currentInteraction, goToNextInteraction} = useChatContext()
+
+  const [dotyFace, setDotyFace] = useState("happy_1")
 
   const [mode, setMode] = useState<"default"|"overlay">("default")
   const messagesEndRef = useRef<HTMLDivElement|null>(null)
@@ -32,6 +37,9 @@ export default function Chat() {
   useEffect(() => {
     if (!currentInteraction) return;
     setHistory((prev) => [...prev, currentInteraction])
+    if (currentInteraction.face && currentInteraction.face !== dotyFace) {
+      setDotyFace(currentInteraction.face);
+    }
     if (currentInteraction.id === "1.12") {
       setShowEmojiReactions(true);
     }
@@ -69,9 +77,10 @@ export default function Chat() {
 
   return(
     <div className="w-full max-w-md mx-auto flex flex-col p-2 h-[calc(100vh)] bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
+      <HelpButton />
       {(mode==="overlay" )&& <ChatOverlay/>}
       <div className="bg-white/10 backdrop-blur-sm rounded-t-xl p-3 flex items-center gap-3 border-b border-white/20">
-        <MessageSquare className="w-6 h-6 text-white" />
+        <LocalSvgRenderer filename={dotyFace} className="w-8 h-8" />
         <h1 className="text-xl font-semibold text-white">Interaktivní chat</h1>
       </div>
 
@@ -93,34 +102,9 @@ export default function Chat() {
             key={`${interaction.id}-${index}`}
             className={`max-w-[80%] ${interaction.type.includes("user-message")  ? "ml-auto" : "mr-auto"}`}
           >
-            <AnimatePresence mode="wait">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                {interaction.type === "user-message" ? (
-                  <div className="bg-indigo-600 text-white p-3 rounded-xl rounded-tr-none">
-                    <p>{interaction.text}</p>
-                  </div>
-                ) : interaction.type === "user-message-emoji" ? (
-                  <div className="flex justify-end items-center h-20 w-full max-w-full mx-auto">
-                    <div className="text-5xl border-indigo-600 border-4 bg-indigo-600/50 rounded-xl rounded-tr-none p-3">
-                      {interaction.text}
-                    </div>
-                  </div>
-                ): interaction.type === "message" ? (
-                  <div className="bg-white/20 text-white p-3 rounded-xl rounded-tl-none">
-                    <p>{interaction.text()}</p>
-                  </div>
-                ): interaction.type === "animation" ? (
-                  <div className="flex justify-center items-center h-20 w-full max-w-full mx-auto">
-                    <div className="animate-bounce text-4xl">✨</div>
-                  </div>
-                ) : null}
-              </motion.div>
-            </AnimatePresence>
+            <ChatBubble type={interaction.type} text={interaction.text}/>
           </div>
+
         ))}
         <div ref={messagesEndRef} />
       </div>)}

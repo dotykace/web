@@ -12,7 +12,7 @@
     },
     "1.1": {
       "type": "message",
-      "text": "😲 Wow!",
+      "text": "Wow!",
       "duration": 2,
       "next-id": "1.2"
     },
@@ -20,7 +20,8 @@
       "type": "message",
       "text": "Teď už zprávy pro tebe jenom nezobrazuju.\nUž ti je i píšu! Yeeees!",
       "duration": 4,
-      "next-id": "1.3"
+      "next-id": "1.3",
+      "face": "happy"
     },
     "1.3": {
       "type": "message",
@@ -30,9 +31,10 @@
     },
     "1.4": {
       "type": "message",
-      "text": "😅 Jaj, promiň. Zapnu ti chat.",
+      "text": "Jaj, promiň. Zapnu ti chat.",
       "duration": 3,
-      "next-id": "input-on"
+      "next-id": "input-on",
+      "face": "wink"
     },
     "1.5": {
       "type": "notification",
@@ -57,7 +59,8 @@
       "type": "message",
       "text": "Hmm... \"{{user_input}}\"\nPrvní slova od UN pro mě.\nTo si budu pamatovat i v továrním nastavení.",
       "duration": 5,
-      "next-id": "1.8"
+      "next-id": "1.8",
+      "face": "happy"
     },
     "1.8": {
       "type": "message",
@@ -90,7 +93,8 @@
       "type": "message",
       "duration": 4,
       "text": "Tohle psaní už začíná být trochu otrava. Mám chuť s tebou mluvit.",
-      "next-id": "chapter-1-end"
+      "next-id": "chapter-1-end",
+      "face": "strange"
     },
     "chapter-1-end": {
       "type": "checkpoint",
@@ -104,12 +108,14 @@
     "1.9": {
       "type": "notification",
       "text": "Chci s tebou zavzpomínat na naše oblíbená místa. Jaké vzpomínky máš na tohle místo?",
-      "duration": 9
+      "duration": 9,
+      "face": "ok"
     },
     "1.10": {
       "type": "notification",
       "duration": 12,
-      "text": "Tvůj prst tu bývá často často. Pro mě je to místo plné očekávání. Všelijakých očekávání."
+      "text": "Tvůj prst je tu často, ale míváš různé druhy stisku.",
+      "face": "aweful"
     },
     "place-2": {
       "type": "checkpoint",
@@ -124,6 +130,7 @@
     "1.20": {
       "type": "notification",
       "duration": 9,
+      "face": "strange",
       "text": "Kdyby mělo tohle místo jméno, tak za mě jídelna."
     },
     "1.21": {
@@ -138,41 +145,48 @@
     "1.30": {
       "type": "notification",
       "duration": 9,
-      "text": "Tomuhle místu říkám stopa."
+      "text": "Tomuhle místu říkám stopa.",
+      "face": "alert"
     },
     "1.31": {
       "type": "card",
       "duration": 7,
       "text": "Někdy tu z tebe vnímám hodně netrpělivosti, je to tak?",
-      "nextCard": "1.32"
+      "nextCard": "1.32",
+      "face": "pressure"
     },
     "1.32": {
       "type": "card",
       "duration": 7,
       "text": "Někdy zvědavost... ",
-      "nextCard": "1.33"
+      "nextCard": "1.33",
+      "face": "smile"
     },
     "1.33": {
       "type": "card",
       "duration": 7,
       "text": "Ale vždycky zírám...",
-      "nextCard": "1.34"
+      "nextCard": "1.34",
+      "face": "aweful"
     },
     "1.34": {
       "type": "card",
       "duration": 7,
       "text": "...kolik toho zvládnou...",
-      "nextCard": "1.35"
+      "nextCard": "1.35",
+      "face": "happy"
     },
     "1.35": {
       "type": "card",
       "duration": 7,
       "text": "...tvoje prsty.",
-      "nextCard": "finger-choice"
+      "nextCard": "finger-choice",
+      "face": "mute"
     },
     "finger-choice": {
       "type": "card",
-      "text": "Kterým prstem vlastně scrolluješ?"
+      "text": "Kterým prstem vlastně scrolluješ?",
+      "face": "nerd"
     },
     "finger-compare":{
       "type": "card",
@@ -180,7 +194,7 @@
     },
     "back-to-chat": {
       "type": "notification",
-      "text": "Zajímavý. A kterým prstem teď odklikneš tohle tlačítko?"
+      "text": "A kterým prstem teď odklikneš tohle tlačítko?"
     },
     "1.100": {
       "type": "message",
@@ -199,6 +213,7 @@
     "1.102": {
       "type": "message",
       "text": "Víš co, netrap se tím. Tohle je pro mě stejně nezapomenutelný.",
+      "face": "wink",
       "duration": 4,
       "next-id": "1.8"
     }
