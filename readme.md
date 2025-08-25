@@ -20,7 +20,7 @@
 
 TouchThePhone is an immersive interactive chat experience that creates a unique dialogue between you and your device. This project explores the relationship we have with our technology through a guided conversation that feels surprisingly personal.
 
-**Live Demo:** [https://touch-the-phone.vercel.app/](https://touch-the-phone.vercel.app/)
+**Live Demo:** [https://www.dotykace.com](https://touch-the-phone.vercel.app/)
 
 ## ✨ Features
 
