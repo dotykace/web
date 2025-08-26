@@ -393,28 +393,64 @@ export default function AdminPage() {
                                     </div>
                                 )}
 
-                                {/* Player Progress */}
+                                {/* Participant Progress Table */}
                                 {room.participants && room.participants.length > 0 && (
                                     <div className="space-y-4">
-                                        <h4 className="font-semibold text-sm">Pokrok hráčov:</h4>
-                                        <div className="grid gap-3">
-                                            {room.participants.map((participant) => {
-                                                const permissions = room.chapterPermissions?.[participant.id]
-                                                const allowedChapters = permissions?.allowedChapters || []
-                                                const currentChapter = participant.currentChapter || 0
-                                                const completedChapters = participant.completedChapters || []
+                                        <div className="flex justify-between items-center">
+                                            <h4 className="font-semibold text-sm">Pokrok hráčov:</h4>
+                                            <div className="text-xs text-gray-500 flex items-center gap-4">
+                        <span className="inline-flex items-center gap-1">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          Dokončené
+                        </span>
+                                                <span className="inline-flex items-center gap-1">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                          Aktuálne
+                        </span>
+                                                <span className="inline-flex items-center gap-1">
+                          <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                          Povolené
+                        </span>
+                                                <span className="inline-flex items-center gap-1">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                          Zamknuté
+                        </span>
+                                            </div>
+                                        </div>
 
-                                                return (
-                                                    <div key={participant.id} className="bg-gray-50 rounded-lg p-4">
-                                                        <div className="flex justify-between items-start mb-3">
-                                                            <div>
-                                                                <h5 className="font-medium text-gray-900">{participant.name}</h5>
-                                                                <p className="text-sm text-gray-600">Aktuálne: {getChapterTitle(currentChapter)}</p>
-                                                            </div>
-                                                        </div>
+                                        <div className="bg-white rounded-lg border overflow-hidden shadow-sm">
+                                            <div className="overflow-x-auto">
+                                                <table className="w-full">
+                                                    <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b">
+                                                    <tr>
+                                                        <th className="text-left p-3 text-sm font-semibold text-gray-800 min-w-[120px]">Hráč</th>
+                                                        <th className="text-center p-3 text-sm font-semibold text-gray-800 w-12">0</th>
+                                                        <th className="text-center p-3 text-sm font-semibold text-gray-800 w-12">1</th>
+                                                        <th className="text-center p-3 text-sm font-semibold text-gray-800 w-12">2</th>
+                                                        <th className="text-center p-3 text-sm font-semibold text-gray-800 w-12">3</th>
+                                                        <th className="text-center p-3 text-sm font-semibold text-gray-800 w-12">4</th>
+                                                        <th className="text-center p-3 text-sm font-semibold text-gray-800 min-w-[100px]">
+                                                            Akcie
+                                                        </th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-gray-100">
+                                                    {room.participants.map((participant, index) => {
+                                                        const permissions = room.chapterPermissions?.[participant.id]
+                                                        const allowedChapters = permissions?.allowedChapters || []
+                                                        const currentChapter = participant.currentChapter || 0
+                                                        const completedChapters = participant.completedChapters || []
 
-                                                        <div className="space-y-2">
-                                                            <div className="flex flex-wrap gap-2">
+                                                        return (
+                                                            <tr
+                                                                key={participant.id}
+                                                                className={`transition-colors duration-150 hover:bg-blue-50 ${index % 2 === 0 ? "bg-white" : "bg-gray-50/50"}`}
+                                                            >
+                                                                <td className="p-2">
+                                                                    <div>
+                                                                        <div className="font-semibold text-gray-900 text-xs">{participant.name}</div>
+                                                                    </div>
+                                                                </td>
                                                                 {[0, 1, 2, 3, 4].map((chapterNum) => {
                                                                     const isCompleted = completedChapters.includes(chapterNum)
                                                                     const isAllowed = allowedChapters.includes(chapterNum)
@@ -422,69 +458,56 @@ export default function AdminPage() {
                                                                     const canUnlock = chapterNum === Math.max(...completedChapters) + 1
 
                                                                     return (
-                                                                        <div
-                                                                            key={`${participant.id}-chapter-${chapterNum}`}
-                                                                            className="flex items-center gap-1"
-                                                                        >
-                                                                            <Badge
-                                                                                variant={
-                                                                                    isCompleted
-                                                                                        ? "default"
-                                                                                        : isCurrent
-                                                                                            ? "secondary"
-                                                                                            : isAllowed
-                                                                                                ? "outline"
-                                                                                                : "secondary"
-                                                                                }
-                                                                                className={
-                                                                                    isCompleted
-                                                                                        ? "bg-green-500"
-                                                                                        : isCurrent
-                                                                                            ? "bg-blue-500"
-                                                                                            : isAllowed
-                                                                                                ? "bg-yellow-500"
-                                                                                                : "bg-gray-400"
-                                                                                }
-                                                                            >
-                                                                                {isCompleted && <CheckCircle className="w-3 h-3 mr-1" />}
-                                                                                {chapterNum}
-                                                                            </Badge>
-                                                                            {canUnlock && !isAllowed && chapterNum > 0 && (
-                                                                                <Button
-                                                                                    size="sm"
-                                                                                    variant="outline"
-                                                                                    className="h-6 px-2 text-xs bg-transparent"
-                                                                                    onClick={() => allowNextChapter(room, participant.id, chapterNum)}
+                                                                        <td key={`${participant.id}-chapter-${chapterNum}`} className="p-2 text-center">
+                                                                            <div className="flex items-center justify-center">
+                                                                                <div
+                                                                                    className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-200 shadow-sm ${
+                                                                                        isCompleted
+                                                                                            ? "bg-emerald-500 text-white shadow-emerald-200"
+                                                                                            : isCurrent
+                                                                                                ? "bg-blue-500 text-white shadow-blue-200 ring-2 ring-blue-200"
+                                                                                                : isAllowed
+                                                                                                    ? "bg-amber-500 text-white shadow-amber-200"
+                                                                                                    : "bg-gray-300 text-gray-600"
+                                                                                    }`}
                                                                                 >
-                                                                                    <Unlock className="w-3 h-3" />
-                                                                                </Button>
-                                                                            )}
-                                                                        </div>
+                                                                                    {isCompleted ? <CheckCircle className="w-2.5 h-2.5" /> : chapterNum}
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
                                                                     )
                                                                 })}
-                                                            </div>
-                                                            <div className="text-xs text-gray-500">
-                                <span className="inline-flex items-center gap-1 mr-3">
-                                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                  Dokončené
-                                </span>
-                                                                <span className="inline-flex items-center gap-1 mr-3">
-                                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                  Aktuálne
-                                </span>
-                                                                <span className="inline-flex items-center gap-1 mr-3">
-                                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                                  Povolené
-                                </span>
-                                                                <span className="inline-flex items-center gap-1">
-                                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                                  Zamknuté
-                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )
-                                            })}
+                                                                <td className="p-2">
+                                                                    <div className="flex justify-center gap-1">
+                                                                        {[1, 2, 3, 4].map((chapterNum) => {
+                                                                            const completedChapters = participant.completedChapters || []
+                                                                            const allowedChapters = permissions?.allowedChapters || []
+                                                                            const canUnlock = chapterNum === Math.max(...completedChapters) + 1
+                                                                            const isAllowed = allowedChapters.includes(chapterNum)
+
+                                                                            if (!canUnlock || isAllowed || chapterNum === 0) return null
+
+                                                                            return (
+                                                                                <Button
+                                                                                    key={chapterNum}
+                                                                                    size="sm"
+                                                                                    variant="outline"
+                                                                                    className="h-5 w-5 p-0 text-xs bg-white hover:bg-blue-50 border-blue-200 hover:border-blue-300 transition-all duration-200 hover:shadow-sm"
+                                                                                    onClick={() => allowNextChapter(room, participant.id, chapterNum)}
+                                                                                    title={`Odomknúť kapitolu ${chapterNum}`}
+                                                                                >
+                                                                                    <Unlock className="w-2.5 h-2.5 text-blue-600" />
+                                                                                </Button>
+                                                                            )
+                                                                        })}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        )
+                                                    })}
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
