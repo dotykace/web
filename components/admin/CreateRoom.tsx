@@ -38,27 +38,21 @@ export default function CreateRoom({adminId}) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Plus className="w-5 h-5" />
-          Vytvoriť novú miestnosť
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex gap-2">
-          <Input
-            placeholder="Názov miestnosti"
-            value={newRoomName}
-            onChange={(e) => setNewRoomName(e.target.value)}
-            className="flex-1"
-          />
-          <Button onClick={createRoom} disabled={loading || !newRoomName.trim()}>
-            {loading ? <LoadingSpinner className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-            Vytvoriť
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="space-y-1 rounded-md border bg-muted/30 p-3">
+      <p className="text-sm font-medium text-muted-foreground">
+        Vytvoriť novú miestnosť
+      </p>
+      <div className="flex items-center gap-2">
+        <Input
+          placeholder="Názov miestnosti"
+          value={newRoomName}
+          onChange={(e) => setNewRoomName(e.target.value)}
+          className="h-8 flex-grow text-sm"
+        />
+        <Button size="icon" className="h-8 w-8 flex-shrink-0" onClick={createRoom} disabled={loading || !newRoomName.trim()}>
+          {loading ? <LoadingSpinner className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+        </Button>
+      </div>
+    </div>
   )
 }

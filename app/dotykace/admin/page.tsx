@@ -2,24 +2,30 @@
 
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { collection, addDoc, onSnapshot, updateDoc, doc, deleteDoc, query, where, Timestamp } from "firebase/firestore"
+import { Card, CardContent} from "@/components/ui/card"
+import { collection, onSnapshot, updateDoc, doc, query, where } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import type { DotykaceRoom, ChapterPermissions } from "@/lib/dotykace-types"
-import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { useRouter } from "next/navigation"
-import { Trash2, Users, Play, Download, Plus, CheckCircle, Unlock, UnlockKeyhole } from "lucide-react"
+import { Users } from "lucide-react"
 import CreateRoom from "@/components/admin/CreateRoom";
-import RoomParticipants from "@/components/admin/RoomParticipants";
 import RenderRoom from "@/components/admin/RenderRoom";
+import {
+    Sidebar,
+    SidebarContent, SidebarFooter,
+    SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
+    SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
+    SidebarProvider,
+    SidebarTrigger
+} from "@/components/ui/sidebar";
 
 export default function AdminPage() {
     const [rooms, setRooms] = useState<DotykaceRoom[]>([])
     const [adminId, setAdminId] = useState<string | null>(null)
     const processedRooms = useRef(new Set<string>())
     const router = useRouter()
+
+    const [selectedRoom, setSelectedRoom] = useState<DotykaceRoom | null>(null)
 
     useEffect(() => {
         const storedAdminId = localStorage.getItem("dotykace_adminId")
@@ -95,6 +101,12 @@ export default function AdminPage() {
         rooms.forEach((room) => {
             ensurePlayerPermissions(room)
         })
+        if (!selectedRoom) {
+            setSelectedRoom(rooms[0] || null)
+        }
+        if (selectedRoom && !rooms.includes(selectedRoom)){
+            setSelectedRoom(rooms[0] || null)
+        }
     }, [rooms])
 
     const logout = () => {
@@ -102,45 +114,74 @@ export default function AdminPage() {
         router.push("/")
     }
 
+    const EmptyRoomList =() =>{
+        return (
+          <Card>
+              <CardContent className="text-center py-12">
+                  <div className="text-gray-400 mb-4">
+                      <Users className="w-16 h-16 mx-auto" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-600 mb-2">Žiadne miestnosti</h3>
+                  <p className="text-gray-500">Vytvorte svoju prvú miestnosť pre začatie interaktívneho zážitku</p>
+              </CardContent>
+          </Card>
+        )
+    }
+
+    const RoomButton = ({room}) => {
+        const coloring = selectedRoom?.id === room.id ? "bg-blue-500 text-white" : "hover:bg-blue-500/30"
+        return (
+          <SidebarMenuButton
+            onClick={() => setSelectedRoom(room)}
+            className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${coloring}`}
+          >
+              <span className="text-base font-medium">{room.name}</span>
+          </SidebarMenuButton>
+        )
+    }
+    const AppSidebar = () => {
+        return (
+          <Sidebar>
+              <SidebarHeader>
+                  <p className="text-3xl font-bold text-gray-900">Admin Panel</p>
+                  {/* Create Room */}
+                  <CreateRoom adminId={adminId}/>
+              </SidebarHeader>
+              <SidebarContent>
+                  <SidebarGroup>
+                      <SidebarGroupLabel>Zoznam miestnosti</SidebarGroupLabel>
+                      <SidebarGroupContent>
+                          <SidebarMenu>
+                              {rooms.map((room) => (
+                                <SidebarMenuItem key={room.id}>
+                                    <RoomButton room={room} />
+                                </SidebarMenuItem>
+                              ))}
+                          </SidebarMenu>
+                      </SidebarGroupContent>
+                  </SidebarGroup>
+            </SidebarContent>
+              <SidebarFooter>
+                  <Button onClick={logout}>
+                      Odhlásiť sa
+                  </Button>
+              </SidebarFooter>
+          </Sidebar>
+        )
+    }
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-            <div className="max-w-6xl mx-auto space-y-6">
-                {/* Header */}
-                <div className="flex justify-between items-center">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
-                        <p className="text-gray-600">Spravujte miestnosti a pokrok hráčov</p>
-                    </div>
-                    <Button onClick={logout} variant="outline">
-                        Odhlásiť sa
-                    </Button>
-                </div>
-
-                {/* Create Room */}
-                <CreateRoom adminId={adminId}/>
-
-                {/* Rooms List */}
-                <div className="grid gap-6">
-                    {rooms.map((room) => (
-                      <div key={room.id}>
-                          <RenderRoom room={room} processedRooms={processedRooms}/>
-                      </div>
-
-                    ))}
-                </div>
-
-                {rooms.length === 0 && (
-                    <Card>
-                        <CardContent className="text-center py-12">
-                            <div className="text-gray-400 mb-4">
-                                <Users className="w-16 h-16 mx-auto" />
-                            </div>
-                            <h3 className="text-lg font-semibold text-gray-600 mb-2">Žiadne miestnosti</h3>
-                            <p className="text-gray-500">Vytvorte svoju prvú miestnosť pre začatie interaktívneho zážitku</p>
-                        </CardContent>
-                    </Card>
-                )}
-            </div>
-        </div>
+      <SidebarProvider style={{
+          "--sidebar-width": "20rem",
+      }}>
+          <AppSidebar />
+          <main>
+              <SidebarTrigger />
+              {selectedRoom?(
+                <RenderRoom room={selectedRoom} processedRooms={processedRooms}/>
+              ):(
+                <EmptyRoomList/>
+              )}
+          </main>
+      </SidebarProvider>
     )
 }
