@@ -170,18 +170,21 @@ export default function AdminPage() {
         )
     }
     return (
-      <SidebarProvider style={{
-          "--sidebar-width": "20rem",
-      }}>
-          <AppSidebar />
-          <main>
-              <SidebarTrigger />
-              {selectedRoom?(
-                <RenderRoom room={selectedRoom} processedRooms={processedRooms}/>
-              ):(
-                <EmptyRoomList/>
-              )}
-          </main>
-      </SidebarProvider>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+          <SidebarProvider style={{
+              "--sidebar-width": "18rem",
+          }}>
+              <AppSidebar />
+              <div className="w-max flex-grow">
+                  <SidebarTrigger />
+                  {selectedRoom?(
+                    <RenderRoom room={selectedRoom} processedRooms={processedRooms}/>
+                  ):(
+                    <EmptyRoomList/>
+                  )}
+              </div>
+          </SidebarProvider>
+      </div>
+
     )
 }
