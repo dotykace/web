@@ -2,10 +2,10 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/compo
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
 import {CheckCircle, Download, Play, Trash2, UnlockKeyhole, Users} from "lucide-react";
-import RoomParticipants from "@/components/admin/RoomParticipants";
 import {ChapterPermissions, DotykaceRoom} from "@/lib/dotykace-types";
 import {deleteDoc, doc, Timestamp, updateDoc} from "firebase/firestore";
 import {db} from "@/lib/firebase";
+import ProgressTable from "@/components/admin/ProgressTable";
 
 export default function RenderRoom({room, processedRooms}) {
   const canUnlockChapterForAll = (room: DotykaceRoom, chapter: number) => {
@@ -126,13 +126,10 @@ export default function RenderRoom({room, processedRooms}) {
             <CardDescription>
               Kód miestnosti: <span className="font-mono font-bold text-lg">{room.id}</span>
             </CardDescription>
-            {room.globalUnlockedChapters && room.globalUnlockedChapters.length > 0 && (
-              <div className="mt-2">
-                        <span className="text-sm text-green-600 font-medium">
-                          Globálne odomknuté kapitoly: {room.globalUnlockedChapters.join(", ")}
-                        </span>
-              </div>
-            )}
+            <div className="flex items-center gap-2 text-sm text-gray-600 mt-2">
+              <Users className="w-4 h-4" />
+              <span>{room.participants?.length || 0} účastníkov</span>
+            </div>
           </div>
           <div className="flex gap-2">
             <Button
@@ -155,10 +152,11 @@ export default function RenderRoom({room, processedRooms}) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-          <Users className="w-4 h-4" />
-          <span>{room.participants?.length || 0} účastníkov</span>
-        </div>
+        {room.globalUnlockedChapters && room.globalUnlockedChapters.length > 0 && (
+          <span className="text-sm text-green-600 font-medium">
+            Globálne odomknuté kapitoly: {room.globalUnlockedChapters.join(", ")}
+          </span>
+        )}
 
         {/* Bulk Actions */}
         {room.participants && room.participants.length > 0 && room.isStarted && (
@@ -193,54 +191,9 @@ export default function RenderRoom({room, processedRooms}) {
         )}
 
         {/* Participant Progress Table */}
-        {room.participants && room.participants.length > 0 && (
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h4 className="font-semibold text-sm">Pokrok hráčov:</h4>
-              <div className="text-xs text-gray-500 flex items-center gap-4">
-                        <span className="inline-flex items-center gap-1">
-                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                          Dokončené
-                        </span>
-                <span className="inline-flex items-center gap-1">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                          Aktuálne
-                        </span>
-                <span className="inline-flex items-center gap-1">
-                          <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                          Povolené
-                        </span>
-                <span className="inline-flex items-center gap-1">
-                          <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                          Zamknuté
-                        </span>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg border overflow-hidden shadow-sm">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b">
-                  <tr>
-                    <th className="text-left p-3 text-sm font-semibold text-gray-800 min-w-[120px]">Hráč</th>
-                    <th className="text-center p-3 text-sm font-semibold text-gray-800 w-12">0</th>
-                    <th className="text-center p-3 text-sm font-semibold text-gray-800 w-12">1</th>
-                    <th className="text-center p-3 text-sm font-semibold text-gray-800 w-12">2</th>
-                    <th className="text-center p-3 text-sm font-semibold text-gray-800 w-12">3</th>
-                    <th className="text-center p-3 text-sm font-semibold text-gray-800 w-12">4</th>
-                    <th className="text-center p-3 text-sm font-semibold text-gray-800 min-w-[100px]">
-                      Akcie
-                    </th>
-                  </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                  <RoomParticipants participants={room.participants} room={room}/>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
+        {room.participants && room.participants.length > 0 &&
+            <ProgressTable room={room}/>
+        }
       </CardContent>
     </Card>
   )
