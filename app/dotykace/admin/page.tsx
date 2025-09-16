@@ -104,8 +104,14 @@ export default function AdminPage() {
         if (!selectedRoom) {
             setSelectedRoom(rooms[0] || null)
         }
-        if (selectedRoom && !rooms.includes(selectedRoom)){
-            setSelectedRoom(rooms[0] || null)
+        if (selectedRoom) {
+            const updatedRoom = rooms.find(room => room.id === selectedRoom.id)
+            if (updatedRoom){
+                setSelectedRoom(updatedRoom)
+            }
+            else {
+                setSelectedRoom(rooms[0] || null)
+            }
         }
     }, [rooms])
 
