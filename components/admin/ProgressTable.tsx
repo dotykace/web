@@ -1,6 +1,6 @@
 import RoomParticipants from "@/components/admin/RoomParticipants";
 
-export default function ProgressTable({ room }) {
+export default function ProgressTable({ room, headerButtons }) {
   const thBaseClass = "text-center px-2 py-3 text-sm font-semibold text-gray-800";
   const statusItems = [
     { label: 'Dokončené', color: 'bg-green-500' },
@@ -27,11 +27,12 @@ export default function ProgressTable({ room }) {
     <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2">
     <tr>
       <th className={"text-left min-w-[120px]"+thBaseClass}>Hráč</th>
-      {[0, 1, 2, 3, 4].map((num) => (
+      {room.isStarted? headerButtons()
+        :([0, 1, 2, 3, 4].map((num) => (
         <th key={num} className={thBaseClass+" w-12"}>
           {num}
         </th>
-      ))}
+      )))}
       <th className={thBaseClass+" min-w-[100px]"}>
         Akcie
       </th>

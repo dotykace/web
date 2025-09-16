@@ -1,7 +1,7 @@
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
-import {CheckCircle, Download, Play, Trash2, UnlockKeyhole, Users} from "lucide-react";
+import {CheckCircle, Download, LockKeyhole, Play, Trash2, UnlockKeyhole, Users} from "lucide-react";
 import {ChapterPermissions, DotykaceRoom} from "@/lib/dotykace-types";
 import {deleteDoc, doc, Timestamp, updateDoc} from "firebase/firestore";
 import {db} from "@/lib/firebase";
@@ -111,6 +111,32 @@ export default function RenderRoom({room, processedRooms}) {
     }
   }
 
+  const BulkActions = () => {
+    return (
+      <>
+        {[0, 1, 2, 3, 4].map((chapterNum) => {
+          const isChapterUnlocked = isChapterGloballyUnlocked(room, chapterNum)
+
+          return (
+            <td key={chapterNum} className="p-2 text-center">
+              <div className="flex items-center justify-center">
+                <div
+                  className={`w-8 h-8 rounded-xl p-1 flex items-center justify-center text-xs font-bold transition-all duration-200 shadow-sm ${
+                    isChapterUnlocked
+                          ? "bg-amber-500 text-white shadow-amber-200/70"
+                          : "bg-gray-300 text-gray-600"
+                  }`}
+                >
+                  {isChapterUnlocked ? <UnlockKeyhole className="w-3 h-3 mr-1" /> : <LockKeyhole className="w-3 h-3 mr-1" />}{chapterNum}
+                </div>
+              </div>
+            </td>
+          )
+        })}
+      </>
+    )
+  }
+
   return (
     <Card key={room.docId} className="border-l-4 border-l-blue-500">
       <CardHeader>
@@ -152,12 +178,6 @@ export default function RenderRoom({room, processedRooms}) {
         </div>
       </CardHeader>
       <CardContent>
-        {room.globalUnlockedChapters && room.globalUnlockedChapters.length > 0 && (
-          <span className="text-sm text-green-600 font-medium">
-            Globálne odomknuté kapitoly: {room.globalUnlockedChapters.join(", ")}
-          </span>
-        )}
-
         {/* Bulk Actions */}
         {room.participants && room.participants.length > 0 && room.isStarted && (
           <div className="mb-6 p-4 bg-blue-50 rounded-lg">
@@ -192,7 +212,7 @@ export default function RenderRoom({room, processedRooms}) {
 
         {/* Participant Progress Table */}
         {room.participants && room.participants.length > 0 &&
-            <ProgressTable room={room}/>
+            <ProgressTable room={room} headerButtons={BulkActions}/>
         }
       </CardContent>
     </Card>
