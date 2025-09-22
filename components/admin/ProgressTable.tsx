@@ -52,7 +52,7 @@ export default function ProgressTable({ room, headerButtons }) {
       {/*Table*/}
       <div className="rounded-lg border overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-start">
             {/* First Table */}
             <table className="table-auto border border-gray-300 w-1/2 flex-grow-0">
               {TableHeader}

@@ -17,6 +17,7 @@ export default function RenderRoom({room, processedRooms}) {
   }
 
   const allowNextChapterForAll = async (room: DotykaceRoom, nextChapter: number) => {
+    if(!canUnlockChapterForAll(room, nextChapter)) return
     try {
       const currentPermissions = room.chapterPermissions || {}
       const updatedPermissions: ChapterPermissions = { ...currentPermissions }
@@ -116,19 +117,29 @@ export default function RenderRoom({room, processedRooms}) {
       <>
         {[0, 1, 2, 3, 4].map((chapterNum) => {
           const isChapterUnlocked = isChapterGloballyUnlocked(room, chapterNum)
+          const canUnlock = canUnlockChapterForAll(room, chapterNum)
 
           return (
             <td key={chapterNum} className="p-2 text-center">
               <div className="flex items-center justify-center">
-                <div
-                  className={`w-8 h-8 rounded-xl p-1 flex items-center justify-center text-xs font-bold transition-all duration-200 shadow-sm ${
+                <Button
+                  disabled={!canUnlock || isChapterUnlocked}
+                  onClick={() => allowNextChapterForAll(room, chapterNum)}
+                  className={`w-9 h-9 gap-1 rounded-xl p-2 flex items-center justify-center text-xs font-bold transition-all duration-200 shadow-sm
+                  ${
                     isChapterUnlocked
-                          ? "bg-amber-500 text-white shadow-amber-200/70"
-                          : "bg-gray-300 text-gray-600"
+                      ? "bg-amber-500 text-white shadow-amber-200/70 hover:bg-amber-600"
+                      : "bg-gray-300 text-gray-600 hover:bg-gray-400"
                   }`}
+                  variant="ghost"
                 >
-                  {isChapterUnlocked ? <UnlockKeyhole className="w-3 h-3 mr-1" /> : <LockKeyhole className="w-3 h-3 mr-1" />}{chapterNum}
-                </div>
+                  {isChapterUnlocked ? (
+                    <UnlockKeyhole className="w-3 h-3" />
+                  ) : (
+                    <LockKeyhole className="w-3 h-3" />
+                  )}
+                  {chapterNum}
+                </Button>
               </div>
             </td>
           )
@@ -178,38 +189,6 @@ export default function RenderRoom({room, processedRooms}) {
         </div>
       </CardHeader>
       <CardContent>
-        {/* Bulk Actions */}
-        {room.participants && room.participants.length > 0 && room.isStarted && (
-          <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-            <h4 className="font-semibold text-sm mb-3 text-blue-900">Hromadné akcie - Kapitoly:</h4>
-            <div className="flex flex-wrap gap-2">
-              {[1, 2, 3, 4].map((chapterNum) => (
-                <Button
-                  key={chapterNum}
-                  size="sm"
-                  variant={isChapterGloballyUnlocked(room, chapterNum) ? "default" : "outline"}
-                  className={
-                    isChapterGloballyUnlocked(room, chapterNum)
-                      ? "bg-green-600 hover:bg-green-700"
-                      : "bg-blue-100 hover:bg-blue-200 border-blue-300"
-                  }
-                  onClick={() => allowNextChapterForAll(room, chapterNum)}
-                  disabled={!canUnlockChapterForAll(room, chapterNum)}
-                >
-                  {isChapterGloballyUnlocked(room, chapterNum) ? (
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                  ) : (
-                    <UnlockKeyhole className="w-3 h-3 mr-1" />
-                  )}
-                  {isChapterGloballyUnlocked(room, chapterNum)
-                    ? `Kapitola ${chapterNum} odomknutá`
-                    : `Povoliť kapitolu ${chapterNum} všetkým`}
-                </Button>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Participant Progress Table */}
         {room.participants && room.participants.length > 0 &&
             <ProgressTable room={room} headerButtons={BulkActions}/>
