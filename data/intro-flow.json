@@ -8,10 +8,10 @@
     "1": {
       "type": "message",
       "duration": 9,
-      "next-id": "2",
+      "next-id": "username-input",
       "text": "Ahoj, já jsem appka. Jsem kus softwaru, víš jak: 0-1-1-0-0-1...\n"
     },
-    "2": {
+    "username-input": {
       "type": "input",
       "duration": 15,
       "next-id": "3",
@@ -61,7 +61,7 @@
       "choices": [
         {
           "type": "Hraju",
-          "next-id": "10a"
+          "next-id": "game-confirm"
         },
         {
           "type": "O co jde?",
@@ -69,18 +69,59 @@
         }
       ]
     },
-    "10a": {
+    "game-confirm": {
       "type": "message",
       "duration": 7,
       "next-id": "11a",
       "text": "Bezva, hrajeme!"
     },
     "11a": {
+      "type": "multiple-choice",
+      "duration": 9,
+      "text": "Připoj ke mně sluchátka, ať se nepřekřikujeme s ostatními.",
+      "choices": [
+          {
+          "type": "Mám sluchátka v uších",
+          "next-id": "12a"
+          }
+      ]
+    },
+    "12a": {
+      "type": "multiple-choice",
+      "duration": 9,
+      "text": "Slyšíš, jak šeptám?",
+      "choices": [
+        {
+          "type": "Ano!",
+          "next-id": "botname-input"
+        },
+        {
+          "type": "Neslyším nic...",
+          "next-id": "sound-test"
+        }
+      ]
+    },
+    "sound-test": {
+      "type": "multiple-choice",
+      "duration": 9,
+      "text": "Zkontroluj hlasitost a připojení a zkus to znovu.",
+      "choices": [
+        {
+          "type": "Zkouška",
+          "next-id": "sound-test"
+        },
+        {
+          "type": "Slyším!",
+          "next-id": "botname-input"
+        }
+      ]
+    },
+    "botname-input": {
       "type": "input",
       "duration": 15,
       "next-id": "12b",
       "answer": "",
-      "text": "Už vím, jak ti mám říkat, UN. Ale jak ty říkáš mně, svému mobilu?"
+      "text": "Prima! Už vím, jak ti mám říkat, UN. Ale jak ty říkáš mně, svému mobilu?"
     },
     "10c": {
       "type": "message",
@@ -95,7 +136,7 @@
       "choices": [
         {
           "type": "Hraju",
-          "next-id": "10a"
+          "next-id": "game-confirm"
         },
         {
           "type": "Videa",
@@ -107,13 +148,13 @@
       "type": "message",
       "duration": 11,
       "next-id": "11b",
-      "text": "Jde o to podívat se na to, jaké návyky máš s telefonem."
+      "text": "Je to příležitost podívat se, jaké návyky máš s telefonem."
     },
     "11b": {
       "type": "message",
       "duration": 11,
       "next-id": "confirm-play",
-      "text": "A skrz tuhle hru si trochu líp uvědomit, jaký máš k mobilu vztah."
+      "text": "A skrz tuhle hravou appku si trochu líp uvědomit, jaký máš k mobilu vztah."
     },
     "12b": {
       "type": "message",
@@ -132,7 +173,7 @@
       "choices": [
         {
           "type": "Hraju",
-          "next-id": "10a"
+          "next-id": "game-confirm"
         }
       ]
     },
