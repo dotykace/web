@@ -250,12 +250,10 @@ export function useInteractions<T>(filename: string) {
 
             // todo id is not really part of currentInteraction, solve it later with further refactoring
             if (currentInteraction?.type === "input") {
-                // If this is a username input (id "2")
-                if (currentInteraction.id === "2") {
+                if (currentInteraction.id === "username-input") {
                     setToStorage("UN", input)
                 }
-                // If this is a bot name input (id "11a")
-                else if (currentInteraction.id === "11a") {
+                else if (currentInteraction.id === "botname-input") {
                     setToStorage("BN", input)
                 }
             }

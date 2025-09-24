@@ -40,8 +40,6 @@ export default function CardSequence(){
                 {(currentInteraction?.type === "input" || currentInteraction?.type === "multiple-choice") && (
                   <InputArea/>
                 )}
-
-                {/*{!showInput && <div className="text-center text-sm text-gray-500 mt-4">Klikni pro pokračování ✨</div>}*/}
               </div>
             </Card>
           </motion.div>
