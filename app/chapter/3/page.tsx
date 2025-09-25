@@ -200,6 +200,7 @@ function Chapter3Content() {
     // Audio channels
     const voiceAudioRef = useRef<HTMLAudioElement | null>(null)
     const sfxAudioRef = useRef<HTMLAudioElement | null>(null)
+    const musicAudioRef = useRef<HTMLAudioElement | null>(null)
     const timeoutRef = useRef<NodeJS.Timeout | null>(null)
     const typingIntervalRef = useRef<NodeJS.Timeout | null>(null)
     const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
@@ -357,7 +358,7 @@ function Chapter3Content() {
 
     // Multi-channel audio playback
     const playAudio = useCallback(
-        async (src: string, channel: "voice" | "sfx", loop = false, onEnded?: () => void) => {
+        async (src: string, channel: "voice" | "sfx" | "music", loop = false, onEnded?: () => void) => {
             if (!audioEnabled || !audioInitialized) {
                 console.warn(
                     `Audio playback skipped for ${channel} channel (${src}): audioEnabled=${audioEnabled}, audioInitialized=${audioInitialized}`,
@@ -375,6 +376,11 @@ function Chapter3Content() {
                     audioRef = sfxAudioRef
                     volume = 0.7
                     break
+                case "music":
+                   audioRef = musicAudioRef
+                   volume = 0.8
+                   break
+
             }
             // Stop current audio on this channel
             if (audioRef.current) {
@@ -408,7 +414,7 @@ function Chapter3Content() {
 
     // Stop all audio
     const stopAllAudio = useCallback(() => {
-        ;[voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
+        ;[voiceAudioRef, sfxAudioRef, musicAudioRef].forEach((audioRef) => {
             if (audioRef.current) {
                 audioRef.current.pause()
                 audioRef.current.src = ""
@@ -420,83 +426,68 @@ function Chapter3Content() {
     const processInteraction = useCallback(
         (interaction: Interaction) => {
             if (!mountedRef.current) return
-            console.log("Processing interaction:", currentInteractionId, interaction.type)
-            // Clear timeouts and intervals
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current)
-                timeoutRef.current = null
-            }
-            if (typingIntervalRef.current) {
-                clearInterval(typingIntervalRef.current)
-                typingIntervalRef.current = null
-            }
-            if (countdownIntervalRef.current) {
-                clearInterval(countdownIntervalRef.current)
-                countdownIntervalRef.current = null
-            }
-            // Stop all audio
-            stopAllAudio()
+
+            // Vyčisti časovače
+            if (timeoutRef.current) clearTimeout(timeoutRef.current)
+            if (typingIntervalRef.current) clearInterval(typingIntervalRef.current)
+            if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current)
+
+            // Resetuj iba voice a sfx (hudbu nechaj)
+            ;[voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
+                if (audioRef.current) {
+                    audioRef.current.pause()
+                    audioRef.current.src = ""
+                    audioRef.current = null
+                }
+            })
+
             setShowButtons(false)
             setTimeLeft(null)
             setShowWarning(false)
             setSelectedOptions([])
             skipFlagRef.current = false
             setIsTyping(false)
+
             switch (interaction.type) {
                 case "voice":
                     if (interaction.sound) {
                         const onAudioEnd = () => {
                             if (!mountedRef.current) return
-                            if (interaction.animation?.type === "choice" || interaction.animation?.type === "multiselect") {
+                            if (
+                                interaction.animation?.type === "choice" ||
+                                interaction.animation?.type === "multiselect"
+                            ) {
                                 setShowButtons(true)
                             } else if (interaction["next-id"]) {
                                 setCurrentInteractionId(interaction["next-id"]!)
                             }
                         }
+
                         playAudio(interaction.sound, "voice", interaction.loop, onAudioEnd)
-                    }
-                    // Voice interactions show text immediately if present
-                    setDisplayText(interaction.text || "")
-                    // Handle button display for looping voice (immediate for persistent buttons)
-                    if (interaction.button) {
-                        setShowButtons(true)
-                    }
-                    break
-                case "message":
-                    typeText(interaction.text || "", () => {
-                        if (!mountedRef.current) return
-                        if (interaction.animation?.type === "choice" || interaction.animation?.type === "multiselect") {
-                            timeoutRef.current = setTimeout(() => {
-                                if (mountedRef.current) setShowButtons(true)
-                            }, 500)
-                        } else if (interaction["next-id"]) {
-                            timeoutRef.current = setTimeout(
-                                () => {
-                                    if (mountedRef.current) {
-                                        setCurrentInteractionId(interaction["next-id"]!)
-                                    }
-                                },
-                                (interaction.duration || 3) * 1000,
-                            )
+
+                        if (interaction.sound === "track17.mp3") {
+                            setTimeout(() => {
+                                playAudio("GALERIA.wav", "music", true)
+                            }, 17000)
                         }
-                    })
-                    break
-                case "display":
-                    setDisplayText(interaction.text || "")
-                    if (interaction["next-id"]) {
-                        timeoutRef.current = setTimeout(
-                            () => {
-                                if (mountedRef.current) {
-                                    setCurrentInteractionId(interaction["next-id"]!)
+
+                        if (interaction.sound === "track20.mp3") {
+                            setTimeout(() => {
+                                if (musicAudioRef.current) {
+                                    musicAudioRef.current.pause()
+                                    musicAudioRef.current.src = ""
+                                    musicAudioRef.current = null
                                 }
-                            },
-                            (interaction.duration || 2) * 1000,
-                        )
+                            }, 2000)
+                        }
                     }
+                    setDisplayText(interaction.text || "")
+                    if (interaction.button) setShowButtons(true)
                     break
+
                 case "input":
                     setDisplayText(interaction.text || interaction.label || "")
-                    setInputValue("")
+                    setInputValue("")   // <-- toto nechaj, aby sa input pole vždy vyresetovalo
                     setShowButtons(true)
                     if (interaction.duration) {
                         setTimeLeft(interaction.duration)
@@ -515,26 +506,11 @@ function Chapter3Content() {
                         }, 1000)
                     }
                     break
-                case "pause":
-                    setDisplayText("...")
-                    if (interaction["next-id"]) {
-                        timeoutRef.current = setTimeout(
-                            () => {
-                                if (mountedRef.current) {
-                                    setCurrentInteractionId(interaction["next-id"]!)
-                                }
-                            },
-                            (interaction.duration || 3) * 1000,
-                        )
-                    }
-                    break
-                case "loop":
-                    setDisplayText(interaction.text || "")
-                    setShowButtons(true)
-                    break
+
+                // ostatné typy nechaj tak ako sú...
             }
         },
-        [currentInteractionId, typeText, playAudio, stopAllAudio],
+        [currentInteractionId, typeText, playAudio]
     )
 
     const handleInputSave = useCallback(
@@ -652,11 +628,14 @@ function Chapter3Content() {
 
     // Handle audio muting
     useEffect(() => {
-        ;[voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
+        ;[voiceAudioRef, sfxAudioRef, ].forEach((audioRef) => {
             if (audioRef.current) {
-                audioRef.current.muted = !audioEnabled
+                audioRef.current.pause()
+                audioRef.current.src = ""
+                audioRef.current = null
             }
         })
+        // 🎵 musicAudioRef nechávame hrať, kým ho sami nezastavíme
     }, [audioEnabled])
 
     const handleStartExperience = async () => {

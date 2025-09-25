@@ -1,7 +1,7 @@
 // hooks/useAudioManager.tsx
 import { useEffect, useRef, useState, useCallback } from "react";
 
-type LayerName = "background" | "primary";
+type LayerName = "background" | "primary" | "music";
 
 interface UseAudioManagerOptions {
   loop?: boolean;
@@ -13,12 +13,14 @@ export function useAudioManager() {
   const audioRefs = useRef<Record<LayerName, HTMLAudioElement | null>>({
     background: null,
     primary: null,
+    music: null,
   });
 
   // Track playback state
   const [isPlaying, setIsPlaying] = useState<Record<LayerName, boolean>>({
     background: false,
     primary: false,
+    music: false,
   });
 
   // --- Internal helper to initialize / reuse an audio element
