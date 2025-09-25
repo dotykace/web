@@ -235,6 +235,12 @@
       "type": "voice",
       "duration": 43,
       "sound": "track14.mp3",
+      "next-id": "9.2a"
+    },
+    "9.2a": {
+      "type": "music",
+      "src": "EMOJI highfive .wav",
+      "duration": 1,
       "next-id": "9.7"
     },
     "9.7": {
@@ -244,6 +250,14 @@
       "warning-after": 20,
       "warning-text": "Ještě máš na psaní 20 vteřin.",
       "countdown-last": 10,
+      "next-id": "9.7a"
+    },
+    "9.7a": {
+      "type": "music",
+      "src": "CAKAREN.wav",
+      "loop": true,
+      "forever": false,
+      "duration": 20,
       "next-id": "9.8"
     },
     "9.8": {
