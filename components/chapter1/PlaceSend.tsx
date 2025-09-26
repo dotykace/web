@@ -1,8 +1,7 @@
 import CustomSend from "@/components/chapter1/CustomSend";
 import SineWaveObject from "@/components/chapter1/SinWaveObject";
 import GlowingDot from "@/components/GlowingDot";
-import {useChatContext} from "@/context/ChatContext";
-import {useCallback, useEffect} from "react";
+import {useCallback} from "react";
 
 export default function PlaceSend({current, goToNext}) {
   const dotPosition = { x: 0.9, y: 0.6, offset: 20 }
@@ -14,12 +13,25 @@ export default function PlaceSend({current, goToNext}) {
   },[current, goToNext])
 
   const revealComponent = CustomSend({onClick: handleClick, isGlowing: sendGlowing})
-  return <Place
-    dotPosition={dotPosition}
-    revealComponent={revealComponent}
-    onAnimationEnd={() => goToNext("1.10")}
-    onReveal={() => goToNext("1.11")}
-  />
+
+  const Request = ({text, visible}) => {
+    if (!visible) return null;
+    return (
+      <div className={"request absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-center text-3xl p-6 py-8 bg-black/50 rounded-3xl "}>{text}</div>
+    )
+  }
+
+  return (
+    <>
+      <Request text={current.text()} visible={current.type === "request"}/>
+      <Place
+        dotPosition={dotPosition}
+        revealComponent={revealComponent}
+        onAnimationEnd={() => goToNext("1.10")}
+        onReveal={() => goToNext("1.11")}
+      />
+    </>
+    )
 
 }
 
