@@ -5,21 +5,10 @@ import { AnimatePresence } from "framer-motion"
 import { Send } from "lucide-react"
 import InteractiveEmoji, {EmojiParams} from "@/components/InteractiveEmoji";
 
-export default function CustomSend({onClick, onFinish}) {
-  const [state, setState] = useState<"default"|"gray"|"glow">("default")
-
+export default function CustomSend({onClick, isGlowing}) {
   const handleSendClick = () => {
-
-    switch (state) {
-      case "gray":
-        return
-      case "glow":
-        onFinish()
-        return;
-      case "default":
-        setState("gray")
-        onClick()
-        break
+    if (isGlowing()){
+      onClick && onClick()
     }
   }
 
@@ -28,7 +17,7 @@ export default function CustomSend({onClick, onFinish}) {
       {/* Send Button */}
       <button
         onClick={handleSendClick}
-        className={"px-3 py-3 text-white rounded-full transition"+((state === "gray")? " bg-gray-500" :" bg-blue-600 hover:bg-blue-700 ")}>
+        className={"px-3 py-3 text-white rounded-full transition bg-blue-600 hover:bg-blue-700"+(isGlowing()?" ring-2 ring-blue-400":"")}>
         <Send/>
       </button>
     </div>

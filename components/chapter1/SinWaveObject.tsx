@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useAnimationFrame } from "framer-motion";
+import {AnimatePresence, motion, useAnimationFrame} from "framer-motion";
 import { useEffect, useState } from "react";
 
 interface SineWaveObjectProps {
@@ -11,7 +11,8 @@ interface SineWaveObjectProps {
   endYPercent?: number; // End Y position as percentage of height
   offset?: number; // Offset to account for circle size
   startX?: number; // Starting X position
-  object: React.ReactNode; // The object to animate (e.g., a div with styles)
+  animatedObject?: JSX.Element; // The object to animate (e.g., a div with styles)
+  object: JSX.Element; // The object to animate (e.g., a div with styles)
 }
 export default function SineWaveObject(props: SineWaveObjectProps) {
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -26,6 +27,8 @@ export default function SineWaveObject(props: SineWaveObjectProps) {
     offset = 20,
     startX = 0,
   } = props;
+
+  const isFinished = progress >= 1;
 
   // Track window size (responsive)
   useEffect(() => {
@@ -62,12 +65,29 @@ export default function SineWaveObject(props: SineWaveObjectProps) {
   // ----------------------
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-gray-100">
-      <motion.div
-        style={{ transform: `translate(${x}px, ${y}px)` }}
-      >
-        {props.object}
-      </motion.div>
-    </div>
+    <AnimatePresence mode={"wait"}>
+      <div className="relative w-full h-screen overflow-hidden">
+        {isFinished?(
+          <motion.div
+            className="absolute"
+            style={{
+              transform: `translate(${endX}px, ${endY}px)`,
+            }}
+          >
+            {props.object}
+          </motion.div>
+        ):(
+          <motion.div
+            key={"moving-object"}
+            style={{ transform: `translate(${x}px, ${y}px)` }}
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            {props.animatedObject || props.object}
+          </motion.div>
+        )}
+      </div>
+    </AnimatePresence>
   );
 }
