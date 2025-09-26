@@ -31,11 +31,7 @@ export default function ChatBubble({ text, type }: ChatBubbleProps) {
           <div className="bg-white/20 text-white p-3 rounded-xl rounded-tl-none">
             <p>{renderText}</p>
           </div>
-        ): type === "animation" ? (
-          <div className="flex justify-center items-center h-20 w-full max-w-full mx-auto">
-            <div className="animate-bounce text-4xl">✨</div>
-          </div>
-        ) : null}
+        ): null}
       </motion.div>
     </AnimatePresence>
   )

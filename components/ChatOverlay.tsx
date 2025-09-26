@@ -1,6 +1,5 @@
 import MobileNotification from "@/components/mobile-notification";
-import React, {useEffect, useState} from "react";
-import {MessageSquare} from "lucide-react";
+import React, {useCallback, useEffect, useState} from "react";
 import GlowingDot from "@/components/GlowingDot";
 import SpecialPlace from "@/components/SpecialPlace";
 import {Button} from "@/components/ui/button";
@@ -8,6 +7,7 @@ import EmojiList from "@/components/EmojiList";
 import {useChatContext} from "@/context/ChatContext";
 import {LocalSvgRenderer} from "@/components/LocalSvgRenderer";
 import HelpButton from "@/components/HelpButton";
+import PlaceSend from "@/components/chapter1/PlaceSend";
 
 export default function ChatOverlay() {
 
@@ -29,7 +29,24 @@ export default function ChatOverlay() {
     setShowPlace(true);
   }
 
+  const [place2, setPlace2] = useState("")
+
+  const renderPlace = useCallback(() => {
+    switch (place2) {
+      case "place-1":
+        return <PlaceSend current={currentInteraction} goToNext={goToNextInteraction}/>
+      }
+  }, [place2, currentInteraction, goToNextInteraction])
+
+
+
   useEffect(() => {
+    if(currentInteraction.id === "place-1"){
+      setPlace2("place-1")
+    }
+
+
+
     if (currentInteraction.face && currentInteraction.face !== dotyFace) {
       setDotyFace(currentInteraction.face);
     }
@@ -122,17 +139,19 @@ export default function ChatOverlay() {
         </Button>
 
       )}
+      {renderPlace()}
 
-      <GlowingDot visible={showDot} position={dotPosition} onClick={() => resetDot()}/>
-      <div
-        style={{
-          position: "absolute",
-          left: dotPosition.left,
-          top: dotPosition.top,
-        }}
-      >
-        <SpecialPlace visible={showPlace} place={place} onFinish={()=>setShowPlace(false)}/>
-      </div>
+
+      {/*<GlowingDot visible={showDot} position={dotPosition} onClick={() => resetDot()}/>*/}
+      {/*<div*/}
+      {/*  style={{*/}
+      {/*    position: "absolute",*/}
+      {/*    left: dotPosition.left,*/}
+      {/*    top: dotPosition.top,*/}
+      {/*  }}*/}
+      {/*>*/}
+      {/*  <SpecialPlace visible={showPlace} place={place} onFinish={()=>setShowPlace(false)}/>*/}
+      {/*</div>*/}
       {isAnimating && animatingEmoji && (
         <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
           <div
