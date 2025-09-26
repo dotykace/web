@@ -1,6 +1,5 @@
 import MobileNotification from "@/components/mobile-notification";
-import React, {useEffect, useState} from "react";
-import {MessageSquare} from "lucide-react";
+import React, {useCallback, useEffect, useState} from "react";
 import GlowingDot from "@/components/GlowingDot";
 import SpecialPlace from "@/components/SpecialPlace";
 import {Button} from "@/components/ui/button";
@@ -8,6 +7,7 @@ import EmojiList from "@/components/EmojiList";
 import {useChatContext} from "@/context/ChatContext";
 import {LocalSvgRenderer} from "@/components/LocalSvgRenderer";
 import HelpButton from "@/components/HelpButton";
+import PlaceSend from "@/components/chapter1/PlaceSend";
 
 export default function ChatOverlay() {
 

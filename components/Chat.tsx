@@ -1,6 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
 import {MessageSquare} from "lucide-react";
-import {AnimatePresence, motion} from "framer-motion";
 import UserInput from "@/components/UserInput";
 import {useChatContext} from "@/context/ChatContext";
 import MobileNotification from "@/components/mobile-notification";

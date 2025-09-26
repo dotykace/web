@@ -1,4 +1,4 @@
-import CustomSend from "@/components/CustomSend";
+import CustomSend from "@/components/chapter1/CustomSend";
 import CustomPlay from "@/components/CustomPlay";
 import {useCallback, useEffect, useRef} from "react";
 import {setToStorage} from "@/scripts/local-storage";
