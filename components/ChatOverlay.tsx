@@ -36,7 +36,7 @@ export default function ChatOverlay() {
       case "place-1":
         return <PlaceSend current={currentInteraction} goToNext={goToNextInteraction}/>
       }
-  }, [place2])
+  }, [place2, currentInteraction, goToNextInteraction])
 
 
 

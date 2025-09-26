@@ -6,16 +6,14 @@ import {useCallback, useEffect} from "react";
 
 export default function PlaceSend({current, goToNext}) {
   const dotPosition = { x: 0.9, y: 0.6, offset: 20 }
+  const sendGlowing = useCallback(() => current.type === "request", [current]);
   const handleClick = useCallback(() => {
-    goToNext()
+    if( current.type === "request" ){
+      goToNext()
+    }
   },[current, goToNext])
 
-  const sendGlowing = () => {
-    if (!current) return false;
-    return current.type === "request";
-  }
-
-  const revealComponent = CustomSend({handleClick, isGlowing: sendGlowing})
+  const revealComponent = CustomSend({onClick: handleClick, isGlowing: sendGlowing})
   return <Place
     dotPosition={dotPosition}
     revealComponent={revealComponent}
@@ -26,7 +24,7 @@ export default function PlaceSend({current, goToNext}) {
 }
 
 function Place({dotPosition, revealComponent, onAnimationEnd, onReveal}) {
-  const animatedObject = <div className={"h-10 w-10 rounded-full"} style={{backgroundColor: "blue"}}/>
-  const object = <GlowingDot onClick={onReveal} color={"red"} visible={true} revealComponent={revealComponent} size={40}/>
+  const animatedObject = <div className={"h-5 w-5 rounded-full"} style={{backgroundColor: "white"}}/>
+  const object = <GlowingDot onClick={onReveal} visible={true} revealComponent={revealComponent} size={40}/>
   return <SineWaveObject onFinish={onAnimationEnd} animatedObject={animatedObject} object={object} endXPercent={dotPosition.x} endYPercent={dotPosition.y} offset={dotPosition.offset}/>
 }
