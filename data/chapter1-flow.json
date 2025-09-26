@@ -14,7 +14,8 @@
       "type": "message",
       "text": "Wow!",
       "duration": 2,
-      "next-id": "1.2"
+      "next-id": "1.2",
+      "face": "wow"
     },
     "1.2": {
       "type": "message",
@@ -27,7 +28,8 @@
       "type": "message",
       "text": "Jsi tam?",
       "duration": 2,
-      "next-id": "1.4"
+      "next-id": "1.4",
+      "face": "puzzeled"
     },
     "1.4": {
       "type": "message",
@@ -53,7 +55,8 @@
       "answer": "",
       "duration": 15,
       "next-id": "1.7",
-      "timeout-id": "1.100"
+      "timeout-id": "1.100",
+      "face": "thrilled"
     },
     "1.7": {
       "type": "message",
@@ -78,18 +81,19 @@
       "duration": 0.5,
       "next-id": "1.11"
     },
-    "1.11": {
+    "1.01": {
       "type": "message",
       "text": "Díky za procházku po známých místech. \uD83D\uDE4F \uD83E\uDD1D",
       "duration": 4,
-      "next-id": "1.12"
+      "face": "blush",
+      "next-id": "1.02"
     },
-    "1.12": {
+    "1.02": {
       "type": "message",
       "duration": 4,
       "text": "Jaké to bylo pro tebe?"
     },
-    "1.13": {
+    "1.03": {
       "type": "message",
       "duration": 4,
       "text": "Tohle psaní už začíná být trochu otrava. Mám chuť s tebou mluvit.",

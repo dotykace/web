@@ -121,7 +121,7 @@ export default function Chat() {
             console.log("Selected emoji:", emoji);
             setShowEmojiReactions(false)
             addUserInputToHistory(emoji, "emoji");
-            goToNextInteraction("1.13")
+            goToNextInteraction("1.03")
           }}/>
           ) : (
           <UserInput onSubmit={(input)=>{
