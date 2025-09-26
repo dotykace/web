@@ -29,7 +29,7 @@
       "text": "Jsi tam?",
       "duration": 2,
       "next-id": "1.4",
-      "face": "puzzeled"
+      "face": "puzzled"
     },
     "1.4": {
       "type": "message",
@@ -74,7 +74,7 @@
     "overlay-on": {
       "type": "checkpoint",
       "duration": 0,
-      "next-id": "place-1"
+      "next-id": "1.9"
     },
     "overlay-off": {
       "type": "checkpoint",
@@ -107,19 +107,82 @@
     "place-1": {
       "type": "checkpoint",
       "duration": 0,
-      "next-id": "1.9"
+      "next-id": "1.9a"
     },
     "1.9": {
       "type": "notification",
-      "text": "Chci s tebou zavzpomínat na naše oblíbená místa. Jaké vzpomínky máš na tohle místo?",
+      "text": "Chci s tebou zavzpomínat na naše oblíbená místa. Jak vnímáš tohle místo?",
       "duration": 9,
-      "face": "ok"
+      "face": "ok",
+      "next-id": "place-1"
+    },
+    "1.9a": {
+      "type": "animation",
+      "next-id": "1.10"
     },
     "1.10": {
       "type": "notification",
       "duration": 12,
       "text": "Tvůj prst je tu často, ale míváš různé druhy stisku.",
-      "face": "aweful"
+      "face": "aweful",
+      "next-id": "1.10a"
+    },
+    "1.10a": {
+      "type": "animation",
+      "next-id": "1.11"
+    },
+    "1.11": {
+      "type": "notification",
+      "duration": 9,
+      "text": "Podle toho, jak na mě klepeš, si představuju, co se s tebou asi děje.",
+      "next-id": "1.11a"
+    },
+    "1.11a": {
+      "type": "request",
+      "text": "Stiskni ‘send’ jako když spěcháš.",
+      "next-id": "1.12"
+    },
+    "1.12": {
+      "type": "notification",
+      "duration": 7,
+      "text": "Když píše UN za chůze, dívá se na cestu nebo na mě?",
+      "face": "puzzled",
+      "next-id": "1.12a"
+    },
+    "1.12a": {
+      "type": "request",
+      "text": "Stiskni ‘send’ váhavě.",
+      "next-id": "1.13"
+    },
+    "1.13": {
+      "type": "notification",
+      "duration": 7,
+      "text": "Je někdy prst UN rychlejší než rozhodnutí ‘tohle odešlu’?",
+      "face": "nerd",
+      "next-id": "1.13a"
+    },
+    "1.13a": {
+      "type": "request",
+      "text": "Stiskni ‘send’ unaveně.",
+      "next-id": "1.14"
+    },
+    "1.14": {
+      "type": "notification",
+      "duration": 7,
+      "text": "Kolikrát za den na mě asi UN klepne?",
+      "face": "aweful",
+      "next-id": "1.14a"
+    },
+    "1.14a": {
+      "type": "request",
+      "text": "Stiskni ‘send’ naštvaně.",
+      "next-id": "1.15"
+    },
+    "1.15": {
+      "type": "notification",
+      "duration": 7,
+      "text": "Jsou ruce UN dost silné, aby mě zlomily vejpůl?",
+      "face": "pressure"
     },
     "place-2": {
       "type": "checkpoint",

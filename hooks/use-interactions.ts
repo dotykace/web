@@ -153,6 +153,9 @@ export function useInteractions<T>(filename: string) {
         if (!currentInteraction || currentInteraction.type === "input" || currentInteraction.type === "multiple-choice") {
             return
         }
+        if (currentInteraction.duration == undefined || currentInteraction.duration < 0) {
+            return
+        }
 
         const timer = setTimeout(() => {
             if (currentInteraction["timeout-id"]) {

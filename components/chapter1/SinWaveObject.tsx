@@ -13,6 +13,7 @@ interface SineWaveObjectProps {
   startX?: number; // Starting X position
   animatedObject?: JSX.Element; // The object to animate (e.g., a div with styles)
   object: JSX.Element; // The object to animate (e.g., a div with styles)
+  onFinish?: () => void; // Callback when animation finishes
 }
 export default function SineWaveObject(props: SineWaveObjectProps) {
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -39,6 +40,11 @@ export default function SineWaveObject(props: SineWaveObjectProps) {
     window.addEventListener("resize", updateSize);
     return () => window.removeEventListener("resize", updateSize);
   }, []);
+  useEffect(() => {
+    if (isFinished && props.onFinish) {
+      props.onFinish();
+    }
+  }, [progress]);
 
   // Animate progress 0 → 1
   useAnimationFrame(() => {
