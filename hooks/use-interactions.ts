@@ -30,14 +30,17 @@ export function useInteractions<T>(filename: string) {
 
             let processed = text
 
+            // todo maybe refactor?
             if (/UN/.test(text)) {
-                const username = readFromStorage("UN") as string
-                processed = processed.replace(/UN/g, username || "ty")
+                const username = (readFromStorage("UN") as string) || "Ty"
+                const capitalized = username.charAt(0).toUpperCase() + username.slice(1)
+                processed = processed.replace(/UN/g, capitalized)
             }
 
             if (/BN/.test(text)) {
-                const botName = readFromStorage("BN") as string
-                processed = processed.replace(/BN/g, botName || "Bot")
+                const botName = (readFromStorage("BN") as string) || "Dotykačka"
+                const capitalized = botName.charAt(0).toUpperCase() + botName.slice(1)
+                processed = processed.replace(/BN/g, capitalized)
             }
 
             if (/\{\{user_input\}\}/.test(text)) {
