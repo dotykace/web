@@ -4,7 +4,7 @@ import { useState } from "react"
 import {AnimatePresence, motion} from "framer-motion"
 import {Pause, Play} from "lucide-react"
 
-export default function CustomPlay({onClick, onFinish}) {
+export default function CustomPlay({onClick}) {
   const [showLogos, setShowLogos] = useState(false)
   const [logos, setLogos] = useState<>([])
 
@@ -35,30 +35,19 @@ export default function CustomPlay({onClick, onFinish}) {
 
   const handleClick = () =>{
     generateLogoList()
-    setShowLogos(prevState => !prevState)
     if (!showLogos) {
       if (onClick) {
         onClick()
       }
     }
-    else {
-      if (onFinish) {
-        onFinish()
-      }
-    }
-
+    setShowLogos(prevState => !prevState)
   }
 
   return (
-    <div
-      className="relative"
-      style={{
-        transform: "translate(-50%, 0)"
-      }}
-    >
+    <div>
       <button
         onClick={handleClick}
-        className="flex items-center justify-center w-14 h-14 rounded-full bg-white/50 text-black shadow-lg"
+        className="flex items-center justify-center w-12 h-12 rounded-full bg-white/50 text-black shadow-lg"
         aria-label="Play or Pause"
       >
         {showLogos ? <Pause size={24} /> : <Play size={24} />}

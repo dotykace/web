@@ -8,7 +8,7 @@
     "chapter-1-start": {
       "type": "checkpoint",
       "duration": 0.5,
-      "next-id": "1.1"
+      "next-id": "overlay-on"
     },
     "1.1": {
       "type": "message",
@@ -182,17 +182,22 @@
       "type": "notification",
       "duration": 7,
       "text": "Jsou ruce UN dost silné, aby mě zlomily vejpůl?",
-      "face": "pressure"
+      "face": "pressure",
+      "next-id": "place-2"
     },
     "place-2": {
       "type": "checkpoint",
       "duration": 0,
-      "next-id": "1.20"
+      "next-id": "1.20a"
     },
     "place-3": {
       "type": "checkpoint",
       "duration": 0,
       "next-id": "1.30"
+    },
+    "1.20a": {
+      "type": "animation",
+      "next-id": "1.20"
     },
     "1.20": {
       "type": "notification",
@@ -200,10 +205,18 @@
       "face": "strange",
       "text": "Kdyby mělo tohle místo jméno, tak za mě jídelna."
     },
+    "1.21a": {
+      "type": "animation",
+      "next-id": "1.21"
+    },
     "1.21": {
       "type": "notification",
       "duration": 9,
       "text": "Někdy si říkám, jak to zvládáš všechno strávit..."
+    },
+    "1.22a": {
+      "type": "animation",
+      "next-id": "input-place-2"
     },
     "input-place-2": {
       "type": "notification",
