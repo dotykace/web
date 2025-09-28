@@ -3,8 +3,8 @@ import SineWaveObject from "@/components/chapter1/SinWaveObject";
 
 export default function Place({dotPosition, revealComponent, onAnimationEnd, onReveal}) {
   const sinWaveProps = {
-    endXPercent: dotPosition.x,
-    endYPercent: dotPosition.y,
+    endXPercent: dotPosition.x ?? 0.5,
+    endYPercent: dotPosition.y ?? 0.5,
     offset: dotPosition.offset ?? 20,
     startX: dotPosition.start ?? 0
   }

@@ -1,12 +1,12 @@
 import Place from "@/components/chapter1/Place";
-import CustomPlay from "@/components/CustomPlay";
+import CustomPlay from "@/components/chapter1/CustomPlay";
 import React, {useEffect, useState} from "react";
 import {LocalSvgRenderer} from "@/components/LocalSvgRenderer";
 import MobileNotification from "@/components/mobile-notification";
 import EmojiList from "@/components/EmojiList";
 
 export default function PlacePlay({current, goToNext}) {
-  const dotPosition = { x: 0.5, y: 0.5, start: 100 }
+  const dotPosition = { start: 100 }
   const revealComponent = <CustomPlay onClick={()=>goToNext("input-place-2")}/>
 
   const PREDEFINED_EMOJIS = ["🍽","️😋","🤤","🥴","🤢","☠️"]

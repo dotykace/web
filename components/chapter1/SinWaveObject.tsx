@@ -23,10 +23,10 @@ export default function SineWaveObject(props: SineWaveObjectProps) {
     periods = 3,
     margin = 50,
     speed = 0.0035,
-    endXPercent = 0.9,
-    endYPercent = 0.6,
-    offset = 20,
-    startX = 0,
+    endXPercent,
+    endYPercent,
+    offset,
+    startX,
   } = props;
 
   const isFinished = progress >= 1;
