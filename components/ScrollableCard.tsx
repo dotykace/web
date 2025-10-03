@@ -4,6 +4,7 @@ import {useState, useEffect, useRef} from "react"
 import ScrollLine from "@/components/ScrollLine";
 import AnimatedCard from "@/components/AnimatedCard";
 import {readFromStorage} from "@/scripts/local-storage";
+import {useSwipeNavigation} from "@/hooks/use-scroll";
 const generateChoiceObject = (text,callback) => {
   return {
     text: text,
@@ -67,9 +68,6 @@ export default function ScrollableCards({currentInteraction, onScroll, onFinish}
 
   const autoScrollDelay = currentInteraction ? (currentInteraction.duration * 1000) ?? 4000 : 0 // 4 seconds
   const intervalMs = (autoScrollDelay/100)*0.75;
-  const touchStartY = useRef(0)
-  const touchEndY = useRef(0)
-  const minSwipeDistance = 50 // minimum distance for a swipe
 
   const changeCard = () => {
     // cooldown logic
@@ -87,48 +85,12 @@ export default function ScrollableCards({currentInteraction, onScroll, onFinish}
     }, 600)
   }
 
-  useEffect(() => {
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault()
+  const swipeCallback = (direction) => {
+    if (direction === "up") {
       changeCard()
     }
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY.current = e.touches[0].clientY
-    }
-
-    const handleTouchMove = (e: TouchEvent) => {
-      e.preventDefault() // Prevent scrolling
-    }
-
-    const handleTouchEnd = (e: TouchEvent) => {
-      touchEndY.current = e.changedTouches[0].clientY
-      handleSwipe()
-    }
-    const handleSwipe = () => {
-      const swipeDistance = touchStartY.current - touchEndY.current
-      const absSwipeDistance = Math.abs(swipeDistance)
-
-      if (absSwipeDistance > minSwipeDistance) {
-        if (swipeDistance > 0) {
-          // Swiped up - show next card
-          changeCard()
-        }
-      }
-    }
-
-    // Add event listeners
-    window.addEventListener("wheel", handleWheel, { passive: false })
-    window.addEventListener("touchstart", handleTouchStart, { passive: true })
-    window.addEventListener("touchmove", handleTouchMove, { passive: false })
-    window.addEventListener("touchend", handleTouchEnd, { passive: true })
-
-    return () => {
-      window.removeEventListener("wheel", handleWheel)
-      window.removeEventListener("touchstart", handleTouchStart)
-      window.removeEventListener("touchmove", handleTouchMove)
-      window.removeEventListener("touchend", handleTouchEnd)
-    }
-  }, [])
+  }
+  useSwipeNavigation(swipeCallback)
 
   const [progress, setProgress] = useState(0)
 
