@@ -29,7 +29,7 @@ export default function SocialMediaPost({
       <CardHeader className="pb-3">
         <div className="flex items-center space-x-3">
           <LocalSvgRenderer filename={avatar} className="w-10 h-10" />
-          <div className="flex-1">
+          <div className="flex-1 justify-between">
             <h3 className="font-semibold text-sm">{username}</h3>
             <p className="text-xs text-gray-500">{timestamp}</p>
           </div>
@@ -53,24 +53,6 @@ export default function SocialMediaPost({
             </div>
           )}
         </div>
-
-        {/* Action buttons */}
-        {/*<div className="flex items-center justify-between pt-2 border-t">*/}
-        {/*  <div className="flex items-center space-x-4">*/}
-        {/*    <Button size="sm" variant="outline" className="p-2 h-auto rounded-[5px]">*/}
-        {/*      <Heart className="w-5 h-5" />*/}
-        {/*    </Button>*/}
-        {/*    <Button size="sm" variant="outline" className="p-2 h-auto rounded-[5px]">*/}
-        {/*      <MessageCircle className="w-5 h-5" />*/}
-        {/*    </Button>*/}
-        {/*    <Button size="sm" variant="outline" className="p-2 h-auto rounded-[5px]">*/}
-        {/*      <Share className="w-5 h-5" />*/}
-        {/*    </Button>*/}
-        {/*  </div>*/}
-        {/*  <Button size="sm" variant="outline" className="p-2 h-auto rounded-[5px]">*/}
-        {/*    <Bookmark className="w-5 h-5" />*/}
-        {/*  </Button>*/}
-        {/*</div>*/}
       </CardContent>
     </Card>
   )

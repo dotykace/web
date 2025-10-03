@@ -8,7 +8,7 @@
     "chapter-1-start": {
       "type": "checkpoint",
       "duration": 0.5,
-      "next-id": "overlay-on"
+      "next-id": "1.1"
     },
     "1.1": {
       "type": "message",
@@ -79,7 +79,7 @@
     "overlay-off": {
       "type": "checkpoint",
       "duration": 0.5,
-      "next-id": "1.11"
+      "next-id": "1.01"
     },
     "1.01": {
       "type": "message",
@@ -193,7 +193,7 @@
     "place-3": {
       "type": "checkpoint",
       "duration": 0,
-      "next-id": "1.30"
+      "next-id": "1.30a"
     },
     "1.20a": {
       "type": "animation",
@@ -222,43 +222,48 @@
       "type": "notification",
       "text": "A jak ti asi všechno, co tu servírujou, chutná..."
     },
+    "1.30a": {
+      "type": "animation",
+      "next-id": "1.30"
+    },
     "1.30": {
       "type": "notification",
       "duration": 9,
       "text": "Tomuhle místu říkám stopa.",
-      "face": "alert"
+      "face": "alert",
+      "next-id": "1.31"
     },
     "1.31": {
       "type": "card",
-      "duration": 7,
+      "duration": 15,
       "text": "Někdy tu z tebe vnímám hodně netrpělivosti, je to tak?",
       "nextCard": "1.32",
       "face": "pressure"
     },
     "1.32": {
       "type": "card",
-      "duration": 7,
+      "duration": 15,
       "text": "Někdy zvědavost... ",
       "nextCard": "1.33",
       "face": "smile"
     },
     "1.33": {
       "type": "card",
-      "duration": 7,
+      "duration": 15,
       "text": "Ale vždycky zírám...",
       "nextCard": "1.34",
       "face": "aweful"
     },
     "1.34": {
       "type": "card",
-      "duration": 7,
+      "duration": 15,
       "text": "...kolik toho zvládnou...",
       "nextCard": "1.35",
       "face": "happy"
     },
     "1.35": {
       "type": "card",
-      "duration": 7,
+      "duration": 15,
       "text": "...tvoje prsty.",
       "nextCard": "finger-choice",
       "face": "mute"

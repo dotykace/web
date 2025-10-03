@@ -15,7 +15,7 @@ export default function ScrollLine() {
 
         {/* Animated wave */}
         <div className="absolute inset-0">
-          <div className="animate-swipeWave absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-transparent via-white/80 to-transparent blur-xl"></div>
+          <div className="animate-swipeWave absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-transparent via-white to-transparent blur-xl"></div>
         </div>
       </div>
 
