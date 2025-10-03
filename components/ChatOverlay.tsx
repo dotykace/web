@@ -1,12 +1,11 @@
 import MobileNotification from "@/components/mobile-notification";
 import React, {useCallback, useEffect, useState} from "react";
-import SpecialPlace from "@/components/SpecialPlace";
-import {Button} from "@/components/ui/button";
 import {useChatContext} from "@/context/ChatContext";
 import {LocalSvgRenderer} from "@/components/LocalSvgRenderer";
 import HelpButton from "@/components/HelpButton";
 import PlaceSend from "@/components/chapter1/PlaceSend";
 import PlacePlay from "@/components/chapter1/PlacePlay";
+import PlaceScroll from "@/components/chapter1/PlaceScroll";
 
 export default function ChatOverlay() {
 
@@ -14,7 +13,6 @@ export default function ChatOverlay() {
   const [showNotification, setShowNotification] = useState(false)
 
   const [place, setPlace] = useState("")
-  const [showBackToChat, setShowBackToChat] = useState(false)
 
   const [dotyFace, setDotyFace] = useState("happy_1")
 
@@ -25,7 +23,7 @@ export default function ChatOverlay() {
       case "place-2":
         return <PlacePlay current={currentInteraction} goToNext={goToNextInteraction}/>
       case "place-3":
-        return <SpecialPlace visible={true} place={"place-3"} onFinish={() => setShowBackToChat(true)}/>
+        return <PlaceScroll current={currentInteraction} goToNext={goToNextInteraction}/>
     }
   }, [place, currentInteraction, goToNextInteraction])
 
@@ -42,9 +40,6 @@ export default function ChatOverlay() {
       setShowNotification(true)
     } else {
       setShowNotification(false)
-    }
-    if (currentInteraction?.id === "back-to-chat") {
-      setShowBackToChat(true);
     }
     if(currentInteraction.id === "place-1"){
       setPlace("place-1")
@@ -75,24 +70,6 @@ export default function ChatOverlay() {
         }}
         duration={currentInteraction?.duration * 1000}
       />
-      {showBackToChat && (
-        <Button
-          style={
-            {
-              position: "absolute",
-              bottom: "50%",
-              left: "5%",
-              width: "90%",
-            }
-          }
-          key={"back-to-chat-button"}
-          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out"
-          onClick={() => goToNextInteraction("overlay-off")}
-        >
-          Zpět do chatu
-        </Button>
-
-      )}
       {renderPlace()}
     </div>
   );
