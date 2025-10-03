@@ -1,6 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
 import {MessageSquare} from "lucide-react";
-import {AnimatePresence, motion} from "framer-motion";
 import UserInput from "@/components/UserInput";
 import {useChatContext} from "@/context/ChatContext";
 import MobileNotification from "@/components/mobile-notification";
@@ -121,7 +120,7 @@ export default function Chat() {
             console.log("Selected emoji:", emoji);
             setShowEmojiReactions(false)
             addUserInputToHistory(emoji, "emoji");
-            goToNextInteraction("1.13")
+            goToNextInteraction("1.03")
           }}/>
           ) : (
           <UserInput onSubmit={(input)=>{

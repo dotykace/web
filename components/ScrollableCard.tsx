@@ -4,6 +4,7 @@ import {useState, useEffect, useRef} from "react"
 import ScrollLine from "@/components/ScrollLine";
 import AnimatedCard from "@/components/AnimatedCard";
 import {readFromStorage} from "@/scripts/local-storage";
+import {useSwipeNavigation} from "@/hooks/use-scroll";
 const generateChoiceObject = (text,callback) => {
   return {
     text: text,
@@ -18,6 +19,7 @@ const FINGERS = [
   "malíček"
 ]
 const createCard = (interaction, botName, onFinish) => {
+  if (!interaction) return undefined
   if (interaction.type !== "card") return undefined
   let newCard = {
     id: interaction.id,
@@ -41,30 +43,31 @@ const createCard = (interaction, botName, onFinish) => {
   return newCard;
 }
 export default function ScrollableCards({currentInteraction, onScroll, onFinish}) {
-  // scrolling cooldown
   const [isTransitioning, setIsTransitioning] = useState(false)
   const lastWheelTime = useRef(0)
   const wheelCooldown = 800 // milliseconds between card changes
 
-  const nextCard = (()=> currentInteraction.id !== "finger-choice" && currentInteraction.id!== "finger-compare");
-  const validCard = (() => currentInteraction.type === "card")
+  const nextCard = (()=> {
+    return currentInteraction.id !== "finger-choice" && currentInteraction.id !== "finger-compare"
+  });
+  const validCard = (() => {
+    return currentInteraction.type === "card"
+  })
 
   const botName = readFromStorage("BN") ?? "Bot"
 
   const [dotyFace, setDotyFace] = useState("happy_1")
 
   useEffect(() => {
+    if (!currentInteraction) return;
     if (currentInteraction.face && currentInteraction.face !== dotyFace) {
       setDotyFace(currentInteraction.face);
     }
   }, [currentInteraction]);
 
 
-  const autoScrollDelay = currentInteraction.duration * 1000 ?? 4000 // 4 seconds
+  const autoScrollDelay = currentInteraction ? (currentInteraction.duration * 1000) ?? 4000 : 0 // 4 seconds
   const intervalMs = (autoScrollDelay/100)*0.75;
-  const touchStartY = useRef(0)
-  const touchEndY = useRef(0)
-  const minSwipeDistance = 50 // minimum distance for a swipe
 
   const changeCard = () => {
     // cooldown logic
@@ -82,48 +85,12 @@ export default function ScrollableCards({currentInteraction, onScroll, onFinish}
     }, 600)
   }
 
-  useEffect(() => {
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault()
+  const swipeCallback = (direction) => {
+    if (direction === "up") {
       changeCard()
     }
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY.current = e.touches[0].clientY
-    }
-
-    const handleTouchMove = (e: TouchEvent) => {
-      e.preventDefault() // Prevent scrolling
-    }
-
-    const handleTouchEnd = (e: TouchEvent) => {
-      touchEndY.current = e.changedTouches[0].clientY
-      handleSwipe()
-    }
-    const handleSwipe = () => {
-      const swipeDistance = touchStartY.current - touchEndY.current
-      const absSwipeDistance = Math.abs(swipeDistance)
-
-      if (absSwipeDistance > minSwipeDistance) {
-        if (swipeDistance > 0) {
-          // Swiped up - show next card
-          changeCard()
-        }
-      }
-    }
-
-    // Add event listeners
-    window.addEventListener("wheel", handleWheel, { passive: false })
-    window.addEventListener("touchstart", handleTouchStart, { passive: true })
-    window.addEventListener("touchmove", handleTouchMove, { passive: false })
-    window.addEventListener("touchend", handleTouchEnd, { passive: true })
-
-    return () => {
-      window.removeEventListener("wheel", handleWheel)
-      window.removeEventListener("touchstart", handleTouchStart)
-      window.removeEventListener("touchmove", handleTouchMove)
-      window.removeEventListener("touchend", handleTouchEnd)
-    }
-  }, [])
+  }
+  useSwipeNavigation(swipeCallback)
 
   const [progress, setProgress] = useState(0)
 
@@ -152,9 +119,9 @@ export default function ScrollableCards({currentInteraction, onScroll, onFinish}
   }, [progress]);
 
   return (
-    <div className="h-screen overflow-hidden touch-none w-screen fixed top-0 left-0">
-      <div className="flex flex-row-reverse justify-evenly items-center h-full w-full">
-        {nextCard() && <ScrollLine />}
+    <div className="h-screen w-screen flex relative items-center justify-center">
+      {nextCard() && <div className="absolute"><ScrollLine /></div>}
+      <div className="z-10">
         <AnimatedCard currentCard={createCard(currentInteraction,botName,onFinish)} visible={validCard()} dotyFace={dotyFace}/>
       </div>
     </div>

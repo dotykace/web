@@ -1,5 +1,5 @@
-import CustomSend from "@/components/CustomSend";
-import CustomPlay from "@/components/CustomPlay";
+import CustomSend from "@/components/chapter1/CustomSend";
+import CustomPlay from "@/components/chapter1/CustomPlay";
 import {useCallback, useEffect, useRef} from "react";
 import {setToStorage} from "@/scripts/local-storage";
 import ScrollableCards from "@/components/ScrollableCard";
