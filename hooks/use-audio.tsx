@@ -23,10 +23,8 @@ export function useAudioManager() {
     music: false,
   });
 
-  // --- Internal helper to initialize / reuse an audio element
   const initAudio = useCallback(
     (layer: LayerName, src: string, opts: UseAudioManagerOptions = {}) => {
-      // Clean up existing if exists
       if (audioRefs.current[layer]) {
         audioRefs.current[layer]?.pause();
         audioRefs.current[layer]!.src = "";
@@ -35,11 +33,22 @@ export function useAudioManager() {
       }
 
       if (!src) {
-        console.warn("Audio initialization failed: no source")
+        console.warn("Audio initialization failed: no source");
         return null;
       }
 
-      const audio = new Audio(src);
+      const audio = new Audio();
+
+      // Explicitly set type if it's a wav
+      if (src.endsWith(".wav")) {
+        const source = document.createElement("source");
+        source.src = src;
+        source.type = "audio/wav";
+        audio.appendChild(source);
+      } else {
+        audio.src = src;
+      }
+
       audio.loop = opts.loop ?? false;
       audio.volume = opts.volume ?? 1.0;
 

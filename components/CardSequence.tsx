@@ -3,6 +3,7 @@ import Card from "@/components/Card";
 import InputArea from "@/components/InputArea";
 import {useEffect, useState} from "react";
 import {useChatContext} from "@/context/ChatContext";
+import {useAudioManager} from "@/hooks/use-audio";
 
 export default function CardSequence(){
 
@@ -10,8 +11,15 @@ export default function CardSequence(){
 
   const [history, setHistory] = useState([])
 
+  const { play } = useAudioManager();
+
   useEffect(() => {
     if (!currentInteraction) return;
+    if (currentInteraction.type === "music" ) {
+      const track = "/audio/"+currentInteraction.src;
+      play("background", track, { loop: currentInteraction.loop })
+      return;
+    }
     setHistory((prev) => [...prev, currentInteraction] )
   }, [currentInteraction]);
 
