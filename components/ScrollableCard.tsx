@@ -18,6 +18,7 @@ const FINGERS = [
   "malíček"
 ]
 const createCard = (interaction, botName, onFinish) => {
+  if (!interaction) return undefined
   if (interaction.type !== "card") return undefined
   let newCard = {
     id: interaction.id,
@@ -41,26 +42,30 @@ const createCard = (interaction, botName, onFinish) => {
   return newCard;
 }
 export default function ScrollableCards({currentInteraction, onScroll, onFinish}) {
-  // scrolling cooldown
   const [isTransitioning, setIsTransitioning] = useState(false)
   const lastWheelTime = useRef(0)
   const wheelCooldown = 800 // milliseconds between card changes
 
-  const nextCard = (()=> currentInteraction.id !== "finger-choice" && currentInteraction.id!== "finger-compare");
-  const validCard = (() => currentInteraction.type === "card")
+  const nextCard = (()=> {
+    return currentInteraction.id !== "finger-choice" && currentInteraction.id !== "finger-compare"
+  });
+  const validCard = (() => {
+    return currentInteraction.type === "card"
+  })
 
   const botName = readFromStorage("BN") ?? "Bot"
 
   const [dotyFace, setDotyFace] = useState("happy_1")
 
   useEffect(() => {
+    if (!currentInteraction) return;
     if (currentInteraction.face && currentInteraction.face !== dotyFace) {
       setDotyFace(currentInteraction.face);
     }
   }, [currentInteraction]);
 
 
-  const autoScrollDelay = currentInteraction.duration * 1000 ?? 4000 // 4 seconds
+  const autoScrollDelay = currentInteraction ? (currentInteraction.duration * 1000) ?? 4000 : 0 // 4 seconds
   const intervalMs = (autoScrollDelay/100)*0.75;
   const touchStartY = useRef(0)
   const touchEndY = useRef(0)
@@ -152,9 +157,9 @@ export default function ScrollableCards({currentInteraction, onScroll, onFinish}
   }, [progress]);
 
   return (
-    <div className="h-screen overflow-hidden touch-none w-screen fixed top-0 left-0">
-      <div className="flex flex-row-reverse justify-evenly items-center h-full w-full">
-        {nextCard() && <ScrollLine />}
+    <div className="h-screen w-screen flex relative items-center justify-center">
+      {nextCard() && <div className="absolute"><ScrollLine /></div>}
+      <div className="z-10">
         <AnimatedCard currentCard={createCard(currentInteraction,botName,onFinish)} visible={validCard()} dotyFace={dotyFace}/>
       </div>
     </div>

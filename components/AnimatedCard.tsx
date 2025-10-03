@@ -3,11 +3,11 @@ import SocialMediaPost from "@/components/SocialMediaPost";
 
 export default function AnimatedCard({currentCard, visible, dotyFace}) {
   return (
-    <div className="items-center justify-center w-[400px]">
+    <div className="items-center flex justify-center">
       <AnimatePresence mode="wait">
         {visible && (
           <motion.div
-          key={currentCard.id}
+          key={currentCard?.id}
           initial={{
             y: 100,
             opacity: 0,
@@ -30,10 +30,10 @@ export default function AnimatedCard({currentCard, visible, dotyFace}) {
             damping: 25,
             duration: 0.8,
           }}
-          className="w-full h-full"
+          className="w-[400px] h-full relative z-50"
           style={{ perspective: "1000px" }}
         >
-          <SocialMediaPost username={currentCard?.name} avatar={dotyFace} content={currentCard.content} timestamp={currentCard.title} choices={currentCard.choices}/>
+          <SocialMediaPost username={currentCard?.username} avatar={dotyFace} content={currentCard?.content} timestamp={currentCard?.title} choices={currentCard?.choices}/>
         </motion.div>)}
 
       </AnimatePresence>
