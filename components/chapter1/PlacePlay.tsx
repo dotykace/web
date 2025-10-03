@@ -7,7 +7,6 @@ import EmojiList from "@/components/EmojiList";
 
 export default function PlacePlay({current, goToNext}) {
   const dotPosition = { start: 100 }
-  const revealComponent = <CustomPlay onClick={()=>goToNext("input-place-2")}/>
 
   const PREDEFINED_EMOJIS = ["🍽","️😋","🤤","🥴","🤢","☠️"]
   const [animatingEmoji, setAnimatingEmoji] = useState<string | null>(null)
@@ -51,10 +50,15 @@ export default function PlacePlay({current, goToNext}) {
         placeVisible && (
           <Place
             dotPosition={dotPosition}
-            revealComponent={revealComponent}
             onAnimationEnd={() => goToNext("1.20")}
             onReveal={() => goToNext("1.21")}
-          />
+          >
+            {()=><div
+              style={{position: "absolute", left: "calc(50% - 25px)", top: "calc(50% - 25px)"}}
+            >
+              {<CustomPlay onClick={() => goToNext("input-place-2")}/>}
+            </div>}
+          </Place>
         )
       }
 

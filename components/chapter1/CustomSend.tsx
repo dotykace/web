@@ -4,15 +4,12 @@ import {useCallback} from "react"
 import { Send } from "lucide-react"
 
 export default function CustomSend({onClick, isGlowing}) {
-  const handleSendClick = useCallback(() => {
-    onClick && onClick()
-  }, [onClick])
 
   return (
     <div className="relative">
       {/* Send Button */}
       <button
-        onClick={handleSendClick}
+        onClick={onClick}
         className={"px-3 py-3 text-white rounded-full transition bg-blue-600 hover:bg-blue-700"+(isGlowing()?" ring ring-blue-400":"")}>
         <Send/>
       </button>

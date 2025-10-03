@@ -11,8 +11,6 @@ export default function PlaceSend({current, goToNext}) {
     }
   },[current, goToNext])
 
-  const revealComponent = CustomSend({onClick: handleClick, isGlowing: sendGlowing})
-
   const Request = ({text, visible}) => {
     if (!visible) return null;
     return (
@@ -25,10 +23,15 @@ export default function PlaceSend({current, goToNext}) {
       <Request text={current.text()} visible={current.type === "request"}/>
       <Place
         dotPosition={dotPosition}
-        revealComponent={revealComponent}
         onAnimationEnd={() => goToNext("1.10")}
         onReveal={() => goToNext("1.11")}
-      />
+      >
+        {() => <div
+          style={{position: "absolute", left: "calc(90% - 20px)", top: "calc(60% - 20px)"}}
+        >
+          {CustomSend({onClick: handleClick, isGlowing: sendGlowing})}
+        </div>}
+      </Place>
     </>
     )
 }

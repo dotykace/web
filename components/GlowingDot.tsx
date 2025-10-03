@@ -1,19 +1,11 @@
 import { motion, AnimatePresence } from "framer-motion";
 import React from "react";
 
-export default function GlowingDot({ onClick, size = 30, color = "white", revealComponent}) {
-  const [visible, setVisible] = React.useState(false);
-  function handleClick() {
-    setVisible(true);
-    console.log("Dot clicked");
-    if (onClick) onClick();
-  }
-
-  if (visible) return revealComponent;
+export default function GlowingDot({ onClick, size = 30, color = "white"}) {
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        onClick={handleClick}
+        onClick={onClick}
         key="dot"
         initial={{ opacity: 0}}
         animate={{ opacity: 1 }}
