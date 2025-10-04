@@ -10,6 +10,7 @@ import ChatOverlay from "@/components/ChatOverlay";
 import ChatBubble from "@/components/ChatBubble";
 import {LocalSvgRenderer} from "@/components/LocalSvgRenderer";
 import HelpButton from "@/components/HelpButton";
+import {useAudioManager} from "@/hooks/use-audio";
 
 export default function Chat() {
   const { currentInteraction, goToNextInteraction} = useChatContext()
@@ -33,8 +34,17 @@ export default function Chat() {
     message: currentInteraction?.text() ?? "",
     icon: <MessageSquare className="h-6 w-6 text-white" />,}
 
+  const { play } = useAudioManager();
+
   useEffect(() => {
     if (!currentInteraction) return;
+    if (currentInteraction.type === "music" ) {
+      // Music handling is done in AudioManager
+      console.log("Playing music:", currentInteraction.src);
+      const track = "/audio/"+currentInteraction.src;
+      play("background", track, { loop: currentInteraction.loop }).then(()=>goToNextInteraction())
+      return;
+    }
     setHistory((prev) => [...prev, currentInteraction])
     if (currentInteraction.face && currentInteraction.face !== dotyFace) {
       setDotyFace(currentInteraction.face);

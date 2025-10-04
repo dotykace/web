@@ -9,9 +9,9 @@ import { Card } from "@/components/ui/card"
 import { doc, onSnapshot } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import type { DotykaceRoom } from "@/lib/dotykace-types"
-import HelpButton from "@/components/HelpButton";
+import HelpButton from "@/components/HelpButton"
+import { useAudioManager } from "@/hooks/use-audio"
 
-// Define the section types and states
 type SectionState = "locked" | "unlocked" | "completed"
 
 interface Section {
@@ -30,9 +30,17 @@ export default function MenuPage() {
   const [roomId, setRoomId] = useState<string | null>(null)
   const [playerId, setPlayerId] = useState<string | null>(null)
   const [isClient, setIsClient] = useState(false)
-
   const [allowedChapters, setAllowedChapters] = useState<number[]>([0])
   const [completedChapters, setCompletedChapters] = useState<number[]>([])
+
+  // 👉 hook musí byť vo vnútri komponentu
+  const { play, stop } = useAudioManager()
+
+  useEffect(() => {
+    // spusti hudbu po mount
+    play("background", "/audio/CAKAREN.wav", { loop: true, volume: 0.4 })
+    return () => stop("background")
+  }, [play, stop])
 
   // Initialize client-side data
   useEffect(() => {
