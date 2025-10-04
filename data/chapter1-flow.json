@@ -35,19 +35,24 @@
       "type": "message",
       "text": "Jaj, promiň. Zapnu ti chat.",
       "duration": 3,
-      "next-id": "input-on",
+      "next-id": "input-on_a",
       "face": "wink"
+    },
+    "input-on_a":{
+      "type": "music",
+      "src": "ODOMKNUTIE CHATU.wav",
+      "next-id": "input-on"
+    },
+    "input-on": {
+      "type": "checkpoint",
+      "duration": 0,
+      "next-id": "1.5"
     },
     "1.5": {
       "type": "notification",
       "text": "🔔 Chat pro UN spuštěn.",
       "duration": 7,
       "next-id": "1.6"
-    },
-    "input-on": {
-      "type": "checkpoint",
-      "duration": 0,
-      "next-id": "1.5"
     },
     "1.6": {
       "type": "message",
@@ -69,12 +74,22 @@
       "type": "message",
       "text": "Když jsme u paměti. Něco ti chci ukázat.",
       "duration": 4,
+      "next-id": "overlay-on_a"
+    },
+    "overlay-on_a": {
+      "type": "music",
+      "src": "vykreslovanie TECKY.wav",
       "next-id": "overlay-on"
     },
     "overlay-on": {
       "type": "checkpoint",
       "duration": 0,
       "next-id": "1.9"
+    },
+    "overlay-off_a": {
+      "type": "music",
+      "src": "KONIEC ROZHRANIA.wav",
+      "next-id": "overlay-off"
     },
     "overlay-off": {
       "type": "checkpoint",
@@ -188,6 +203,12 @@
     "place-2": {
       "type": "checkpoint",
       "duration": 0,
+      "next-id": "looped-sound"
+    },
+    "looped-sound": {
+      "type": "music",
+      "src": "ZVUKOVY PODKRES.wav",
+      "loop": true,
       "next-id": "1.20a"
     },
     "place-3": {
