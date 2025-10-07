@@ -46,9 +46,9 @@
     "input-on": {
       "type": "checkpoint",
       "duration": 0,
-      "next-id": "1.5"
+      "next-id": "first-notification"
     },
-    "1.5": {
+    "first-notification": {
       "type": "notification",
       "text": "🔔 Chat pro UN spuštěn.",
       "duration": 7,
