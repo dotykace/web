@@ -81,7 +81,6 @@ export function useAudioManager() {
         console.log("Resuming suspended AudioContext");
         await context.resume();
       }
-      console.log(`Playing sound ${key}`);
       const gainNode = context.createGain();
       gainNode.gain.value = sound.volume;
 
@@ -91,7 +90,7 @@ export function useAudioManager() {
 
       source.connect(gainNode).connect(context.destination);
       source.start();
-      console.log(`Started sound ${key}`);
+      console.log(`Playing sound ${key}`);
 
       // Track instance
       if (!playingRef.current[key]) playingRef.current[key] = [];
