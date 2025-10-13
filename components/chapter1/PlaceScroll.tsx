@@ -3,7 +3,7 @@ import {Button} from "@/components/ui/button";
 import {setToStorage} from "@/scripts/local-storage";
 import ScrollableCards from "@/components/ScrollableCard";
 import Place from "@/components/chapter1/Place";
-import {useAudioManager} from "@/hooks/use-audio";
+import {useSharedAudio} from "@/context/AudioContext";
 
 
 export default function PlaceScroll({ current, goToNext }) {
@@ -11,7 +11,7 @@ export default function PlaceScroll({ current, goToNext }) {
 
   const dotPosition = { start: 200 }
 
-  const {play} = useAudioManager();
+  const {play} = useSharedAudio();
 
   useEffect(() => {
     if (current?.id === "back-to-chat") {
@@ -27,7 +27,7 @@ export default function PlaceScroll({ current, goToNext }) {
     }
     else {
       if (current.nextCard) {
-        play("primary", "/audio/SCROLLOVANIE.wav").then(()=>
+        play("scroll").then(()=>
         goToNext(current.nextCard))
       }
     }

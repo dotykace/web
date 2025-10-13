@@ -3,7 +3,7 @@
 import { useState } from "react"
 import {AnimatePresence, motion} from "framer-motion"
 import {Pause, Play} from "lucide-react"
-import {useAudioManager} from "@/hooks/use-audio";
+import {useSharedAudio} from "@/context/AudioContext";
 
 export default function CustomPlay({onClick}) {
   const [showLogos, setShowLogos] = useState(false)
@@ -34,14 +34,14 @@ export default function CustomPlay({onClick}) {
     setLogos(newEmojis)
   }
 
-  const {play, stop} = useAudioManager()
+  const {play, stop} = useSharedAudio()
 
   const handleClick = () =>{
     generateLogoList()
     if (!showLogos) {
       if (onClick) {
-        play("primary", "/audio/CHAOS.wav").then(()=> {
-          stop("background")
+        play("chaos").then(()=> {
+          stop("loop")
           onClick()
         })
       }
