@@ -34,13 +34,7 @@ export default function MenuPage() {
   const [completedChapters, setCompletedChapters] = useState<number[]>([])
 
   // 👉 hook musí byť vo vnútri komponentu
-  const { play, stop } = useAudioManager()
-
-  useEffect(() => {
-    // spusti hudbu po mount
-    play("background", "/audio/CAKAREN.wav", { loop: true, volume: 0.4 })
-    return () => stop("background")
-  }, [play, stop])
+  const audioManager = useAudioManager()
 
   // Initialize client-side data
   useEffect(() => {
@@ -61,7 +55,22 @@ export default function MenuPage() {
     if (storedChapter === 0) {
       console.log("Redirecting to chapter 0 from the menu")
       redirect("/chapter/0")
+      return;
     }
+
+    audioManager.preloadAll({
+      "menu-background": { url: "/audio/CAKAREN.wav", opts: { loop: true, volume: 0.3 } },
+    }).then(()=> {
+      if (!audioManager.isPlaying["menu-background"]){
+        audioManager.play("menu-background")
+      }
+    })
+
+    return () => {
+      // Close the shared AudioContext on app exit
+      const ctx = (audioManager as any).audioContextRef?.current;
+      if (ctx && ctx.state !== "closed") ctx.close();
+    };
   }, [])
 
   // Listen to room changes to get updated permissions

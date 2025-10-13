@@ -1,17 +1,17 @@
 import CustomSend from "@/components/chapter1/CustomSend";
 import {useCallback} from "react";
 import Place from "@/components/chapter1/Place";
-import {useAudioManager} from "@/hooks/use-audio";
+import {useSharedAudio} from "@/context/AudioContext";
 
 export default function PlaceSend({current, goToNext}) {
   const dotPosition = { x: 0.9, y: 0.6, offset: 20 }
-  const {play} = useAudioManager();
+  const {play} = useSharedAudio();
   const sendGlowing = useCallback(() => current.type === "request", [current]);
   const handleClick = useCallback(() => {
     if( current.type === "request" ){
-      play("primary", "/audio/send.wav").then(goToNext)
+      play("send").then(goToNext)
     }
-  },[current, goToNext])
+  },[current, goToNext, play])
 
   const Request = ({text, visible}) => {
     if (!visible) return null;

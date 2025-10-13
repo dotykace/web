@@ -40,15 +40,15 @@
     },
     "input-on_a":{
       "type": "music",
-      "src": "ODOMKNUTIE CHATU.wav",
+      "key": "input-on",
       "next-id": "input-on"
     },
     "input-on": {
       "type": "checkpoint",
       "duration": 0,
-      "next-id": "1.5"
+      "next-id": "first-notification"
     },
-    "1.5": {
+    "first-notification": {
       "type": "notification",
       "text": "🔔 Chat pro UN spuštěn.",
       "duration": 7,
@@ -78,7 +78,7 @@
     },
     "overlay-on_a": {
       "type": "music",
-      "src": "vykreslovanie TECKY.wav",
+      "key": "overlay-on",
       "next-id": "overlay-on"
     },
     "overlay-on": {
@@ -88,7 +88,7 @@
     },
     "overlay-off_a": {
       "type": "music",
-      "src": "KONIEC ROZHRANIA.wav",
+      "key": "overlay-off",
       "next-id": "overlay-off"
     },
     "overlay-off": {
@@ -207,8 +207,7 @@
     },
     "looped-sound": {
       "type": "music",
-      "src": "ZVUKOVY PODKRES.wav",
-      "loop": true,
+      "key": "loop",
       "next-id": "1.20a"
     },
     "place-3": {

@@ -10,17 +10,36 @@ import ChatOverlay from "@/components/ChatOverlay";
 import ChatBubble from "@/components/ChatBubble";
 import {LocalSvgRenderer} from "@/components/LocalSvgRenderer";
 import HelpButton from "@/components/HelpButton";
-import {useAudioManager} from "@/hooks/use-audio";
+import {useSharedAudio} from "@/context/AudioContext";
+import AudioWrapper from "@/components/audio/AudioWrapper";
+
+const soundMap = {
+  "overlay-on": { url: "/audio/vykreslovanie TECKY.wav" },
+  "overlay-off": { url: "/audio/KONIEC ROZHRANIA.wav" },
+  "loop": { url: "/audio/ZVUKOVY PODKRES.wav", opts: {loop:true} },
+  "input-on": { url: "/audio/ODOMKNUTIE CHATU.wav" },
+  "send": { url: "/audio/send.wav" },
+  "chaos": { url: "/audio/CHAOS.wav" },
+  "scroll": { url: "/audio/SCROLLOVANIE.wav" },
+}
 
 export default function Chat() {
+  return (
+    <AudioWrapper soundMap={soundMap}>
+      <ChatContent />
+    </AudioWrapper>
+  );
+}
+
+function ChatContent() {
   const { currentInteraction, goToNextInteraction} = useChatContext()
+  const { play, isPlaying, toggle } = useSharedAudio();
 
   const [dotyFace, setDotyFace] = useState("happy_1")
 
   const [mode, setMode] = useState<"default"|"overlay">("default")
   const messagesEndRef = useRef<HTMLDivElement|null>(null)
 
-  const [showNotification, setShowNotification] = useState(false)
   const {handleUserInput} = useChatContext()
   const [showInput, setShowInput] = useState(false)
   const [showEmojiReactions, setShowEmojiReactions] = useState(false);
@@ -34,15 +53,10 @@ export default function Chat() {
     message: currentInteraction?.text() ?? "",
     icon: <MessageSquare className="h-6 w-6 text-white" />,}
 
-  const { play } = useAudioManager();
-
   useEffect(() => {
     if (!currentInteraction) return;
     if (currentInteraction.type === "music" ) {
-      // Music handling is done in AudioManager
-      console.log("Playing music:", currentInteraction.src);
-      const track = "/audio/"+currentInteraction.src;
-      play("background", track, { loop: currentInteraction.loop }).then(()=>goToNextInteraction())
+      play(currentInteraction.key).then(()=>goToNextInteraction())
       return;
     }
     setHistory((prev) => [...prev, currentInteraction])
@@ -51,9 +65,6 @@ export default function Chat() {
     }
     if (currentInteraction.id === "1.12") {
       setShowEmojiReactions(true);
-    }
-    if (currentInteraction.id === "1.5"){
-      setShowNotification(true);
     }
     if(currentInteraction.type === "checkpoint"){
       if (currentInteraction.id === "overlay-on") {
@@ -94,12 +105,12 @@ export default function Chat() {
       </div>
 
       <div>
-        {currentInteraction?.type === "notification" && (
+        {currentInteraction?.id === "first-notification" && (
           <MobileNotification
             {...notificationProps}
-            isOpen={showNotification}
+            isOpen={true}
             duration={currentInteraction?.duration * 1000}
-            onClose={() => setShowNotification(false)}
+            onClose={() => goToNextInteraction()}
           />
         )}
       </div>
