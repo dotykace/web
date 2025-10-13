@@ -21,7 +21,7 @@ export default function Home() {
   return (
     <>
       <button onClick={() => play("overlay-off")}>Click sound</button>
-      <button onClick={() => toggle("loop")}>{isPlaying["bg"] ? "Pause" : "Play"} BG</button>
+      <button onClick={() => toggle("loop")}>{isPlaying["loop"] ? "Pause" : "Play"} BG</button>
     </>
   );
 }

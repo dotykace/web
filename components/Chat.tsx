@@ -10,7 +10,8 @@ import ChatOverlay from "@/components/ChatOverlay";
 import ChatBubble from "@/components/ChatBubble";
 import {LocalSvgRenderer} from "@/components/LocalSvgRenderer";
 import HelpButton from "@/components/HelpButton";
-import {useAudioManager} from "@/hooks/use-audio";
+import {useSharedAudio} from "@/context/AudioContext";
+import AudioWrapper from "@/components/audio/AudioWrapper";
 
 const soundMap = {
   "overlay-on": { url: "/audio/vykreslovanie TECKY.wav" },
@@ -20,15 +21,16 @@ const soundMap = {
 }
 
 export default function Chat() {
+  return (
+    <AudioWrapper soundMap={soundMap}>
+      <ChatContent />
+    </AudioWrapper>
+  );
+}
+
+function ChatContent() {
   const { currentInteraction, goToNextInteraction} = useChatContext()
-  const { preloadAll, play, isPlaying, toggle } = useAudioManager();
-
-  useEffect(() => {
-    preloadAll(soundMap).then(() => {
-      console.log("All sounds preloaded");
-    });
-  }, [preloadAll]);
-
+  const { play, isPlaying, toggle } = useSharedAudio();
 
   const [dotyFace, setDotyFace] = useState("happy_1")
 
