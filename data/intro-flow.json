@@ -71,9 +71,7 @@
     },
     "game-confirm_a": {
       "type": "music",
-      "src": "JINGEL.wav",
-      "loop": false,
-      "forever": false,
+      "key": "game-confirm",
       "duration": 0,
       "next-id": "game-confirm"
     },
@@ -96,8 +94,7 @@
     },
     "first-sound-test_a": {
       "type": "music",
-      "src": "vykreslovanie TECKY.wav",
-      "loop": false,
+      "key": "sound-test",
       "duration": 0,
       "next-id": "12a"
     },
@@ -118,8 +115,7 @@
     },
     "sound-test_a": {
       "type": "music",
-      "src": "vykreslovanie TECKY.wav",
-      "loop": false,
+      "key": "sound-test",
       "duration": 0,
       "next-id": "sound-test"
     },

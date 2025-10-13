@@ -8,16 +8,23 @@ import {useAudioManager} from "@/hooks/use-audio";
 export default function CardSequence(){
 
   const {currentInteraction, goToNextInteraction} = useChatContext()
-
   const [history, setHistory] = useState([])
 
-  const { play } = useAudioManager();
+  const { preloadAll, play } = useAudioManager();
+  const soundMap = {
+    "sound-test": {url: "/audio/vykreslovanie TECKY.wav"},
+    "game-confirm": {url: "/audio/JINGEL.wav"},
+  }
+  useEffect(() => {
+    preloadAll(soundMap).then(() => {
+      console.log("All sounds preloaded");
+    });
+  }, []);
 
   useEffect(() => {
     if (!currentInteraction) return;
     if (currentInteraction.type === "music" ) {
-      const track = "/audio/"+currentInteraction.src;
-      play("background", track, { loop: currentInteraction.loop })
+      play(currentInteraction.key)
       return;
     }
     setHistory((prev) => [...prev, currentInteraction] )
