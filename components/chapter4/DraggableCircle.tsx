@@ -37,7 +37,7 @@ export default function DraggableCircle() {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-screen overflow-hidden bg-gradient-to-b from-gray-100 to-gray-300 flex items-center justify-center"
+      className="relative w-full h-full overflow-hidden flex items-center justify-center"
     >
       <motion.div
         ref={circleRef}
