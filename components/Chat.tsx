@@ -18,7 +18,7 @@ const soundMap = {
   "overlay-off": { url: "/audio/KONIEC ROZHRANIA.wav" },
   "loop": { url: "/audio/ZVUKOVY PODKRES.wav", opts: {loop:true} },
   "input-on": { url: "/audio/ODOMKNUTIE CHATU.wav" },
-  "send": { url: "/audio/send.wav" },
+  "send": { url: "/audio/SEND.wav" },
   "chaos": { url: "/audio/CHAOS.wav" },
   "scroll": { url: "/audio/SCROLLOVANIE.wav" },
 }
