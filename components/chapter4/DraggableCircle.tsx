@@ -4,20 +4,30 @@ import { useState, useEffect, useRef } from "react";
 import { motion, useMotionValue } from "framer-motion";
 
 export default function DraggableCircle() {
-  const [percentage, setPercentage] = useState(0);
+  const [percentage, setPercentage] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
+  const circleRef = useRef<HTMLDivElement>(null);
   const y = useMotionValue(0);
 
   useEffect(() => {
     const updatePercentage = () => {
       if (!containerRef.current) return;
-      const containerHeight = containerRef.current.offsetHeight;
-      const yValue = y.get();
+      const circleHeight = circleRef.current.offsetHeight;
+      const containerHeight = containerRef.current.offsetHeight - circleHeight;
 
-      // Clamp Y and convert to percentage (0% bottom → 100% top)
-      const clampedY = Math.max(0, Math.min(containerHeight, yValue));
-      const percent = 100 - (clampedY / containerHeight) * 100;
-      setPercentage(Number(percent.toFixed(1)));
+      // When starting from center, y = 0 → middle of screen
+      // Up movement => positive y, Down => negative y
+      const yValue = -y.get();
+
+      const halfHeight = containerHeight / 2;
+      const currentY = halfHeight + yValue;
+
+      // Clamp within container
+      const clampedY = Math.max(0, Math.min(containerHeight, currentY));
+
+      // Convert to percentage (0% bottom → 100% top)
+      const percent = (clampedY / containerHeight) * 100;
+      setPercentage(Number(percent.toFixed(2)));
     };
 
     const unsubscribe = y.on("change", updatePercentage);
@@ -30,6 +40,7 @@ export default function DraggableCircle() {
       className="relative w-full h-screen overflow-hidden bg-gradient-to-b from-gray-100 to-gray-300 flex items-center justify-center"
     >
       <motion.div
+        ref={circleRef}
         drag="y"
         dragConstraints={containerRef}
         dragElastic={0}
