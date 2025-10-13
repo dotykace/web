@@ -1,142 +1,153 @@
 // hooks/useAudioManager.tsx
 import { useEffect, useRef, useState, useCallback } from "react";
 
-type LayerName = "background" | "primary" | "music";
-
 interface UseAudioManagerOptions {
   loop?: boolean;
-  volume?: number;
+  volume?: number; // 0.0 to 1.0
+}
+
+interface Sound {
+  buffer: AudioBuffer;
+  loop: boolean;
+  volume: number;
+}
+
+interface PlayingInstance {
+  source: AudioBufferSourceNode;
+  gainNode: GainNode;
 }
 
 export function useAudioManager() {
-  // Keep refs per layer
-  const audioRefs = useRef<Record<LayerName, HTMLAudioElement | null>>({
-    background: null,
-    primary: null,
-    music: null,
-  });
+  const audioContextRef = useRef<AudioContext | null>(null);
 
-  // Track playback state
-  const [isPlaying, setIsPlaying] = useState<Record<LayerName, boolean>>({
-    background: false,
-    primary: false,
-    music: false,
-  });
+  // Preloaded sounds map: key -> Sound
+  const soundsRef = useRef<Record<string, Sound>>({});
 
-  const initAudio = useCallback(
-    (layer: LayerName, src: string, opts: UseAudioManagerOptions = {}) => {
-      if (audioRefs.current[layer]) {
-        audioRefs.current[layer]?.pause();
-        audioRefs.current[layer]!.src = "";
-        audioRefs.current[layer]?.load();
-        audioRefs.current[layer] = null;
+  // Playing instances map: key -> currently playing sources
+  const playingRef = useRef<Record<string, PlayingInstance[]>>({});
+
+  const [isPlaying, setIsPlaying] = useState<Record<string, boolean>>({});
+
+  const getAudioContext = () => {
+    if (!audioContextRef.current) {
+      console.log("Creating new AudioContext");
+      audioContextRef.current = new AudioContext();
+    }
+    return audioContextRef.current;
+  };
+
+  // --- Load a sound and decode it
+  const loadSound = useCallback(async (key: string, url: string, opts?: UseAudioManagerOptions) => {
+    const context = getAudioContext();
+    if (!context) return;
+    const response = await fetch(url);
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = await context.decodeAudioData(arrayBuffer);
+
+    soundsRef.current[key] = {
+      buffer,
+      loop: opts?.loop ?? false,
+      volume: opts?.volume ?? 1,
+    };
+    setIsPlaying((prev) => ({ ...prev, [key]: false }));
+  }, []);
+
+  // --- Preload multiple sounds at once
+  const preloadAll = useCallback(
+    async (soundMap: Record<string, { url: string; opts?: UseAudioManagerOptions }>) => {
+      const promises = Object.entries(soundMap).map(([key, { url, opts }]) =>
+        loadSound(key, url, opts)
+      );
+      await Promise.all(promises);
+    },
+    [loadSound]
+  );
+
+  // --- Play a sound by key
+  const play = useCallback(
+    async (key: string) => {
+      const sound = soundsRef.current[key];
+      if (!sound) {
+        console.warn(`Sound ${key} not loaded`);
+        return;
       }
 
-      if (!src) {
-        console.warn("Audio initialization failed: no source");
-        return null;
+      const context = getAudioContext();
+      if(!context) {
+        console.warn("AudioContext not available");
+        return;
       }
-
-      const audio = new Audio();
-
-      // Explicitly set type if it's a wav
-      if (src.endsWith(".wav")) {
-        const source = document.createElement("source");
-        source.src = src;
-        source.type = "audio/wav";
-        audio.appendChild(source);
-      } else {
-        audio.src = src;
+      if (context.state === "suspended") {
+        console.log("Resuming suspended AudioContext");
+        await context.resume();
       }
+      console.log(`Playing sound ${key}`);
+      const gainNode = context.createGain();
+      gainNode.gain.value = sound.volume;
 
-      audio.loop = opts.loop ?? false;
-      audio.volume = opts.volume ?? 1.0;
+      const source = context.createBufferSource();
+      source.buffer = sound.buffer;
+      source.loop = sound.loop;
 
-      audio.addEventListener("ended", () => {
-        setIsPlaying((prev) => ({ ...prev, [layer]: false }));
-      });
+      source.connect(gainNode).connect(context.destination);
+      source.start();
+      console.log(`Started sound ${key}`);
 
-      audioRefs.current[layer] = audio;
-      return audio;
+      // Track instance
+      if (!playingRef.current[key]) playingRef.current[key] = [];
+      playingRef.current[key].push({ source, gainNode });
+
+      source.onended = () => {
+        source.disconnect();
+        gainNode.disconnect();
+        playingRef.current[key] = playingRef.current[key].filter(
+          (inst) => inst.source !== source
+        );
+        if (playingRef.current[key].length === 0) {
+          setIsPlaying((prev) => ({ ...prev, [key]: false }));
+        }
+      };
+
+      setIsPlaying((prev) => ({ ...prev, [key]: true }));
     },
     []
   );
 
-  // --- Play a track in a given layer
-  // IMPORTANT: This will re-init the audio element each time
-  // so use toggle() to pause/resume instead
-  const play = useCallback(
-    async (layer: LayerName, src: string, opts?: UseAudioManagerOptions) => {
-      const audio = initAudio(layer, src, opts);
-      if (!audio) return;
+  // --- Stop all instances of a sound
+  const stop = useCallback((key: string) => {
+    const instances = playingRef.current[key];
+    if (!instances) return;
 
-      try {
-        await audio.play();
-        setIsPlaying((prev) => ({ ...prev, [layer]: true }));
-      } catch (err) {
-        console.error(`Failed to play ${layer} audio:`, err);
-        setIsPlaying((prev) => ({ ...prev, [layer]: false }));
-      }
-    },
-    [initAudio]
-  );
+    instances.forEach(({ source, gainNode }) => {
+      source.stop();
+      source.disconnect();
+      gainNode.disconnect();
+    });
 
-  // --- Pause a specific layer
-  const pause = useCallback((layer: LayerName) => {
-    const audio = audioRefs.current[layer];
-    if (audio && !audio.paused) {
-      audio.pause();
-      setIsPlaying((prev) => ({ ...prev, [layer]: false }));
-    }
+    playingRef.current[key] = [];
+    setIsPlaying((prev) => ({ ...prev, [key]: false }));
   }, []);
 
-  // --- Stop (pause + cleanup)
-  const stop = useCallback((layer: LayerName) => {
-    const audio = audioRefs.current[layer];
-    if (audio) {
-      audio.pause();
-      audio.src = "";
-      audio.load();
-      audioRefs.current[layer] = null;
-      setIsPlaying((prev) => ({ ...prev, [layer]: false }));
-    }
-  }, []);
-
+  // --- Toggle a sound
   const toggle = useCallback(
-    async (layer: LayerName, src: string, opts?: UseAudioManagerOptions) => {
-      const audio = audioRefs.current[layer];
-
-      // If no audio exists OR new src → init & play fresh
-      if (!audio || audio.src !== new URL(src, window.location.href).href) {
-        await play(layer, src, opts);
-        return;
-      }
-
-      // If paused → resume
-      if (audio.paused) {
-        try {
-          await audio.play();
-          setIsPlaying((prev) => ({ ...prev, [layer]: true }));
-        } catch (err) {
-          console.error(`Failed to resume ${layer} audio:`, err);
-        }
+    (key: string) => {
+      if (isPlaying[key]) {
+        stop(key);
       } else {
-        // If playing → pause
-        audio.pause();
-        setIsPlaying((prev) => ({ ...prev, [layer]: false }));
+        console.log("Toggling play for", key);
+        play(key);
       }
     },
-    [play]
+    [isPlaying, play, stop]
   );
 
-  // --- Cleanup all on unmount
+  // --- Cleanup on unmount
   useEffect(() => {
     return () => {
-      (Object.keys(audioRefs.current) as LayerName[]).forEach((layer) => {
-        stop(layer);
-      });
+      Object.keys(playingRef.current).forEach(stop);
+      // audioContextRef.current?.close();
     };
   }, [stop]);
 
-  return { play, pause, toggle, stop, isPlaying };
+  return { preloadAll, play, stop, toggle, isPlaying };
 }

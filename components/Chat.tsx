@@ -12,8 +12,23 @@ import {LocalSvgRenderer} from "@/components/LocalSvgRenderer";
 import HelpButton from "@/components/HelpButton";
 import {useAudioManager} from "@/hooks/use-audio";
 
+const soundMap = {
+  "overlay-on": { url: "/audio/vykreslovanie TECKY.wav" },
+  "overlay-off": { url: "/audio/KONIEC ROZHRANIA.wav" },
+  "loop": { url: "/audio/ZVUKOVY PODKRES.wav", opts: {loop:true} },
+  "input-on": { url: "/audio/ODOMKNUTIE CHATU.wav" },
+}
+
 export default function Chat() {
   const { currentInteraction, goToNextInteraction} = useChatContext()
+  const { preloadAll, play, isPlaying, toggle } = useAudioManager();
+
+  useEffect(() => {
+    preloadAll(soundMap).then(() => {
+      console.log("All sounds preloaded");
+    });
+  }, [preloadAll]);
+
 
   const [dotyFace, setDotyFace] = useState("happy_1")
 
@@ -33,15 +48,10 @@ export default function Chat() {
     message: currentInteraction?.text() ?? "",
     icon: <MessageSquare className="h-6 w-6 text-white" />,}
 
-  const { play } = useAudioManager();
-
   useEffect(() => {
     if (!currentInteraction) return;
     if (currentInteraction.type === "music" ) {
-      // Music handling is done in AudioManager
-      console.log("Playing music:", currentInteraction.src);
-      const track = "/audio/"+currentInteraction.src;
-      play("background", track, { loop: currentInteraction.loop }).then(()=>goToNextInteraction())
+      play(currentInteraction.key).then(()=>goToNextInteraction())
       return;
     }
     setHistory((prev) => [...prev, currentInteraction])
