@@ -20,6 +20,7 @@ const soundMap = {
   "input-on": { url: "/audio/ODOMKNUTIE CHATU.wav" },
   "send": { url: "/audio/SEND.wav" },
   "chaos": { url: "/audio/CHAOS.wav" },
+  "click": { url: "/audio/KLIK.wav" },
   "scroll": { url: "/audio/SCROLLOVANIE.wav" },
 }
 
@@ -59,7 +60,11 @@ function ChatContent() {
       play(currentInteraction.key).then(()=>goToNextInteraction())
       return;
     }
-    setHistory((prev) => [...prev, currentInteraction])
+    if (currentInteraction.type === "message"){
+      setHistory((prev) => [...prev, currentInteraction])
+      play("click")
+    }
+
     if (currentInteraction.face && currentInteraction.face !== dotyFace) {
       setDotyFace(currentInteraction.face);
     }
