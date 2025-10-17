@@ -5,10 +5,10 @@ import {useEffect} from "react";
 
 export default function Home() {
   const soundMap = {
-    "overlay-on": { url: "/audio/vykreslovanie TECKY.wav" },
-    "overlay-off": { url: "/audio/KONIEC ROZHRANIA.wav" },
-    "loop": { url: "/audio/ZVUKOVY PODKRES.wav", opts: {loop:true} },
-    "input-on": { url: "/audio/ODOMKNUTIE CHATU.wav" },
+    "overlay-on": { url: "/audio/vykreslovanie TECKY.mp3" },
+    "overlay-off": { url: "/audio/KONIEC ROZHRANIA.mp3" },
+    "loop": { url: "/audio/ZVUKOVY PODKRES.mp3", opts: {loop:true} },
+    "input-on": { url: "/audio/ODOMKNUTIE CHATU.mp3" },
   }
   const { play, toggle, isPlaying, preloadAll } = useAudioManager();
 

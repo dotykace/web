@@ -11,7 +11,7 @@ export default function PlaceScroll({ current, goToNext }) {
 
   const dotPosition = { start: 200 }
 
-  const {play} = useSharedAudio();
+  const {stop} = useSharedAudio();
 
   useEffect(() => {
     if (current?.id === "back-to-chat") {
@@ -27,8 +27,7 @@ export default function PlaceScroll({ current, goToNext }) {
     }
     else {
       if (current.nextCard) {
-        play("scroll").then(()=>
-        goToNext(current.nextCard))
+        goToNext(current.nextCard)
       }
     }
   }, [ current, goToNext])
@@ -59,7 +58,10 @@ export default function PlaceScroll({ current, goToNext }) {
           }
           key={"back-to-chat-button"}
           className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out"
-          onClick={() => goToNext("overlay-off_a")}
+          onClick={() => {
+            stop("loop")
+            goToNext("overlay-off_a")
+          }}
         >
           Zpět do chatu
         </Button>
