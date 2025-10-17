@@ -21,7 +21,6 @@ const soundMap = {
   "send": { url: "/audio/SEND.wav" },
   "chaos": { url: "/audio/CHAOS.wav" },
   "click": { url: "/audio/KLIK.wav" },
-  "scroll": { url: "/audio/SCROLLOVANIE.wav" },
 }
 
 export default function Chat() {

@@ -41,7 +41,6 @@ export default function CustomPlay({onClick}) {
     if (!showLogos) {
       if (onClick) {
         play("chaos").then(()=> {
-          stop("loop")
           onClick()
         })
       }
