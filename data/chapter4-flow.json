@@ -1,0 +1,81 @@
+{
+  "id": "chapter4-flow",
+  "name": "Chapter 4 - Scales and Gallery",
+  "description": "Five scales and image gallery interaction",
+  "version": "1.0.0",
+  "startInteractionId": "chapter-4-start",
+  "interactions": {
+    "chapter-4-start": {
+      "type": "checkpoint",
+      "duration": 0,
+      "next-id": "scales"
+    },
+    "scales": {
+      "type": "group",
+      "scales": {
+        "A": {
+          "id": "A",
+          "secondary": "B",
+          "top": "propojení",
+          "bottom": "osamělost",
+          "next": "B"
+        },
+        "B": {
+          "id": "B",
+          "secondary": "D",
+          "top": "klid a bezpečí",
+          "bottom": "napětí a úzkost",
+          "next": "C"
+        },
+        "C": {
+          "id": "C",
+          "secondary": "A",
+          "top": "vděk",
+          "bottom": "rozhořčení",
+          "next": "D"
+        },
+        "D": {
+          "id": "D",
+          "secondary": "E",
+          "top": "sebevědomí",
+          "bottom": "stud",
+          "next": "E"
+        },
+        "E": {
+          "id": "E",
+          "secondary": "C",
+          "top": "zábava a inspirace",
+          "bottom": "prázdnota"
+        }
+      },
+      "next-id": "collect-data"
+    },
+    "collect-data": {
+      "type": "checkpoint",
+      "next-id": "gallery"
+    },
+    "gallery": {
+      "type": "message",
+      "text": "Který z obrázků s tebou rezonuje nejvíc? Dlouhým stisknutím označ jeden.",
+      "next-id": "save-popup"
+    },
+    "save-popup": {
+      "type": "multiple-choice",
+      "choices": [
+        {
+          "text": "Ne, díky",
+          "next-id": "chapter-4-end"
+        },
+        {
+          "text": "Stáhnout",
+          "next-id": "chapter-4-end"
+        }
+      ],
+      "next-id": "chapter-4-end"
+    },
+    "chapter-4-end": {
+      "type": "checkpoint",
+      "duration": 0
+    }
+  }
+}
