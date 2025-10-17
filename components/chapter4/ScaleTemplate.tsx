@@ -12,7 +12,7 @@ interface CenteredLayoutProps {
   confirmationText?: string;
 }
 
-export default function CenteredLayout({
+export default function ScaleTemplate({
                                          topText,
                                          bottomText,
                                          onConfirm,
@@ -34,8 +34,6 @@ export default function CenteredLayout({
       <div className="m-2 ml-8">
         <ArrowButton onClick={handleConfirm} label={confirmationText} />
       </div>
-
     </div>
-
   );
 }
