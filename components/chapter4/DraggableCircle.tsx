@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { motion, useMotionValue } from "framer-motion";
 
-export default function DraggableCircle() {
-  const [percentage, setPercentage] = useState(50);
+export default function DraggableCircle({percentageCallback}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const circleRef = useRef<HTMLDivElement>(null);
   const y = useMotionValue(0);
@@ -27,7 +26,7 @@ export default function DraggableCircle() {
 
       // Convert to percentage (0% bottom → 100% top)
       const percent = (clampedY / containerHeight) * 100;
-      setPercentage(Number(percent.toFixed(2)));
+      percentageCallback(Number(percent.toFixed(2)));
     };
 
     const unsubscribe = y.on("change", updatePercentage);
@@ -37,7 +36,7 @@ export default function DraggableCircle() {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full overflow-hidden flex items-center justify-center"
+      className="relative w-full h-full overflow-hidden flex flex-1 items-center justify-center"
     >
       <motion.div
         ref={circleRef}
@@ -48,10 +47,6 @@ export default function DraggableCircle() {
         style={{ y }}
         className="absolute w-20 h-20 md:w-24 md:h-24 rounded-full bg-blue-500 shadow-lg cursor-grab active:cursor-grabbing touch-none"
       />
-
-      <div className="absolute top-5 right-5 bg-white bg-opacity-80 px-4 py-2 rounded-xl shadow-md text-gray-800 text-sm md:text-base font-medium">
-        Position: {percentage}%
-      </div>
     </div>
   );
 }
