@@ -1,6 +1,27 @@
 import {useEffect, useState} from "react";
 import ScaleTemplate from "@/components/chapter4/ScaleTemplate";
 
+const classifyData = (number) => {
+  if (number >= 67) return "H"; // high
+  if (number <= 33) return "L"; // low
+  return "M"; // medium
+}
+// connections = {A: B, B: C, C: A}
+const interpretData = (connections, data) => {
+  const interpretations = {};
+  for (const key in data){
+    interpretations[key] = {
+      percentage: data[key],
+      class: classifyData(data[key]),
+    };
+  }
+  for (const key in interpretations){
+    const secondaryKey = connections[key];
+    interpretations[key].combo = interpretations[key].class+interpretations[secondaryKey].class;
+  }
+  return interpretations;
+}
+
 export default function Scales({currentInteraction, onComplete}) {
 
   const [data, setData] = useState({});
@@ -9,6 +30,12 @@ export default function Scales({currentInteraction, onComplete}) {
   useEffect(() => {
     if(dataCollected){
       console.log("Final data:", data);
+      const connections = {}
+      for (const key in scalesObject){
+        connections[key] = scalesObject[key].secondary;
+      }
+      const result = interpretData(connections, data);
+      onComplete(result);
     }
   }, [data]);
 
