@@ -1,78 +1,144 @@
 import Image from 'next/image'
-import {Hand} from "lucide-react";
+import {X, ChevronLeft, ChevronRight, Hand} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import React, {useState} from "react";
 
 export default function Galery() {
   const images = [
-    '/trnava.jpg',
-    '/trnava.jpg',
-    '/trnava.jpg',
-    '/trnava.jpg',
-    '/trnava.jpg',
-  ]
-  const emptySlotIndex = 5 // 0..5 — which grid cell will be the text+icon slot
-  const emptyText = 'Hello there'
-  // Ensure we always have exactly 5 images provided
-  const strings = images.slice(0, 5)
+    "/images/phone-character-phone.png",
+    "/trnava.jpg",
+    "/images/phone-character-question.png",
+    "/trnava.jpg",
+    "/images/phone-character-thinking.png",
+    "/trnava.jpg",
+  ];
 
-  // Build 6 grid slots: either an image or the empty slot
-  const slots = Array.from({ length: 6 }).map((_, i) => {
-    if (i === emptySlotIndex) return { type: 'empty' }
-    // take next image from imgs (in order)
-    const img = strings.shift()
-    return { type: 'image', src: img }
-  })
-
+  const emptyText = "Hello there";
+  const strings = images.slice(0, 5);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const handleSelect = (index: number) => {
     // toggle off if the same one is clicked again
     setSelectedIndex(prev => (prev === index ? null : index));
   };
 
-  return (
-    <div className="w-full max-w-4xl h-screen p-6">
-      <div className="grid grid-cols-2 grid-rows-3 gap-2">
-        {slots.map((slot, i) => (
-          <div key={i} className="relative w-full h-60 rounded-xl overflow-hidden  flex items-center justify-center">
-            {slot.type === 'image' ? (
-              <>
-                <Image
-                  src={slot.src}
-                  alt={`Grid image ${i + 1}`}
-                  width={1200}
-                  height={800}
-                  className="w-full h-full object-cover"
-                  //priority={false}
-                />
-                <button
-                  type="button"
-                  onClick={() => handleSelect(i)}
-                  className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/40 border-2 border-white flex items-center justify-center cursor-pointer transition-all duration-200"
-                >
-                  {selectedIndex === i && (
-                    <span className="text-white text-sm font-bold">✓</span>
-                  )}
-                </button>
-              </>
+  const [fullscreenIndex, setFullscreenIndex] = useState<number | null>(null);
 
-            ) : (
-              <div className="flex flex-col items-center justify-center">
-                <div className="flex items-center justify-center p-4">
-                  <span className="text-lg font-semibold text-gray-800">{emptyText}</span>
-                  <Hand className="w-6 h-6 text-gray-700 ml-2" />
-                </div>
-                <Button
-                  disabled={selectedIndex === null}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out"
-                >
-                  Continue
-                </Button>
-              </div>
-            )}
+  const handleImageClick = (index: number) => {
+    setFullscreenIndex(index);
+  };
+
+  const closeFullscreen = () => {
+    setFullscreenIndex(null);
+  };
+
+  const goTo = (side) => {
+    setFullscreenIndex((prev) =>{
+        let newIndex = (prev + side) % strings.length;
+        return prev !== null ? newIndex : prev
+      }
+    );
+  }
+
+  const showPrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    goTo(-1);
+  };
+
+  const showNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    goTo(1);
+  };
+
+  return (
+    <div className="w-full max-w-4xl h-screen p-6 relative">
+      {/* Grid gallery */}
+      <div className="grid grid-cols-2 grid-rows-3 gap-2">
+        {strings.map((slot, i) => (
+          <div key={i} className="relative w-full h-60 rounded-xl overflow-hidden  flex items-center justify-center">
+            <Image
+              src={slot}
+              alt={`Grid image ${i + 1}`}
+              width={1200}
+              height={800}
+              className="w-full h-full object-cover"
+              onClick={() => handleImageClick(i)}
+              //priority={false}
+            />
+            <button
+              type="button"
+              onClick={() => handleSelect(i)}
+              className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/40 border-2 border-white flex items-center justify-center cursor-pointer transition-all duration-200"
+            >
+              {selectedIndex === i && (
+                <span className="text-white text-sm font-bold">✓</span>
+              )}
+            </button>
           </div>
         ))}
+        <div className="flex flex-col items-center justify-center">
+          <div className="flex items-center justify-center p-4">
+                  <span className="text-lg font-semibold text-gray-800">
+                    {emptyText}
+                  </span>
+            <Hand className="w-6 h-6 text-gray-700 ml-2" />
+          </div>
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out">
+            Continue
+          </Button>
+        </div>
       </div>
+
+      {/* Fullscreen overlay */}
+      {fullscreenIndex !== null && (
+        <div
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center"
+        >
+          {/* Close button */}
+          <button
+            onClick={closeFullscreen}
+            className="absolute top-6 right-6 text-white hover:text-gray-300"
+          >
+            <X className="w-8 h-8" />
+          </button>
+
+          {/* Prev button */}
+          <button
+            onClick={showPrev}
+            className="absolute left-6 text-white hover:text-gray-300"
+          >
+            <ChevronLeft className="w-10 h-10 text-black bg-white rounded-full" />
+          </button>
+
+          {/* Image */}
+          <>
+          <Image
+            src={strings[fullscreenIndex]}
+            alt="Fullscreen image"
+            width={1600}
+            height={1000}
+            className="max-w-[90%] max-h-[90%] object-contain rounded-lg"
+          />
+            <button
+              type="button"
+              onClick={() => handleSelect(fullscreenIndex)}
+              className="absolute top-20 right-40 w-6 h-6 rounded-full bg-black/40 border-2 border-white flex items-center justify-center cursor-pointer transition-all duration-200"
+            >
+              {selectedIndex === fullscreenIndex && (
+                <span className="text-white text-sm font-bold">✓</span>
+              )}
+            </button>
+          </>
+
+
+          {/* Next button */}
+          <button
+            onClick={showNext}
+            className="absolute right-6 text-white hover:text-gray-300"
+          >
+            <ChevronRight className="w-10 h-10 text-black bg-white rounded-full" />
+          </button>
+        </div>
+      )}
     </div>
-  )
+  );
 }
