@@ -36,10 +36,13 @@ export default function Gallery() {
 
   const goTo = (side) => {
     setFullscreenIndex((prev) =>{
+        if (prev === null) return null;
         let newIndex = (prev + side) % strings.length;
-        return prev !== null ? newIndex : prev
-      }
-    );
+        if (newIndex < 0) {
+          newIndex = strings.length - 1;
+        }
+        return newIndex
+    });
   }
 
   const showPrev = (e: React.MouseEvent) => {
