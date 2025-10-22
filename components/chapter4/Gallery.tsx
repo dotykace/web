@@ -68,17 +68,17 @@ export default function Gallery() {
       className="w-6 h-6 rounded-full bg-black/40 border-2 border-white flex items-center justify-center cursor-pointer transition-all duration-200"
     >
       {selectedIndex === i && (
-        <span className="bg-green-400 p-2 rounded-full"/>
+        <span className="bg-blue-700 p-2 rounded-full"/>
       )}
     </button>
   )
 
   return (
-    <div className="w-full max-w-4xl h-screen p-6 relative">
+    <div className="w-full h-screen p-6 flex bg-blue-100">
       {/* Grid gallery */}
       <div className="grid grid-cols-2 grid-rows-3 gap-2">
         {strings.map((slot, i) => (
-          <div key={i} className="relative w-full h-60 rounded-xl overflow-hidden  flex items-center justify-center">
+          <div key={i} className="relative w-full h-full rounded-xl overflow-hidden flex items-center justify-center">
             <Image
               src={slot}
               alt={`Grid image ${i + 1}`}
@@ -138,7 +138,7 @@ export default function Gallery() {
             alt="Fullscreen image"
             width={1600}
             height={1000}
-            className="max-w-[90%] max-h-[90%] object-contain rounded-lg"
+            className="max-w-[90%] max-h-[90%] object-contain rounded-xl"
           />
 
           </div>
