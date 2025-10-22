@@ -9,8 +9,7 @@ import Modal from "@/components/Modal";
 export function GalleryModal({ isOpen, onClose }) {
   const closeModal = (save) => {
     if (save) {
-      // Logic to save the image goes here
-      console.log("Image saved!")
+      return onClose(true)
     }
     onClose()
   }

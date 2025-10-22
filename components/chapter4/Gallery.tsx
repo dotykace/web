@@ -56,11 +56,31 @@ export default function Gallery() {
     goTo(1);
   };
 
-  const saveSelection = () => {
+  const saveSelection = (download) => {
     console.log("Selected index:", selectedIndex);
     console.log("Selected image:", strings[selectedIndex]);
-    setShowModal(true);
+    const selectedImage = strings[selectedIndex];
+    if (download) {
+      handleDownload(selectedImage);
+      console.log("Image saved!")
+    }
+    setShowModal(false);
   }
+
+  const handleDownload = (imagePath) => {
+
+    // Create a temporary link element
+    const link = document.createElement("a");
+    link.href = imagePath;
+
+    // The name the file will have when downloaded
+    link.download = "Dotykace-Result.jpg";
+
+    // Append link, trigger click, and remove link
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const RadioButton = (i) => (
     <button
@@ -102,7 +122,7 @@ export default function Gallery() {
             <Hand className="w-6 h-6 text-gray-700 ml-2 flex-shrink-0" />
           </div>
           <Button
-            onClick={saveSelection}
+            onClick={()=>setShowModal(true)}
             disabled={selectedIndex === null}
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xl py-2 px-4 rounded-xl shadow-lg">
             {confirmText}
@@ -161,7 +181,7 @@ export default function Gallery() {
         </SwipeComponent>
 
       )}
-      <GalleryModal isOpen={showModal} onClose={() => setShowModal(false)} />
+      <GalleryModal isOpen={showModal} onClose={saveSelection} />
     </div>
   );
 }
