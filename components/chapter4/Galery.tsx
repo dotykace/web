@@ -49,6 +49,11 @@ export default function Galery() {
     goTo(1);
   };
 
+  const saveSelection = () => {
+    console.log("Selected index:", selectedIndex);
+    console.log("Selected image:", strings[selectedIndex]);
+  }
+
   return (
     <div className="w-full max-w-4xl h-screen p-6 relative">
       {/* Grid gallery */}
@@ -82,7 +87,9 @@ export default function Galery() {
                   </span>
             <Hand className="w-6 h-6 text-gray-700 ml-2" />
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out">
+          <Button
+            onClick={saveSelection}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xl py-2 px-4 rounded-xl shadow-lg">
             Continue
           </Button>
         </div>
