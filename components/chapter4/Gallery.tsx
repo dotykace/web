@@ -2,6 +2,7 @@ import Image from 'next/image'
 import {X, ChevronLeft, ChevronRight, Hand} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import React, {useState} from "react";
+import {GalleryModal} from "@/components/chapter4/GalleryModal";
 
 export default function Gallery() {
   const images = [
@@ -21,6 +22,7 @@ export default function Gallery() {
     setSelectedIndex(prev => (prev === index ? null : index));
   };
 
+  const [showModal, setShowModal] = useState(false);
   const [fullscreenIndex, setFullscreenIndex] = useState<number | null>(null);
 
   const handleImageClick = (index: number) => {
@@ -52,6 +54,7 @@ export default function Gallery() {
   const saveSelection = () => {
     console.log("Selected index:", selectedIndex);
     console.log("Selected image:", strings[selectedIndex]);
+    setShowModal(true);
   }
 
   return (
@@ -89,6 +92,7 @@ export default function Gallery() {
           </div>
           <Button
             onClick={saveSelection}
+            disabled={selectedIndex === null}
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xl py-2 px-4 rounded-xl shadow-lg">
             Continue
           </Button>
@@ -146,6 +150,7 @@ export default function Gallery() {
           </button>
         </div>
       )}
+      <GalleryModal isOpen={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 }
