@@ -3,7 +3,7 @@ import {X, ChevronLeft, ChevronRight, Hand} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import React, {useState} from "react";
 
-export default function Galery() {
+export default function Gallery() {
   const images = [
     "/images/phone-character-phone.png",
     "/trnava.jpg",

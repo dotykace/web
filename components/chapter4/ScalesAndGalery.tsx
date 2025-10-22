@@ -1,6 +1,6 @@
 import {useChatContext} from "@/context/ChatContext";
 import Scales from "@/components/chapter4/Scales";
-import Galery from "@/components/chapter4/Galery";
+import Gallery from "@/components/chapter4/Gallery";
 import {useState} from "react";
 
 export default function ScalesAndGalery() {
@@ -15,7 +15,7 @@ export default function ScalesAndGalery() {
   if (!currentInteraction) return null;
   if (data) return <ResultTable data={data} />;
   if (currentInteraction.id === "scales") return <Scales currentInteraction={currentInteraction} onComplete={collectData} />;
-  else return <Galery />;
+  else return <Gallery />;
 }
 
 function ResultTable({ data }) {
