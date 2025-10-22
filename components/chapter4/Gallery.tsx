@@ -3,6 +3,7 @@ import {X, ChevronLeft, ChevronRight, Hand} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import React, {useState} from "react";
 import {GalleryModal} from "@/components/chapter4/GalleryModal";
+import SwipeComponent from "@/components/chapter4/SwipeComponent";
 
 export default function Gallery() {
   const images = [
@@ -46,12 +47,12 @@ export default function Gallery() {
   }
 
   const showPrev = (e: React.MouseEvent) => {
-    e.stopPropagation();
+    if (e) e.stopPropagation();
     goTo(-1);
   };
 
   const showNext = (e: React.MouseEvent) => {
-    e.stopPropagation();
+    if (e) e.stopPropagation();
     goTo(1);
   };
 
@@ -111,7 +112,12 @@ export default function Gallery() {
 
       {/* Fullscreen overlay */}
       {fullscreenIndex !== null && (
-        <div
+        <SwipeComponent
+          onSwipeLeft={showNext}
+          onSwipeRight={showPrev}
+          className="fixed inset-0 z-50"
+        >
+          <div
           className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center"
         >
           {/* Close button */}
@@ -132,14 +138,14 @@ export default function Gallery() {
 
           {/* Image */}
           <div className="w-full flex flex-col gap-4 justify-center items-center">
-          {RadioButton(fullscreenIndex)}
-          <Image
-            src={strings[fullscreenIndex]}
-            alt="Fullscreen image"
-            width={1600}
-            height={1000}
-            className="max-w-[90%] max-h-[90%] object-contain rounded-xl"
-          />
+            {RadioButton(fullscreenIndex)}
+            <Image
+              src={strings[fullscreenIndex]}
+              alt="Fullscreen image"
+              width={1600}
+              height={1000}
+              className="max-w-[90%] max-h-[90%] object-contain rounded-xl"
+            />
 
           </div>
 
@@ -152,6 +158,8 @@ export default function Gallery() {
             <ChevronRight className="w-10 h-10 text-black bg-white rounded-full" />
           </button>
         </div>
+        </SwipeComponent>
+
       )}
       <GalleryModal isOpen={showModal} onClose={() => setShowModal(false)} />
     </div>
