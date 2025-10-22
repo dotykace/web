@@ -58,6 +58,18 @@ export default function Gallery() {
     setShowModal(true);
   }
 
+  const RadioButton = (i) => (
+    <button
+      type="button"
+      onClick={() => handleSelect(i)}
+      className="w-6 h-6 rounded-full bg-black/40 border-2 border-white flex items-center justify-center cursor-pointer transition-all duration-200"
+    >
+      {selectedIndex === i && (
+        <span className="bg-green-400 p-2 rounded-full"/>
+      )}
+    </button>
+  )
+
   return (
     <div className="w-full max-w-4xl h-screen p-6 relative">
       {/* Grid gallery */}
@@ -71,17 +83,11 @@ export default function Gallery() {
               height={800}
               className="w-full h-full object-cover"
               onClick={() => handleImageClick(i)}
-              //priority={false}
             />
-            <button
-              type="button"
-              onClick={() => handleSelect(i)}
-              className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/40 border-2 border-white flex items-center justify-center cursor-pointer transition-all duration-200"
-            >
-              {selectedIndex === i && (
-                <span className="text-white text-sm font-bold">✓</span>
-              )}
-            </button>
+            <div className="absolute top-2 right-2">
+              {RadioButton(i)}
+            </div>
+
           </div>
         ))}
         <div className="flex flex-col items-center justify-center">
@@ -122,7 +128,8 @@ export default function Gallery() {
           </button>
 
           {/* Image */}
-          <>
+          <div className="w-full flex flex-col gap-4 justify-center items-center">
+          {RadioButton(fullscreenIndex)}
           <Image
             src={strings[fullscreenIndex]}
             alt="Fullscreen image"
@@ -130,16 +137,8 @@ export default function Gallery() {
             height={1000}
             className="max-w-[90%] max-h-[90%] object-contain rounded-lg"
           />
-            <button
-              type="button"
-              onClick={() => handleSelect(fullscreenIndex)}
-              className="absolute top-20 right-40 w-6 h-6 rounded-full bg-black/40 border-2 border-white flex items-center justify-center cursor-pointer transition-all duration-200"
-            >
-              {selectedIndex === fullscreenIndex && (
-                <span className="text-white text-sm font-bold">✓</span>
-              )}
-            </button>
-          </>
+
+          </div>
 
 
           {/* Next button */}
