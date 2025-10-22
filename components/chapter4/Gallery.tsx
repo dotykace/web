@@ -14,7 +14,8 @@ export default function Gallery() {
     "/trnava.jpg",
   ];
 
-  const emptyText = "Hello there";
+  const emptyText = "Který z obrázků s tebou rezonuje nejvíc? Označ jeden.";
+  const confirmText = "Potvrdit";
   const strings = images.slice(0, 5);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const handleSelect = (index: number) => {
@@ -84,17 +85,17 @@ export default function Gallery() {
           </div>
         ))}
         <div className="flex flex-col items-center justify-center">
-          <div className="flex items-center justify-center p-4">
-                  <span className="text-lg font-semibold text-gray-800">
+          <div className="flex items-center justify-center p-2 pb-6">
+                  <span className="font-semibold text-gray-800">
                     {emptyText}
                   </span>
-            <Hand className="w-6 h-6 text-gray-700 ml-2" />
+            <Hand className="w-6 h-6 text-gray-700 ml-2 flex-shrink-0" />
           </div>
           <Button
             onClick={saveSelection}
             disabled={selectedIndex === null}
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xl py-2 px-4 rounded-xl shadow-lg">
-            Continue
+            {confirmText}
           </Button>
         </div>
       </div>
