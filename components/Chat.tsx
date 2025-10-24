@@ -13,6 +13,8 @@ import HelpButton from "@/components/HelpButton";
 import {useSharedAudio} from "@/context/AudioContext";
 import AudioWrapper from "@/components/audio/AudioWrapper";
 import ScreenTransition from "@/components/chapter1/ScreenTransition";
+import VoiceRoom from "@/components/chapter1/VoiceRoom";
+import {setToStorage} from "@/scripts/local-storage";
 
 const soundMap = {
   "overlay-on": { url: "/audio/vykreslovanie TECKY.mp3" },
@@ -22,22 +24,33 @@ const soundMap = {
   "send": { url: "/audio/SEND.mp3" },
   "chaos": { url: "/audio/CHAOS.mp3" },
   "click": { url: "/audio/KLIK.mp3" },
+
+  "voice-placeholder": {url:"/audio/EMOJI highfive.mp3"},
+  "voice-loop": {url:"/audio/SVET HLASOV.mp3", opts:{loop:true}},
 }
 
 export default function Chat() {
-  const { currentInteraction } = useChatContext()
+  const { currentInteraction, goToNextInteraction } = useChatContext()
+  const finishChapter = (voice)=> {
+    console.log("Selected voice:", voice)
+    //todo store voice selection properly in firestore
+    setToStorage("selectedVoice", voice)
+    goToNextInteraction()
+  }
   return (
     <AudioWrapper soundMap={soundMap}>
       <ScreenTransition
         showSecond={currentInteraction.id === "voice-room"}
-        firstScreen={<ChatContent />}/>
+        firstScreen={<ChatContent />}
+        secondScreen={<VoiceRoom onFinish={finishChapter}/>}
+      />
     </AudioWrapper>
   );
 }
 
 function ChatContent() {
   const { currentInteraction, goToNextInteraction} = useChatContext()
-  const { play, isPlaying, toggle } = useSharedAudio();
+  const { play } = useSharedAudio();
 
   const [dotyFace, setDotyFace] = useState("happy_1")
 

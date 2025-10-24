@@ -5,7 +5,6 @@ import {Button} from "@/components/ui/button";
 import {Pause, Play} from "lucide-react";
 
 export default function VoiceItem ({voice, isSelected, isPlaying, onToggle}) {
-  console.log(voice)
   return (
     <Card
       key={voice.id}

@@ -23,9 +23,8 @@ export default function ScreenTransition({firstScreen, secondScreen, showSecond}
             animate={{ y: 0 }}
             exit={{ y: '-100%' }}
             transition={{ duration: 1, ease: 'easeInOut' }}
-            className="absolute inset-0 bg-green-500 flex items-center justify-center text-white text-3xl"
           >
-            Screen 2
+            {secondScreen}
           </motion.div>
         )}
       </AnimatePresence>
