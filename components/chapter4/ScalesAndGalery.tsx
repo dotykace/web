@@ -13,10 +13,31 @@ export default function ScalesAndGalery() {
     goToNextInteraction();
   }
 
+  const pickGalleryImages = () => {
+    if (!currentInteraction) return [];
+    if (!data) return [];
+    // todo connect scales data to gallery images
+    return  [
+      "/images/phone-character-phone.png",
+      "/trnava.jpg",
+      "/images/phone-character-question.png",
+      "/trnava.jpg",
+      "/images/phone-character-thinking.png",
+      "/trnava.jpg",
+    ]
+  }
+
   if (!currentInteraction) return null;
   if (data){
     console.log("Displaying collected data:", data);
-    if (currentInteraction.id==="gallery") return <Gallery />;
+    if (currentInteraction.id==="gallery"){
+      const images = pickGalleryImages();
+      return <Gallery
+        images={images}
+        helpText={currentInteraction.text()}
+        onFinish={() => goToNextInteraction()}
+      />
+    }
     else return (
       <ResultTable data={data}>
         <Button

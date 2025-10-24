@@ -57,20 +57,6 @@
     "gallery": {
       "type": "message",
       "text": "Který z obrázků s tebou rezonuje nejvíc? Dlouhým stisknutím označ jeden.",
-      "next-id": "save-popup"
-    },
-    "save-popup": {
-      "type": "multiple-choice",
-      "choices": [
-        {
-          "text": "Ne, díky",
-          "next-id": "chapter-4-end"
-        },
-        {
-          "text": "Stáhnout",
-          "next-id": "chapter-4-end"
-        }
-      ],
       "next-id": "chapter-4-end"
     },
     "chapter-4-end": {

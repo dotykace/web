@@ -4,18 +4,9 @@ import {Button} from "@/components/ui/button";
 import React, {useState} from "react";
 import {GalleryModal} from "@/components/chapter4/GalleryModal";
 import SwipeComponent from "@/components/chapter4/SwipeComponent";
+import {setToStorage} from "@/scripts/local-storage";
 
-export default function Gallery() {
-  const images = [
-    "/images/phone-character-phone.png",
-    "/trnava.jpg",
-    "/images/phone-character-question.png",
-    "/trnava.jpg",
-    "/images/phone-character-thinking.png",
-    "/trnava.jpg",
-  ];
-
-  const emptyText = "Který z obrázků s tebou rezonuje nejvíc? Označ jeden.";
+export default function Gallery({images, helpText, onFinish}) {
   const confirmText = "Potvrdit";
   const strings = images.slice(0, 5);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -63,6 +54,10 @@ export default function Gallery() {
     if (download) {
       handleDownload(selectedImage);
       console.log("Image saved!")
+    }
+    setToStorage("gallerySelection", selectedImage);
+    if (onFinish) {
+      onFinish(selectedImage);
     }
     setShowModal(false);
   }
@@ -117,7 +112,7 @@ export default function Gallery() {
         <div className="flex flex-col items-center justify-center">
           <div className="flex items-center justify-center p-2 pb-6">
                   <span className="font-semibold text-gray-800">
-                    {emptyText}
+                    {helpText}
                   </span>
             <Hand className="w-6 h-6 text-gray-700 ml-2 flex-shrink-0" />
           </div>
