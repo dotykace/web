@@ -172,6 +172,7 @@ export function useInteractions<T>(filename: string) {
     }, [currentInteraction])
 
     // Handle chapter transitions
+    // todo refactor code duplication
     useEffect(() => {
         if (!currentInteraction || !isClient) return
 
