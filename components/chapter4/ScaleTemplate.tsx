@@ -31,7 +31,7 @@ export default function ScaleTemplate({
   return (
     <div className="flex flex-col min-h-screen text-center">
       <h1 className="text-2xl font-semibold mt-8">{topText}</h1>
-      <DraggableCircle percentageCallback={setPercentage} scaleKey={resetKey}/>
+      <DraggableCircle percentageCallback={setPercentage} key={resetKey}/>
       <h2 className="text-2xl font-semibold mb-8">{bottomText}</h2>
       <div className="m-2 ml-8">
         <ArrowButton onClick={handleConfirm} label={confirmationText} />
