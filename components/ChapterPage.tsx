@@ -25,8 +25,11 @@ export default function ChapterPage({ chapterNumber, interactionsFileName, ViewC
     redirect("/")
   }
   if (chapter && chapter !== chapterNumber && pathname !== "/menu") {
-    console.log("Redirecting to menu from chapter", chapter)
-    redirect("/menu")
+    // todo remove chapter 4 after full integration of the gallery
+    if (chapterNumber !== 4 ){
+      console.log("Redirecting to menu from chapter", chapter)
+      redirect("/menu")
+    }
   }
 
   if (!state || state === "loading" || !currentInteraction) {
