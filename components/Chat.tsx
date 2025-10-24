@@ -154,12 +154,6 @@ function ChatContent() {
         ))}
         <div ref={messagesEndRef} />
       </div>)}
-      <button
-        onClick={() => goToNextInteraction("1.03")}
-        className="z-100 absolute bottom-10 px-6 py-3 bg-white text-green-600 rounded-xl"
-      >
-        Skip to 1.03
-      </button>
 
       {/* Input area */}
       {/*
