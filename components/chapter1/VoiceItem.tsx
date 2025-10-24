@@ -4,7 +4,7 @@ import {RadioGroupItem} from "@/components/ui/radio-group";
 import {Button} from "@/components/ui/button";
 import {Pause, Play} from "lucide-react";
 
-export default function VoiceItem ({voice, isSelected, isPlaying, onToggle}) {
+export default function VoiceItem ({voice, isSelected, isPlaying, onToggle, disabled}) {
   return (
     <Card
       key={voice.id}
@@ -20,11 +20,11 @@ export default function VoiceItem ({voice, isSelected, isPlaying, onToggle}) {
             value={voice.id}
             id={voice.id}
             className="border-zinc-600 text-blue-500"
-            disabled={voice.id !== "male"}
+            disabled={disabled}
           />
           <div className="space-y-1">
             <div className="font-semibold text-xl text-white">{voice.name}</div>
-            {voice.id !== "male" && <div className="text-sm text-zinc-500">Brzy k dispozici</div>}
+            {disabled && <div className="text-sm text-zinc-500">Brzy k dispozici</div>}
           </div>
         </div>
         <Button
@@ -35,14 +35,12 @@ export default function VoiceItem ({voice, isSelected, isPlaying, onToggle}) {
             isSelected
               ? "bg-blue-500 hover:bg-blue-600 text-white"
               : "bg-zinc-800 hover:bg-zinc-700 text-zinc-300"
-          } ${voice.id !== "male" ? "opacity-50 cursor-not-allowed" : ""}`}
+          } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
           onClick={(e) => {
             e.preventDefault()
-            if (voice.id === "male") {
-              onToggle(voice.audioKey)
-            }
+            onToggle(voice.audioKey)
           }}
-          disabled={voice.id !== "male"}
+          disabled={disabled}
         >
           {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6 ml-0.5" />}
         </Button>

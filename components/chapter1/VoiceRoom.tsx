@@ -10,7 +10,7 @@ const sampleVoices = [
   {
     id: "female",
     name: "Ženský hlas",
-    audioKey: "voice-placeholder",
+    audioKey: "voice-female",
   },
   {
     id: "male",
@@ -47,6 +47,7 @@ export default function VoiceRoom({onFinish}) {
             {sampleVoices.map((voice) => (
               <VoiceItem
                 key={voice.id}
+                disabled={voice.id === "neutral"}
                 voice={voice}
                 isSelected={selectedVoice === voice.id}
                 isPlaying={isPlaying[voice.audioKey]}

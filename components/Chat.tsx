@@ -26,6 +26,7 @@ const soundMap = {
   "click": { url: "/audio/KLIK.mp3" },
 
   "voice-placeholder": {url:"/audio/EMOJI highfive.mp3"},
+  "voice-female": {url:"/audio/EMOJI smutny.mp3"},
   "voice-loop": {url:"/audio/SVET HLASOV.mp3", opts:{loop:true}},
 }
 
