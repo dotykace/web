@@ -3,7 +3,7 @@ import Chat from "@/components/Chat"
 import CardSequence from "@/components/CardSequence"
 import ChapterPage from "@/components/ChapterPage"
 import { notFound } from "next/navigation"
-import ScalesAndGalery from "@/components/chapter4/ScalesAndGalery";
+import ScalesAndGallery from "@/components/chapter4/ScalesAndGallery";
 
 // Chapter configuration
 const chapterConfigs = {
@@ -34,7 +34,7 @@ const chapterConfigs = {
   "4": {
     chapterNumber: 4,
     interactionsFileName: "chapter4-flow",
-    ViewComponent: ScalesAndGalery,
+    ViewComponent: ScalesAndGallery,
     title: "Scales of Emotions",
   },
 } as const

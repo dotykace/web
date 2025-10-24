@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { motion, useMotionValue } from "framer-motion";
 
-export default function DraggableCircle({percentageCallback}) {
+export default function DraggableCircle({percentageCallback, scaleKey}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const circleRef = useRef<HTMLDivElement>(null);
   const y = useMotionValue(0);
@@ -38,7 +38,9 @@ export default function DraggableCircle({percentageCallback}) {
       ref={containerRef}
       className="relative w-full h-full overflow-hidden flex flex-1 items-center justify-center"
     >
+      <div className="absolute top-1/2 left-0 w-full border-t-4 border-dashed border-gray-400 transform -translate-y-1/2" />
       <motion.div
+        key={scaleKey}
         ref={circleRef}
         drag="y"
         dragConstraints={containerRef}
