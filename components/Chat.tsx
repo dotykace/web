@@ -12,6 +12,9 @@ import {LocalSvgRenderer} from "@/components/LocalSvgRenderer";
 import HelpButton from "@/components/HelpButton";
 import {useSharedAudio} from "@/context/AudioContext";
 import AudioWrapper from "@/components/audio/AudioWrapper";
+import ScreenTransition from "@/components/chapter1/ScreenTransition";
+import VoiceRoom from "@/components/chapter1/VoiceRoom";
+import {setToStorage} from "@/scripts/local-storage";
 
 const soundMap = {
   "overlay-on": { url: "/audio/vykreslovanie TECKY.mp3" },
@@ -21,19 +24,34 @@ const soundMap = {
   "send": { url: "/audio/SEND.mp3" },
   "chaos": { url: "/audio/CHAOS.mp3" },
   "click": { url: "/audio/KLIK.mp3" },
+
+  "voice-placeholder": {url:"/audio/EMOJI highfive.mp3"},
+  "voice-female": {url:"/audio/EMOJI smutny.mp3"},
+  "voice-loop": {url:"/audio/SVET HLASOV.mp3", opts:{loop:true}},
 }
 
 export default function Chat() {
+  const { currentInteraction, goToNextInteraction } = useChatContext()
+  const finishChapter = (voice)=> {
+    console.log("Selected voice:", voice)
+    //todo store voice selection properly in firestore
+    setToStorage("selectedVoice", voice)
+    goToNextInteraction()
+  }
   return (
     <AudioWrapper soundMap={soundMap}>
-      <ChatContent />
+      <ScreenTransition
+        showSecond={currentInteraction.id === "voice-room"}
+        firstScreen={<ChatContent />}
+        secondScreen={<VoiceRoom onFinish={finishChapter}/>}
+      />
     </AudioWrapper>
   );
 }
 
 function ChatContent() {
   const { currentInteraction, goToNextInteraction} = useChatContext()
-  const { play, isPlaying, toggle } = useSharedAudio();
+  const { play } = useSharedAudio();
 
   const [dotyFace, setDotyFace] = useState("happy_1")
 
@@ -46,12 +64,6 @@ function ChatContent() {
 
 
   const [history, setHistory] = useState([])
-
-  const notificationProps = {
-    id: currentInteraction.id,
-    title: "New Message",
-    message: currentInteraction?.text() ?? "",
-    icon: <MessageSquare className="h-6 w-6 text-white" />,}
 
   useEffect(() => {
     if (!currentInteraction) return;
@@ -99,8 +111,18 @@ function ChatContent() {
     setHistory((prev) => [...prev, userMessage]);
   }
 
+  if (!currentInteraction) {
+    return <div>Loading...</div>;
+  }
+
+  const notificationProps = {
+    id: currentInteraction.id,
+    title: "New Message",
+    message: currentInteraction?.text() ?? "",
+    icon: <MessageSquare className="h-6 w-6 text-white" />,}
+
   return(
-    <div className="w-full max-w-md mx-auto flex flex-col p-2 h-[calc(100vh)] bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
+    <div className="w-full mx-auto flex flex-col p-2 h-[calc(100vh)] bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
       <HelpButton />
       {(mode==="overlay" )&& <ChatOverlay/>}
       <div className="bg-white/10 backdrop-blur-sm rounded-t-xl p-3 flex items-center gap-3 border-b border-white/20">

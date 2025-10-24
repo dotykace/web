@@ -10,7 +10,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Volume2, VolumeX, SkipForward, Star } from "lucide-react"
 import { useRouter } from "next/navigation"
 import type { DotykaceRoom } from "@/lib/dotykace-types"
-import {VoicePickerModal} from "@/components/VoicePickerModal";
 import HelpButton from "@/components/HelpButton";
 
 // Animated Voice Visualization Component (unchanged)
@@ -333,9 +332,6 @@ function Chapter2Content() {
             console.warn("Audio initialization failed:", error)
         }
     }, [audioInitialized])
-
-    const [showSettings, setShowSettings] = useState(true)
-    const [selectedVoice, setSelectedVoice] = useState<string|null>(null)
 
     useEffect(() => {
         const loadFlowData = async () => {
@@ -828,11 +824,12 @@ function Chapter2Content() {
     }, [router, clearProgressFromLocalStorage])
 
     // Process current interaction only if experience has started
+    // todo add here voice selection check
     useEffect(() => {
-        if (selectedVoice && hasStartedExperience && flowData && currentInteractionId && flowData.interactions[currentInteractionId]) {
+        if ( hasStartedExperience && flowData && currentInteractionId && flowData.interactions[currentInteractionId]) {
             processInteraction(flowData.interactions[currentInteractionId])
         }
-    }, [currentInteractionId, flowData, processInteraction, hasStartedExperience, selectedVoice])
+    }, [currentInteractionId, flowData, processInteraction, hasStartedExperience])
 
     // Handle chapter completion
     useEffect(() => {
@@ -859,14 +856,6 @@ function Chapter2Content() {
         await initializeAudio()
         setHasStartedExperience(true)
         setCurrentInteractionId(flowData!.startInteractionId) // Set initial interaction after start
-    }
-
-    if (!selectedVoice){
-        return (
-          <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-              <VoicePickerModal isOpen={showSettings} onClose={(voiceId)=>{setShowSettings(false); setSelectedVoice(voiceId)}}/>
-          </div>
-        )
     }
 
     if (isLoading) {

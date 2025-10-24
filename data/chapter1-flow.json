@@ -112,8 +112,12 @@
       "type": "message",
       "duration": 4,
       "text": "Tohle psaní už začíná být trochu otrava. Mám chuť s tebou mluvit.",
-      "next-id": "chapter-1-end",
+      "next-id": "voice-room",
       "face": "strange"
+    },
+    "voice-room": {
+      "type": "checkpoint",
+      "next-id": "chapter-1-end"
     },
     "chapter-1-end": {
       "type": "checkpoint",
