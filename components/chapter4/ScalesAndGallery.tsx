@@ -4,7 +4,7 @@ import Gallery from "@/components/chapter4/Gallery";
 import {useState} from "react";
 import {Button} from "@/components/ui/button";
 
-export default function ScalesAndGalery() {
+export default function ScalesAndGallery() {
   const { currentInteraction, goToNextInteraction} = useChatContext()
   const [data, setData] = useState(null);
   const collectData = (data) => {
