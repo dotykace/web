@@ -5,10 +5,11 @@ export default function ScreenTransition({firstScreen, secondScreen, showSecond}
 
   return (
     <div className="relative h-screen overflow-hidden">
-      <AnimatePresence>
+      <AnimatePresence mode="sync">
         {!showSecond ? (
           <motion.div
             key="first"
+            className="absolute inset-0"
             initial={{ y: 0 }}
             animate={{ y: 0 }}
             exit={{ y: '-100%' }}
@@ -19,6 +20,7 @@ export default function ScreenTransition({firstScreen, secondScreen, showSecond}
         ) : (
           <motion.div
             key="second"
+            className="absolute inset-0"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '-100%' }}
