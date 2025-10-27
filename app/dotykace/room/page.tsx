@@ -10,6 +10,7 @@ import { Clock } from "lucide-react"
 import {readFromStorage} from "@/scripts/local-storage";
 
 import Image from "next/image";
+import DotykaceLogo from "@/components/DotykaceLogo";
 
 export default function DotykaceRoomPage() {
     const [room, setRoom] = useState<DotykaceRoom | null>(null)
@@ -123,15 +124,7 @@ export default function DotykaceRoomPage() {
         <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 p-4">
             <div className="max-w-md mx-auto space-y-6">
                 {/* Header */}
-                <div className="items-center flex justify-center">
-                    <Image
-                      src="/images/menu/dotykace_white.svg"
-                      alt="Logo"
-                      width={300}
-                      height={120}
-                      priority
-                    />
-                </div>
+                <DotykaceLogo />
 
                 {/* Waiting Screen */}
                 <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-xl">
