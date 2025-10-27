@@ -160,7 +160,7 @@
     "1.12": {
       "type": "notification",
       "duration": 7,
-      "text": "Když píše UN za chůze, dívá se na cestu nebo na mě?",
+      "text": "Když píšeš za chůze, díváš se na cestu nebo na mě? \uD83D\uDC3E\uD83D\uDC40",
       "face": "puzzled",
       "next-id": "1.12a"
     },
@@ -172,7 +172,7 @@
     "1.13": {
       "type": "notification",
       "duration": 7,
-      "text": "Je někdy prst UN rychlejší než rozhodnutí ‘tohle odešlu’?",
+      "text": "Jsou někdy tvoje prst rychlejší než rozhodnutí ‘tohle odešlu’? \uD83D\uDCAC\uD83E\uDEE3",
       "face": "nerd",
       "next-id": "1.13a"
     },
@@ -184,7 +184,7 @@
     "1.14": {
       "type": "notification",
       "duration": 7,
-      "text": "Kolikrát za den na mě asi UN klepne?",
+      "text": "Kolikrát za den na tohle místo asi klepneš? \uD83E\uDD14\uD83D\uDC49\uD83D\uDCF1\uD83D\uDC48",
       "face": "aweful",
       "next-id": "1.14a"
     },
@@ -196,7 +196,7 @@
     "1.15": {
       "type": "notification",
       "duration": 7,
-      "text": "Jsou ruce UN dost silné, aby mě zlomily vejpůl?",
+      "text": "Někdy mě napadne: ‘Jsou ruce UN dost silné, aby mě zlomily vejpůl?’ \uD83D\uDCAA\uD83D\uDE35\u200D\uD83D\uDCAB\uD83D\uDCA5",
       "face": "pressure",
       "next-id": "place-2"
     },

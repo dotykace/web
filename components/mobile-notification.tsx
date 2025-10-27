@@ -77,16 +77,7 @@ export default function MobileNotification({
                   <p className="text-xs text-gray-400 dark:text-gray-500">{timestapm}</p>
                 </div>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{message}</p>
-                {content && (
-                  <Button
-                    size="sm"
-                    className="h-8 px-3 my-2 rounded-[2vw] text-xs bg-blue-900 text-white"
-                    onClick={() => setShowQuickReply(!showQuickReply)}
-                  >
-                    Quick Reply
-                  </Button>
-                )}
-
+                {content && <QuickReplyButton onClick={() => setShowQuickReply(!showQuickReply)} isActive={!showQuickReply} />}
               </div>
               {onClose && (
                 <Button variant="ghost" size="sm" className="ml-1 h-5 w-5 p-0 dark:text-white" onClick={onClose}>
@@ -107,4 +98,37 @@ export default function MobileNotification({
       </AnimatePresence>
     </div>
   )
+}
+
+function QuickReplyButton ({onClick, isActive}) {
+  return (
+    <motion.button
+    initial={{ boxShadow: '0 0 0px rgba(59,130,246,0)' }}
+    animate={
+      isActive
+        ? {
+          boxShadow: [
+            '0 0 0px rgba(59,130,246,0)',
+            '0 0 15px rgba(59,130,246,0.8)',
+            '0 0 0px rgba(59,130,246,0)',
+          ],
+        }
+        : {
+          boxShadow: '0 0 0px rgba(59,130,246,0)',
+        }
+    }
+    transition={
+      isActive
+        ? {
+          duration: 2,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }
+        : { duration: 0.3 }
+    }
+    onClick={onClick}
+    className={"my-2 rounded-xl h-8 px-3 text-xs bg-blue-900 text-white"}
+  >
+      Quick Reply
+  </motion.button>)
 }
