@@ -21,11 +21,11 @@ export default function ScaleTemplate({
   const [percentage, setPercentage] = useState(50);
   const [resetKey, setResetKey] = useState(0);
   const handleConfirm = () => {
-    console.log("Confirmed percentage:", percentage);
     if (onConfirm) {
       onConfirm(percentage);
     }
     setResetKey(k => k + 1);
+    setPercentage(50);
   }
 
   return (

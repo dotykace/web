@@ -2,9 +2,9 @@ import {useEffect, useState} from "react";
 import ScaleTemplate from "@/components/chapter4/ScaleTemplate";
 
 const classifyData = (number) => {
-  if (number >= 67) return "high"; // high
-  if (number <= 33) return "low"; // low
-  return "medium"; // medium
+  if (number >= 67) return 1; // high
+  if (number <= 33) return 5; // low
+  return 3; // medium
 }
 // connections = {A: B, B: C, C: A}
 const interpretData = (connections, data) => {
@@ -18,7 +18,7 @@ const interpretData = (connections, data) => {
   }
   for (const key in interpretations){
     const secondaryKey = connections[key];
-    interpretations[key].combo = `${interpretations[key].class} + ${interpretations[secondaryKey].class}`;
+    interpretations[key].combo = `${key}${interpretations[key].class}${secondaryKey}${interpretations[secondaryKey].class}`;
   }
   return interpretations;
 }
