@@ -30,6 +30,15 @@ export default function BasicAudioVisual({ audio=null, id, children, coloring = 
         </Card>
         </motion.div>
       </AnimatePresence>
+      <Button
+        onClick={() => {
+          if(audio){
+            if (audio.onFinish) {
+              stop(audio.filename)
+              audio.onFinish()
+            }
+        }}}
+      >SKIP</Button>
     </div>
   )
 }
