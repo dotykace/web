@@ -16,20 +16,13 @@ export default function ScalesAndGallery() {
   const pickGalleryImages = () => {
     if (!currentInteraction) return [];
     if (!data) return [];
-    // todo connect scales data to gallery images
-    return  [
-      "/images/phone-character-phone.png",
-      "/trnava.jpg",
-      "/images/phone-character-question.png",
-      "/trnava.jpg",
-      "/images/phone-character-thinking.png",
-      "/trnava.jpg",
-    ]
+    return Object.entries(data).map(
+      ([key, value]) => `/images/scales/${key}/${value.combo}.png`
+    );
   }
 
   if (!currentInteraction) return null;
   if (data){
-    console.log("Displaying collected data:", data);
     if (currentInteraction.id==="gallery"){
       const images = pickGalleryImages();
       return <Gallery

@@ -21,17 +21,17 @@ export default function ScaleTemplate({
   const [percentage, setPercentage] = useState(50);
   const [resetKey, setResetKey] = useState(0);
   const handleConfirm = () => {
-    console.log("Confirmed percentage:", percentage);
     if (onConfirm) {
       onConfirm(percentage);
     }
     setResetKey(k => k + 1);
+    setPercentage(50);
   }
 
   return (
     <div className="flex flex-col min-h-screen text-center">
       <h1 className="text-2xl font-semibold mt-8">{topText}</h1>
-      <DraggableCircle percentageCallback={setPercentage} scaleKey={resetKey}/>
+      <DraggableCircle percentageCallback={setPercentage} key={resetKey}/>
       <h2 className="text-2xl font-semibold mb-8">{bottomText}</h2>
       <div className="m-2 ml-8">
         <ArrowButton onClick={handleConfirm} label={confirmationText} />
