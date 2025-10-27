@@ -15,42 +15,7 @@ import {useRouter} from "next/navigation";
 // Animated Voice Visualization Component (unchanged)
 const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
     return (
-        <div className="relative w-full h-48 flex items-center justify-center overflow-hidden">
-            {/* Background animated circles */}
-            <div className="absolute inset-0">
-                {[...Array(6)].map((_, i) => (
-                    <div
-                        key={i}
-                        className={`absolute rounded-full bg-gradient-to-r from-purple-400/20 to-pink-400/20 animate-pulse`}
-                        style={{
-                            width: `${60 + i * 20}px`,
-                            height: `${60 + i * 20}px`,
-                            left: "50%",
-                            top: "50%",
-                            transform: "translate(-50%, -50%)",
-                            animationDelay: `${i * 0.3}s`,
-                            animationDuration: `${2 + i * 0.5}s`,
-                        }}
-                    />
-                ))}
-            </div>
-            {/* Floating emojis */}
-            <div className="absolute inset-0">
-                {["💫", "✨", "🌟", "💝", "🎵", "🎶"].map((emoji, i) => (
-                    <div
-                        key={i}
-                        className={`absolute text-2xl animate-bounce ${isActive ? "opacity-80" : "opacity-40"}`}
-                        style={{
-                            left: `${20 + ((i * 15) % 60)}%`,
-                            top: `${15 + ((i * 20) % 50)}%`,
-                            animationDelay: `${i * 0.5}s`,
-                            animationDuration: `${1.5 + (i % 3) * 0.5}s`,
-                        }}
-                    >
-                        {emoji}
-                    </div>
-                ))}
-            </div>
+        <div className="relative w-full h-48 flex items-center justify-center">
             {/* Central phone character with pulsing effect */}
             <div className="relative z-10">
                 <div className={`relative transition-all duration-1000 ${isActive ? "animate-pulse scale-110" : "scale-100"}`}>
@@ -90,40 +55,6 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
                     </div>
                 )}
             </div>
-            {/* Floating hearts */}
-            <div className="absolute inset-0 pointer-events-none">
-                {["💕", "💖", "💗"].map((heart, i) => (
-                    <div
-                        key={i}
-                        className={`absolute text-lg animate-bounce ${isActive ? "opacity-60" : "opacity-20"}`}
-                        style={{
-                            left: `${70 + i * 10}%`,
-                            top: `${30 + i * 15}%`,
-                            animationDelay: `${i * 0.7}s`,
-                            animationDuration: `${2 + i * 0.3}s`,
-                        }}
-                    >
-                        {heart}
-                    </div>
-                ))}
-            </div>
-            {/* Gentle sparkles */}
-            <div className="absolute inset-0">
-                {[...Array(8)].map((_, i) => (
-                    <div
-                        key={i}
-                        className={`absolute w-1 h-1 bg-yellow-300 rounded-full animate-twinkle ${
-                            isActive ? "opacity-80" : "opacity-30"
-                        }`}
-                        style={{
-                            left: `${Math.random() * 100}%`,
-                            top: `${Math.random() * 100}%`,
-                            animationDelay: `${Math.random() * 2}s`,
-                            animationDuration: `${1 + Math.random()}s`,
-                        }}
-                    />
-                ))}
-            </div>
         </div>
     )
 }
@@ -147,39 +78,6 @@ const MusicStarAnimation = ({ isActive }: { isActive: boolean }) => {
         </div>
     )
 }
-
-const AnimationStyles = () => (
-    <style jsx>{`
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.2); }
-        }
-        .animate-twinkle {
-            animation: twinkle 1.5s ease-in-out infinite;
-        }
-        @keyframes star-scale-pulse {
-            0% { transform: scale(0.1); opacity: 0; }
-            20% { transform: scale(1.2); opacity: 1; } /* Rapid growth */
-            50% { transform: scale(1); opacity: 1; }
-            75% { transform: scale(1.05); opacity: 1; } /* Subtle pulse */
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .animate-star-scale-pulse {
-            animation: star-scale-pulse 1.5s ease-out forwards, pulse-opacity 2s infinite alternate 1.5s; /* Initial growth, then continuous pulse */
-        }
-        @keyframes pulse-opacity {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
-        }
-        @keyframes ping-slow {
-            0% { transform: scale(0.5); opacity: 0.5; }
-            100% { transform: scale(1.5); opacity: 0; }
-        }
-        .animate-ping-slow {
-            animation: ping-slow 2s ease-out infinite;
-        }
-    `}</style>
-)
 
 interface Interaction {
     type: string
@@ -873,7 +771,6 @@ function Chapter2Content() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col">
-            <AnimationStyles />
 
             {/* Audio Control */}
             <div className="absolute top-4 left-4 z-20">
