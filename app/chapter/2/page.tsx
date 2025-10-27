@@ -818,6 +818,7 @@ function Chapter2Content() {
 
     const currentInteraction = flowData.interactions[currentInteractionId]
 
+    // todo get rid of this screen - redirect to menu directly
     if (currentInteractionId === "end") {
         return (
             <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">

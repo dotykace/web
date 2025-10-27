@@ -35,23 +35,6 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
                     />
                 ))}
             </div>
-            {/* Floating emojis */}
-            <div className="absolute inset-0">
-                {["🌟", "✨", "💫", "🎵", "🎶", "💝"].map((emoji, i) => (
-                    <div
-                        key={i}
-                        className={`absolute text-2xl animate-bounce ${isActive ? "opacity-80" : "opacity-40"}`}
-                        style={{
-                            left: `${20 + ((i * 15) % 60)}%`,
-                            top: `${15 + ((i * 20) % 50)}%`,
-                            animationDelay: `${i * 0.5}s`,
-                            animationDuration: `${1.5 + (i % 3) * 0.5}s`,
-                        }}
-                    >
-                        {emoji}
-                    </div>
-                ))}
-            </div>
             {/* Central phone character with pulsing effect */}
             <div className="relative z-10">
                 <div className={`relative transition-all duration-1000 ${isActive ? "animate-pulse scale-110" : "scale-100"}`}>
@@ -90,40 +73,6 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
                         ))}
                     </div>
                 )}
-            </div>
-            {/* Floating hearts */}
-            <div className="absolute inset-0 pointer-events-none">
-                {["💕", "💖", "💗"].map((heart, i) => (
-                    <div
-                        key={i}
-                        className={`absolute text-lg animate-bounce ${isActive ? "opacity-60" : "opacity-20"}`}
-                        style={{
-                            left: `${70 + i * 10}%`,
-                            top: `${30 + i * 15}%`,
-                            animationDelay: `${i * 0.7}s`,
-                            animationDuration: `${2 + i * 0.3}s`,
-                        }}
-                    >
-                        {heart}
-                    </div>
-                ))}
-            </div>
-            {/* Gentle sparkles */}
-            <div className="absolute inset-0">
-                {[...Array(8)].map((_, i) => (
-                    <div
-                        key={i}
-                        className={`absolute w-1 h-1 bg-yellow-300 rounded-full animate-twinkle ${
-                            isActive ? "opacity-80" : "opacity-30"
-                        }`}
-                        style={{
-                            left: `${Math.random() * 100}%`,
-                            top: `${Math.random() * 100}%`,
-                            animationDelay: `${Math.random() * 2}s`,
-                            animationDuration: `${1 + Math.random()}s`,
-                        }}
-                    />
-                ))}
             </div>
         </div>
     )
@@ -467,7 +416,7 @@ function Chapter3Content() {
 
                         if (interaction.sound === "track17.mp3") {
                             setTimeout(() => {
-                                playAudio("GALERIA.wav", "music", true)
+                                playAudio("GALERIA- opravene.mp3", "music", true)
                             }, 17000)
                         }
 
@@ -687,6 +636,7 @@ function Chapter3Content() {
     }
 
     const currentInteraction = flowData.interactions[currentInteractionId]
+    // todo get rid of this screen - redirect to menu directly
     if (currentInteractionId === "end") {
         return (
             <div className="min-h-screen bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 flex items-center justify-center p-4">
