@@ -38,21 +38,11 @@ export default function ScalesAndGallery() {
         onFinish={() => goToNextInteraction()}
       />
     }
-    else return (
-      <ResultTable data={data}>
-        <Button
-          className="rounded-xl text-xl"
-          onClick={() => goToNextInteraction()}
-        >
-          Pokračovat
-        </Button>
-      </ResultTable>
-    )
   }
   if (currentInteraction.id === "scales") return <Scales currentInteraction={currentInteraction} onComplete={collectData} />;
   else return <div>NOT FOUND</div>;
 }
-
+// todo remove when not needed
 function ResultTable({ data, children }) {
   return (
     <div className="p-4 py-20 h-screen items-center justify-between flex flex-col ">

@@ -48,15 +48,11 @@
           "bottom": "prázdnota"
         }
       },
-      "next-id": "collect-data"
-    },
-    "collect-data": {
-      "type": "checkpoint",
       "next-id": "gallery"
     },
     "gallery": {
       "type": "message",
-      "text": "Který z obrázků s tebou rezonuje nejvíc? Dlouhým stisknutím označ jeden.",
+      "text": "Který z obrázků s tebou rezonuje nejvíc? Označ jeden v pravém horním rohu.",
       "next-id": "chapter-4-end"
     },
     "chapter-4-end": {

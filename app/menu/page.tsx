@@ -42,7 +42,7 @@ export default function MenuPage() {
 
     // Only access localStorage after component mounts on client
     const storedChapter = readFromStorage("chapter") as number
-    const storedUserName = (readFromStorage("userName") as string) || ""
+    const storedUserName = (readFromStorage("UN") as string) || ""
     const storedRoomId = typeof window !== "undefined" ? localStorage.getItem("dotykace_roomId") : null
     const storedPlayerId = typeof window !== "undefined" ? localStorage.getItem("dotykace_playerId") : null
 
@@ -172,19 +172,6 @@ export default function MenuPage() {
   return (
       <div className="min-h-screen bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex flex-col items-center justify-center p-4">
         <HelpButton />
-        {/* Welcome message */}
-        {userName && (
-            <motion.div
-                className="mb-8 text-center"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-            >
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-6 py-3 shadow-lg">
-                <p className="text-sky-700 font-medium">Vítaj späť, {userName}!</p>
-              </div>
-            </motion.div>
-        )}
 
         {/* Logo */}
         <div className="p-4 pb-8">
