@@ -1,25 +1,15 @@
 "use client"
 
-import {useEffect, useState} from "react"
+import {ReactNode, useEffect, useState} from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { collection, query, where, getDocs } from "firebase/firestore"
-import { db } from "@/lib/firebase"
-import type { DotykaceUser } from "@/lib/dotykace-types"
-import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { useRouter } from "next/navigation"
 import {readFromStorage} from "@/scripts/local-storage";
-import { FormField } from "@/components/FormField"
+import AdminForm from "@/components/login/AdminForm";
+import PlayerForm from "@/components/login/PlayerForm";
 
 export default function HomePage() {
   const [isLogin, setIsLogin] = useState(false)
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [roomCode, setRoomCode] = useState("")
-  const [playerName, setPlayerName] = useState("")
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const router = useRouter()
 
@@ -48,88 +38,32 @@ export default function HomePage() {
     // todo how do i detect if the user is admin or player?
   }, []);
 
-  const handleAdminLogin = async () => {
-    if (!username || !password) {
-      setError("Prosím vyplňte všetky polia")
-      return
-    }
-
-    setLoading(true)
-    setError("")
-
-    try {
-      const usersRef = collection(db, "admins")
-      const q = query(usersRef, where("username", "==", username))
-      const querySnapshot = await getDocs(q)
-
-      if (querySnapshot.empty) {
-        setError("Nesprávne prihlasovacie údaje")
-        return
-      }
-
-      const userDoc = querySnapshot.docs[0]
-      const userData = userDoc.data() as DotykaceUser
-
-      if (userData.password !== password || userData.role !== "admin") {
-        setError("Nesprávne prihlasovacie údaje")
-        return
-      }
-
-      localStorage.setItem("dotykace_adminId", userDoc.id)
-      router.push("/dotykace/admin")
-    } catch (err) {
-      setError("Chyba pri prihlasovaní")
-      console.error("Login error:", err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleUserJoin = async () => {
-    if (!roomCode || !playerName) {
-      setError("Prosím vyplňte všetky polia")
-      return
-    }
-
-    setLoading(true)
-    setError("")
-
-    try {
-      const roomsRef = collection(db, "rooms")
-      const idQuery = query(roomsRef, where("id", "==", roomCode.toUpperCase()))
-      const querySnapshot = await getDocs(idQuery)
-
-      if (querySnapshot.empty) {
-        setError("Miestnosť nebola nájdená")
-        return
-      }
-
-      const roomDoc = querySnapshot.docs[0]
-      const roomData = roomDoc.data()
-
-      if (!roomData.isActive) {
-        setError("Miestnosť nie je aktívna")
-        return
-      }
-
-      localStorage.setItem("dotykace_playerName", playerName)
-      localStorage.setItem("dotykace_roomId", roomDoc.id)
-      router.push("/dotykace/room")
-    } catch (err) {
-      setError("Chyba pri pripájaní do miestnosti")
-      console.error("Join room error:", err)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const loadingText = "Načítání"
 
   if(!tryLogIn) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 p-4 flex items-center justify-center">
-        <div className="text-center text-white text-xl">Načítavanie...</div>
+        <div className="text-center text-white text-xl">{loadingText}...</div>
       </div>
     )
   }
+
+  function renderError(message: string) {
+    return (
+      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg text-sm">
+        {message}
+      </div>
+    )
+  }
+
+  const appTitle = "Dotýkače";
+  const appSubtitle = "Interaktivní zkušenost s mobilem";
+
+  const loginTitle = isLogin ? "Admin prihlaseni" : "Připojit se do aplikace";
+  const loginSubtitle = isLogin ? "Prihláste sa ako administrátor" : "Zadejte kód místnosti a jméno"
+
+  const playerLabel = "Hráč";
+  const adminLabel = "Admin";
 
   return (
       <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 p-4 flex items-center justify-center">
@@ -142,8 +76,8 @@ export default function HomePage() {
               </div>
               <div className="absolute -top-2 -right-2 w-8 h-8 bg-blue-400 rounded-full"></div>
             </div>
-            <h1 className="text-4xl font-bold text-blue-600 mb-2">dotykáče</h1>
-            <p className="text-gray-700">Interaktívny mobilný zážitok</p>
+            <h1 className="text-4xl font-bold text-blue-600 mb-2">{appTitle}</h1>
+            <p className="text-gray-700">{appSubtitle}</p>
           </div>
 
           {/* Toggle Buttons */}
@@ -153,78 +87,35 @@ export default function HomePage() {
                 className={`flex-1 rounded-full ${!isLogin ? "bg-white text-gray-900" : "text-white"}`}
                 onClick={() => setIsLogin(false)}
             >
-              Hráč
+              {playerLabel}
             </Button>
             <Button
               variant={isLogin ? "default" : "ghost"}
               className={`flex-1 rounded-full ${isLogin ? "bg-white text-gray-900" : "text-white"}`}
               onClick={() => setIsLogin(true)}
             >
-              Admin
+              {adminLabel}
             </Button>
           </div>
 
           {/* Login/Join Form */}
-          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl">
+          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-xl">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl text-gray-900">
-                {isLogin ? "Admin prihlásenie" : "Pripojiť sa do hry"}
+                {loginTitle}
               </CardTitle>
               <CardDescription className="text-gray-600">
-                {isLogin ? "Prihláste sa ako administrátor" : "Zadajte kód miestnosti a vaše meno"}
+                {loginSubtitle}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {error && (
-                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg text-sm">{error}</div>
-              )}
+
+              {error && renderError(error) as ReactNode}
 
               {isLogin ? (
-                  <>
-                    <FormField
-                      id="username"
-                      label="Používateľské meno"
-                      value={username}
-                      onChange={setUsername}
-                      placeholder="Zadajte používateľské meno"
-                    />
-                    <FormField
-                      id="password"
-                      label="Heslo"
-                      value={password}
-                      onChange={setPassword}
-                      placeholder="Zadajte heslo"
-                      onKeyPress={(e) => e.key === "Enter" && handleAdminLogin()}
-                    />
-                    <Button onClick={handleAdminLogin} disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700">
-                      {loading ? <LoadingSpinner className="mr-2" /> : null}
-                      Prihlásiť sa
-                    </Button>
-                  </>
+                <AdminForm setError={setError} /> as ReactNode
               ) : (
-                  <>
-                    <FormField
-                      id="roomCode"
-                      label="Kód miestnosti"
-                      value={roomCode}
-                      onChange={(val) => setRoomCode(val.toUpperCase())}
-                      placeholder="ABCD"
-                      className="text-center text-lg font-mono"
-                      maxLength={4}
-                    />
-
-                    <FormField
-                      id="playerName"
-                      label="Vaše meno"
-                      value={playerName}
-                      onChange={setPlayerName}
-                      placeholder="Zadajte vaše meno"
-                    />
-                    <Button onClick={handleUserJoin} disabled={loading} className="w-full bg-green-600 hover:bg-green-700">
-                      {loading ? <LoadingSpinner className="mr-2" /> : null}
-                      Pripojiť sa
-                    </Button>
-                  </>
+                  <PlayerForm setError={setError} /> as ReactNode
               )}
             </CardContent>
           </Card>
