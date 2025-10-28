@@ -3,7 +3,7 @@ import React from "react";
 import {AnimatePresence, motion} from "framer-motion";
 import VoiceVisualization from "@/components/VoiceVisualization";
 
-export default function BasicAudioVisial({id, children, coloring = "bg-white/10"}: {children?: React.ReactNode, coloring?: string}) {
+export default function BasicAudioVisual({id, children, coloring = "bg-white/10"}: {children?: React.ReactNode, coloring?: string}) {
   return (
     <div className={"min-h-screen flex items-center justify-center p-4 "+ coloring}>
       <AnimatePresence mode="wait">

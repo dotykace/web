@@ -2,7 +2,7 @@ import {useChatContext} from "@/context/ChatContext";
 import Scales from "@/components/chapter4/Scales";
 import Gallery from "@/components/chapter4/Gallery";
 import {useState} from "react";
-import BasicAudioVisial from "@/components/BasicAudioVisial";
+import BasicAudioVisual from "@/components/BasicAudioVisual";
 import AudioWrapper from "@/components/audio/AudioWrapper";
 import CountDownInput from "@/components/CountDownInput";
 
@@ -22,9 +22,9 @@ export default function ScalesAndGallery() {
     <AudioWrapper soundMap={soundMap} setLoaded={setLoaded}>
       {loaded && <ScalesAndGalleryContent />}
       {!loaded && (
-        <BasicAudioVisial coloring={coloring}>
+        <BasicAudioVisual coloring={coloring}>
           Loading audio...
-        </BasicAudioVisial>
+        </BasicAudioVisual>
       )}
     </AudioWrapper>
   )
@@ -65,7 +65,7 @@ function ScalesAndGalleryContent(){
 
   if (currentInteraction.id === "scales") return <Scales currentInteraction={currentInteraction} onComplete={collectData} />;
   else return (
-    <BasicAudioVisial coloring={coloring}>
+    <BasicAudioVisual coloring={coloring}>
       {currentInteraction.type === "input" ? (
         <CountDownInput questionText={currentInteraction.text()} countdownSeconds={currentInteraction.duration} onSave={finishChapter} />
       ): currentInteraction.text()? (
@@ -73,7 +73,7 @@ function ScalesAndGalleryContent(){
           {currentInteraction.text()}
         </div>
       ): undefined}
-    </BasicAudioVisial>
+    </BasicAudioVisual>
   )
 }
 // todo remove when not needed
