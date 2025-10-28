@@ -69,7 +69,6 @@
     "final-words-voice": {
       "type": "voice",
       "duration": 10,
-      "text": "Děkuji ti za tvůj čas a upřímnost. Tvé odpovědi nám pomohou lépe porozumět lidským emocím a jejich propojení s uměním.",
       "next-id": "final-words"
     },
     "final-words": {

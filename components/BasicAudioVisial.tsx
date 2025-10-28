@@ -1,8 +1,9 @@
 import {Card, CardContent} from "@/components/ui/card";
 import React from "react";
 import {AnimatePresence, motion} from "framer-motion";
+import VoiceVisualization from "@/components/VoiceVisualization";
 
-export default function BasicAudioVisial({id, children, coloring = "bg-white/10"}: {children: React.ReactNode, coloring?: string}) {
+export default function BasicAudioVisial({id, children, coloring = "bg-white/10"}: {children?: React.ReactNode, coloring?: string}) {
   return (
     <div className={"min-h-screen flex items-center justify-center p-4 "+ coloring}>
       <AnimatePresence mode="wait">
@@ -16,7 +17,7 @@ export default function BasicAudioVisial({id, children, coloring = "bg-white/10"
         >
         <Card className="w-full max-w-md bg-white/10 backdrop-blur-lg border-white/20 shadow-2xl rounded-xl">
           <CardContent className="p-8 text-center">
-            {children}
+            {children ?? <VoiceVisualization/>}
           </CardContent>
         </Card>
         </motion.div>

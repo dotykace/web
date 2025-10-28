@@ -68,11 +68,11 @@ function ScalesAndGalleryContent(){
     <BasicAudioVisial coloring={coloring}>
       {currentInteraction.type === "input" ? (
         <CountDownInput questionText={currentInteraction.text()} countdownSeconds={currentInteraction.duration} onSave={finishChapter} />
-      ): (
+      ): currentInteraction.text()? (
         <div className="text-white">
           {currentInteraction.text()}
         </div>
-      )}
+      ): undefined}
     </BasicAudioVisial>
   )
 }
