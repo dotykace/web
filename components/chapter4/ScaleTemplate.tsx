@@ -5,19 +5,13 @@ import { useState} from "react";
 import DraggableCircle from "@/components/chapter4/DraggableCircle";
 import ArrowButton from "@/components/chapter4/ArrowButton";
 
-interface CenteredLayoutProps {
-  topText: string;
-  bottomText: string;
-  onConfirm?: (percentage) => void;
-  confirmationText?: string;
-}
-
 export default function ScaleTemplate({
-                                         topText,
-                                         bottomText,
-                                         onConfirm,
-                                         confirmationText = "Potvrdit a pokračovat"
-                                       }: CenteredLayoutProps) {
+                          disabled,
+                          topText,
+                          bottomText,
+                          onConfirm,
+                          confirmationText = "Potvrdit a pokračovat"
+                        }) {
   const [percentage, setPercentage] = useState(50);
   const [resetKey, setResetKey] = useState(0);
   const handleConfirm = () => {
@@ -34,7 +28,7 @@ export default function ScaleTemplate({
       <DraggableCircle percentageCallback={setPercentage} key={resetKey}/>
       <h2 className="text-2xl font-semibold mb-8">{bottomText}</h2>
       <div className="m-2 ml-8">
-        <ArrowButton onClick={handleConfirm} label={confirmationText} />
+        <ArrowButton disabled={disabled} onClick={handleConfirm} label={confirmationText} />
       </div>
     </div>
   );
