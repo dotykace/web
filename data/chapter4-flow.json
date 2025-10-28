@@ -14,6 +14,7 @@
       "type": "group",
       "scales": {
         "A": {
+          "sound": "scaleA",
           "id": "A",
           "secondary": "B",
           "top": "propojení",
@@ -21,6 +22,7 @@
           "next": "B"
         },
         "B": {
+          "sound": "scaleB",
           "id": "B",
           "secondary": "D",
           "top": "klid a bezpečí",
@@ -28,6 +30,7 @@
           "next": "C"
         },
         "C": {
+          "sound": "scaleC",
           "id": "C",
           "secondary": "A",
           "top": "vděk",
@@ -35,6 +38,7 @@
           "next": "D"
         },
         "D": {
+          "sound": "scaleD",
           "id": "D",
           "secondary": "E",
           "top": "sebevědomí",
@@ -42,6 +46,7 @@
           "next": "E"
         },
         "E": {
+          "sound": "scaleE",
           "id": "E",
           "secondary": "C",
           "top": "zábava a inspirace",

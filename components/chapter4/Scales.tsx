@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import ScaleTemplate from "@/components/chapter4/ScaleTemplate";
+import {useSharedAudio} from "@/context/AudioContext";
 
 const classifyData = (number) => {
   if (number >= 67) return 1; // high
@@ -27,6 +28,8 @@ export default function Scales({currentInteraction, onComplete}) {
 
   const [data, setData] = useState({});
   const [dataCollected, setDataCollected] = useState(false);
+
+  const { play, isPlaying } = useSharedAudio();
 
   useEffect(() => {
     if(dataCollected){
@@ -60,6 +63,15 @@ export default function Scales({currentInteraction, onComplete}) {
     setCurrentScale(scalesObject[currentScale.next])
   }
 
+  useEffect(() => {
+    if (!currentScale) return;
+    if (currentScale.sound){
+      play(currentScale.sound).then(()=>{
+        console.log("Played sound for scales:", currentScale.sound);
+      });
+    }
+  }, [currentScale]);
+
   if (!currentScale) return null;
 
   return (
@@ -67,6 +79,7 @@ export default function Scales({currentInteraction, onComplete}) {
       topText={currentScale.top}
       bottomText={currentScale.bottom}
       onConfirm={updateScale}
+      disabled={isPlaying[currentScale.sound]}
       confirmationText={!(currentScale.next) ? "Potvrdit a dokončit" : undefined}
     />
   )

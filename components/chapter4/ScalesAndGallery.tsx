@@ -2,9 +2,31 @@ import {useChatContext} from "@/context/ChatContext";
 import Scales from "@/components/chapter4/Scales";
 import Gallery from "@/components/chapter4/Gallery";
 import {useState} from "react";
-import {Button} from "@/components/ui/button";
+import BasicAudioVisial from "@/components/BasicAudioVisial";
+import AudioWrapper from "@/components/audio/AudioWrapper";
 
+const soundMap = {
+  "scaleA": { url: "/audio/SCROLLOVANIE.mp3" },
+  "scaleB": { url: "/audio/JINGEL - pozitiv.mp3" },
+  "scaleC": { url: "/audio/CHAOS.mp3" },
+  "scaleD": { url: "/audio/JINGEL.mp3" },
+  "scaleE": { url: "/audio/ODOMKNUTIE CHATU.mp3" },
+}
 export default function ScalesAndGallery() {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <AudioWrapper soundMap={soundMap} setLoaded={setLoaded}>
+      {loaded && <ScalesAndGalleryContent />}
+      {!loaded && (
+        <BasicAudioVisial coloring="bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+          Loading audio...
+        </BasicAudioVisial>
+      )}
+    </AudioWrapper>
+  )
+}
+
+function ScalesAndGalleryContent(){
   const { currentInteraction, goToNextInteraction} = useChatContext()
   const [data, setData] = useState(null);
   const collectData = (data) => {
