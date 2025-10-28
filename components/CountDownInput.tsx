@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 
 export default function CountDownInput({
                                          onSave,
+  questionText = "",
                                          buttonLabel = "Uložit",
                                          countdownSeconds = 15,
                                        }) {
@@ -46,18 +47,23 @@ export default function CountDownInput({
 
   return (
     <div className="space-y-4">
+      {questionText && (
+        <div className="text-white/90 text-lg font-medium text-center">
+          {questionText}
+        </div>
+      )}
       <Textarea
         value={inputValue}
         onChange={handleInputChange}
         placeholder={textAreaPlaceholder}
-        className="bg-white/30 border-white/40 text-white placeholder:text-white/70 resize-none rounded-2xl"
+        className="bg-white/30 border-white/40 text-white placeholder:text-white/70 resize-none rounded-xl"
         rows={3}
       />
 
       {timeLeft !== null && (
         <div className="text-center">
           <div className="text-white/90 text-sm font-medium">
-            {timeLeftText}: {Math.floor(timeLeft / 60)}:
+            {timeLeftText}{Math.floor(timeLeft / 60)}:
             {(timeLeft % 60).toString().padStart(2, "0")}
           </div>
         </div>
@@ -65,7 +71,7 @@ export default function CountDownInput({
 
       <Button
         onClick={handleInputSave}
-        className="w-full bg-white/30 hover:bg-white/40 text-white border-white/40 rounded-2xl font-medium"
+        className="w-full bg-white/30 hover:bg-white/40 text-white border-white/40 rounded-xl font-medium"
         disabled={!inputValue.trim()}
       >
         {buttonLabel}
