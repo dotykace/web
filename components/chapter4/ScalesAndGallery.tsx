@@ -11,6 +11,7 @@ const soundMap = {
   "scaleC": { url: "/audio/CHAOS.mp3" },
   "scaleD": { url: "/audio/JINGEL.mp3" },
   "scaleE": { url: "/audio/ODOMKNUTIE CHATU.mp3" },
+  "voiceGallery": { url: "/audio/track11_loop.mp3" },
 }
 export default function ScalesAndGallery() {
   const [loaded, setLoaded] = useState(false);
@@ -51,6 +52,7 @@ function ScalesAndGalleryContent(){
         images={images}
         helpText={currentInteraction.text()}
         onFinish={() => goToNextInteraction()}
+        audio="voiceGallery"
       />
     }
   }
