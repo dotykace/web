@@ -13,13 +13,14 @@ const soundMap = {
   "scaleE": { url: "/audio/ODOMKNUTIE CHATU.mp3" },
   "voiceGallery": { url: "/audio/track11_loop.mp3" },
 }
+const coloring = "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900";
 export default function ScalesAndGallery() {
   const [loaded, setLoaded] = useState(false);
   return (
     <AudioWrapper soundMap={soundMap} setLoaded={setLoaded}>
       {loaded && <ScalesAndGalleryContent />}
       {!loaded && (
-        <BasicAudioVisial coloring="bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+        <BasicAudioVisial coloring={coloring}>
           Loading audio...
         </BasicAudioVisial>
       )}
