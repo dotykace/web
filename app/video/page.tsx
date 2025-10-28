@@ -21,46 +21,16 @@ const videos: VideoItem[] = [
         description: "Krátke video vysvetľujúce princípy kapacitných dotykových obrazoviek a ako reagujú na náš dotyk.",
         youtubeId: "dQw4w9WgXcQ", // Placeholder: Rick Astley - Never Gonna Give You Up
     },
-    {
-        id: 2,
-        title: "Vplyv technológií na mozog",
-        description:
-            "Preskúmajte, ako moderné technológie a neustále pripojenie ovplyvňujú naše kognitívne funkcie a správanie.",
-        youtubeId: "xvFZjo5PgG0", // Placeholder: Kurzgesagt – In a Nutshell
-    },
-    {
-        id: 3,
-        title: "Digitálny detox: Prečo a ako?",
-        description:
-            "Tipy a triky, ako si dať pauzu od digitálneho sveta, nájsť rovnováhu a zlepšiť svoje duševné zdravie.",
-        youtubeId: "k_okcNVZzCg", // Placeholder: The School of Life
-    },
-    {
-        id: 4,
-        title: "Budúcnosť interakcie s technológiami",
-        description: "Pozrite sa na inovatívne spôsoby, akými by sme mohli v budúcnosti interagovať s našimi zariadeniami.",
-        youtubeId: "Y_9vd4Jb_1Q", // Placeholder: TED Talk
-    },
 ]
 
 export default function Chapter4Page() {
-    const router = useRouter()
+
+  const pageHeader = "Kapitola 4"
+  const pageSubheader = "Náučné videá o technológiách a nás"
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col items-center p-4 sm:p-6 md:p-8">
             <HelpButton/>
-            {/* Back Button */}
-            <div className="absolute top-4 left-4 z-20">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => router.push("/menu")}
-                    className="text-white hover:bg-white/20"
-                >
-                    <ArrowLeft className="h-6 w-6" />
-                    <span className="sr-only">Späť do menu</span>
-                </Button>
-            </div>
 
             <motion.div
                 initial={{ opacity: 0, y: -50 }}
@@ -68,8 +38,8 @@ export default function Chapter4Page() {
                 transition={{ duration: 0.5 }}
                 className="text-center mb-8 mt-12 sm:mt-16"
             >
-                <h1 className="text-4xl sm:text-5xl font-bold text-white drop-shadow-lg">Kapitola 4</h1>
-                <p className="text-white/80 text-lg sm:text-xl mt-2">Náučné videá o technológiách a nás</p>
+                <h1 className="text-4xl sm:text-5xl font-bold text-white drop-shadow-lg">{pageHeader}</h1>
+                <p className="text-white/80 text-lg sm:text-xl mt-2">{pageSubheader}</p>
             </motion.div>
 
             <div className="w-full max-w-3xl space-y-8 mb-12">
@@ -99,20 +69,6 @@ export default function Chapter4Page() {
                     </motion.div>
                 ))}
             </div>
-
-            <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: videos.length * 0.1 + 0.5 }}
-                className="w-full max-w-xs"
-            >
-                <Button
-                    onClick={() => router.push("/menu")}
-                    className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30 transition-all duration-200 hover:scale-105"
-                >
-                    Späť do menu
-                </Button>
-            </motion.div>
         </div>
     )
 }
