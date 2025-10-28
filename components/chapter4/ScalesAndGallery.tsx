@@ -4,6 +4,8 @@ import Gallery from "@/components/chapter4/Gallery";
 import {useState} from "react";
 import BasicAudioVisial from "@/components/BasicAudioVisial";
 import AudioWrapper from "@/components/audio/AudioWrapper";
+import CountDownInput from "@/components/CountDownInput";
+
 
 const soundMap = {
   "scaleA": { url: "/audio/SCROLLOVANIE.mp3" },
@@ -57,8 +59,22 @@ function ScalesAndGalleryContent(){
       />
     }
   }
+  const finishChapter = (finalResponse) => {
+    console.log("Final response:", finalResponse);
+  }
+
   if (currentInteraction.id === "scales") return <Scales currentInteraction={currentInteraction} onComplete={collectData} />;
-  else return <div>NOT FOUND</div>;
+  else return (
+    <BasicAudioVisial coloring={coloring}>
+      {currentInteraction.type === "input" ? (
+        <CountDownInput questionText={currentInteraction.text()} countdownSeconds={currentInteraction.duration} onSave={finishChapter} />
+      ): (
+        <div className="text-white">
+          {currentInteraction.text()}
+        </div>
+      )}
+    </BasicAudioVisial>
+  )
 }
 // todo remove when not needed
 function ResultTable({ data, children }) {
