@@ -111,10 +111,10 @@ export default function Gallery({images, helpText, onFinish}) {
         ))}
         <div className="flex flex-col items-center justify-center">
           <div className="flex items-center justify-center p-2 pb-6">
-                  <span className="font-semibold text-gray-800">
+                  <span className="font-semibold text-gray-800 text-sm sm:text-base">
                     {helpText}
                   </span>
-            <Hand className="w-6 h-6 text-gray-700 ml-2 flex-shrink-0" />
+            <Hand className="w-5 h-5 text-gray-700 ml-2 flex-shrink-0" />
           </div>
           <Button
             onClick={()=>setShowModal(true)}
