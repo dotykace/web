@@ -58,6 +58,7 @@ export default function Chapter4Page() {
                                     src={`/videos/${video.fileName}`}
                                     title={video.title}
                                     controls
+                                    autoPlay
                                     playsInline
                                   />
                                 </div>

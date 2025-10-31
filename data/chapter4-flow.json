@@ -8,6 +8,11 @@
     "chapter-4-start": {
       "type": "checkpoint",
       "duration": 0,
+      "next-id": "intro-voice"
+    },
+    "intro-voice": {
+      "type": "voice",
+      "duration": 5,
       "next-id": "scales"
     },
     "scales": {
@@ -58,7 +63,7 @@
     "painter": {
       "type": "voice",
       "text": "Dobře. Vezmu si to do ateliéru. Bude to jako blesk!",
-      "duration": 15,
+      "duration": 5,
       "next-id": "gallery"
     },
     "gallery": {
@@ -68,7 +73,7 @@
     },
     "final-words-voice": {
       "type": "voice",
-      "duration": 10,
+      "duration": 5,
       "next-id": "final-words"
     },
     "final-words": {

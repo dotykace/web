@@ -5,6 +5,7 @@ import {useState} from "react";
 import BasicAudioVisual from "@/components/BasicAudioVisual";
 import AudioWrapper from "@/components/audio/AudioWrapper";
 import CountDownInput from "@/components/CountDownInput";
+import {useRouter} from "next/navigation";
 
 
 const soundMap = {
@@ -59,8 +60,10 @@ function ScalesAndGalleryContent(){
       />
     }
   }
+  const router = useRouter();
   const finishChapter = (finalResponse) => {
     console.log("Final response:", finalResponse);
+    router.push("/video");
   }
 
   if (currentInteraction.id === "scales") return <Scales currentInteraction={currentInteraction} onComplete={collectData} />;
