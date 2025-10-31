@@ -6,38 +6,33 @@ import { notFound } from "next/navigation"
 import ScalesAndGallery from "@/components/chapter4/ScalesAndGallery";
 
 // Chapter configuration
-const chapterConfigs = {
+export const chapterConfigs = {
   "0": {
     chapterNumber: 0,
     interactionsFileName: "intro-flow",
     ViewComponent: CardSequence,
-    title: "Introduction",
   },
   "1": {
     chapterNumber: 1,
     interactionsFileName: "chapter1-flow",
     ViewComponent: Chat,
-    title: "Place & Touch",
   },
   "2": {
     chapterNumber: 2,
     interactionsFileName: "chapter2-flow",
     ViewComponent: Chat,
-    title: "Mental & Physical Habits",
   },
   "3": {
     chapterNumber: 3,
     interactionsFileName: "chapter3-flow",
     ViewComponent: Chat,
-    title: "Relationships",
   },
   "4": {
     chapterNumber: 4,
     interactionsFileName: "chapter4-flow",
     ViewComponent: ScalesAndGallery,
-    title: "Scales of Emotions",
   },
-} as const
+}
 
 type ChapterId = keyof typeof chapterConfigs
 
