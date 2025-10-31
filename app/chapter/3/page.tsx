@@ -687,23 +687,6 @@ function Chapter3Content() {
     }
 
     const currentInteraction = flowData.interactions[currentInteractionId]
-    if (currentInteractionId === "end") {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 flex items-center justify-center p-4">
-                <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center">
-                    <div className="mb-6">
-                        <img src="/images/phone-character-simple.png" alt="Phone Character" className="w-30 h-30 mx-auto" />
-                    </div>
-                    <Card className="bg-white/20 backdrop-blur-lg border-white/30 shadow-2xl">
-                        <CardContent className="p-8 text-center">
-                            <h2 className="text-3xl font-bold text-white mb-4">Kapitola 3 Dokončená!</h2>
-                            <p className="text-white/90 text-lg">Presmerovávam na menu...</p>
-                        </CardContent>
-                    </Card>
-                </motion.div>
-            </div>
-        )
-    }
 
     const showSkipButton =
         isDesktop && // Only show on desktop/laptop devices
