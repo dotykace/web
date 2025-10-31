@@ -43,7 +43,7 @@ function ScalesAndGalleryContent(){
     if (!currentInteraction) return [];
     if (!data) return [];
     return Object.entries(data).map(
-      ([key, value]) => `/images/scales/${key}/${value.combo}.png`
+      ([key, value]) => `/images/scales/${key}/${value.combo}.jpg`
     );
   }
 
