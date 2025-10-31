@@ -1,25 +1,23 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+
 import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft } from "lucide-react"
 import HelpButton from "@/components/HelpButton";
 
 interface VideoItem {
     id: number
     title: string
     description: string
-    youtubeId: string // Only the video ID, e.g., "dQw4w9WgXcQ"
+    filename: string // videos are stored in public/videos/
 }
 
 const videos: VideoItem[] = [
     {
         id: 1,
-        title: "Ako funguje dotyk na smartfóne?",
-        description: "Krátke video vysvetľujúce princípy kapacitných dotykových obrazoviek a ako reagujú na náš dotyk.",
-        youtubeId: "dQw4w9WgXcQ", // Placeholder: Rick Astley - Never Gonna Give You Up
+        title: "Dopamin",
+        description: "Popis videa o dopamíne a jeho vplyve na naše správanie v digitálnom svete.",
+        fileName: "DOPAMIN27.10.mp4",
     },
 ]
 
@@ -55,14 +53,13 @@ export default function Chapter4Page() {
                                 <h2 className="text-xl sm:text-2xl font-semibold text-white mb-3">{video.title}</h2>
                                 <p className="text-white/80 text-sm sm:text-base mb-4">{video.description}</p>
                                 <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg">
-                                    <iframe
-                                        className="absolute top-0 left-0 w-full h-full"
-                                        src={`https://www.youtube.com/embed/${video.youtubeId}`}
-                                        title={video.title}
-                                        frameBorder="0"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowFullScreen
-                                    ></iframe>
+                                  <video
+                                    className="absolute top-0 left-0 w-full h-full"
+                                    src={`/videos/${video.fileName}`}
+                                    title={video.title}
+                                    controls
+                                    playsInline
+                                  />
                                 </div>
                             </CardContent>
                         </Card>
