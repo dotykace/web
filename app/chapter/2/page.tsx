@@ -920,19 +920,6 @@ function Chapter2Content() {
 
     const currentInteraction = flowData.interactions[currentInteractionId]
 
-    if (currentInteractionId === "end") {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
-                <Card className="w-full max-w-md bg-white/10 backdrop-blur-lg border-white/20">
-                    <CardContent className="p-8 text-center">
-                        <h2 className="text-2xl font-bold text-white mb-4">Chapter 2 Dokončený</h2>
-                        <p className="text-white/80 mb-6">Presmerovávam do menu...</p>
-                    </CardContent>
-                </Card>
-            </div>
-        )
-    }
-
     // Show skip button only for desktop/laptop screens (lg and above)
     const showSkipButton =
         currentInteraction &&

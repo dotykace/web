@@ -11,7 +11,7 @@ export default function MenuSectionCard({section, handleSectionClick}) {
 
   return (
     <div className="flex flex-col items-center w-[150px] relative">
-      <div className="relative w-[150px] h-[150px] rounded-xl border-white border-2 overflow-hidden">
+      <div className="relative w-[150px] h-[150px] rounded-xl border-white border-4 overflow-hidden">
         <Image
           src={fileName}
           alt={`Chapter Image ${fileName}`}
@@ -28,7 +28,6 @@ export default function MenuSectionCard({section, handleSectionClick}) {
       {/* Text block */}
       <div className="mt-2 w-full">
         <p className="text-lg font-semibold break-words">{section.title}</p>
-        <p className="text-white/90 text-sm break-words">{section.subtitle}</p>
       </div>
     </div>
   )

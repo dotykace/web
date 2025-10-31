@@ -11,16 +11,15 @@ import HelpButton from "@/components/HelpButton"
 import { useAudioManager } from "@/hooks/use-audio"
 import DotykaceLogo from "@/components/DotykaceLogo";
 import MenuSectionCard from "@/components/MenuSectionCard";
+import {chapterConfigs} from "@/app/chapter/[id]/ChapterClient";
 
 type SectionState = "locked" | "unlocked" | "completed"
 
 interface Section {
   id: number
   title: string
-  subtitle: string
   path: string
   state: SectionState
-  icon: React.ReactNode
 }
 
 export default function MenuPage() {
@@ -111,37 +110,17 @@ export default function MenuPage() {
     }
   }
 
-  // Initial sections data with states
-  const [sections] = useState<Section[]>([
-    {
-      id: 1,
-      title: "Chapter 1",
-      subtitle: "Place & Touch",
-      path: "/chapter/1",
-      state: "locked", // Will be updated by getState
-    },
-    {
-      id: 2,
-      title: "Chapter 2",
-      subtitle: "Mental & Physical Habits",
-      path: "/chapter/2",
-      state: "locked",
-    },
-    {
-      id: 3,
-      title: "Chapter 3",
-      subtitle: "Relationships",
-      path: "/chapter/3",
-      state: "locked",
-    },
-    {
-      id: 4,
-      title: "Chapter 4",
-      subtitle: "Advanced Relationships",
-      path: "/chapter/4",
-      state: "unlocked",
-    },
-  ])
+  const chapterString = "Kapitola"
+  const [sections] = useState<Section[]>(() => {
+    return Object.values(chapterConfigs)
+      .filter((config) => config.chapterNumber !== 0)
+      .map((config) => ({
+      id: config.chapterNumber,
+      title: `${chapterString} ${config.chapterNumber}`,
+      path: `/chapter/${config.chapterNumber}`,
+      state: config.chapterNumber === 4 ? "unlocked" : "locked", // example logic
+    }))
+  })
 
   // Update section states when permissions change
   const updatedSections = sections.map((section) => ({
