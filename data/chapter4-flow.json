@@ -8,12 +8,18 @@
     "chapter-4-start": {
       "type": "checkpoint",
       "duration": 0,
+      "next-id": "intro-voice"
+    },
+    "intro-voice": {
+      "type": "voice",
+      "duration": 5,
       "next-id": "scales"
     },
     "scales": {
       "type": "group",
       "scales": {
         "A": {
+          "sound": "scaleA",
           "id": "A",
           "secondary": "B",
           "top": "propojení",
@@ -21,6 +27,7 @@
           "next": "B"
         },
         "B": {
+          "sound": "scaleB",
           "id": "B",
           "secondary": "D",
           "top": "klid a bezpečí",
@@ -28,6 +35,7 @@
           "next": "C"
         },
         "C": {
+          "sound": "scaleC",
           "id": "C",
           "secondary": "A",
           "top": "vděk",
@@ -35,6 +43,7 @@
           "next": "D"
         },
         "D": {
+          "sound": "scaleD",
           "id": "D",
           "secondary": "E",
           "top": "sebevědomí",
@@ -42,17 +51,35 @@
           "next": "E"
         },
         "E": {
+          "sound": "scaleE",
           "id": "E",
           "secondary": "C",
           "top": "zábava a inspirace",
           "bottom": "prázdnota"
         }
       },
+      "next-id": "painter"
+    },
+    "painter": {
+      "type": "voice",
+      "text": "Dobře. Vezmu si to do ateliéru. Bude to jako blesk!",
+      "duration": 5,
       "next-id": "gallery"
     },
     "gallery": {
       "type": "message",
       "text": "Který z obrázků s tebou rezonuje nejvíc? Označ jeden v pravém horním rohu.",
+      "next-id": "final-words-voice"
+    },
+    "final-words-voice": {
+      "type": "voice",
+      "duration": 5,
+      "next-id": "final-words"
+    },
+    "final-words": {
+      "type": "input",
+      "text": "Chceš nakonec něco dodat?",
+      "duration": 30,
       "next-id": "chapter-4-end"
     },
     "chapter-4-end": {

@@ -2,9 +2,36 @@ import {useChatContext} from "@/context/ChatContext";
 import Scales from "@/components/chapter4/Scales";
 import Gallery from "@/components/chapter4/Gallery";
 import {useState} from "react";
-import {Button} from "@/components/ui/button";
+import BasicAudioVisual from "@/components/BasicAudioVisual";
+import AudioWrapper from "@/components/audio/AudioWrapper";
+import CountDownInput from "@/components/CountDownInput";
+import {useRouter} from "next/navigation";
 
+
+const soundMap = {
+  "scaleA": { url: "/audio/SCROLLOVANIE.mp3" },
+  "scaleB": { url: "/audio/JINGEL - pozitiv.mp3" },
+  "scaleC": { url: "/audio/CHAOS.mp3" },
+  "scaleD": { url: "/audio/JINGEL.mp3" },
+  "scaleE": { url: "/audio/ODOMKNUTIE CHATU.mp3" },
+  "voiceGallery": { url: "/audio/track11_loop.mp3" },
+}
+const coloring = "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900";
 export default function ScalesAndGallery() {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <AudioWrapper soundMap={soundMap} setLoaded={setLoaded}>
+      {loaded && <ScalesAndGalleryContent />}
+      {!loaded && (
+        <BasicAudioVisual coloring={coloring}>
+          Loading audio...
+        </BasicAudioVisual>
+      )}
+    </AudioWrapper>
+  )
+}
+
+function ScalesAndGalleryContent(){
   const { currentInteraction, goToNextInteraction} = useChatContext()
   const [data, setData] = useState(null);
   const collectData = (data) => {
@@ -17,7 +44,7 @@ export default function ScalesAndGallery() {
     if (!currentInteraction) return [];
     if (!data) return [];
     return Object.entries(data).map(
-      ([key, value]) => `/images/scales/${key}/${value.combo}.png`
+      ([key, value]) => `/images/scales/${key}/${value.combo}.jpg`
     );
   }
 
@@ -29,11 +56,28 @@ export default function ScalesAndGallery() {
         images={images}
         helpText={currentInteraction.text()}
         onFinish={() => goToNextInteraction()}
+        audio="voiceGallery"
       />
     }
   }
+  const router = useRouter();
+  const finishChapter = (finalResponse) => {
+    console.log("Final response:", finalResponse);
+    router.push("/video");
+  }
+
   if (currentInteraction.id === "scales") return <Scales currentInteraction={currentInteraction} onComplete={collectData} />;
-  else return <div>NOT FOUND</div>;
+  else return (
+    <BasicAudioVisual coloring={coloring}>
+      {currentInteraction.type === "input" ? (
+        <CountDownInput questionText={currentInteraction.text()} countdownSeconds={currentInteraction.duration} onSave={finishChapter} />
+      ): currentInteraction.text()? (
+        <div className="text-white">
+          {currentInteraction.text()}
+        </div>
+      ): undefined}
+    </BasicAudioVisual>
+  )
 }
 // todo remove when not needed
 function ResultTable({ data, children }) {

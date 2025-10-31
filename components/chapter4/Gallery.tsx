@@ -1,12 +1,14 @@
 import Image from 'next/image'
 import {X, ChevronLeft, ChevronRight, Hand} from "lucide-react";
 import {Button} from "@/components/ui/button";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {GalleryModal} from "@/components/chapter4/GalleryModal";
 import SwipeComponent from "@/components/chapter4/SwipeComponent";
 import {setToStorage} from "@/scripts/local-storage";
+import {useSharedAudio} from "@/context/AudioContext";
 
-export default function Gallery({images, helpText, onFinish}) {
+export default function Gallery({images, helpText, onFinish, audio}) {
+  const { play, isPlaying } = useSharedAudio();
   const confirmText = "Potvrdit";
   const strings = images.slice(0, 5);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -89,6 +91,10 @@ export default function Gallery({images, helpText, onFinish}) {
     </button>
   )
 
+  useEffect(() => {
+    play(audio);
+  }, []);
+
   return (
     <div className="w-full h-screen p-6 flex bg-blue-100">
       {/* Grid gallery */}
@@ -118,7 +124,7 @@ export default function Gallery({images, helpText, onFinish}) {
           </div>
           <Button
             onClick={()=>setShowModal(true)}
-            disabled={selectedIndex === null}
+            disabled={selectedIndex === null || isPlaying[audio]}
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xl py-2 px-4 rounded-xl shadow-lg">
             {confirmText}
           </Button>
