@@ -11,7 +11,7 @@ export default function MenuSectionCard({section, handleSectionClick}) {
 
   return (
     <div className="flex flex-col items-center w-[150px] relative">
-      <div className="relative w-[150px] h-[150px] rounded-xl border-white border-2 overflow-hidden">
+      <div className="relative w-[150px] h-[150px] rounded-xl border-white border-4 overflow-hidden">
         <Image
           src={fileName}
           alt={`Chapter Image ${fileName}`}

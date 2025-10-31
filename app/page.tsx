@@ -56,7 +56,7 @@ export default function HomePage() {
     )
   }
 
-  const appTitle = "Dotýkače";
+  const appTitle = "dotýkače";
   const appSubtitle = "Interaktivní zkušenost s mobilem";
 
   const loginTitle = isLogin ? "Admin prihlaseni" : "Připojit se do aplikace";
