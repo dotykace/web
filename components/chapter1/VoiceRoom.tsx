@@ -1,6 +1,6 @@
 "use client"
 
-import {useEffect, useState} from "react"
+import {ReactNode, useEffect, useState} from "react"
 import { Button } from "@/components/ui/button"
 import { RadioGroup } from "@/components/ui/radio-group"
 import VoiceItem from "@/components/chapter1/VoiceItem"
@@ -20,7 +20,6 @@ const sampleVoices = [
   {
     id: "neutral",
     name: "Neutrální hlas",
-    audioKey: "voice-placeholder",
   },
 ]
 
@@ -44,19 +43,24 @@ export default function VoiceRoom({onFinish}) {
         {/* Voice Options */}
         <div className="space-y-4">
           <RadioGroup value={selectedVoice} onValueChange={setSelectedVoice}>
-            {sampleVoices.map((voice) => (
-              <VoiceItem
-                key={voice.id}
-                disabled={voice.id === "neutral"}
-                voice={voice}
-                isSelected={selectedVoice === voice.id}
-                isPlaying={isPlaying[voice.audioKey]}
-                onToggle={() => {
-                  console.log("Play/Pause toggled for voice:", voice.id)
-                  toggle(voice.audioKey)
-                }}
-              />
-            ))}
+            {sampleVoices.map((voice) => {
+              const disabled = voice.audioKey === undefined;
+
+              return (
+                <VoiceItem
+                  key={voice.id}
+                  disabled={disabled}
+                  voice={voice}
+                  isSelected={selectedVoice === voice.id}
+                  isPlaying={disabled? false: isPlaying[voice.audioKey]}
+                  onToggle={() => {
+                    if (disabled) return;
+                    console.log("Play/Pause toggled for voice:", voice.id)
+                    toggle(voice.audioKey)
+                  }}
+                />
+              ) as ReactNode;
+            })}
           </RadioGroup>
         </div>
 
