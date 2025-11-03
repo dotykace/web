@@ -12,8 +12,8 @@ export default function CardSequence(){
 
   const { preloadAll, play } = useAudioManager();
   const soundMap = {
-    "sound-test": {url: "/audio/vykreslovanie TECKY.mp3"},
-    "game-confirm": {url: "/audio/JINGEL - pozitiv.mp3"},
+    "sound-test": {filename: "vykreslovanie TECKY.mp3"},
+    "game-confirm": {filename: "JINGEL - pozitiv.mp3"},
   }
   useEffect(() => {
     preloadAll(soundMap).then(() => {

@@ -9,12 +9,12 @@ import {useRouter} from "next/navigation";
 
 
 const soundMap = {
-  "scaleA": { url: "/audio/SCROLLOVANIE.mp3" },
-  "scaleB": { url: "/audio/JINGEL - pozitiv.mp3" },
-  "scaleC": { url: "/audio/CHAOS.mp3" },
-  "scaleD": { url: "/audio/JINGEL.mp3" },
-  "scaleE": { url: "/audio/ODOMKNUTIE CHATU.mp3" },
-  "voiceGallery": { url: "/audio/track11_loop.mp3" },
+  "scaleA": { filename: "SCROLLOVANIE.mp3" },
+  "scaleB": { filename: "JINGEL - pozitiv.mp3" },
+  "scaleC": { filename: "CHAOS.mp3" },
+  "scaleD": { filename: "JINGEL.mp3" },
+  "scaleE": { filename: "ODOMKNUTIE CHATU.mp3" },
+  "voiceGallery": { filename: "track11_loop.mp3" },
 }
 const coloring = "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900";
 export default function ScalesAndGallery() {

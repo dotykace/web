@@ -58,7 +58,7 @@ export default function MenuPage() {
     }
 
     audioManager.preloadAll({
-      "menu-background": { url: "/audio/CAKAREN.mp3", opts: { loop: true, volume: 0.3 } },
+      "menu-background": { filename: "CAKAREN.mp3", opts: { loop: true, volume: 0.3 } },
     }).then(()=> {
       if (!audioManager.isPlaying["menu-background"]){
         audioManager.play("menu-background")

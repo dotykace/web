@@ -17,17 +17,17 @@ import VoiceRoom from "@/components/chapter1/VoiceRoom";
 import {setToStorage} from "@/scripts/local-storage";
 
 const soundMap = {
-  "overlay-on": { url: "/audio/vykreslovanie TECKY.mp3" },
-  "overlay-off": { url: "/audio/KONIEC ROZHRANIA.mp3" },
-  "loop": { url: "/audio/ZVUKOVY PODKRES.mp3", opts: {loop:true} },
-  "input-on": { url: "/audio/ODOMKNUTIE CHATU.mp3" },
-  "send": { url: "/audio/SEND.mp3" },
-  "chaos": { url: "/audio/CHAOS.mp3" },
-  "click": { url: "/audio/KLIK.mp3" },
+  "overlay-on": { filename: "vykreslovanie TECKY.mp3" },
+  "overlay-off": { filename: "KONIEC ROZHRANIA.mp3" },
+  "loop": { filename: "ZVUKOVY PODKRES.mp3", opts: {loop:true} },
+  "input-on": { filename: "ODOMKNUTIE CHATU.mp3" },
+  "send": { filename: "SEND.mp3" },
+  "chaos": { filename: "CHAOS.mp3" },
+  "click": { filename: "KLIK.mp3" },
 
-  "voice-placeholder": {url:"/audio/EMOJI highfive.mp3"},
-  "voice-female": {url:"/audio/EMOJI smutny.mp3"},
-  "voice-loop": {url:"/audio/SVET HLASOV.mp3", opts:{loop:true}},
+  "voice-placeholder": {filename:"EMOJI highfive.mp3"},
+  "voice-female": {filename:"EMOJI smutny.mp3"},
+  "voice-loop": {filename:"SVET HLASOV.mp3", opts:{loop:true}},
 }
 
 export default function Chat() {

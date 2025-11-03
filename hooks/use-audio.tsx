@@ -17,6 +17,15 @@ interface PlayingInstance {
   gainNode: GainNode;
 }
 
+interface SoundMapEntry {
+  filename: string;
+  opts?: UseAudioManagerOptions;
+}
+
+interface SoundMap {
+  [key: string]: SoundMapEntry;
+}
+
 export function useAudioManager() {
   const audioContextRef = useRef<AudioContext | null>(null);
 
@@ -36,11 +45,15 @@ export function useAudioManager() {
     return audioContextRef.current;
   };
 
+  const getPath = (filename: string) => {
+    return '/audio/' + filename;
+  }
+
   // --- Load a sound and decode it
-  const loadSound = useCallback(async (key: string, url: string, opts?: UseAudioManagerOptions) => {
+  const loadSound = useCallback(async (key: string, filename: string, opts?: UseAudioManagerOptions) => {
     const context = getAudioContext();
     if (!context) return;
-    const response = await fetch(url);
+    const response = await fetch(getPath(filename));
     const arrayBuffer = await response.arrayBuffer();
     const buffer = await context.decodeAudioData(arrayBuffer);
 
@@ -54,9 +67,9 @@ export function useAudioManager() {
 
   // --- Preload multiple sounds at once
   const preloadAll = useCallback(
-    async (soundMap: Record<string, { url: string; opts?: UseAudioManagerOptions }>) => {
-      const promises = Object.entries(soundMap).map(([key, { url, opts }]) =>
-        loadSound(key, url, opts)
+    async (soundMap: SoundMap) => {
+      const promises = Object.entries(soundMap).map(([key, { filename, opts }]) =>
+        loadSound(key, filename, opts)
       );
       await Promise.all(promises);
     },
