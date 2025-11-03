@@ -2,14 +2,13 @@
 
 import { useState, useEffect, useRef } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { doc, onSnapshot, updateDoc, arrayUnion } from "firebase/firestore"
+import {doc, onSnapshot, setDoc} from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import type { DotykaceRoom, DotykaceParticipant } from "@/lib/dotykace-types"
 import { useRouter } from "next/navigation"
 import { Clock } from "lucide-react"
 import {readFromStorage} from "@/scripts/local-storage";
 
-import Image from "next/image";
 import DotykaceLogo from "@/components/DotykaceLogo";
 
 export default function DotykaceRoomPage() {
@@ -94,10 +93,9 @@ export default function DotykaceRoomPage() {
                 completedChapters: [],
             }
 
-            const roomRef = doc(db, "rooms", roomId)
-            await updateDoc(roomRef, {
-                participants: arrayUnion(newParticipant),
-            })
+            const participantRef = doc(db, "rooms", roomId, "participants", newPlayerId);
+            await setDoc(participantRef, newParticipant);
+            console.log("Participant added:", newPlayerId);
 
             console.log("✅ Player added successfully")
         } catch (error) {

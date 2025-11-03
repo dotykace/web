@@ -22,7 +22,6 @@ export default function CreateRoom({adminId}) {
         isActive: true,
         isStarted: false,
         createdAt: new Date(),
-        participants: [],
         chapterPermissions: {},
         globalUnlockedChapters: [],
       })

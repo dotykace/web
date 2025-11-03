@@ -7,6 +7,7 @@ import { readFromStorage, setToStorage } from "@/scripts/local-storage"
 import { doc, updateDoc, getDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import type { DotykaceRoom } from "@/lib/dotykace-types"
+import {getParticipantsOnce} from "@/hooks/use-participants";
 
 export function useInteractions<T>(filename: string) {
     const [interactions, setInteractions] = useState<InteractionRecord | null>(null)
@@ -78,8 +79,8 @@ export function useInteractions<T>(filename: string) {
 
             if (!roomSnap.exists()) return
 
-            const roomData = roomSnap.data() as DotykaceRoom
-            const participants = roomData.participants || []
+            const roomData = roomSnap.data()
+            const participants = await getParticipantsOnce(roomData)
 
             // Find and update the specific participant
             const updatedParticipants = participants.map((participant) => {

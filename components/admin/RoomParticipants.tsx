@@ -3,11 +3,13 @@ import {Button} from "@/components/ui/button";
 import {ChapterPermissions, DotykaceRoom} from "@/lib/dotykace-types";
 import {doc, updateDoc} from "firebase/firestore";
 import {db} from "@/lib/firebase";
+import useParticipants from "@/hooks/use-participants";
 
 export default function RoomParticipants({ participants, room }) {
   const allowNextChapter = async (room: DotykaceRoom, participantId: string, nextChapter: number) => {
     try {
-      const participant = room.participants.find((p) => p.id === participantId)
+      const {participants: allParticipants} = useParticipants({room})
+      const participant = allParticipants.find((p) => p.id === participantId)
       if (!participant) return
 
       const currentPermissions = room.chapterPermissions || {}
