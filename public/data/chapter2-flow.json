@@ -239,7 +239,7 @@
     },
     "9.2a": {
       "type": "music",
-      "src": "EMOJI highfive .wav",
+      "src": "EMOJI highfive.mp3",
       "duration": 1,
       "next-id": "9.7"
     },
@@ -255,7 +255,7 @@
     },
     "9.7a": {
       "type": "music",
-      "src": "CAKAREN.wav",
+      "src": "CAKAREN.mp3",
       "loop": true,
       "forever": false,
       "duration": 20,

@@ -467,7 +467,7 @@ function Chapter3Content() {
 
                         if (interaction.sound === "track17.mp3") {
                             setTimeout(() => {
-                                playAudio("GALERIA.wav", "music", true)
+                                playAudio("GALERIA.mp3", "music", true)
                             }, 17000)
                         }
 
