@@ -52,18 +52,19 @@
       "type": "notification",
       "text": "🔔 Chat pro UN spuštěn.",
       "duration": 7,
-      "next-id": "1.6"
+      "next-id": "first-message-reaction",
+      "timeout-id": "1.7"
     },
     "1.6": {
       "type": "message",
       "text": "Napiš něco, pls.",
       "answer": "",
       "duration": 15,
-      "next-id": "1.7",
+      "next-id": "first-message-reaction",
       "timeout-id": "1.100",
       "face": "thrilled"
     },
-    "1.7": {
+    "first-message-reaction": {
       "type": "message",
       "text": "Hmm... \"{{user_input}}\"\nPrvní slova od UN pro mě.\nTo si budu pamatovat i v továrním nastavení.",
       "duration": 5,
@@ -309,14 +310,14 @@
       "type": "message",
       "text": "Ty mě napínáš!",
       "duration": 3,
-      "next-id": "1.7",
+      "next-id": "first-message-reaction",
       "timeout-id": "1.101"
     },
     "1.101": {
       "type": "message",
       "text": "Dáváš si záležet, viď?",
       "duration": 3,
-      "next-id": "1.7",
+      "next-id": "first-message-reaction",
       "timeout-id": "1.102"
     },
     "1.102": {

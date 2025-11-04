@@ -176,6 +176,7 @@ export function useInteractions<T>(filename: string) {
             // todo either dont have user input as interaction or make it work properly
             // todo maybe separate user inputs and interactions
             if (
+                currentInteraction?.id === "first-notification" ||
                 currentInteraction?.id === "1.6" ||
                 currentInteraction?.id === "1.100" ||
                 currentInteraction?.id === "1.101"
