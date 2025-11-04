@@ -74,6 +74,7 @@ export default function MenuPage() {
 
   // Listen to room changes to get updated permissions
   useEffect(() => {
+    console.log("Setting up room listener for roomId:", roomId, "and playerId:", playerId)
     if (!isClient || !roomId || !playerId) {
       // Fallback to local storage if not in dotykace mode
       return
@@ -83,20 +84,28 @@ export default function MenuPage() {
     const unsubscribe = onSnapshot(roomRef, (document) => {
       if (document.exists()) {
         const roomData = document.data() as DotykaceRoom
-        const participant = doc(db, "rooms", roomId, "participants", playerId) as DotykaceParticipant
         const permissions = roomData.chapterPermissions?.[playerId]
 
         if (permissions) {
           setAllowedChapters(permissions.allowedChapters)
         }
-
-        if (participant) {
-          setCompletedChapters(participant.completedChapters || [])
-        }
+      }
+    })
+    const participantRef = doc(db, "rooms", roomId, "participants", playerId)
+    const unsubscribeParticipant = onSnapshot(participantRef, (participantSnap) => {
+      if (participantSnap.exists()) {
+        const participant = participantSnap.data() as DotykaceParticipant
+        setCompletedChapters(participant.completedChapters || [])
+        console.log("Participant data updated:", participant)
+      } else {
+        console.log("Participant document does not exist.")
       }
     })
 
-    return () => unsubscribe()
+    return () => {
+      unsubscribe()
+      unsubscribeParticipant()
+    }
   }, [roomId, playerId, isClient])
 
   const getState = (id: number): SectionState => {
