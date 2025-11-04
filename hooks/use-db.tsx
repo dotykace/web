@@ -53,6 +53,17 @@ export default function useDB() {
       }
     }, onFinish)
   }
+  const updateVoice = async (newVoice:string) => {
+    await updatePlayerData((oldData) => {
+      const responses = {
+        ...oldData.responses,
+        voiceOption: newVoice,
+      }
+      return {
+        responses: responses
+      } as Partial<DotykaceParticipant>
+    }, ()=>{})
+  }
 
-  return {updateChapter, participantRef}
+  return {updateVoice, updateChapter, participantRef}
 }

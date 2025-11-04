@@ -32,6 +32,7 @@ export default function PlayerForm({setError}){
         joinedAt: new Date(),
         responses: {
           isComplete: false,
+          voiceOption: "female"
         },
         currentChapter: 0,
         completedChapters: [],

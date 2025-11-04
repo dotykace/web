@@ -16,7 +16,6 @@ export interface DotykaceRoom {
     isActive: boolean
     isStarted: boolean
     createdAt: Timestamp | Date
-    participants: DotykaceParticipant[]
     chapterPermissions?: ChapterPermissions
     globalUnlockedChapters?: number[] // Nové pole pre sledovanie globálne odomknutých kapitol
 }
@@ -34,15 +33,8 @@ export interface DotykaceParticipant {
 export interface DotykaceUserResponses {
     isComplete: boolean
     botName?: string
-    phoneUsage?: {
-        question1: string
-        question2: string
-        question3: string
-    }
-    experienceRating?: {
-        question1: string
-        question2: string
-    }
+    userName?: string
+    voiceOption: string
 }
 
 export interface ChapterPermissions {

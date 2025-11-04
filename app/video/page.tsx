@@ -4,12 +4,14 @@
 import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import HelpButton from "@/components/HelpButton";
+import {readFromStorage} from "@/scripts/local-storage";
+import {useEffect, useState} from "react";
 
 interface VideoItem {
     id: number
     title: string
     description: string
-    filename: string // videos are stored in public/videos/
+    fileName: string
 }
 
 const videos: VideoItem[] = [
@@ -17,14 +19,27 @@ const videos: VideoItem[] = [
         id: 1,
         title: "Dopamin",
         description: "Popis videa o dopamíne a jeho vplyve na naše správanie v digitálnom svete.",
-        fileName: "DOPAMIN27.10.mp4",
+        fileName: "DOPAMIN.mp4",
     },
 ]
 
-export default function Chapter4Page() {
+export default function VideoPage() {
 
   const pageHeader = "Kapitola 4"
   const pageSubheader = "Náučné videá o technológiách a nás"
+
+  const [selectedVoice, setSelectedVoice] = useState()
+
+  useEffect(() => {
+    console.log("Loading selected voice from storage")
+    // todo get voice from firebase
+    const savedVoice = readFromStorage("selectedVoice") || "female"
+    if(savedVoice){
+      setSelectedVoice(savedVoice)
+    }
+  }, []);
+
+  const filePath = `/videos/${selectedVoice}/`
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col items-center p-4 sm:p-6 md:p-8">
@@ -55,10 +70,9 @@ export default function Chapter4Page() {
                                 <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg">
                                   <video
                                     className="absolute top-0 left-0 w-full h-full"
-                                    src={`/videos/${video.fileName}`}
+                                    src={`${filePath}${video.fileName}`}
                                     title={video.title}
                                     controls
-                                    autoPlay
                                     playsInline
                                   />
                                 </div>

@@ -15,6 +15,7 @@ import AudioWrapper from "@/components/audio/AudioWrapper";
 import ScreenTransition from "@/components/chapter1/ScreenTransition";
 import VoiceRoom from "@/components/chapter1/VoiceRoom";
 import {setToStorage} from "@/scripts/local-storage";
+import useDB from "@/hooks/use-db";
 
 const soundMap = {
   "overlay-on": { filename: "vykreslovanie TECKY.mp3" },
@@ -32,12 +33,13 @@ const soundMap = {
 
 export default function Chat() {
   const { currentInteraction, goToNextInteraction } = useChatContext()
+  const { updateVoice } = useDB()
   const finishChapter = (voice)=> {
     console.log("Selected voice:", voice)
-    //todo store voice selection properly in firestore
     setToStorage("selectedVoice", voice)
-    goToNextInteraction()
+    updateVoice(voice).then(()=>goToNextInteraction())
   }
+
   return (
     <AudioWrapper soundMap={soundMap}>
       <ScreenTransition
