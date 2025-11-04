@@ -5,6 +5,7 @@ import {db} from "@/lib/firebase";
 import {FormField} from "@/components/FormField";
 import {Button} from "@/components/ui/button";
 import {LoadingSpinner} from "@/components/ui/loading-spinner";
+import {setToStorage} from "@/scripts/local-storage";
 
 export default function PlayerForm({setError}){
   const roomCodeLabel = "Kód místnosti";
@@ -45,8 +46,8 @@ export default function PlayerForm({setError}){
         return
       }
 
-      localStorage.setItem("dotykace_playerName", playerName)
-      localStorage.setItem("dotykace_roomId", roomDoc.id)
+      setToStorage("playerName", playerName)
+      setToStorage("roomId", roomDoc.id)
       router.push("/dotykace/room")
     } catch (err) {
       setError("Chyba pri pripájaní do miestnosti")

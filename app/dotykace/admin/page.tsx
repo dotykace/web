@@ -19,6 +19,7 @@ import {
     SidebarTrigger
 } from "@/components/ui/sidebar";
 import {getParticipantsOnce} from "@/hooks/use-participants";
+import {readFromStorage, removeFromStorage} from "@/scripts/local-storage";
 
 export default function AdminPage() {
     const [rooms, setRooms] = useState<DotykaceRoom[]>([])
@@ -29,7 +30,7 @@ export default function AdminPage() {
     const [selectedRoom, setSelectedRoom] = useState<DotykaceRoom | null>(null)
 
     useEffect(() => {
-        const storedAdminId = localStorage.getItem("dotykace_adminId")
+        const storedAdminId = readFromStorage("adminId")
         if (!storedAdminId) {
             router.push("/")
             return
@@ -119,7 +120,7 @@ export default function AdminPage() {
     }, [rooms])
 
     const logout = () => {
-        localStorage.removeItem("dotykace_adminId")
+        removeFromStorage("adminId")
         router.push("/")
     }
 

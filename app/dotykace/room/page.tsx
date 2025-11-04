@@ -18,9 +18,9 @@ export default function DotykaceRoomPage() {
     const router = useRouter()
 
     useEffect(() => {
-        const storedPlayerName = localStorage.getItem("dotykace_playerName")
-        const storedRoomId = localStorage.getItem("dotykace_roomId")
-        const storedPlayerId = localStorage.getItem("dotykace_playerId")
+        const storedPlayerName = readFromStorage("playerName") as string
+        const storedRoomId = readFromStorage("roomId") as string
+        const storedPlayerId = readFromStorage("playerId") as string
 
         if (!storedPlayerName || !storedRoomId) {
             router.push("/")

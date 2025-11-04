@@ -42,8 +42,8 @@ export default function MenuPage() {
     // Only access localStorage after component mounts on client
     const storedChapter = readFromStorage("chapter") as number
     const storedUserName = (readFromStorage("UN") as string) || ""
-    const storedRoomId = typeof window !== "undefined" ? localStorage.getItem("dotykace_roomId") : null
-    const storedPlayerId = typeof window !== "undefined" ? localStorage.getItem("dotykace_playerId") : null
+    const storedRoomId = readFromStorage("roomId") as string
+    const storedPlayerId = readFromStorage("playerId") as string
 
     setChapter(storedChapter)
     setUserName(storedUserName)

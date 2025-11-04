@@ -6,6 +6,7 @@ import {DotykaceUser} from "@/lib/dotykace-types";
 import {FormField} from "@/components/FormField";
 import {Button} from "@/components/ui/button";
 import {LoadingSpinner} from "@/components/ui/loading-spinner";
+import {setToStorage} from "@/scripts/local-storage";
 
 export default function AdminForm({setError}){
   const [username, setUsername] = useState("")
@@ -42,7 +43,7 @@ export default function AdminForm({setError}){
         return
       }
 
-      localStorage.setItem("dotykace_adminId", userDoc.id)
+      setToStorage("adminId", userDoc.id)
       router.push("/dotykace/admin")
     } catch (err) {
       setError("Chyba pri prihlasovaní")

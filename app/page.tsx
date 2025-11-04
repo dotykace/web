@@ -22,9 +22,10 @@ export default function HomePage() {
       setTryLogIn(true)
       return
     }
-    const adminId = localStorage.getItem("dotykace_adminId")
-    const playerName = localStorage.getItem("dotykace_playerName")
-    const roomId = localStorage.getItem("dotykace_roomId")
+    const adminId = readFromStorage("adminId")
+
+    const playerName = readFromStorage("playerName")
+    const roomId = readFromStorage("roomId")
     if (adminId) {
       router.push("/dotykace/admin")
       return;
