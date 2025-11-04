@@ -1,15 +1,13 @@
 import {CheckCircle, Unlock} from "lucide-react";
 import {Button} from "@/components/ui/button";
-import {ChapterPermissions, DotykaceRoom} from "@/lib/dotykace-types";
+import {ChapterPermissions, DotykaceParticipant, DotykaceRoom} from "@/lib/dotykace-types";
 import {doc, updateDoc} from "firebase/firestore";
 import {db} from "@/lib/firebase";
-import useParticipants from "@/hooks/use-participants";
 
 export default function RoomParticipants({ participants, room }) {
   const allowNextChapter = async (room: DotykaceRoom, participantId: string, nextChapter: number) => {
     try {
-      const {participants: allParticipants} = useParticipants({room})
-      const participant = allParticipants.find((p) => p.id === participantId)
+      const participant = doc(db, "rooms", room.docId!, "participants", participantId) as DotykaceParticipant
       if (!participant) return
 
       const currentPermissions = room.chapterPermissions || {}

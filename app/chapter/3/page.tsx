@@ -2,16 +2,16 @@
 
 import type React from "react"
 import { useState, useEffect, useRef, useCallback } from "react"
-import { collection, addDoc, serverTimestamp, doc, runTransaction } from "firebase/firestore"
+import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Volume2, VolumeX, SkipForward, Check } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import type { DotykaceRoom } from "@/lib/dotykace-types"
 import HelpButton from "@/components/HelpButton";
+import useDB from "@/hooks/use-db";
+import {useRouter} from "next/navigation";
 
 // Voice Visualization Component (similar to Chapter 2)
 const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
@@ -206,7 +206,9 @@ function Chapter3Content() {
     const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
     const skipFlagRef = useRef(false)
     const mountedRef = useRef(true)
+
     const router = useRouter()
+    const { updateChapter } = useDB()
 
     // Detect if device is desktop/laptop
     useEffect(() => {
@@ -576,42 +578,6 @@ function Chapter3Content() {
         }
     }, [flowData, currentInteractionId, isTyping, typeText])
 
-    const updateChapterCompletionStatus = useCallback(async () => {
-        const storedRoomId = localStorage.getItem("dotykace_roomId")
-        const storedPlayerId = localStorage.getItem("dotykace_playerId")
-        if (!storedRoomId || !storedPlayerId) {
-            console.warn("Room ID or Player ID not found in localStorage. Cannot update Firestore.")
-            return
-        }
-        const roomRef = doc(db, "rooms", storedRoomId)
-        try {
-            await runTransaction(db, async (transaction) => {
-                const roomDoc = await transaction.get(roomRef)
-                if (!roomDoc.exists()) {
-                    throw "Room document does not exist!"
-                }
-                const roomData = roomDoc.data() as DotykaceRoom
-                const updatedParticipants = [...(roomData.participants || [])]
-                const participantIndex = updatedParticipants.findIndex((p) => p.id === storedPlayerId)
-                if (participantIndex !== -1) {
-                    const participant = updatedParticipants[participantIndex]
-                    const completedChapters = new Set(participant.completedChapters || [])
-                    completedChapters.add(3)
-                    participant.completedChapters = Array.from(completedChapters).sort((a, b) => a - b)
-                    participant.currentChapter = 4
-                    updatedParticipants[participantIndex] = participant
-                }
-                transaction.update(roomRef, {
-                    participants: updatedParticipants,
-                })
-            })
-            console.log("Firestore updated successfully: Chapter 3 completed, Chapter 4 unlocked.")
-            router.push("/menu")
-        } catch (e) {
-            console.error("Firestore transaction failed: ", e)
-        }
-    }, [router])
-
     // Process current interaction only if experience has started
     useEffect(() => {
         if (hasStartedExperience && flowData && currentInteractionId && flowData.interactions[currentInteractionId]) {
@@ -622,9 +588,9 @@ function Chapter3Content() {
     // Handle chapter completion
     useEffect(() => {
         if (flowData && currentInteractionId === "end") {
-            updateChapterCompletionStatus()
+            updateChapter(3, () => router.push("/menu")).then()
         }
-    }, [currentInteractionId, flowData, updateChapterCompletionStatus])
+    }, [currentInteractionId, flowData])
 
     // Handle audio muting
     useEffect(() => {

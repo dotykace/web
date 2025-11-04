@@ -6,7 +6,7 @@ import { motion } from "framer-motion"
 import { readFromStorage } from "@/scripts/local-storage"
 import { doc, onSnapshot } from "firebase/firestore"
 import { db } from "@/lib/firebase"
-import type { DotykaceRoom } from "@/lib/dotykace-types"
+import type {DotykaceParticipant, DotykaceRoom} from "@/lib/dotykace-types"
 import HelpButton from "@/components/HelpButton"
 import { useAudioManager } from "@/hooks/use-audio"
 import DotykaceLogo from "@/components/DotykaceLogo";
@@ -80,10 +80,10 @@ export default function MenuPage() {
     }
 
     const roomRef = doc(db, "rooms", roomId)
-    const unsubscribe = onSnapshot(roomRef, (doc) => {
-      if (doc.exists()) {
-        const roomData = doc.data() as DotykaceRoom
-        const participant = roomData.participants?.find((p) => p.id === playerId)
+    const unsubscribe = onSnapshot(roomRef, (document) => {
+      if (document.exists()) {
+        const roomData = document.data() as DotykaceRoom
+        const participant = doc(db, "rooms", roomId, "participants", playerId) as DotykaceParticipant
         const permissions = roomData.chapterPermissions?.[playerId]
 
         if (permissions) {

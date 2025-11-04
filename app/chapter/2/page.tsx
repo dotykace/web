@@ -2,15 +2,15 @@
 
 import type React from "react"
 import { useState, useEffect, useRef, useCallback } from "react"
-import { collection, addDoc, serverTimestamp, doc, runTransaction } from "firebase/firestore"
+import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Volume2, VolumeX, SkipForward, Star } from "lucide-react"
-import { useRouter } from "next/navigation"
-import type { DotykaceRoom } from "@/lib/dotykace-types"
 import HelpButton from "@/components/HelpButton";
+import useDB from "@/hooks/use-db";
+import {useRouter} from "next/navigation";
 
 // Animated Voice Visualization Component (unchanged)
 const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
@@ -254,7 +254,9 @@ function Chapter2Content() {
     const buttonTimeoutRef = useRef<NodeJS.Timeout | null>(null) // New ref for button timing
     const skipFlagRef = useRef(false)
     const mountedRef = useRef(true)
+
     const router = useRouter()
+    const { updateChapter } = useDB()
 
     // LocalStorage functions
     const saveProgressToLocalStorage = useCallback((interactionId: string, message: string, started: boolean) => {
@@ -280,12 +282,6 @@ function Chapter2Content() {
             }
         }
         return null
-    }, [])
-
-    const clearProgressFromLocalStorage = useCallback(() => {
-        if (typeof window !== "undefined") {
-            localStorage.removeItem(CHAPTER2_PROGRESS_KEY)
-        }
     }, [])
 
     // Cleanup function
@@ -774,55 +770,6 @@ function Chapter2Content() {
         }
     }, [flowData, currentInteractionId, isTyping, typeText])
 
-    const updateChapterCompletionStatus = useCallback(async () => {
-        const storedRoomId = localStorage.getItem("dotykace_roomId")
-        const storedPlayerId = localStorage.getItem("dotykace_playerId")
-
-        if (!storedRoomId || !storedPlayerId) {
-            console.warn("Room ID or Player ID not found in localStorage. Redirecting to menu anyway.")
-            clearProgressFromLocalStorage()
-            router.push("/menu")
-            return
-        }
-
-        const roomRef = doc(db, "rooms", storedRoomId)
-
-        try {
-            await runTransaction(db, async (transaction) => {
-                const roomDoc = await transaction.get(roomRef)
-                if (!roomDoc.exists()) {
-                    throw new Error("Room document does not exist!")
-                }
-
-                const roomData = roomDoc.data() as DotykaceRoom
-                const updatedParticipants = [...(roomData.participants || [])]
-                const participantIndex = updatedParticipants.findIndex((p) => p.id === storedPlayerId)
-
-                if (participantIndex !== -1) {
-                    const participant = updatedParticipants[participantIndex]
-                    const completedChapters = new Set(participant.completedChapters || [])
-                    completedChapters.add(2)
-                    participant.completedChapters = Array.from(completedChapters).sort((a, b) => a - b)
-                    participant.currentChapter = 3
-                    updatedParticipants[participantIndex] = participant
-                }
-
-                transaction.update(roomRef, {
-                    participants: updatedParticipants,
-                })
-            })
-
-            console.log("Firestore updated successfully: Chapter 2 completed, Chapter 3 unlocked.")
-        } catch (e) {
-            console.error("Firestore transaction failed: ", e)
-            // Continue anyway - don't block user progression
-        } finally {
-            // Always clear progress and redirect, regardless of Firestore success/failure
-            clearProgressFromLocalStorage()
-            router.push("/menu")
-        }
-    }, [router, clearProgressFromLocalStorage])
-
     // Process current interaction only if experience has started
     // todo add here voice selection check
     useEffect(() => {
@@ -834,14 +781,9 @@ function Chapter2Content() {
     // Handle chapter completion
     useEffect(() => {
         if (flowData && currentInteractionId === "end") {
-            // Add a small delay before updating completion status to ensure UI shows completion message
-            const completionTimeout = setTimeout(() => {
-                updateChapterCompletionStatus()
-            }, 2000)
-
-            return () => clearTimeout(completionTimeout)
+            updateChapter(2, () => router.push("/menu")).then()
         }
-    }, [currentInteractionId, flowData, updateChapterCompletionStatus])
+    }, [currentInteractionId, flowData])
 
     // Handle audio muting
     useEffect(() => {
