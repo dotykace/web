@@ -5,13 +5,13 @@ import {useSharedAudio} from "@/context/AudioContext";
 
 export default function PlaceSend({current, goToNext}) {
   const dotPosition = { x: 0.9, y: 0.6, offset: 20 }
-  const {play} = useSharedAudio();
+  const {playPreloaded} = useSharedAudio();
   const sendGlowing = useCallback(() => current.type === "request", [current]);
   const handleClick = useCallback(() => {
     if( current.type === "request" ){
-      play("send").then(goToNext)
+      playPreloaded("send").then(goToNext)
     }
-  },[current, goToNext, play])
+  },[current, goToNext, playPreloaded])
 
   const Request = ({text, visible}) => {
     if (!visible) return null;

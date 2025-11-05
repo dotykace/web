@@ -53,7 +53,7 @@ export default function Chat() {
 
 function ChatContent() {
   const { currentInteraction, goToNextInteraction} = useChatContext()
-  const { play } = useSharedAudio();
+  const { playPreloaded } = useSharedAudio();
 
   const [dotyFace, setDotyFace] = useState("happy_1")
 
@@ -70,12 +70,12 @@ function ChatContent() {
   useEffect(() => {
     if (!currentInteraction) return;
     if (currentInteraction.type === "music" ) {
-      play(currentInteraction.key).then(()=>goToNextInteraction())
+      playPreloaded(currentInteraction.key).then(()=>goToNextInteraction())
       return;
     }
     if (currentInteraction.type === "message"){
       setHistory((prev) => [...prev, currentInteraction])
-      play("click")
+      playPreloaded("click")
     }
 
     if (currentInteraction.face && currentInteraction.face !== dotyFace) {

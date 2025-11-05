@@ -29,7 +29,7 @@ export default function Scales({currentInteraction, onComplete}) {
   const [data, setData] = useState({});
   const [dataCollected, setDataCollected] = useState(false);
 
-  const { play, isPlaying } = useSharedAudio();
+  const { playPreloaded, isPlaying } = useSharedAudio();
 
   useEffect(() => {
     if(dataCollected){
@@ -66,7 +66,7 @@ export default function Scales({currentInteraction, onComplete}) {
   useEffect(() => {
     if (!currentScale) return;
     if (currentScale.sound){
-      play(currentScale.sound).then(()=>{
+      playPreloaded(currentScale.sound).then(()=>{
         console.log("Played sound for scales:", currentScale.sound);
       });
     }

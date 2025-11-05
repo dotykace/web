@@ -25,10 +25,10 @@ const sampleVoices = [
 
 export default function VoiceRoom({onFinish}) {
   const [selectedVoice, setSelectedVoice] = useState<string>("male")
-  const { play, isPlaying, toggle } = useSharedAudio();
+  const { playPreloaded, isPlaying, toggle } = useSharedAudio();
 
   useEffect(() => {
-    play("voice-loop")
+    playPreloaded("voice-loop")
   }, []);
 
   return (

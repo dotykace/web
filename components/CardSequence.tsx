@@ -10,7 +10,7 @@ export default function CardSequence(){
   const {currentInteraction, goToNextInteraction} = useChatContext()
   const [history, setHistory] = useState([])
 
-  const { preloadAll, play } = useAudioManager();
+  const { preloadAll, playPreloaded } = useAudioManager();
   const soundMap = {
     "sound-test": {filename: "vykreslovanie TECKY.mp3"},
     "game-confirm": {filename: "JINGEL - pozitiv.mp3"},
@@ -24,7 +24,7 @@ export default function CardSequence(){
   useEffect(() => {
     if (!currentInteraction) return;
     if (currentInteraction.type === "music" ) {
-      play(currentInteraction.key)
+      playPreloaded(currentInteraction.key)
       return;
     }
     setHistory((prev) => [...prev, currentInteraction] )

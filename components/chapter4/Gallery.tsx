@@ -8,7 +8,7 @@ import {setToStorage} from "@/scripts/local-storage";
 import {useSharedAudio} from "@/context/AudioContext";
 
 export default function Gallery({images, helpText, onFinish, audio}) {
-  const { play, isPlaying } = useSharedAudio();
+  const { playPreloaded, isPlaying } = useSharedAudio();
   const confirmText = "Potvrdit";
   const strings = images.slice(0, 5);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -92,7 +92,7 @@ export default function Gallery({images, helpText, onFinish, audio}) {
   )
 
   useEffect(() => {
-    play(audio);
+    playPreloaded(audio);
   }, []);
 
   return (
