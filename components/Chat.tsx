@@ -26,8 +26,8 @@ const soundMap = {
   "chaos": { filename: "CHAOS.mp3" },
   "click": { filename: "KLIK.mp3" },
 
-  "voice-placeholder": {filename:"EMOJI highfive.mp3"},
-  "voice-female": {filename:"EMOJI smutny.mp3"},
+  "voice-male": {filename:"sample_muz.mp3"},
+  "voice-female": {filename:"sample_zena.mp3"},
   "voice-loop": {filename:"SVET HLASOV.mp3", opts:{loop:true}},
 }
 

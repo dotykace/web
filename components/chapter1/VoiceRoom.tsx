@@ -15,7 +15,7 @@ const sampleVoices = [
   {
     id: "male",
     name: "Mužský hlas",
-    audioKey: "voice-placeholder",
+    audioKey: "voice-male",
   },
   {
     id: "neutral",
@@ -25,11 +25,19 @@ const sampleVoices = [
 
 export default function VoiceRoom({onFinish}) {
   const [selectedVoice, setSelectedVoice] = useState<string>("male")
-  const { playPreloaded, isPlaying, toggle } = useSharedAudio();
+  const { playPreloaded, isPlaying, toggle, stop } = useSharedAudio();
+  const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
 
   useEffect(() => {
     playPreloaded("voice-loop")
   }, []);
+  useEffect(() => {
+    sampleVoices.forEach((voice) => {
+      if (voice.audioKey && isPlaying[voice.audioKey]) {
+        setCurrentlyPlaying(voice.audioKey);
+      }
+    })
+  }, [isPlaying]);
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-4">
@@ -55,7 +63,9 @@ export default function VoiceRoom({onFinish}) {
                   isPlaying={disabled? false: isPlaying[voice.audioKey]}
                   onToggle={() => {
                     if (disabled) return;
-                    console.log("Play/Pause toggled for voice:", voice.id)
+                    if (currentlyPlaying && currentlyPlaying !== voice.audioKey) {
+                      stop(currentlyPlaying);
+                    }
                     toggle(voice.audioKey)
                   }}
                 />
