@@ -35,7 +35,7 @@ export default function VideoPage() {
   useEffect(() => {
     console.log("Loading selected voice from storage")
     // todo get voice from firebase
-    const savedVoice = readFromStorage("selectedVoice") || "female"
+    const savedVoice = readFromStorage("selectedVoice") || "male"
     if(savedVoice){
       setSelectedVoice(savedVoice)
       setFilePathLoaded(true);
