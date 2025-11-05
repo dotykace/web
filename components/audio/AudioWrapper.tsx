@@ -5,6 +5,7 @@ function AudioInitializer({soundMap, setLoaded}) {
   const { preloadAll } = useSharedAudio();
 
   useEffect(() => {
+    if (!soundMap) return;
     preloadAll(soundMap).then(() => {
       console.log("Sounds loaded")
       setLoaded && setLoaded(true);
