@@ -157,7 +157,13 @@ function Chapter3Content() {
     const mountedRef = useRef(true)
 
     const router = useRouter()
-    const { updateChapter } = useDB()
+
+    const [dbHook, setDbHook] = useState<any>(null);
+
+    useEffect(() => {
+        const hook = useDB();
+        setDbHook(hook);
+    }, []);
 
     // Detect if device is desktop/laptop
     useEffect(() => {
@@ -537,7 +543,7 @@ function Chapter3Content() {
     // Handle chapter completion
     useEffect(() => {
         if (flowData && currentInteractionId === "end") {
-            updateChapter(3, () => router.push("/menu")).then()
+            dbHook.updateChapter(3, () => router.push("/menu")).then()
         }
     }, [currentInteractionId, flowData])
 

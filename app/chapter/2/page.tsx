@@ -154,7 +154,13 @@ function Chapter2Content() {
     const mountedRef = useRef(true)
 
     const router = useRouter()
-    const { updateChapter } = useDB()
+
+    const [dbHook, setDbHook] = useState<any>(null);
+
+    useEffect(() => {
+        const hook = useDB();
+        setDbHook(hook);
+    }, []);
 
     // LocalStorage functions
     const saveProgressToLocalStorage = useCallback((interactionId: string, message: string, started: boolean) => {
@@ -679,7 +685,7 @@ function Chapter2Content() {
     // Handle chapter completion
     useEffect(() => {
         if (flowData && currentInteractionId === "end") {
-            updateChapter(2, () => router.push("/menu")).then()
+            dbHook.updateChapter(2, () => router.push("/menu")).then()
         }
     }, [currentInteractionId, flowData])
 

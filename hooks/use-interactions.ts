@@ -14,7 +14,12 @@ export function useInteractions<T>(filename: string) {
 
     const router = useRouter()
 
-    const {updateChapter} = useDB()
+    const [dbHook, setDbHook] = useState<any>(null);
+
+    useEffect(() => {
+        const hook = useDB();
+        setDbHook(hook);
+    }, []);
 
     const [userInput, setUserInput] = useState("")
 
@@ -133,7 +138,7 @@ export function useInteractions<T>(filename: string) {
         if (match) {
             // If it's "intro-end", chapterNumber = 0; otherwise, use the captured number
             const chapterNumber = match[1] ? Number(match[1]) : 0
-            updateChapter(chapterNumber, () => router.push("/menu")).then()
+            dbHook.updateChapter(chapterNumber, () => router.push("/menu")).then()
         }
     }, [currentInteraction, isClient])
 

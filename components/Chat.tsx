@@ -33,11 +33,16 @@ const soundMap = {
 
 export default function Chat() {
   const { currentInteraction, goToNextInteraction } = useChatContext()
-  const { updateVoice } = useDB()
+  const [dbHook, setDbHook] = useState<any>(null);
+
+  useEffect(() => {
+    const hook = useDB();
+    setDbHook(hook);
+  }, []);
   const finishChapter = (voice)=> {
     console.log("Selected voice:", voice)
     setToStorage("selectedVoice", voice)
-    updateVoice(voice).then(()=>goToNextInteraction())
+    dbHook.updateVoice(voice).then(()=>goToNextInteraction())
   }
 
   return (
