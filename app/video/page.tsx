@@ -17,16 +17,15 @@ interface VideoItem {
 const videos: VideoItem[] = [
     {
         id: 1,
-        title: "Dopamin",
-        description: "Popis videa o dopamíne a jeho vplyve na naše správanie v digitálnom svete.",
+        title: "Mobil a mozek",
+        description: "Co je dopamin, jak používání mobilu ovlivňuje jeho vyplavování do mozku, a proč je to důležité?",
         fileName: "DOPAMIN.mp4",
     },
 ]
 
 export default function VideoPage() {
 
-  const pageHeader = "Kapitola 4"
-  const pageSubheader = "Náučné videá o technológiách a nás"
+  const pageHeader = "Video na závěr"
 
   const [selectedVoice, setSelectedVoice] = useState()
 
@@ -66,7 +65,6 @@ export default function VideoPage() {
                 className="text-center mb-8 mt-12 sm:mt-16"
             >
                 <h1 className="text-4xl sm:text-5xl font-bold text-white drop-shadow-lg">{pageHeader}</h1>
-                <p className="text-white/80 text-lg sm:text-xl mt-2">{pageSubheader}</p>
             </motion.div>
 
             <div className="w-full max-w-3xl space-y-8 mb-12">
