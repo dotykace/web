@@ -63,10 +63,9 @@ export default function RenderRoom({room, processedRooms}) {
   const startRoom = async (roomDocId: string) => {
     try {
       // Spusti room a automaticky odomkni introduction (kapitolu 0)
-      // todo remove chapter 4 after full integration of the gallery
       await updateDoc(doc(db, "rooms", roomDocId), {
         isStarted: true,
-        globalUnlockedChapters: [0, 4],
+        globalUnlockedChapters: [0],
       })
     } catch (error) {
       console.error("❌ Error starting room:", error)

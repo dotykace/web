@@ -109,7 +109,6 @@ export default function MenuPage() {
   }, [roomId, playerId, isClient])
 
   const getState = (id: number): SectionState => {
-    if(id === 4 ) return "unlocked" // Chapter 4 is always unlocked for testing
     if (completedChapters.includes(id)) {
       return "completed"
     } else if (allowedChapters.includes(id)) {
