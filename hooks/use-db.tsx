@@ -9,12 +9,14 @@ export default function useDB() {
   const roomId = readFromStorage("roomId")
 
   if (!roomId || !playerId) {
-    throw Error("Room ID or Player ID not found in localStorage.")
+    console.warn("Room ID or Player ID not found in localStorage.")
+    return undefined;
   }
 
   const participantRef = doc(db, "rooms", roomId, "participants", playerId)
   if (!participantRef) {
-    throw Error("Participant reference could not be created.")
+    console.warn("Participant reference could not be created.")
+    return undefined;
   }
 
   const updatePlayerData = async (updateCallback: (oldData: DotykaceParticipant) => Partial<DotykaceParticipant>, onFinish: () => void) => {
