@@ -8,7 +8,7 @@ import {setToStorage} from "@/scripts/local-storage";
 import {useSharedAudio} from "@/context/AudioContext";
 
 export default function Gallery({images, helpText, onFinish, audio}) {
-  const { playPreloaded, isPlaying } = useSharedAudio();
+  const { playOnce, isPlaying } = useSharedAudio();
   const confirmText = "Potvrdit";
   const strings = images.slice(0, 5);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -92,7 +92,7 @@ export default function Gallery({images, helpText, onFinish, audio}) {
   )
 
   useEffect(() => {
-    playPreloaded(audio);
+    playOnce(audio)
   }, []);
 
   return (
@@ -124,7 +124,7 @@ export default function Gallery({images, helpText, onFinish, audio}) {
           </div>
           <Button
             onClick={()=>setShowModal(true)}
-            disabled={selectedIndex === null || isPlaying[audio]}
+            disabled={selectedIndex === null || isPlaying[audio.filename]}
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xl py-2 px-4 rounded-xl shadow-lg">
             {confirmText}
           </Button>

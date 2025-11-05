@@ -29,7 +29,7 @@ export default function Scales({currentInteraction, onComplete}) {
   const [data, setData] = useState({});
   const [dataCollected, setDataCollected] = useState(false);
 
-  const { playPreloaded, isPlaying } = useSharedAudio();
+  const { playOnce, isPlaying } = useSharedAudio();
 
   useEffect(() => {
     if(dataCollected){
@@ -65,10 +65,16 @@ export default function Scales({currentInteraction, onComplete}) {
 
   useEffect(() => {
     if (!currentScale) return;
-    if (currentScale.sound){
-      playPreloaded(currentScale.sound).then(()=>{
-        console.log("Played sound for scales:", currentScale.sound);
-      });
+    if (currentScale.voice){
+      if(isPlaying[currentScale.voice]) return;
+      const audio = {
+        filename: currentScale.voice as string,
+        type: "voice",
+        onFinish: () => {
+          console.log("Played sound for scales:", currentScale.voice);
+        }
+      }
+      playOnce(audio);
     }
   }, [currentScale]);
 
@@ -79,7 +85,7 @@ export default function Scales({currentInteraction, onComplete}) {
       topText={currentScale.top}
       bottomText={currentScale.bottom}
       onConfirm={updateScale}
-      disabled={isPlaying[currentScale.sound]}
+      disabled={isPlaying[currentScale.voice]}
       confirmationText={!(currentScale.next) ? "Potvrdit a dokončit" : undefined}
     />
   )

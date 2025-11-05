@@ -12,14 +12,14 @@
     },
     "intro-voice": {
       "type": "voice",
-      "duration": 5,
+      "filename": "track31.mp3",
       "next-id": "scales"
     },
     "scales": {
       "type": "group",
       "scales": {
         "A": {
-          "sound": "scaleA",
+          "voice": "track32.mp3",
           "id": "A",
           "secondary": "B",
           "top": "propojení",
@@ -27,7 +27,7 @@
           "next": "B"
         },
         "B": {
-          "sound": "scaleB",
+          "voice": "track33.mp3",
           "id": "B",
           "secondary": "D",
           "top": "klid a bezpečí",
@@ -35,7 +35,7 @@
           "next": "C"
         },
         "C": {
-          "sound": "scaleC",
+          "voice": "track34.mp3",
           "id": "C",
           "secondary": "A",
           "top": "vděk",
@@ -43,7 +43,7 @@
           "next": "D"
         },
         "D": {
-          "sound": "scaleD",
+          "voice": "track35.mp3",
           "id": "D",
           "secondary": "E",
           "top": "sebevědomí",
@@ -51,7 +51,7 @@
           "next": "E"
         },
         "E": {
-          "sound": "scaleE",
+          "voice": "track36.mp3",
           "id": "E",
           "secondary": "C",
           "top": "zábava a inspirace",
@@ -62,18 +62,18 @@
     },
     "painter": {
       "type": "voice",
-      "text": "Dobře. Vezmu si to do ateliéru. Bude to jako blesk!",
-      "duration": 5,
+      "filename": "track37.mp3",
       "next-id": "gallery"
     },
     "gallery": {
       "type": "message",
+      "voice": "track38.mp3",
       "text": "Který z obrázků s tebou rezonuje nejvíc? Označ jeden v pravém horním rohu.",
       "next-id": "final-words-voice"
     },
     "final-words-voice": {
       "type": "voice",
-      "duration": 5,
+      "filename": "track39.mp3",
       "next-id": "final-words"
     },
     "final-words": {
