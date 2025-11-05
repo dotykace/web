@@ -53,7 +53,7 @@
       "text": "🔔 Chat pro UN spuštěn.",
       "duration": 7,
       "next-id": "first-message-reaction",
-      "timeout-id": "1.7"
+      "timeout-id": "1.6"
     },
     "1.6": {
       "type": "message",
