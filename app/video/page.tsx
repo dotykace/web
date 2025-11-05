@@ -30,19 +30,33 @@ export default function VideoPage() {
 
   const [selectedVoice, setSelectedVoice] = useState()
 
+  const [filePathLoaded, setFilePathLoaded] = useState(false);
+
   useEffect(() => {
     console.log("Loading selected voice from storage")
     // todo get voice from firebase
     const savedVoice = readFromStorage("selectedVoice") || "female"
     if(savedVoice){
       setSelectedVoice(savedVoice)
+      setFilePathLoaded(true);
     }
   }, []);
 
   const filePath = `/videos/${selectedVoice}/`
+  const coloring = "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900";
+
+  if (!filePathLoaded) {
+    const loadingText = "Načítavam video obsah..."
+    return (
+      <div className={`min-h-screen text-white flex items-center justify-center p-4 ${coloring}`}>
+        {loadingText}
+      </div>
+
+    )
+  }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col items-center p-4 sm:p-6 md:p-8">
+        <div className={`min-h-screen flex flex-col items-center p-4 sm:p-6 md:p-8 ${coloring}`}>
             <HelpButton/>
 
             <motion.div
