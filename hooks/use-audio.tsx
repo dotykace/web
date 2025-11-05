@@ -51,6 +51,22 @@ export function useAudioManager() {
     return audioContextRef.current;
   };
 
+  const addToPlaying = (key: string, instance: PlayingInstance) => {
+    // Track instance
+    if (!playingRef.current[key]) playingRef.current[key] = [];
+    playingRef.current[key].push(instance);
+    setIsPlaying((prev) => ({ ...prev, [key]: true }));
+  }
+
+  const removeFromPlaying = (key: string, instance: PlayingInstance) => {
+    playingRef.current[key] = playingRef.current[key].filter(
+      (inst) => inst.source !== instance.source
+    );
+    if (playingRef.current[key].length === 0) {
+      setIsPlaying((prev) => ({ ...prev, [key]: false }));
+    }
+  }
+
   const getPath = (filename: string, type = "sound") => {
     if (type === "voice"){
       const selectedVoice = readFromStorage("selectedVoice") || "male";
@@ -127,22 +143,13 @@ export function useAudioManager() {
     }
     const {source, gainNode} = await play(sound);
 
-    // Track instance
-    if (!playingRef.current[key]) playingRef.current[key] = [];
-    playingRef.current[key].push({ source, gainNode });
+    addToPlaying(key, {source, gainNode});
 
     source.onended = () => {
       source.disconnect();
       gainNode.disconnect();
-      playingRef.current[key] = playingRef.current[key].filter(
-        (inst) => inst.source !== source
-      );
-      if (playingRef.current[key].length === 0) {
-        setIsPlaying((prev) => ({ ...prev, [key]: false }));
-      }
+      removeFromPlaying(key, {source, gainNode});
     };
-
-    setIsPlaying((prev) => ({ ...prev, [key]: true }));
 
   },[play])
 
@@ -154,11 +161,15 @@ export function useAudioManager() {
       volume: opts?.volume ?? 1,
     }
     const {source, gainNode} = await play(sound);
+    addToPlaying(filename, {source, gainNode});
     source.onended = () => {
       source.disconnect();
       gainNode.disconnect();
+      removeFromPlaying(filename, {source, gainNode});
+
       onFinish();
     };
+
   },[play]);
 
   // --- Stop all instances of a sound
@@ -195,7 +206,7 @@ export function useAudioManager() {
   useEffect(() => {
     return () => {
       Object.keys(playingRef.current).forEach(stop);
-      // audioContextRef.current?.close();
+      audioContextRef.current?.close();
     };
   }, [stop]);
 
