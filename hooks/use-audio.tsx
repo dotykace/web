@@ -206,7 +206,7 @@ export function useAudioManager() {
   useEffect(() => {
     return () => {
       Object.keys(playingRef.current).forEach(stop);
-      audioContextRef.current?.close();
+      //audioContextRef.current?.close();
     };
   }, [stop]);
 
