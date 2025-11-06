@@ -22,6 +22,16 @@ interface Section {
   state: SectionState
 }
 
+const chapterString = "Kapitola"
+const defaultSections = Object.values(chapterConfigs)
+  .filter((config) => config.chapterNumber !== 0)
+  .map((config) => ({
+    id: config.chapterNumber,
+    title: `${chapterString} ${config.chapterNumber}`,
+    path: `/chapter/${config.chapterNumber}`,
+    state: "locked", // example logic
+  } as Section))
+
 export default function MenuPage() {
   const router = useRouter()
   const [chapter, setChapter] = useState<number | null>(null)
@@ -31,6 +41,8 @@ export default function MenuPage() {
   const [isClient, setIsClient] = useState(false)
   const [allowedChapters, setAllowedChapters] = useState<number[]>([0])
   const [completedChapters, setCompletedChapters] = useState<number[]>([])
+
+  const [sections, setSections] = useState<Section[]>(defaultSections)
 
   // 👉 hook musí byť vo vnútri komponentu
   const audioManager = useAudioManager()
@@ -71,6 +83,19 @@ export default function MenuPage() {
       if (ctx && ctx.state !== "closed") ctx.close();
     };
   }, [])
+
+  const updateSectionsState = () => {
+    setSections((prevSections) =>{
+      return prevSections.map((section) => ({
+        ...section,
+        state: getState(section.id),
+      }))
+    })
+  }
+
+  useEffect(() => {
+    updateSectionsState()
+  }, [completedChapters, allowedChapters]);
 
   // Listen to room changes to get updated permissions
   useEffect(() => {
@@ -124,24 +149,6 @@ export default function MenuPage() {
     }
   }
 
-  const chapterString = "Kapitola"
-  const [sections] = useState<Section[]>(() => {
-    return Object.values(chapterConfigs)
-      .filter((config) => config.chapterNumber !== 0)
-      .map((config) => ({
-      id: config.chapterNumber,
-      title: `${chapterString} ${config.chapterNumber}`,
-      path: `/chapter/${config.chapterNumber}`,
-      state: config.chapterNumber === 4 ? "unlocked" : "locked", // example logic
-    }))
-  })
-
-  // Update section states when permissions change
-  const updatedSections = sections.map((section) => ({
-    ...section,
-    state: getState(section.id),
-  }))
-
   // Handle section click
   const handleSectionClick = (section: Section) => {
     const currentState = getState(section.id)
@@ -173,7 +180,7 @@ export default function MenuPage() {
 
         {/* Chapters Grid */}
         <div className="grid grid-cols-2 gap-6">
-          {updatedSections.map((section, index) => {
+          {sections.map((section, index) => {
             return (
                 <MenuSectionCard
                     key={section.id}

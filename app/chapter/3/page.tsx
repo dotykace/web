@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import HelpButton from "@/components/HelpButton";
 import useDB from "@/hooks/use-db";
 import {useRouter} from "next/navigation";
+import {readFromStorage} from "@/scripts/local-storage";
 
 // Voice Visualization Component (similar to Chapter 2)
 const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
@@ -156,6 +157,8 @@ function Chapter3Content() {
     const skipFlagRef = useRef(false)
     const mountedRef = useRef(true)
 
+    const [selectedVoice, setSelectedVoice] = useState()
+
     const router = useRouter()
 
     const [dbHook, setDbHook] = useState<any>(null);
@@ -163,6 +166,7 @@ function Chapter3Content() {
     useEffect(() => {
         const hook = useDB();
         setDbHook(hook);
+        setSelectedVoice(readFromStorage("selectedVoice"))
     }, []);
 
     // Detect if device is desktop/laptop
@@ -419,24 +423,9 @@ function Chapter3Content() {
                                 setCurrentInteractionId(interaction["next-id"]!)
                             }
                         }
-
-                        playAudio(interaction.sound, "voice", interaction.loop, onAudioEnd)
-
-                        if (interaction.sound === "track17.mp3") {
-                            setTimeout(() => {
-                                playAudio("GALERIA- opravene.mp3", "music", true)
-                            }, 17000)
-                        }
-
-                        if (interaction.sound === "track20.mp3") {
-                            setTimeout(() => {
-                                if (musicAudioRef.current) {
-                                    musicAudioRef.current.pause()
-                                    musicAudioRef.current.src = ""
-                                    musicAudioRef.current = null
-                                }
-                            }, 2000)
-                        }
+                        const filePath = selectedVoice? `${selectedVoice}/${interaction.sound}`:interaction.sound
+                        console.log("Interaction sound file path:",filePath)
+                        playAudio(filePath, "voice", interaction.loop, onAudioEnd)
                     }
                     setDisplayText(interaction.text || "")
                     if (interaction.button) setShowButtons(true)

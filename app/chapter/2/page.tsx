@@ -11,6 +11,7 @@ import { Volume2, VolumeX, SkipForward, Star } from "lucide-react"
 import HelpButton from "@/components/HelpButton";
 import useDB from "@/hooks/use-db";
 import {useRouter} from "next/navigation";
+import {readFromStorage, setToStorage} from "@/scripts/local-storage";
 
 // Animated Voice Visualization Component (unchanged)
 const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
@@ -153,6 +154,8 @@ function Chapter2Content() {
     const skipFlagRef = useRef(false)
     const mountedRef = useRef(true)
 
+    const [selectedVoice, setSelectedVoice] = useState()
+
     const router = useRouter()
 
     const [dbHook, setDbHook] = useState<any>(null);
@@ -160,32 +163,21 @@ function Chapter2Content() {
     useEffect(() => {
         const hook = useDB();
         setDbHook(hook);
+        setSelectedVoice(readFromStorage("selectedVoice"))
     }, []);
 
     // LocalStorage functions
     const saveProgressToLocalStorage = useCallback((interactionId: string, message: string, started: boolean) => {
-        if (typeof window !== "undefined") {
-            const progress: Chapter2Progress = {
-                currentInteractionId: interactionId,
-                savedUserMessage: message,
-                hasStartedExperience: started,
-            }
-            localStorage.setItem(CHAPTER2_PROGRESS_KEY, JSON.stringify(progress))
-        }
+      const progress: Chapter2Progress = {
+        currentInteractionId: interactionId,
+        savedUserMessage: message,
+        hasStartedExperience: started,
+      }
+      setToStorage(CHAPTER2_PROGRESS_KEY, progress)
     }, [])
 
     const loadProgressFromLocalStorage = useCallback((): Chapter2Progress | null => {
-        if (typeof window !== "undefined") {
-            try {
-                const saved = localStorage.getItem(CHAPTER2_PROGRESS_KEY)
-                if (saved) {
-                    return JSON.parse(saved) as Chapter2Progress
-                }
-            } catch (error) {
-                console.warn("Failed to load progress from localStorage:", error)
-            }
-        }
-        return null
+      return readFromStorage(CHAPTER2_PROGRESS_KEY)
     }, [])
 
     // Cleanup function
@@ -215,7 +207,7 @@ function Chapter2Content() {
             }
         })
     }, []);
-// Initialize audio context for mobile Safari
+    // Initialize audio context for mobile Safari
     const initializeAudio = useCallback(async () => {
         if (audioInitialized) return
 
@@ -429,7 +421,9 @@ function Chapter2Content() {
             switch (interaction.type) {
                 case "voice":
                     if (interaction.sound) {
-                        playAudio(interaction.sound, "voice", interaction.loop)
+                        const filePath = selectedVoice? `${selectedVoice}/${interaction.sound}`:interaction.sound
+                        console.log("Interaction sound file path:",filePath)
+                        playAudio(filePath, "voice", interaction.loop)
 
                         // Special handling for looping voice with delayed button
                         if (interaction.loop && interaction.button?.["show-after-first-play"]) {
@@ -509,21 +503,7 @@ function Chapter2Content() {
                     break
 
                 case "music":
-                    if (interaction.src) {
-                        playAudio(interaction.src, "sfx", interaction.loop)
-                        setIsMusicPlaying(true) // Start star animation
-                    }
-                    if (interaction["next-id"]) {
-                        timeoutRef.current = setTimeout(
-                            () => {
-                                if (mountedRef.current) {
-                                    setIsMusicPlaying(false) // Stop star animation when music duration ends
-                                    setCurrentInteractionId(interaction["next-id"]!)
-                                }
-                            },
-                            (interaction.duration || 1) * 1000,
-                        )
-                    }
+                    setCurrentInteractionId(interaction["next-id"]!)
                     break
 
                 case "pause":

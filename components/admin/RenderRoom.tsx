@@ -125,7 +125,7 @@ export default function RenderRoom({room, processedRooms}) {
             <td key={chapterNum} className="p-2 text-center">
               <div className="flex items-center justify-center">
                 <Button
-                  disabled={!canUnlock || isChapterUnlocked}
+                  disabled={!canUnlock}
                   onClick={() => allowNextChapterForAll(room, chapterNum)}
                   className={`w-9 h-9 gap-1 rounded-xl p-2 flex items-center justify-center text-xs font-bold transition-all duration-200 shadow-sm
                   ${
@@ -151,7 +151,7 @@ export default function RenderRoom({room, processedRooms}) {
   }
 
   return (
-    <Card key={room.docId} className="border-l-4 border-l-blue-500">
+    <Card key={room.docId} className="border-l-4 border-l-blue-500 text-black">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>

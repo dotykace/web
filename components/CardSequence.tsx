@@ -50,7 +50,7 @@ export default function CardSequence(){
               }
             }}>
               <div className="p-6">
-                <p className="text-lg mb-4">{currentInteraction?.text()}</p>
+                <p className="text-lg mb-4 text-black">{currentInteraction?.text()}</p>
 
                 {(currentInteraction?.type === "input" || currentInteraction?.type === "multiple-choice") && (
                   <InputArea/>

@@ -16,28 +16,12 @@
     },
     "3.10.3": {
       "type": "voice",
-      "sound": "track17.mp3",
-      "next-id": "3.10.8"
-    },
-    "3.10.8": {
-      "type": "voice",
-      "sound": "track18.mp3",
-      "next-id": "3.10.11"
-    },
-    "3.10.11": {
-      "type": "voice",
-      "sound": "track19.mp3",
-      "next-id": "3.10.16"
-    },
-    "3.10.16": {
-      "type": "voice",
-      "sound": "track20.mp3",
+      "sound": "track17-20.mp3",
       "next-id": "3.10.18"
     },
     "3.10.18": {
       "type": "voice",
-      "sound": "track21.mp3",
-      "next-id": "3.10.17",
+      "sound": "track21_loop.mp3",
       "loop": true,
       "button": {
         "label": "Pokračovat",
@@ -183,12 +167,6 @@
     "3.11.c1": {
       "type": "voice",
       "sound": "track28c.mp3",
-      "next-id": "3.11.c2"
-    },
-    "3.11.c2": {
-      "type": "message",
-      "text": "Vyber, co nejvíc sedí (můžeš vybrat víc):",
-      "duration": 4,
       "animation": {
         "type": "multiselect",
         "options": [
@@ -212,34 +190,40 @@
         "buttons": [
           {
             "label": "nikdy",
-            "next-id": "end"
+            "next-id": "final"
           },
           {
             "label": "výjimečně, když se s tebou zapomenu",
-            "next-id": "end"
+            "next-id": "final"
           },
           {
             "label": "výjimečně, když na lidi nemám náladu",
-            "next-id": "end"
+            "next-id": "final"
           },
           {
             "label": "občas",
-            "next-id": "end"
+            "next-id": "final"
           },
           {
             "label": "často",
-            "next-id": "end"
+            "next-id": "final"
           },
           {
             "label": "vždycky",
-            "next-id": "end"
+            "next-id": "final"
           },
           {
             "label": "není v tom rozdíl - používám tě ke komunikování s jinými lidmi",
-            "next-id": "end"
+            "next-id": "final"
           }
         ]
       }
+    },
+    "final": {
+      "type": "voice",
+      "sound": "track30.mp3",
+      "duration": 4,
+      "next-id": "end"
     }
   }
 }
