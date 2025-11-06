@@ -1,7 +1,5 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {Card, CardContent, CardHeader} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Heart, MessageCircle, Share, Bookmark } from "lucide-react"
 import {LocalSvgRenderer} from "@/components/LocalSvgRenderer";
 
 interface SocialMediaPostProps {
@@ -44,7 +42,7 @@ export default function SocialMediaPost({
               {choices.map((choice, index) => (
                 <Button
                   key={index}
-                  className="flex-1 rounded-full bg-gray-800"
+                  className="flex-1 rounded-full bg-gray-800 text-white"
                   onClick={choice.callback}
                 >
                   {choice.text}

@@ -151,7 +151,7 @@ export default function AdminPage() {
     }
     const AppSidebar = () => {
         return (
-          <Sidebar>
+          <Sidebar className="text-black">
               <SidebarHeader>
                   <p className="text-3xl font-bold text-gray-900">Admin Panel</p>
                   {/* Create Room */}
@@ -172,7 +172,7 @@ export default function AdminPage() {
                   </SidebarGroup>
             </SidebarContent>
               <SidebarFooter>
-                  <Button onClick={logout}>
+                  <Button onClick={logout} className="bg-black text-white">
                       Odhlásiť sa
                   </Button>
               </SidebarFooter>

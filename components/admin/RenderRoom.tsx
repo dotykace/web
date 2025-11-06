@@ -151,7 +151,7 @@ export default function RenderRoom({room, processedRooms}) {
   }
 
   return (
-    <Card key={room.docId} className="border-l-4 border-l-blue-500">
+    <Card key={room.docId} className="border-l-4 border-l-blue-500 text-black">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>
