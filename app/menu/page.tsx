@@ -3,7 +3,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { redirect, useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { readFromStorage } from "@/scripts/local-storage"
+import {readFromStorage, setToStorage} from "@/scripts/local-storage"
 import { doc, onSnapshot } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import type {DotykaceParticipant, DotykaceRoom} from "@/lib/dotykace-types"
@@ -96,6 +96,12 @@ export default function MenuPage() {
       if (participantSnap.exists()) {
         const participant = participantSnap.data() as DotykaceParticipant
         setCompletedChapters(participant.completedChapters || [])
+        const savedChapter = readFromStorage("chapter");
+        const dbChapter = participant.currentChapter;
+        if (dbChapter !== savedChapter) {
+          console.log(`Synchronizing chapter from ${savedChapter} to ${dbChapter}`);
+          setToStorage("chapter", dbChapter);
+        }
         console.log("Participant data updated:", participant)
       } else {
         console.log("Participant document does not exist.")
