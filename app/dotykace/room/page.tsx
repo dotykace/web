@@ -44,6 +44,11 @@ export default function DotykaceRoomPage() {
                     // Skontroluj či hráč už existuje v miestnosti
                     const existingParticipant = doc(db, "rooms", storedRoomId, "participants", storedPlayerId) as DotykaceParticipant;
                     console.log("Existing participant data:", existingParticipant)
+                    if (!existingParticipant) {
+                        console.log("Participant not found in room. Redirecting to root")
+                        router.push("/")
+                        return
+                    }
 
                     // Ak sa miestnosť spustila, automaticky začni introduction
                     if (roomData.isStarted) {
