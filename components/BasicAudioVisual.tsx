@@ -6,12 +6,32 @@ import {useSharedAudio} from "@/context/AudioContext";
 import {Button} from "@/components/ui/button";
 
 export default function BasicAudioVisual({ audio=null, id, children, coloring = "bg-white/10"}: {children?: React.ReactNode, coloring?: string}) {
+
+  const [isDesktop, setIsDesktop] = React.useState(false)
+
   const {playOnce, stop} = useSharedAudio()
   React.useEffect(() => {
     if (audio) {
       playOnce(audio);
     }
   }, [audio, playOnce]);
+  React.useEffect(() => {
+    const checkIsDesktop = () => {
+      // Check screen width (notebooks are typically 1024px+)
+      const isLargeScreen = window.innerWidth >= 1024
+      // Check if device has hover capability (typically desktop/laptop)
+      const hasHover = window.matchMedia("(hover: hover)").matches
+      // Check if device has fine pointer (mouse)
+      const hasFinePointer = window.matchMedia("(pointer: fine)").matches
+
+      setIsDesktop(isLargeScreen && hasHover && hasFinePointer)
+    }
+
+    checkIsDesktop()
+    window.addEventListener("resize", checkIsDesktop)
+
+    return () => window.removeEventListener("resize", checkIsDesktop)
+  }, [])
   return (
     <div className={`min-h-screen flex items-center justify-center p-4 ${coloring}`}>
       <AnimatePresence mode="wait">
@@ -30,15 +50,15 @@ export default function BasicAudioVisual({ audio=null, id, children, coloring = 
         </Card>
         </motion.div>
       </AnimatePresence>
-      <Button
-        onClick={() => {
-          if(audio){
-            if (audio.onFinish) {
-              stop(audio.filename)
-              audio.onFinish()
-            }
-        }}}
-      >SKIP</Button>
+      {isDesktop && audio && audio.onFinish &&(
+        <Button
+          onClick={() => {
+            stop(audio.filename)
+            audio.onFinish()
+          }}
+        >SKIP</Button>
+      )}
+
     </div>
   )
 }
