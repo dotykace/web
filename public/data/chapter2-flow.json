@@ -4,12 +4,6 @@
   "interactions": {
     "chapter-2-start": {
       "type": "voice",
-      "duration": 29,
-      "sound": "track0.mp3",
-      "next-id": "2.1"
-    },
-    "2.1": {
-      "type": "voice",
       "duration": 27,
       "sound": "track1.mp3",
       "next-id": "2.2"
@@ -52,7 +46,7 @@
     "3.2": {
       "type": "display",
       "text": "První kolo",
-      "duration": 2.5,
+      "duration": 2,
       "next-id": "3.3"
     },
     "3.3": {
@@ -206,7 +200,7 @@
       "type": "message",
       "text": "Jak chceš.",
       "duration": 2,
-      "next-id": "9.0"
+      "next-id": "8.3"
     },
     "8.3": {
       "type": "voice",
@@ -254,9 +248,9 @@
       "next-id": "9.8"
     },
     "9.8": {
-      "type": "message",
-      "text": "A máme hotových všech 5 kol. Dobrá práce!",
-      "duration": 6,
+      "type": "voice",
+      "sound": "track15.mp3",
+      "duration": 4,
       "next-id": "end"
     }
   }
