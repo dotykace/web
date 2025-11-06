@@ -25,8 +25,10 @@ const sampleVoices = [
 
 export default function VoiceRoom({onFinish}) {
   const [selectedVoice, setSelectedVoice] = useState<string>("male")
-  const { playPreloaded, isPlaying, toggle, stop } = useSharedAudio();
+  const { playPreloaded, isPlaying, toggle, stop, playOnce } = useSharedAudio();
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
+  // todo disable selection while track0 is playing
+  const [disableSelection, setDisableSelection] = useState<boolean>(false);
 
   useEffect(() => {
     playPreloaded("voice-loop")
@@ -38,6 +40,20 @@ export default function VoiceRoom({onFinish}) {
       }
     })
   }, [isPlaying]);
+
+  const playTrackZero = () => {
+    setDisableSelection((prevState)=>!prevState);
+    console.log(disableSelection)
+    stop("voice-loop");
+    const path = `${selectedVoice}/track0.mp3`;
+    playOnce({
+      filename: path,
+      type: "sound",
+      onFinish: () => {
+        onFinish(selectedVoice);
+      }
+    });
+  }
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-4">
@@ -52,7 +68,7 @@ export default function VoiceRoom({onFinish}) {
         <div className="space-y-4">
           <RadioGroup value={selectedVoice} onValueChange={setSelectedVoice}>
             {sampleVoices.map((voice) => {
-              const disabled = voice.audioKey === undefined;
+              const disabled = (voice.audioKey === undefined)|| disableSelection;
 
               return (
                 <VoiceItem
@@ -60,7 +76,7 @@ export default function VoiceRoom({onFinish}) {
                   disabled={disabled}
                   voice={voice}
                   isSelected={selectedVoice === voice.id}
-                  isPlaying={disabled? false: isPlaying[voice.audioKey]}
+                  isPlaying={disabled? false: isPlaying[voice.audioKey] }
                   onToggle={() => {
                     if (disabled) return;
                     if (currentlyPlaying && currentlyPlaying !== voice.audioKey) {
@@ -77,7 +93,8 @@ export default function VoiceRoom({onFinish}) {
         {/* Continue Button */}
         <div className="flex justify-center pt-4">
           <Button
-            onClick={() => onFinish(selectedVoice)}
+            disabled={disableSelection}
+            onClick={playTrackZero}
             size="lg"
             className="px-12 py-6 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-lg shadow-blue-600/30 transition-all hover:shadow-blue-600/50 hover:scale-105"
           >
