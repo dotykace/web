@@ -15,29 +15,36 @@ import AudioWrapper from "@/components/audio/AudioWrapper";
 import ScreenTransition from "@/components/chapter1/ScreenTransition";
 import VoiceRoom from "@/components/chapter1/VoiceRoom";
 import {setToStorage} from "@/scripts/local-storage";
+import useDB from "@/hooks/use-db";
 
 const soundMap = {
-  "overlay-on": { url: "/audio/vykreslovanie TECKY.mp3" },
-  "overlay-off": { url: "/audio/KONIEC ROZHRANIA.mp3" },
-  "loop": { url: "/audio/ZVUKOVY PODKRES.mp3", opts: {loop:true} },
-  "input-on": { url: "/audio/ODOMKNUTIE CHATU.mp3" },
-  "send": { url: "/audio/SEND.mp3" },
-  "chaos": { url: "/audio/CHAOS.mp3" },
-  "click": { url: "/audio/KLIK.mp3" },
+  "overlay-on": { filename: "vykreslovanie TECKY.mp3" },
+  "overlay-off": { filename: "KONIEC ROZHRANIA.mp3" },
+  "loop": { filename: "ZVUKOVY PODKRES.mp3", opts: {loop:true} },
+  "input-on": { filename: "ODOMKNUTIE CHATU.mp3" },
+  "send": { filename: "SEND.mp3" },
+  "chaos": { filename: "CHAOS.mp3" },
+  "click": { filename: "KLIK.mp3" },
 
-  "voice-placeholder": {url:"/audio/EMOJI highfive.mp3"},
-  "voice-female": {url:"/audio/EMOJI smutny.mp3"},
-  "voice-loop": {url:"/audio/SVET HLASOV.mp3", opts:{loop:true}},
+  "voice-male": {filename:"sample_muz.mp3"},
+  "voice-female": {filename:"sample_zena.mp3"},
+  "voice-loop": {filename:"SVET HLASOV.mp3", opts:{loop:true}},
 }
 
 export default function Chat() {
   const { currentInteraction, goToNextInteraction } = useChatContext()
+  const [dbHook, setDbHook] = useState<any>(null);
+
+  useEffect(() => {
+    const hook = useDB();
+    setDbHook(hook);
+  }, []);
   const finishChapter = (voice)=> {
     console.log("Selected voice:", voice)
-    //todo store voice selection properly in firestore
     setToStorage("selectedVoice", voice)
-    goToNextInteraction()
+    dbHook.updateVoice(voice).then(()=>goToNextInteraction())
   }
+
   return (
     <AudioWrapper soundMap={soundMap}>
       <ScreenTransition
@@ -51,7 +58,7 @@ export default function Chat() {
 
 function ChatContent() {
   const { currentInteraction, goToNextInteraction} = useChatContext()
-  const { play } = useSharedAudio();
+  const { playPreloaded } = useSharedAudio();
 
   const [dotyFace, setDotyFace] = useState("happy_1")
 
@@ -68,12 +75,12 @@ function ChatContent() {
   useEffect(() => {
     if (!currentInteraction) return;
     if (currentInteraction.type === "music" ) {
-      play(currentInteraction.key).then(()=>goToNextInteraction())
+      playPreloaded(currentInteraction.key).then(()=>goToNextInteraction())
       return;
     }
     if (currentInteraction.type === "message"){
       setHistory((prev) => [...prev, currentInteraction])
-      play("click")
+      playPreloaded("click")
     }
 
     if (currentInteraction.face && currentInteraction.face !== dotyFace) {

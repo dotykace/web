@@ -5,15 +5,12 @@ import {doc, updateDoc} from "firebase/firestore";
 import {db} from "@/lib/firebase";
 
 export default function RoomParticipants({ participants, room }) {
-  const allowNextChapter = async (room: DotykaceRoom, participantId: string, nextChapter: number) => {
+  const allowNextChapter = async (room: DotykaceRoom, participantId: string, participantName:string, nextChapter: number) => {
     try {
-      const participant = room.participants.find((p) => p.id === participantId)
-      if (!participant) return
-
       const currentPermissions = room.chapterPermissions || {}
       const playerPermissions = currentPermissions[participantId] || {
         allowedChapters: [],
-        playerName: participant.name,
+        playerName: participantName,
       }
 
       if (!playerPermissions.allowedChapters.includes(nextChapter)) {
@@ -91,7 +88,7 @@ export default function RoomParticipants({ participants, room }) {
                   size="sm"
                   variant="outline"
                   className="h-5 w-5 p-0 text-xs bg-white hover:bg-blue-50 border-blue-200 hover:border-blue-300 transition-all duration-200 hover:shadow-sm"
-                  onClick={() => allowNextChapter(room, participant.id, chapterNum)}
+                  onClick={() => allowNextChapter(room, participant.id, participant.name, chapterNum)}
                   title={`Odomknúť kapitolu ${chapterNum}`}
                 >
                   <Unlock className="w-2.5 h-2.5 text-blue-600" />

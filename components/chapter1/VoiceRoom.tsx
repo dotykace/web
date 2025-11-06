@@ -1,6 +1,6 @@
 "use client"
 
-import {useEffect, useState} from "react"
+import {ReactNode, useEffect, useState} from "react"
 import { Button } from "@/components/ui/button"
 import { RadioGroup } from "@/components/ui/radio-group"
 import VoiceItem from "@/components/chapter1/VoiceItem"
@@ -15,22 +15,29 @@ const sampleVoices = [
   {
     id: "male",
     name: "Mužský hlas",
-    audioKey: "voice-placeholder",
+    audioKey: "voice-male",
   },
   {
     id: "neutral",
     name: "Neutrální hlas",
-    audioKey: "voice-placeholder",
   },
 ]
 
 export default function VoiceRoom({onFinish}) {
   const [selectedVoice, setSelectedVoice] = useState<string>("male")
-  const { play, isPlaying, toggle } = useSharedAudio();
+  const { playPreloaded, isPlaying, toggle, stop } = useSharedAudio();
+  const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
 
   useEffect(() => {
-    play("voice-loop")
+    playPreloaded("voice-loop")
   }, []);
+  useEffect(() => {
+    sampleVoices.forEach((voice) => {
+      if (voice.audioKey && isPlaying[voice.audioKey]) {
+        setCurrentlyPlaying(voice.audioKey);
+      }
+    })
+  }, [isPlaying]);
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-4">
@@ -44,19 +51,26 @@ export default function VoiceRoom({onFinish}) {
         {/* Voice Options */}
         <div className="space-y-4">
           <RadioGroup value={selectedVoice} onValueChange={setSelectedVoice}>
-            {sampleVoices.map((voice) => (
-              <VoiceItem
-                key={voice.id}
-                disabled={voice.id === "neutral"}
-                voice={voice}
-                isSelected={selectedVoice === voice.id}
-                isPlaying={isPlaying[voice.audioKey]}
-                onToggle={() => {
-                  console.log("Play/Pause toggled for voice:", voice.id)
-                  toggle(voice.audioKey)
-                }}
-              />
-            ))}
+            {sampleVoices.map((voice) => {
+              const disabled = voice.audioKey === undefined;
+
+              return (
+                <VoiceItem
+                  key={voice.id}
+                  disabled={disabled}
+                  voice={voice}
+                  isSelected={selectedVoice === voice.id}
+                  isPlaying={disabled? false: isPlaying[voice.audioKey]}
+                  onToggle={() => {
+                    if (disabled) return;
+                    if (currentlyPlaying && currentlyPlaying !== voice.audioKey) {
+                      stop(currentlyPlaying);
+                    }
+                    toggle(voice.audioKey)
+                  }}
+                />
+              ) as ReactNode;
+            })}
           </RadioGroup>
         </div>
 

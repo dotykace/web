@@ -2,16 +2,16 @@
 
 import type React from "react"
 import { useState, useEffect, useRef, useCallback } from "react"
-import { collection, addDoc, serverTimestamp, doc, runTransaction } from "firebase/firestore"
+import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Volume2, VolumeX, SkipForward, Check } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import type { DotykaceRoom } from "@/lib/dotykace-types"
 import HelpButton from "@/components/HelpButton";
+import useDB from "@/hooks/use-db";
+import {useRouter} from "next/navigation";
 
 // Voice Visualization Component (similar to Chapter 2)
 const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
@@ -33,23 +33,6 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
                             animationDuration: `${2 + i * 0.5}s`,
                         }}
                     />
-                ))}
-            </div>
-            {/* Floating emojis */}
-            <div className="absolute inset-0">
-                {["🌟", "✨", "💫", "🎵", "🎶", "💝"].map((emoji, i) => (
-                    <div
-                        key={i}
-                        className={`absolute text-2xl animate-bounce ${isActive ? "opacity-80" : "opacity-40"}`}
-                        style={{
-                            left: `${20 + ((i * 15) % 60)}%`,
-                            top: `${15 + ((i * 20) % 50)}%`,
-                            animationDelay: `${i * 0.5}s`,
-                            animationDuration: `${1.5 + (i % 3) * 0.5}s`,
-                        }}
-                    >
-                        {emoji}
-                    </div>
                 ))}
             </div>
             {/* Central phone character with pulsing effect */}
@@ -90,40 +73,6 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
                         ))}
                     </div>
                 )}
-            </div>
-            {/* Floating hearts */}
-            <div className="absolute inset-0 pointer-events-none">
-                {["💕", "💖", "💗"].map((heart, i) => (
-                    <div
-                        key={i}
-                        className={`absolute text-lg animate-bounce ${isActive ? "opacity-60" : "opacity-20"}`}
-                        style={{
-                            left: `${70 + i * 10}%`,
-                            top: `${30 + i * 15}%`,
-                            animationDelay: `${i * 0.7}s`,
-                            animationDuration: `${2 + i * 0.3}s`,
-                        }}
-                    >
-                        {heart}
-                    </div>
-                ))}
-            </div>
-            {/* Gentle sparkles */}
-            <div className="absolute inset-0">
-                {[...Array(8)].map((_, i) => (
-                    <div
-                        key={i}
-                        className={`absolute w-1 h-1 bg-yellow-300 rounded-full animate-twinkle ${
-                            isActive ? "opacity-80" : "opacity-30"
-                        }`}
-                        style={{
-                            left: `${Math.random() * 100}%`,
-                            top: `${Math.random() * 100}%`,
-                            animationDelay: `${Math.random() * 2}s`,
-                            animationDuration: `${1 + Math.random()}s`,
-                        }}
-                    />
-                ))}
             </div>
         </div>
     )
@@ -206,7 +155,15 @@ function Chapter3Content() {
     const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
     const skipFlagRef = useRef(false)
     const mountedRef = useRef(true)
+
     const router = useRouter()
+
+    const [dbHook, setDbHook] = useState<any>(null);
+
+    useEffect(() => {
+        const hook = useDB();
+        setDbHook(hook);
+    }, []);
 
     // Detect if device is desktop/laptop
     useEffect(() => {
@@ -467,7 +424,7 @@ function Chapter3Content() {
 
                         if (interaction.sound === "track17.mp3") {
                             setTimeout(() => {
-                                playAudio("GALERIA.wav", "music", true)
+                                playAudio("GALERIA- opravene.mp3", "music", true)
                             }, 17000)
                         }
 
@@ -576,42 +533,6 @@ function Chapter3Content() {
         }
     }, [flowData, currentInteractionId, isTyping, typeText])
 
-    const updateChapterCompletionStatus = useCallback(async () => {
-        const storedRoomId = localStorage.getItem("dotykace_roomId")
-        const storedPlayerId = localStorage.getItem("dotykace_playerId")
-        if (!storedRoomId || !storedPlayerId) {
-            console.warn("Room ID or Player ID not found in localStorage. Cannot update Firestore.")
-            return
-        }
-        const roomRef = doc(db, "rooms", storedRoomId)
-        try {
-            await runTransaction(db, async (transaction) => {
-                const roomDoc = await transaction.get(roomRef)
-                if (!roomDoc.exists()) {
-                    throw "Room document does not exist!"
-                }
-                const roomData = roomDoc.data() as DotykaceRoom
-                const updatedParticipants = [...(roomData.participants || [])]
-                const participantIndex = updatedParticipants.findIndex((p) => p.id === storedPlayerId)
-                if (participantIndex !== -1) {
-                    const participant = updatedParticipants[participantIndex]
-                    const completedChapters = new Set(participant.completedChapters || [])
-                    completedChapters.add(3)
-                    participant.completedChapters = Array.from(completedChapters).sort((a, b) => a - b)
-                    participant.currentChapter = 4
-                    updatedParticipants[participantIndex] = participant
-                }
-                transaction.update(roomRef, {
-                    participants: updatedParticipants,
-                })
-            })
-            console.log("Firestore updated successfully: Chapter 3 completed, Chapter 4 unlocked.")
-            router.push("/menu")
-        } catch (e) {
-            console.error("Firestore transaction failed: ", e)
-        }
-    }, [router])
-
     // Process current interaction only if experience has started
     useEffect(() => {
         if (hasStartedExperience && flowData && currentInteractionId && flowData.interactions[currentInteractionId]) {
@@ -622,9 +543,9 @@ function Chapter3Content() {
     // Handle chapter completion
     useEffect(() => {
         if (flowData && currentInteractionId === "end") {
-            updateChapterCompletionStatus()
+            dbHook.updateChapter(3, () => router.push("/menu")).then()
         }
-    }, [currentInteractionId, flowData, updateChapterCompletionStatus])
+    }, [currentInteractionId, flowData])
 
     // Handle audio muting
     useEffect(() => {

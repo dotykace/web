@@ -1,15 +1,17 @@
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
-import {CheckCircle, Download, LockKeyhole, Play, Trash2, UnlockKeyhole, Users} from "lucide-react";
+import { Download, LockKeyhole, Play, Trash2, UnlockKeyhole, Users} from "lucide-react";
 import {ChapterPermissions, DotykaceRoom} from "@/lib/dotykace-types";
-import {deleteDoc, doc, Timestamp, updateDoc} from "firebase/firestore";
+import { deleteDoc, doc, Timestamp, updateDoc} from "firebase/firestore";
 import {db} from "@/lib/firebase";
 import ProgressTable from "@/components/admin/ProgressTable";
+import useParticipants from "@/hooks/use-participants";
 
 export default function RenderRoom({room, processedRooms}) {
+  const {participants} = useParticipants({room})
   const canUnlockChapterForAll = (room: DotykaceRoom, chapter: number) => {
-    return room.participants.some((p) => (p.completedChapters || []).includes(chapter - 1) || chapter === 1)
+    return participants.some((p) => (p.completedChapters || []).includes(chapter - 1) || chapter === 1)
   }
 
   const isChapterGloballyUnlocked = (room: DotykaceRoom, chapter: number) => {
@@ -29,7 +31,7 @@ export default function RenderRoom({room, processedRooms}) {
         updatedGlobalUnlocked.sort((a, b) => a - b)
       }
 
-      room.participants.forEach((participant) => {
+      participants.forEach((participant) => {
         const completedChapters = participant.completedChapters || []
         const previousChapter = nextChapter - 1
 
@@ -61,10 +63,9 @@ export default function RenderRoom({room, processedRooms}) {
   const startRoom = async (roomDocId: string) => {
     try {
       // Spusti room a automaticky odomkni introduction (kapitolu 0)
-      // todo remove chapter 4 after full integration of the gallery
       await updateDoc(doc(db, "rooms", roomDocId), {
         isStarted: true,
-        globalUnlockedChapters: [0, 4],
+        globalUnlockedChapters: [0],
       })
     } catch (error) {
       console.error("❌ Error starting room:", error)
@@ -85,7 +86,7 @@ export default function RenderRoom({room, processedRooms}) {
     try {
       const csvData = [
         ["Meno", "Čas pripojenia", "Aktuálna kapitola", "Dokončené kapitoly", "Povolené kapitoly"],
-        ...room.participants.map((p) => {
+        ...participants.map((p) => {
           const permissions = room.chapterPermissions?.[p.id]
           return [
             p.name,
@@ -166,7 +167,7 @@ export default function RenderRoom({room, processedRooms}) {
             </CardDescription>
             <div className="flex items-center gap-2 text-sm text-gray-600 mt-2">
               <Users className="w-4 h-4" />
-              <span>{room.participants?.length || 0} účastníkov</span>
+              <span>{participants?.length || 0} účastníkov</span>
             </div>
           </div>
           <div className="flex gap-2">
@@ -191,8 +192,8 @@ export default function RenderRoom({room, processedRooms}) {
       </CardHeader>
       <CardContent>
         {/* Participant Progress Table */}
-        {room.participants && room.participants.length > 0 &&
-            <ProgressTable room={room} headerButtons={BulkActions}/>
+        {participants && participants.length > 0 &&
+            <ProgressTable room={room} headerButtons={BulkActions} participants={participants}/>
         }
       </CardContent>
     </Card>

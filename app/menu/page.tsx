@@ -6,7 +6,7 @@ import { motion } from "framer-motion"
 import { readFromStorage } from "@/scripts/local-storage"
 import { doc, onSnapshot } from "firebase/firestore"
 import { db } from "@/lib/firebase"
-import type { DotykaceRoom } from "@/lib/dotykace-types"
+import type {DotykaceParticipant, DotykaceRoom} from "@/lib/dotykace-types"
 import HelpButton from "@/components/HelpButton"
 import { useAudioManager } from "@/hooks/use-audio"
 import DotykaceLogo from "@/components/DotykaceLogo";
@@ -42,8 +42,8 @@ export default function MenuPage() {
     // Only access localStorage after component mounts on client
     const storedChapter = readFromStorage("chapter") as number
     const storedUserName = (readFromStorage("UN") as string) || ""
-    const storedRoomId = typeof window !== "undefined" ? localStorage.getItem("dotykace_roomId") : null
-    const storedPlayerId = typeof window !== "undefined" ? localStorage.getItem("dotykace_playerId") : null
+    const storedRoomId = readFromStorage("roomId") as string
+    const storedPlayerId = readFromStorage("playerId") as string
 
     setChapter(storedChapter)
     setUserName(storedUserName)
@@ -58,10 +58,10 @@ export default function MenuPage() {
     }
 
     audioManager.preloadAll({
-      "menu-background": { url: "/audio/CAKAREN.mp3", opts: { loop: true, volume: 0.3 } },
+      "menu-background": { filename: "CAKAREN.mp3", opts: { loop: true, volume: 0.3 } },
     }).then(()=> {
       if (!audioManager.isPlaying["menu-background"]){
-        audioManager.play("menu-background")
+        audioManager.playPreloaded("menu-background")
       }
     })
 
@@ -74,33 +74,41 @@ export default function MenuPage() {
 
   // Listen to room changes to get updated permissions
   useEffect(() => {
+    console.log("Setting up room listener for roomId:", roomId, "and playerId:", playerId)
     if (!isClient || !roomId || !playerId) {
       // Fallback to local storage if not in dotykace mode
       return
     }
 
     const roomRef = doc(db, "rooms", roomId)
-    const unsubscribe = onSnapshot(roomRef, (doc) => {
-      if (doc.exists()) {
-        const roomData = doc.data() as DotykaceRoom
-        const participant = roomData.participants?.find((p) => p.id === playerId)
+    const unsubscribe = onSnapshot(roomRef, (document) => {
+      if (document.exists()) {
+        const roomData = document.data() as DotykaceRoom
         const permissions = roomData.chapterPermissions?.[playerId]
 
         if (permissions) {
           setAllowedChapters(permissions.allowedChapters)
         }
-
-        if (participant) {
-          setCompletedChapters(participant.completedChapters || [])
-        }
+      }
+    })
+    const participantRef = doc(db, "rooms", roomId, "participants", playerId)
+    const unsubscribeParticipant = onSnapshot(participantRef, (participantSnap) => {
+      if (participantSnap.exists()) {
+        const participant = participantSnap.data() as DotykaceParticipant
+        setCompletedChapters(participant.completedChapters || [])
+        console.log("Participant data updated:", participant)
+      } else {
+        console.log("Participant document does not exist.")
       }
     })
 
-    return () => unsubscribe()
+    return () => {
+      unsubscribe()
+      unsubscribeParticipant()
+    }
   }, [roomId, playerId, isClient])
 
   const getState = (id: number): SectionState => {
-    if(id === 4 ) return "unlocked" // Chapter 4 is always unlocked for testing
     if (completedChapters.includes(id)) {
       return "completed"
     } else if (allowedChapters.includes(id)) {

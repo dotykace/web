@@ -1,6 +1,6 @@
 import RoomParticipants from "@/components/admin/RoomParticipants";
 
-export default function ProgressTable({ room, headerButtons }) {
+export default function ProgressTable({ room, headerButtons, participants }) {
   const thBaseClass = "text-center px-2 py-3 text-sm font-semibold text-gray-800";
   const statusItems = [
     { label: 'Dokončené', color: 'bg-green-500' },
@@ -40,9 +40,9 @@ export default function ProgressTable({ room, headerButtons }) {
     </thead>
   )
 
-  const middleIndex = Math.ceil(room.participants.length / 2);
-  const firstHalf = room.participants.slice(0, middleIndex);
-  const secondHalf = room.participants.slice(middleIndex);
+  const middleIndex = Math.ceil(participants.length / 2);
+  const firstHalf = participants.slice(0, middleIndex);
+  const secondHalf = participants.slice(middleIndex);
 
   return (
     <div className="space-y-4">

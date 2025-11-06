@@ -2,11 +2,9 @@
 
 import { useEffect, useState, useCallback } from "react"
 import type { Choice, Interaction, InteractionRecord, RawInteraction, ProcessedInteraction } from "@/interactions"
-import { redirect, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { readFromStorage, setToStorage } from "@/scripts/local-storage"
-import { doc, updateDoc, getDoc } from "firebase/firestore"
-import { db } from "@/lib/firebase"
-import type { DotykaceRoom } from "@/lib/dotykace-types"
+import useDB from "@/hooks/use-db";
 
 export function useInteractions<T>(filename: string) {
     const [interactions, setInteractions] = useState<InteractionRecord | null>(null)
@@ -15,6 +13,13 @@ export function useInteractions<T>(filename: string) {
     const [isClient, setIsClient] = useState(false)
 
     const router = useRouter()
+
+    const [dbHook, setDbHook] = useState<any>(null);
+
+    useEffect(() => {
+        const hook = useDB();
+        setDbHook(hook);
+    }, []);
 
     const [userInput, setUserInput] = useState("")
 
@@ -60,54 +65,6 @@ export function useInteractions<T>(filename: string) {
             text: () => processText(current.text),
         }
         setCurrentInteraction(newInteraction)
-    }
-
-    // Update player progress in database
-    const updatePlayerProgress = async (currentChapter: number, completedChapters: number[]) => {
-        if (!isClient) return
-
-        const roomId = localStorage.getItem("dotykace_roomId")
-        const playerId = localStorage.getItem("dotykace_playerId")
-        const playerName = localStorage.getItem("dotykace_playerName")
-
-        if (!roomId || !playerId || !playerName) return
-
-        try {
-            const roomRef = doc(db, "rooms", roomId)
-            const roomSnap = await getDoc(roomRef)
-
-            if (!roomSnap.exists()) return
-
-            const roomData = roomSnap.data() as DotykaceRoom
-            const participants = roomData.participants || []
-
-            // Find and update the specific participant
-            const updatedParticipants = participants.map((participant) => {
-                if (participant.id === playerId) {
-                    return {
-                        ...participant,
-                        currentChapter,
-                        completedChapters,
-                    }
-                }
-                return participant
-            })
-
-            // If participant not found, this shouldn't happen but let's handle it
-            const participantExists = participants.some((p) => p.id === playerId)
-            if (!participantExists) {
-                console.warn("Participant not found, this shouldn't happen")
-                return
-            }
-
-            await updateDoc(roomRef, {
-                participants: updatedParticipants,
-            })
-
-            console.log("✅ Player progress updated:", { playerId, currentChapter, completedChapters })
-        } catch (error) {
-            console.error("❌ Error updating player progress:", error)
-        }
     }
 
     // Fetch interactions data
@@ -175,56 +132,13 @@ export function useInteractions<T>(filename: string) {
     useEffect(() => {
         if (!currentInteraction || !isClient) return
 
-        // Check if interaction is a checkpoint by type or by specific checkpoint IDs
-        const isCheckpoint =
-            currentInteraction.type === "checkpoint" ||
-            currentInteraction.id === "intro-end" ||
-            currentInteraction.id === "chapter-1-end" ||
-            currentInteraction.id === "chapter-2-end" ||
-            currentInteraction.id === "chapter-3-end" ||
-            currentInteraction.id === "chapter-4-end"
+        // id is intro-end or chapter-X-end
+        const match = currentInteraction.id.match(/^(?:chapter-(\d+)|intro)-end$/)
 
-        if (isCheckpoint) {
-            if (currentInteraction.id === "intro-end") {
-                console.log("Introduction end interaction reached, setting chapter to 1")
-                const completedChapters = [0]
-                setToStorage("chapter", 1)
-                setToStorage("completedChapters", completedChapters)
-                updatePlayerProgress(1, completedChapters)
-                redirect("/menu")
-            } else if (currentInteraction.id === "chapter-1-end") {
-                console.log("Chapter 1 end interaction reached, setting chapter to 2")
-                const currentCompleted = (readFromStorage("completedChapters") as number[]) || [0]
-                const completedChapters = [...currentCompleted, 1]
-                setToStorage("chapter", 2)
-                setToStorage("completedChapters", completedChapters)
-                updatePlayerProgress(2, completedChapters)
-                redirect("/menu")
-            } else if (currentInteraction.id === "chapter-2-end") {
-                console.log("Chapter 2 end interaction reached, setting chapter to 3")
-                const currentCompleted = (readFromStorage("completedChapters") as number[]) || [0, 1]
-                const completedChapters = [...currentCompleted, 2]
-                setToStorage("chapter", 3)
-                setToStorage("completedChapters", completedChapters)
-                updatePlayerProgress(3, completedChapters)
-                redirect("/menu")
-            } else if (currentInteraction.id === "chapter-3-end") {
-                console.log("Chapter 3 end interaction reached, setting chapter to 4")
-                const currentCompleted = (readFromStorage("completedChapters") as number[]) || [0, 1, 2]
-                const completedChapters = [...currentCompleted, 3]
-                setToStorage("chapter", 4)
-                setToStorage("completedChapters", completedChapters)
-                updatePlayerProgress(4, completedChapters)
-                redirect("/menu")
-            } else if (currentInteraction.id === "chapter-4-end") {
-                console.log("Chapter 4 end interaction reached, game completed")
-                const currentCompleted = (readFromStorage("completedChapters") as number[]) || [0, 1, 2, 3]
-                const completedChapters = [...currentCompleted, 4]
-                setToStorage("completedChapters", completedChapters)
-                updatePlayerProgress(4, completedChapters)
-                // Redirect to completion page or menu
-                redirect("/menu")
-            }
+        if (match) {
+            // If it's "intro-end", chapterNumber = 0; otherwise, use the captured number
+            const chapterNumber = match[1] ? Number(match[1]) : 0
+            dbHook.updateChapter(chapterNumber, () => router.push("/menu")).then()
         }
     }, [currentInteraction, isClient])
 
@@ -267,6 +181,7 @@ export function useInteractions<T>(filename: string) {
             // todo either dont have user input as interaction or make it work properly
             // todo maybe separate user inputs and interactions
             if (
+                currentInteraction?.id === "first-notification" ||
                 currentInteraction?.id === "1.6" ||
                 currentInteraction?.id === "1.100" ||
                 currentInteraction?.id === "1.101"

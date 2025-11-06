@@ -18,6 +18,8 @@ import {
     SidebarProvider,
     SidebarTrigger
 } from "@/components/ui/sidebar";
+import {getParticipantsOnce} from "@/hooks/use-participants";
+import {readFromStorage, removeFromStorage} from "@/scripts/local-storage";
 
 export default function AdminPage() {
     const [rooms, setRooms] = useState<DotykaceRoom[]>([])
@@ -28,7 +30,7 @@ export default function AdminPage() {
     const [selectedRoom, setSelectedRoom] = useState<DotykaceRoom | null>(null)
 
     useEffect(() => {
-        const storedAdminId = localStorage.getItem("dotykace_adminId")
+        const storedAdminId = readFromStorage("adminId")
         if (!storedAdminId) {
             router.push("/")
             return
@@ -48,12 +50,12 @@ export default function AdminPage() {
 
         return () => unsubscribe()
     }, [router])
-
     const ensurePlayerPermissions = async (room: DotykaceRoom) => {
         if (!room.globalUnlockedChapters || room.globalUnlockedChapters.length === 0) return
         if (!room.docId) return
 
-        const roomStateKey = `${room.docId}-${room.participants?.length || 0}-${room.globalUnlockedChapters.join(",")}`
+        const participants = await getParticipantsOnce(room)
+        const roomStateKey = `${room.docId}-${participants.length || 0}-${room.globalUnlockedChapters.join(",")}`
 
         if (processedRooms.current.has(roomStateKey)) return
 
@@ -61,7 +63,7 @@ export default function AdminPage() {
         let needsUpdate = false
         const updatedPermissions: ChapterPermissions = { ...currentPermissions }
 
-        room.participants.forEach((participant) => {
+        participants.forEach((participant) => {
             const playerPermissions = updatedPermissions[participant.id] || {
                 allowedChapters: [],
                 playerName: participant.name,
@@ -99,6 +101,8 @@ export default function AdminPage() {
         }
 
         rooms.forEach((room) => {
+            console.log("Checking permissions for room:", room.name)
+            // todo reduce calls
             ensurePlayerPermissions(room)
         })
         if (!selectedRoom) {
@@ -116,7 +120,7 @@ export default function AdminPage() {
     }, [rooms])
 
     const logout = () => {
-        localStorage.removeItem("dotykace_adminId")
+        removeFromStorage("adminId")
         router.push("/")
     }
 

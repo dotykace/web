@@ -7,26 +7,11 @@ import AudioWrapper from "@/components/audio/AudioWrapper";
 import CountDownInput from "@/components/CountDownInput";
 import {useRouter} from "next/navigation";
 
-
-const soundMap = {
-  "scaleA": { url: "/audio/SCROLLOVANIE.mp3" },
-  "scaleB": { url: "/audio/JINGEL - pozitiv.mp3" },
-  "scaleC": { url: "/audio/CHAOS.mp3" },
-  "scaleD": { url: "/audio/JINGEL.mp3" },
-  "scaleE": { url: "/audio/ODOMKNUTIE CHATU.mp3" },
-  "voiceGallery": { url: "/audio/track11_loop.mp3" },
-}
 const coloring = "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900";
 export default function ScalesAndGallery() {
-  const [loaded, setLoaded] = useState(false);
   return (
-    <AudioWrapper soundMap={soundMap} setLoaded={setLoaded}>
-      {loaded && <ScalesAndGalleryContent />}
-      {!loaded && (
-        <BasicAudioVisual coloring={coloring}>
-          Loading audio...
-        </BasicAudioVisual>
-      )}
+    <AudioWrapper>
+      <ScalesAndGalleryContent />
     </AudioWrapper>
   )
 }
@@ -36,6 +21,7 @@ function ScalesAndGalleryContent(){
   const [data, setData] = useState(null);
   const collectData = (data) => {
     console.log("Collected data:", data);
+    // todo save to firestore
     setData(data);
     goToNextInteraction();
   }
@@ -52,11 +38,18 @@ function ScalesAndGalleryContent(){
   if (data){
     if (currentInteraction.id==="gallery"){
       const images = pickGalleryImages();
+      const audio = {
+        filename: currentInteraction.voice,
+        type: "voice",
+        onFinish: () => {
+          console.log("Played gallery audio:", currentInteraction.voice);
+        }
+      }
       return <Gallery
         images={images}
         helpText={currentInteraction.text()}
         onFinish={() => goToNextInteraction()}
-        audio="voiceGallery"
+        audio={audio}
       />
     }
   }
@@ -67,18 +60,32 @@ function ScalesAndGalleryContent(){
   }
 
   if (currentInteraction.id === "scales") return <Scales currentInteraction={currentInteraction} onComplete={collectData} />;
-  else return (
-    <BasicAudioVisual coloring={coloring}>
-      {currentInteraction.type === "input" ? (
-        <CountDownInput questionText={currentInteraction.text()} countdownSeconds={currentInteraction.duration} onSave={finishChapter} />
-      ): currentInteraction.text()? (
-        <div className="text-white">
-          {currentInteraction.text()}
-        </div>
-      ): undefined}
-    </BasicAudioVisual>
-  )
+  else {
+    if (currentInteraction.type === "voice"){
+      const audio = {
+        filename: currentInteraction.filename,
+        type: "voice",
+        onFinish: () => goToNextInteraction(),
+      }
+      return <BasicAudioVisual coloring={coloring} audio={audio}/>
+    }
+    if (currentInteraction.type === "input"){
+      return (
+        <BasicAudioVisual coloring={coloring}>
+          <CountDownInput questionText={currentInteraction.text()} countdownSeconds={currentInteraction.duration}
+                          onSave={finishChapter}/>
+        </BasicAudioVisual>
+      )
+    }
+    else return <BasicAudioVisual coloring={coloring}/>
+  }
 }
+
+
+
+
+
+
 // todo remove when not needed
 function ResultTable({ data, children }) {
   return (

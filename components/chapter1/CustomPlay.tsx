@@ -34,13 +34,13 @@ export default function CustomPlay({onClick}) {
     setLogos(newEmojis)
   }
 
-  const {play, stop} = useSharedAudio()
+  const {playPreloaded} = useSharedAudio()
 
   const handleClick = () =>{
     generateLogoList()
     if (!showLogos) {
       if (onClick) {
-        play("chaos").then(()=> {
+        playPreloaded("chaos").then(()=> {
           onClick()
         })
       }

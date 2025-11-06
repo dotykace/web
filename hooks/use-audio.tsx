@@ -1,5 +1,6 @@
 // hooks/useAudioManager.tsx
 import { useEffect, useRef, useState, useCallback } from "react";
+import {readFromStorage} from "@/scripts/local-storage";
 
 interface UseAudioManagerOptions {
   loop?: boolean;
@@ -15,6 +16,20 @@ interface Sound {
 interface PlayingInstance {
   source: AudioBufferSourceNode;
   gainNode: GainNode;
+}
+
+interface SoundMapEntry {
+  filename: string;
+  opts?: UseAudioManagerOptions;
+}
+
+interface PlayOnceOptions extends SoundMapEntry {
+  onFinish: () => void;
+  type: "sound" | "voice";
+}
+
+interface SoundMap {
+  [key: string]: SoundMapEntry;
 }
 
 export function useAudioManager() {
@@ -36,13 +51,43 @@ export function useAudioManager() {
     return audioContextRef.current;
   };
 
-  // --- Load a sound and decode it
-  const loadSound = useCallback(async (key: string, url: string, opts?: UseAudioManagerOptions) => {
+  const addToPlaying = (key: string, instance: PlayingInstance) => {
+    // Track instance
+    if (!playingRef.current[key]) playingRef.current[key] = [];
+    playingRef.current[key].push(instance);
+    setIsPlaying((prev) => ({ ...prev, [key]: true }));
+  }
+
+  const removeFromPlaying = (key: string, instance: PlayingInstance) => {
+    playingRef.current[key] = playingRef.current[key].filter(
+      (inst) => inst.source !== instance.source
+    );
+    if (playingRef.current[key].length === 0) {
+      setIsPlaying((prev) => ({ ...prev, [key]: false }));
+    }
+  }
+
+  const getPath = (filename: string, type = "sound") => {
+    if (type === "voice"){
+      const selectedVoice = readFromStorage("selectedVoice") || "male";
+      console.log("Using voice:", selectedVoice);
+      return `/audio/${selectedVoice}/${filename}`;
+    }
+    return `/audio/${filename}`;
+  }
+
+  const fetchSound = async (filename: string, type = "sound"): Promise<AudioBuffer> => {
     const context = getAudioContext();
-    if (!context) return;
-    const response = await fetch(url);
+    if (!context) throw new Error("AudioContext not available");
+    const response = await fetch(getPath(filename, type));
     const arrayBuffer = await response.arrayBuffer();
-    const buffer = await context.decodeAudioData(arrayBuffer);
+    return await context.decodeAudioData(arrayBuffer);
+  }
+
+  // --- Load a sound and decode it
+  const loadSound = useCallback(async (key: string, filename: string, opts?: UseAudioManagerOptions) => {
+
+    const buffer = await fetchSound(filename);
 
     soundsRef.current[key] = {
       buffer,
@@ -54,9 +99,9 @@ export function useAudioManager() {
 
   // --- Preload multiple sounds at once
   const preloadAll = useCallback(
-    async (soundMap: Record<string, { url: string; opts?: UseAudioManagerOptions }>) => {
-      const promises = Object.entries(soundMap).map(([key, { url, opts }]) =>
-        loadSound(key, url, opts)
+    async (soundMap: SoundMap) => {
+      const promises = Object.entries(soundMap).map(([key, { filename, opts }]) =>
+        loadSound(key, filename, opts)
       );
       await Promise.all(promises);
     },
@@ -65,12 +110,7 @@ export function useAudioManager() {
 
   // --- Play a sound by key
   const play = useCallback(
-    async (key: string) => {
-      const sound = soundsRef.current[key];
-      if (!sound) {
-        console.warn(`Sound ${key} not loaded`);
-        return;
-      }
+    async (sound) => {
 
       const context = getAudioContext();
       if(!context) {
@@ -90,27 +130,47 @@ export function useAudioManager() {
 
       source.connect(gainNode).connect(context.destination);
       source.start();
-      console.log(`Playing sound ${key}`);
-
-      // Track instance
-      if (!playingRef.current[key]) playingRef.current[key] = [];
-      playingRef.current[key].push({ source, gainNode });
-
-      source.onended = () => {
-        source.disconnect();
-        gainNode.disconnect();
-        playingRef.current[key] = playingRef.current[key].filter(
-          (inst) => inst.source !== source
-        );
-        if (playingRef.current[key].length === 0) {
-          setIsPlaying((prev) => ({ ...prev, [key]: false }));
-        }
-      };
-
-      setIsPlaying((prev) => ({ ...prev, [key]: true }));
-    },
+      return { source, gainNode };
+      },
     []
   );
+
+  const playPreloaded = useCallback(async (key: string) => {
+    const sound = soundsRef.current[key];
+    if (!sound) {
+      console.warn(`Sound ${key} not loaded`);
+      return;
+    }
+    const {source, gainNode} = await play(sound);
+
+    addToPlaying(key, {source, gainNode});
+
+    source.onended = () => {
+      source.disconnect();
+      gainNode.disconnect();
+      removeFromPlaying(key, {source, gainNode});
+    };
+
+  },[play])
+
+  const playOnce = useCallback(async ({filename, opts, type, onFinish}: PlayOnceOptions) => {
+    const buffer = await fetchSound(filename, type);
+    const sound = {
+      buffer,
+      loop: opts?.loop ?? false,
+      volume: opts?.volume ?? 1,
+    }
+    const {source, gainNode} = await play(sound);
+    addToPlaying(filename, {source, gainNode});
+    source.onended = () => {
+      source.disconnect();
+      gainNode.disconnect();
+      removeFromPlaying(filename, {source, gainNode});
+
+      onFinish();
+    };
+
+  },[play]);
 
   // --- Stop all instances of a sound
   const stop = useCallback((key: string) => {
@@ -128,25 +188,27 @@ export function useAudioManager() {
   }, []);
 
   // --- Toggle a sound
+  // todo toggle only work for preloaded sounds
+  // todo make sure to handle the case when sound is not preloaded
   const toggle = useCallback(
     (key: string) => {
       if (isPlaying[key]) {
         stop(key);
       } else {
         console.log("Toggling play for", key);
-        play(key);
+        playPreloaded(key);
       }
     },
-    [isPlaying, play, stop]
+    [isPlaying, playPreloaded, stop]
   );
 
   // --- Cleanup on unmount
   useEffect(() => {
     return () => {
       Object.keys(playingRef.current).forEach(stop);
-      // audioContextRef.current?.close();
+      //audioContextRef.current?.close();
     };
   }, [stop]);
 
-  return { preloadAll, play, stop, toggle, isPlaying };
+  return { preloadAll, playPreloaded, playOnce, stop, toggle, isPlaying };
 }

@@ -17,7 +17,6 @@ export default function PlaceScroll({ current, goToNext }) {
     if (current?.id === "back-to-chat") {
       setShowBackToChat(true);
     }
-    console.log(current)
   }, [current]);
 
   const onScrollCard = useCallback(() => {
@@ -33,7 +32,6 @@ export default function PlaceScroll({ current, goToNext }) {
   }, [ current, goToNext])
 
   const choiceCallback = (option, choice) => {
-    console.log(option)
     if (option === "compare") {
       setShowBackToChat(true)
       goToNext("back-to-chat");

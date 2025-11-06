@@ -2,10 +2,18 @@ import {Card, CardContent} from "@/components/ui/card";
 import React from "react";
 import {AnimatePresence, motion} from "framer-motion";
 import VoiceVisualization from "@/components/VoiceVisualization";
+import {useSharedAudio} from "@/context/AudioContext";
+import {Button} from "@/components/ui/button";
 
-export default function BasicAudioVisual({id, children, coloring = "bg-white/10"}: {children?: React.ReactNode, coloring?: string}) {
+export default function BasicAudioVisual({ audio=null, id, children, coloring = "bg-white/10"}: {children?: React.ReactNode, coloring?: string}) {
+  const {playOnce, stop} = useSharedAudio()
+  React.useEffect(() => {
+    if (audio) {
+      playOnce(audio);
+    }
+  }, [audio, playOnce]);
   return (
-    <div className={"min-h-screen flex items-center justify-center p-4 "+ coloring}>
+    <div className={`min-h-screen flex items-center justify-center p-4 ${coloring}`}>
       <AnimatePresence mode="wait">
         <motion.div
           key={id}
@@ -22,6 +30,15 @@ export default function BasicAudioVisual({id, children, coloring = "bg-white/10"
         </Card>
         </motion.div>
       </AnimatePresence>
+      <Button
+        onClick={() => {
+          if(audio){
+            if (audio.onFinish) {
+              stop(audio.filename)
+              audio.onFinish()
+            }
+        }}}
+      >SKIP</Button>
     </div>
   )
 }

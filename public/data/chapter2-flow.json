@@ -46,7 +46,7 @@
     },
     "3.1": {
       "type": "music",
-      "src": "challenge_prompt_1.mp3",
+      "src": "SEND.mp3",
       "next-id": "3.2"
     },
     "3.2": {
@@ -63,7 +63,7 @@
     },
     "4.0": {
       "type": "music",
-      "src": "challenge_prompt_2.mp3",
+      "src": "SEND.mp3",
       "duration": 2,
       "next-id": "4.1"
     },
@@ -81,7 +81,7 @@
     },
     "5.0": {
       "type": "music",
-      "src": "challenge_prompt_3.mp3",
+      "src": "SEND.mp3",
       "duration": 2,
       "next-id": "5.1"
     },
@@ -99,7 +99,7 @@
     },
     "6.0": {
       "type": "music",
-      "src": "challenge_prompt_4.mp3",
+      "src": "SEND.mp3",
       "duration": 2,
       "next-id": "6.1"
     },
@@ -221,7 +221,7 @@
     },
     "9.0": {
       "type": "music",
-      "src": "challenge_prompt_4.mp3",
+      "src": "SEND.mp3",
       "duration": 2,
       "next-id": "9.1"
     },
@@ -239,7 +239,7 @@
     },
     "9.2a": {
       "type": "music",
-      "src": "EMOJI highfive .wav",
+      "src": "EMOJI highfive.mp3",
       "duration": 1,
       "next-id": "9.7"
     },
@@ -251,14 +251,6 @@
       "warning-after": 20,
       "warning-text": "Ještě máš na psaní 20 vteřin.",
       "countdown-last": 10,
-      "next-id": "9.7a"
-    },
-    "9.7a": {
-      "type": "music",
-      "src": "CAKAREN.wav",
-      "loop": true,
-      "forever": false,
-      "duration": 20,
       "next-id": "9.8"
     },
     "9.8": {

@@ -1,59 +1,57 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { doc, onSnapshot, updateDoc, arrayUnion } from "firebase/firestore"
+import {doc, onSnapshot} from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import type { DotykaceRoom, DotykaceParticipant } from "@/lib/dotykace-types"
 import { useRouter } from "next/navigation"
 import { Clock } from "lucide-react"
-import {readFromStorage} from "@/scripts/local-storage";
+import {readFromStorage, setToStorage} from "@/scripts/local-storage";
 
-import Image from "next/image";
 import DotykaceLogo from "@/components/DotykaceLogo";
 
 export default function DotykaceRoomPage() {
     const [room, setRoom] = useState<DotykaceRoom | null>(null)
     const [connectionError, setConnectionError] = useState(false)
-    const hasAddedPlayer = useRef(false)
     const router = useRouter()
 
     useEffect(() => {
-        const storedPlayerName = localStorage.getItem("dotykace_playerName")
-        const storedRoomId = localStorage.getItem("dotykace_roomId")
-        const storedPlayerId = localStorage.getItem("dotykace_playerId")
+        const storedPlayerName = readFromStorage("playerName") as string
+        const storedRoomId = readFromStorage("roomId") as string
+        const storedPlayerId = readFromStorage("playerId") as string
 
         if (!storedPlayerName || !storedRoomId) {
             router.push("/")
             return
         }
 
+        if (!storedPlayerId) {
+            console.log("Player ID not found in localStorage. Redirecting to root")
+            router.push("/")
+        }
+
         const roomRef = doc(db, "rooms", storedRoomId)
         const unsubscribe = onSnapshot(
             roomRef,
-            (doc) => {
-                if (doc.exists()) {
-                    const roomData = doc.data() as DotykaceRoom
+            (document) => {
+                if (document.exists()) {
+                    const roomData = document.data() as DotykaceRoom
                     setRoom(roomData)
                     setConnectionError(false)
+                    console.log(`Connected to room "${storedRoomId}" as player "${storedPlayerName}"`)
 
                     // Skontroluj či hráč už existuje v miestnosti
-                    const existingParticipant = roomData.participants?.find(
-                        (p) => p.id === storedPlayerId || p.name === storedPlayerName,
-                    )
-
-                    // Pridaj hráča len ak neexistuje a ešte nebol pridaný
-                    if (!existingParticipant && !hasAddedPlayer.current) {
-                        hasAddedPlayer.current = true
-                        addPlayerToRoom(storedRoomId, storedPlayerName)
-                    }
+                    const existingParticipant = doc(db, "rooms", storedRoomId, "participants", storedPlayerId) as DotykaceParticipant;
+                    console.log("Existing participant data:", existingParticipant)
 
                     // Ak sa miestnosť spustila, automaticky začni introduction
                     if (roomData.isStarted) {
-                        console.log("Room has started, redirecting to introduction chapter")
-                        localStorage.setItem("userName", storedPlayerName)
-                        let currentChapter = readFromStorage("chapter") ?? existingParticipant?.currentChapter ?? 0
-                        localStorage.setItem("chapter", currentChapter.toString())
+                        let currentChapter = readFromStorage("chapter");
+                        if(!currentChapter) {
+                            currentChapter = existingParticipant?.currentChapter ?? 0
+                            setToStorage("chapter", currentChapter)
+                        }
                         if(currentChapter > 0) {
                             console.log("Current chapter from existing participant:", currentChapter)
                             router.push(`/menu`)
@@ -76,35 +74,6 @@ export default function DotykaceRoomPage() {
 
         return () => unsubscribe()
     }, [router])
-
-    const addPlayerToRoom = async (roomId: string, playerName: string) => {
-        try {
-            const newPlayerId = Date.now().toString()
-            localStorage.setItem("dotykace_playerId", newPlayerId)
-
-            const newParticipant: DotykaceParticipant = {
-                id: newPlayerId,
-                name: playerName,
-                roomId,
-                joinedAt: new Date(),
-                responses: {
-                    isComplete: false,
-                },
-                currentChapter: 0,
-                completedChapters: [],
-            }
-
-            const roomRef = doc(db, "rooms", roomId)
-            await updateDoc(roomRef, {
-                participants: arrayUnion(newParticipant),
-            })
-
-            console.log("✅ Player added successfully")
-        } catch (error) {
-            console.error("❌ Error adding player:", error)
-            hasAddedPlayer.current = false
-        }
-    }
 
     if (!room) {
         return (
