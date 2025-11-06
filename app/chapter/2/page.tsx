@@ -747,13 +747,13 @@ function Chapter2Content() {
     const currentInteraction = flowData.interactions[currentInteractionId]
 
     // Show skip button only for desktop/laptop screens (lg and above)
-    const showSkipButton =
-        currentInteraction &&
-        currentInteraction["next-id"] &&
-        !currentInteraction.animation?.buttons &&
-        currentInteraction.type !== "input" &&
-        currentInteraction.type !== "loop" &&
-        !currentInteraction.button
+    const showSkipButton = true;
+        // currentInteraction &&
+        // currentInteraction["next-id"] &&
+        // !currentInteraction.animation?.buttons &&
+        // currentInteraction.type !== "input" &&
+        // currentInteraction.type !== "loop" &&
+        // !currentInteraction.button
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col">

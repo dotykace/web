@@ -598,15 +598,15 @@ function Chapter3Content() {
 
     const currentInteraction = flowData.interactions[currentInteractionId]
 
-    const showSkipButton =
-        isDesktop && // Only show on desktop/laptop devices
-        currentInteraction &&
-        currentInteraction["next-id"] &&
-        !currentInteraction.animation?.buttons &&
-        currentInteraction.type !== "input" &&
-        currentInteraction.type !== "loop" &&
-        !currentInteraction.button &&
-        currentInteraction.animation?.type !== "multiselect"
+    const showSkipButton = true;
+        // isDesktop && // Only show on desktop/laptop devices
+        // currentInteraction &&
+        // currentInteraction["next-id"] &&
+        // !currentInteraction.animation?.buttons &&
+        // currentInteraction.type !== "input" &&
+        // currentInteraction.type !== "loop" &&
+        // !currentInteraction.button &&
+        // currentInteraction.animation?.type !== "multiselect"
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 flex flex-col relative overflow-hidden">
