@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 import {readFromStorage} from "@/scripts/local-storage";
 import AdminForm from "@/components/login/AdminForm";
 import PlayerForm from "@/components/login/PlayerForm";
-
+import DotykaceLogo from "@/components/DotykaceLogo";
 export default function HomePage() {
   const [isLogin, setIsLogin] = useState(false)
   const [error, setError] = useState("")
@@ -56,8 +56,6 @@ export default function HomePage() {
       </div>
     )
   }
-
-  const appTitle = "dotýkače";
   const appSubtitle = "Interaktivní zkušenost s mobilem";
 
   const loginTitle = isLogin ? "Admin prihlaseni" : "Připojit se do aplikace";
@@ -71,14 +69,8 @@ export default function HomePage() {
         <div className="w-full max-w-md space-y-6">
           {/* Logo */}
           <div className="text-center mb-8">
-            <div className="relative w-32 h-32 mx-auto mb-4">
-              <div className="absolute inset-0 bg-yellow-300 rounded-full flex items-center justify-center text-4xl">
-                ^_^
-              </div>
-              <div className="absolute -top-2 -right-2 w-8 h-8 bg-blue-400 rounded-full"></div>
-            </div>
-            <h1 className="text-4xl font-bold text-blue-600 mb-2">{appTitle}</h1>
-            <p className="text-gray-700">{appSubtitle}</p>
+            <DotykaceLogo width={230} />
+            <p className="text-gray-700 mt-2">{appSubtitle}</p>
           </div>
 
           {/* Toggle Buttons */}
