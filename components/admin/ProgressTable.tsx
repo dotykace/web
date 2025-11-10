@@ -1,4 +1,5 @@
 import RoomParticipants from "@/components/admin/RoomParticipants";
+import {chapterList} from "@/components/admin/RenderRoom";
 
 export default function ProgressTable({ room, headerButtons, participants }) {
   const thBaseClass = "text-center px-2 py-3 text-sm font-semibold text-gray-800";
@@ -28,7 +29,7 @@ export default function ProgressTable({ room, headerButtons, participants }) {
     <tr>
       <th className={"text-left min-w-[120px]"+thBaseClass}>Hráč</th>
       {room.isStarted? headerButtons()
-        :([0, 1, 2, 3, 4].map((num) => (
+        :(chapterList.map((num) => (
         <th key={num} className={thBaseClass+" w-12"}>
           {num}
         </th>

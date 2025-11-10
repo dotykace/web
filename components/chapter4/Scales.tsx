@@ -29,7 +29,7 @@ export default function Scales({currentInteraction, onComplete}) {
   const [data, setData] = useState({});
   const [dataCollected, setDataCollected] = useState(false);
 
-  const { playOnce, isPlaying } = useSharedAudio();
+  const { playOnce, isPlaying, stop } = useSharedAudio();
 
   useEffect(() => {
     if(dataCollected){
@@ -56,6 +56,7 @@ export default function Scales({currentInteraction, onComplete}) {
   const updateScale = (number) => {
     if(!currentScale) return;
     updateData(currentScale.id, number);
+    stop(currentScale.voice)
     if(!currentScale.next){
       setDataCollected(true);
       return;
@@ -85,7 +86,8 @@ export default function Scales({currentInteraction, onComplete}) {
       topText={currentScale.top}
       bottomText={currentScale.bottom}
       onConfirm={updateScale}
-      disabled={isPlaying[currentScale.voice]}
+      // todo bring it back when audio on Iphone plays correctly
+      //disabled={isPlaying[currentScale.voice]}
       confirmationText={!(currentScale.next) ? "Potvrdit a dokončit" : undefined}
     />
   )

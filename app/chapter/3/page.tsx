@@ -7,12 +7,14 @@ import { db } from "@/lib/firebase"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Volume2, VolumeX, SkipForward, Check } from "lucide-react"
+import { Volume2, VolumeX, Check } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import HelpButton from "@/components/HelpButton";
 import useDB from "@/hooks/use-db";
 import {useRouter} from "next/navigation";
 import {readFromStorage} from "@/scripts/local-storage";
+import SkipButton from "@/components/SkipButton";
+import AudioControl from "@/components/AudioControl";
 
 // Voice Visualization Component (similar to Chapter 2)
 const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
@@ -354,6 +356,7 @@ function Chapter3Content() {
                 audio.volume = volume
                 audio.preload = "auto"
                 // Handle audio end event
+                audioRef.current = audio
                 audio.onended = () => {
                     if (mountedRef.current && audioRef.current === audio) {
                         if (loop) {
@@ -364,7 +367,6 @@ function Chapter3Content() {
                         }
                     }
                 }
-                audioRef.current = audio
                 await audio.play()
             } catch (error) {
                 console.warn(`Audio playback failed for ${channel} channel (${src}):`, error)
@@ -538,14 +540,11 @@ function Chapter3Content() {
 
     // Handle audio muting
     useEffect(() => {
-        ;[voiceAudioRef, sfxAudioRef, ].forEach((audioRef) => {
+        ;[voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
             if (audioRef.current) {
-                audioRef.current.pause()
-                audioRef.current.src = ""
-                audioRef.current = null
+                audioRef.current.muted = !audioEnabled
             }
         })
-        // 🎵 musicAudioRef nechávame hrať, kým ho sami nezastavíme
     }, [audioEnabled])
 
     const handleStartExperience = async () => {
@@ -618,34 +617,8 @@ function Chapter3Content() {
                 <div className="absolute bottom-20 left-20 w-24 h-24 bg-green-300 rounded-full"></div>
                 <div className="absolute bottom-40 right-10 w-12 h-12 bg-pink-300 rounded-full"></div>
             </div>
-
-            {/* Audio Control */}
-            <div className="absolute top-4 left-4 z-20">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                        initializeAudio() // Ensure audio is initialized even if toggling mute
-                        setAudioEnabled(!audioEnabled)
-                    }}
-                    className="text-white hover:bg-white/20 backdrop-blur-sm"
-                >
-                    {audioEnabled ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
-                </Button>
-            </div>
-
             {/* Skip Button - Only visible on desktop/laptop */}
-            {showSkipButton && (
-                <div className="absolute bottom-4 right-4 z-20">
-                    <Button
-                        onClick={handleSkip}
-                        className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm flex items-center gap-1"
-                    >
-                        <SkipForward className="h-4 w-4" />
-                        Preskočiť
-                    </Button>
-                </div>
-            )}
+            <SkipButton onSkip={handleSkip} visible={showSkipButton}/>
 
             {/* Main Content */}
             <div className="flex-1 flex items-center justify-center p-4 relative z-10">
@@ -660,6 +633,14 @@ function Chapter3Content() {
                             transition={{ duration: 0.3 }}
                         >
                             <Card className="bg-white/20 backdrop-blur-lg border-white/30 shadow-2xl rounded-3xl">
+                                <AudioControl
+                                  onClick={() => {
+                                      initializeAudio() // Ensure audio is initialized even if toggling mute
+                                      setAudioEnabled(!audioEnabled)
+                                  }}
+                                  audioEnabled={audioEnabled}
+                                  isVisible={true}
+                                />
                                 <CardContent className="p-6 space-y-6">
                                     {/* Display Text with Voice Visualization */}
                                     <div className="min-h-[200px] flex flex-col items-center justify-center">

@@ -3,7 +3,7 @@ import React from "react";
 import {AnimatePresence, motion} from "framer-motion";
 import VoiceVisualization from "@/components/VoiceVisualization";
 import {useSharedAudio} from "@/context/AudioContext";
-import {Button} from "@/components/ui/button";
+import SkipButton from "@/components/SkipButton";
 
 export default function BasicAudioVisual({ audio=null, id, children, coloring = "bg-white/10"}: {children?: React.ReactNode, coloring?: string}) {
 
@@ -15,6 +15,7 @@ export default function BasicAudioVisual({ audio=null, id, children, coloring = 
       playOnce(audio);
     }
   }, [audio, playOnce]);
+  // todo maybe dont need this, just always show skip button ???
   React.useEffect(() => {
     const checkIsDesktop = () => {
       // Check screen width (notebooks are typically 1024px+)
@@ -32,6 +33,13 @@ export default function BasicAudioVisual({ audio=null, id, children, coloring = 
 
     return () => window.removeEventListener("resize", checkIsDesktop)
   }, [])
+  const skipInteraction = () => {
+    stop(audio.filename)
+    if (audio.onFinish){
+      audio.onFinish()
+    }
+
+  }
   return (
     <div className={`min-h-screen flex items-center justify-center p-4 ${coloring}`}>
       <AnimatePresence mode="wait">
@@ -50,14 +58,7 @@ export default function BasicAudioVisual({ audio=null, id, children, coloring = 
         </Card>
         </motion.div>
       </AnimatePresence>
-      {isDesktop && audio && audio.onFinish &&(
-        <Button
-          onClick={() => {
-            stop(audio.filename)
-            audio.onFinish()
-          }}
-        >SKIP</Button>
-      )}
+      <SkipButton onSkip={skipInteraction} visible={audio}/>
 
     </div>
   )

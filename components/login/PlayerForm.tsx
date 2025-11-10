@@ -5,7 +5,7 @@ import {db} from "@/lib/firebase";
 import {FormField} from "@/components/FormField";
 import {Button} from "@/components/ui/button";
 import {LoadingSpinner} from "@/components/ui/loading-spinner";
-import {setToStorage} from "@/scripts/local-storage";
+import {readFromStorage, setToStorage} from "@/scripts/local-storage";
 import {DotykaceParticipant} from "@/lib/dotykace-types";
 
 export default function PlayerForm({setError}){
@@ -74,7 +74,18 @@ export default function PlayerForm({setError}){
         setError("Miestnosť nie je aktívna")
         return
       }
-
+      const savedRoomId = readFromStorage("roomId")
+      if (savedRoomId ) {
+        if(savedRoomId !== roomDoc.id){
+          localStorage.clear()
+        }
+        else {
+          const savedPlayerId = readFromStorage("playerId")
+          console.log(`User with ID ${savedPlayerId} is re-joining room "${roomDoc.id}"`)
+          router.push("/dotykace/room")
+          return;
+        }
+      }
       setToStorage("playerName", playerName)
       setToStorage("roomId", roomDoc.id)
       await addPlayerToRoom(roomDoc.id, playerName)
