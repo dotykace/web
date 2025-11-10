@@ -4,8 +4,11 @@
 import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import HelpButton from "@/components/HelpButton";
-import {readFromStorage} from "@/scripts/local-storage";
+import {readFromStorage, setToStorage} from "@/scripts/local-storage";
 import {useEffect, useState} from "react";
+import {Button} from "@/components/ui/button";
+import useDB from "@/hooks/use-db";
+import {useRouter} from "next/navigation";
 
 interface VideoItem {
     id: number
@@ -26,10 +29,14 @@ const videos: VideoItem[] = [
 export default function VideoPage() {
 
   const pageHeader = "Video na závěr"
+  const finishButtonText = "Dokončit zážitek"
 
   const [selectedVoice, setSelectedVoice] = useState()
+  const [dbHook, setDbHook] = useState();
+  const router = useRouter()
 
   const [filePathLoaded, setFilePathLoaded] = useState(false);
+  const [showFinishButton, setShowFinishButton] = useState(false);
 
   useEffect(() => {
     console.log("Loading selected voice from storage")
@@ -39,7 +46,19 @@ export default function VideoPage() {
       setSelectedVoice(savedVoice)
       setFilePathLoaded(true);
     }
+    const hook = useDB()
+    setDbHook(hook);
+    setTimeout(() => {
+      setShowFinishButton(true);
+    }, 1000 * 2 * 60); // Show finish button after 2 minutes
   }, []);
+
+  const handleFinish = () => {
+    if(dbHook){
+      dbHook.updateChapter(5, () => setToStorage("dotykaceFinished", true));
+    }
+    router.push("/dotykace")
+  }
 
   const filePath = `/videos/${selectedVoice}/`
   const coloring = "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900";
@@ -93,6 +112,16 @@ export default function VideoPage() {
                     </motion.div>
                 ))}
             </div>
+          {
+            showFinishButton && (
+              <Button
+                onClick={handleFinish}
+                className={"rounded-full border-2 border-blue-950 bg-blue-700 text-white text-xl p-6"}
+              >
+                {finishButtonText}
+              </Button>
+            )
+          }
         </div>
     )
 }

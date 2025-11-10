@@ -3,6 +3,7 @@ import {Button} from "@/components/ui/button";
 import {ChapterPermissions, DotykaceRoom} from "@/lib/dotykace-types";
 import {doc, updateDoc} from "firebase/firestore";
 import {db} from "@/lib/firebase";
+import {chapterList} from "@/components/admin/RenderRoom";
 
 export default function RoomParticipants({ participants, room }) {
   const allowNextChapter = async (room: DotykaceRoom, participantId: string, participantName:string, nextChapter: number) => {
@@ -47,7 +48,7 @@ export default function RoomParticipants({ participants, room }) {
             <div className="font-semibold text-gray-900 text-xs">{participant.name}</div>
           </div>
         </td>
-        {[0, 1, 2, 3, 4].map((chapterNum) => {
+        {chapterList.map((chapterNum) => {
           const isCompleted = completedChapters.includes(chapterNum)
           const isAllowed = allowedChapters.includes(chapterNum)
           const isCurrent = currentChapter === chapterNum

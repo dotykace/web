@@ -7,9 +7,10 @@ import { deleteDoc, doc, Timestamp, updateDoc} from "firebase/firestore";
 import {db} from "@/lib/firebase";
 import ProgressTable from "@/components/admin/ProgressTable";
 import useParticipants from "@/hooks/use-participants";
-
+export const chapterList = [0, 1, 2, 3, 4, 5]
 export default function RenderRoom({room, processedRooms}) {
   const {participants} = useParticipants({room})
+  // todo maybe remove this restriction?
   const canUnlockChapterForAll = (room: DotykaceRoom, chapter: number) => {
     return participants.some((p) => (p.completedChapters || []).includes(chapter - 1) || chapter === 1)
   }
@@ -19,7 +20,7 @@ export default function RenderRoom({room, processedRooms}) {
   }
 
   const allowNextChapterForAll = async (room: DotykaceRoom, nextChapter: number) => {
-    if(!canUnlockChapterForAll(room, nextChapter)) return
+    //if(!canUnlockChapterForAll(room, nextChapter)) return
     try {
       const currentPermissions = room.chapterPermissions || {}
       const updatedPermissions: ChapterPermissions = { ...currentPermissions }
@@ -65,7 +66,7 @@ export default function RenderRoom({room, processedRooms}) {
       // Spusti room a automaticky odomkni introduction (kapitolu 0)
       await updateDoc(doc(db, "rooms", roomDocId), {
         isStarted: true,
-        globalUnlockedChapters: [0],
+        globalUnlockedChapters: [0, 5],
       })
     } catch (error) {
       console.error("❌ Error starting room:", error)
@@ -117,15 +118,14 @@ export default function RenderRoom({room, processedRooms}) {
   const BulkActions = () => {
     return (
       <>
-        {[0, 1, 2, 3, 4].map((chapterNum) => {
+        {chapterList.map((chapterNum) => {
           const isChapterUnlocked = isChapterGloballyUnlocked(room, chapterNum)
-          const canUnlock = canUnlockChapterForAll(room, chapterNum)
+          //const canUnlock = canUnlockChapterForAll(room, chapterNum)
 
           return (
             <td key={chapterNum} className="p-2 text-center">
               <div className="flex items-center justify-center">
                 <Button
-                  disabled={!canUnlock}
                   onClick={() => allowNextChapterForAll(room, chapterNum)}
                   className={`w-9 h-9 gap-1 rounded-xl p-2 flex items-center justify-center text-xs font-bold transition-all duration-200 shadow-sm
                   ${
