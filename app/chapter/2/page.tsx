@@ -13,6 +13,7 @@ import useDB from "@/hooks/use-db";
 import {useRouter} from "next/navigation";
 import {readFromStorage, setToStorage} from "@/scripts/local-storage";
 import SkipButton from "@/components/SkipButton";
+import AudioControl from "@/components/AudioControl";
 
 // Animated Voice Visualization Component (unchanged)
 const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
@@ -760,27 +761,20 @@ function Chapter2Content() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col">
 
-            {/* Audio Control */}
-            <div className="absolute top-4 left-4 z-20">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                        initializeAudio() // Ensure audio is initialized even if toggling mute
-                        setAudioEnabled(!audioEnabled)
-                    }}
-                    className="text-white hover:bg-white/20"
-                >
-                    {audioEnabled ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
-                </Button>
-            </div>
-
             {/* Skip Button - Only visible on desktop/laptop screens (lg and above) */}
             <SkipButton onSkip={handleSkip} visible={showSkipButton}/>
 
             {/* Main Content */}
             <div className="flex-1 flex items-center justify-center p-4">
                 <Card className="w-full max-w-lg bg-white/10 backdrop-blur-lg border-white/20 shadow-2xl">
+                    <AudioControl
+                      onClick={() => {
+                        initializeAudio() // Ensure audio is initialized even if toggling mute
+                        setAudioEnabled(!audioEnabled)
+                        }}
+                      audioEnabled={audioEnabled}
+                      isVisible={true}
+                    />
                     <CardContent className="p-6 space-y-6">
                         {/* Display Text with Voice/Music Visualization */}
                         <div className="min-h-[200px] flex flex-col items-center justify-center">

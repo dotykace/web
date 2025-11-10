@@ -57,6 +57,12 @@ export default function MenuPage() {
     const storedRoomId = readFromStorage("roomId") as string
     const storedPlayerId = readFromStorage("playerId") as string
 
+    const selectedVoice = readFromStorage("selectedVoice") as string
+    console.log("Selected voice from storage:", selectedVoice)
+    if(!selectedVoice){
+      setToStorage("selectedVoice", "male")
+    }
+
     setChapter(storedChapter)
     setUserName(storedUserName)
     setRoomId(storedRoomId)
