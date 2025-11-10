@@ -27,7 +27,6 @@ export default function VoiceRoom({onFinish}) {
   const [selectedVoice, setSelectedVoice] = useState<string>("male")
   const { playPreloaded, isPlaying, toggle, stop, playOnce } = useSharedAudio();
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
-  // todo disable selection while track0 is playing
   const [disableSelection, setDisableSelection] = useState<boolean>(false);
 
   useEffect(() => {

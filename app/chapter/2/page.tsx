@@ -7,11 +7,12 @@ import { db } from "@/lib/firebase"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Volume2, VolumeX, SkipForward, Star } from "lucide-react"
+import { Volume2, VolumeX, Star } from "lucide-react"
 import HelpButton from "@/components/HelpButton";
 import useDB from "@/hooks/use-db";
 import {useRouter} from "next/navigation";
 import {readFromStorage, setToStorage} from "@/scripts/local-storage";
+import SkipButton from "@/components/SkipButton";
 
 // Animated Voice Visualization Component (unchanged)
 const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
@@ -748,6 +749,7 @@ function Chapter2Content() {
 
     // Show skip button only for desktop/laptop screens (lg and above)
     const showSkipButton = true;
+    // todo solve the skip button visibility properly
         // currentInteraction &&
         // currentInteraction["next-id"] &&
         // !currentInteraction.animation?.buttons &&
@@ -774,17 +776,7 @@ function Chapter2Content() {
             </div>
 
             {/* Skip Button - Only visible on desktop/laptop screens (lg and above) */}
-            {showSkipButton && (
-                <div className="absolute bottom-4 right-4 z-20 hidden lg:block">
-                    <Button
-                        onClick={handleSkip}
-                        className="bg-white/20 hover:bg-white/30 text-white border-white/30 flex items-center gap-1"
-                    >
-                        <SkipForward className="h-4 w-4" />
-                        Preskočiť
-                    </Button>
-                </div>
-            )}
+            <SkipButton onSkip={handleSkip} visible={showSkipButton}/>
 
             {/* Main Content */}
             <div className="flex-1 flex items-center justify-center p-4">
