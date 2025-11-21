@@ -1,13 +1,30 @@
 import React from "react";
 import Image from "next/image";
-import {Check} from "lucide-react";
-function generateSectionFileName (chapterNumber: number, disabled: boolean) {
-  return `/images/menu/menu${chapterNumber}_${disabled ? "dis" : "en"}.svg`
+import { Check } from "lucide-react";
+
+type SectionState = "locked" | "unlocked" | "completed";
+
+interface Section {
+  id: number;
+  title: string;
+  path: string;
+  state: SectionState;
 }
-export default function MenuSectionCard({section, handleSectionClick}) {
-  const isLocked = section.state === "locked"
-  const isCompleted = section.state === "completed"
-  const fileName = generateSectionFileName(section.id, isLocked)
+
+function generateSectionFileName(chapterNumber: number, disabled: boolean) {
+  return `/images/menu/menu${chapterNumber}_${disabled ? "dis" : "en"}.svg`;
+}
+
+export default function MenuSectionCard({
+  section,
+  handleSectionClick,
+}: {
+  section: Section;
+  handleSectionClick: (section: Section) => void;
+}) {
+  const isLocked = section.state === "locked";
+  const isCompleted = section.state === "completed";
+  const fileName = generateSectionFileName(section.id, isLocked);
 
   return (
     <div className="flex flex-col items-center w-[150px] relative">
@@ -30,5 +47,5 @@ export default function MenuSectionCard({section, handleSectionClick}) {
         <p className="text-lg font-semibold break-words">{section.title}</p>
       </div>
     </div>
-  )
+  );
 }

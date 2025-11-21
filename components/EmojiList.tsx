@@ -1,11 +1,21 @@
-export default function EmojiList({ emojis, onEmojiClick, className }) {
+export default function EmojiList({
+  emojis,
+  onEmojiClick,
+  className,
+}: {
+  emojis: string[];
+  onEmojiClick: (emoji: string) => void;
+  className?: string;
+}) {
   return (
     <div className="bg-gray-50 dark:bg-gray-800 rounded-xl">
-      <div className={(className??"")+" flex justify-around"}>
+      <div className={(className ?? "") + " flex justify-around"}>
         {emojis.map((emoji, index) => (
           <button
             key={index}
-            className={"text-3xl hover:scale-110 transition-transform duration-200 p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700"}
+            className={
+              "text-3xl hover:scale-110 transition-transform duration-200 p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+            }
             onClick={() => onEmojiClick(emoji)}
           >
             {emoji}
@@ -13,5 +23,5 @@ export default function EmojiList({ emojis, onEmojiClick, className }) {
         ))}
       </div>
     </div>
-  )
+  );
 }

@@ -1,18 +1,32 @@
-import {useEffect, useState} from "react";
-import {collection, getDocs, onSnapshot} from "firebase/firestore";
-import {db} from "@/lib/firebase";
+import { useEffect, useState } from "react";
+import { collection, getDocs, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import type { DotykaceRoom, DotykaceParticipant } from "@/lib/dotykace-types";
 
-export default function useParticipants({room}) {
-  const [participants, setParticipants] = useState<Array<any>>([]);
-  const participantsCol = collection(db, "rooms", room.docId, "participants");
+interface RoomWithParticipants extends DotykaceRoom {
+  participants?: DotykaceParticipant[];
+}
+
+export default function useParticipants({
+  room,
+}: {
+  room: RoomWithParticipants;
+}) {
+  const [participants, setParticipants] = useState<DotykaceParticipant[]>([]);
+
   useEffect(() => {
+    if (!room.docId) return;
+
+    const participantsCol = collection(db, "rooms", room.docId, "participants");
     console.log("new room docId:", room.docId);
-    getParticipantsOnce(room).then(fetchedParticipants => {
+    getParticipantsOnce(room).then((fetchedParticipants) => {
       setParticipants(fetchedParticipants);
-    })
-    if (room.participants) return
-    onSnapshot(participantsCol, snapshot => {
-      const newParticipants = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    });
+    if (room.participants) return;
+    onSnapshot(participantsCol, (snapshot) => {
+      const newParticipants = snapshot.docs.map(
+        (doc) => ({ id: doc.id, ...doc.data() } as DotykaceParticipant)
+      );
       setParticipants(newParticipants);
       console.log("Realtime participants:", newParticipants);
     });
@@ -20,14 +34,21 @@ export default function useParticipants({room}) {
 
   return { participants };
 }
-export async function getParticipantsOnce(room) {
-  console.log(room)
-  if(room.participants){
+export async function getParticipantsOnce(
+  room: RoomWithParticipants
+): Promise<DotykaceParticipant[]> {
+  console.log(room);
+  if (room.participants) {
     return room.participants;
   }
   const roomDocId = room.docId;
+  if (!roomDocId) {
+    return [];
+  }
   const participantsCol = collection(db, "rooms", roomDocId, "participants");
-  const snapshot = await getDocs(participantsCol)
+  const snapshot = await getDocs(participantsCol);
   console.log("Fetched participants snapshot for room", roomDocId);
-  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  return snapshot.docs.map(
+    (doc) => ({ id: doc.id, ...doc.data() } as DotykaceParticipant)
+  );
 }

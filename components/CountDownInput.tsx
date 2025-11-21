@@ -3,11 +3,16 @@ import { Button } from "@/components/ui/button";
 import React, { useEffect, useState } from "react";
 
 export default function CountDownInput({
-                                         onSave,
+  onSave,
   questionText = "",
-                                         buttonLabel = "Uložit",
-                                         countdownSeconds = 15,
-                                       }) {
+  buttonLabel = "Uložit",
+  countdownSeconds = 15,
+}: {
+  onSave: (value: string) => void;
+  questionText?: string;
+  buttonLabel?: string;
+  countdownSeconds?: number;
+}) {
   const [inputValue, setInputValue] = useState("");
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
 
@@ -63,7 +68,8 @@ export default function CountDownInput({
       {timeLeft !== null && (
         <div className="text-center">
           <div className="text-white/90 text-sm font-medium">
-            {timeLeftText}{Math.floor(timeLeft / 60)}:
+            {timeLeftText}
+            {Math.floor(timeLeft / 60)}:
             {(timeLeft % 60).toString().padStart(2, "0")}
           </div>
         </div>

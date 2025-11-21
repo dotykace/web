@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import {ReactNode, useEffect, useState} from "react"
-import { Button } from "@/components/ui/button"
-import { RadioGroup } from "@/components/ui/radio-group"
-import VoiceItem from "@/components/chapter1/VoiceItem"
-import {useSharedAudio} from "@/context/AudioContext";
+import { ReactNode, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { RadioGroup } from "@/components/ui/radio-group";
+import VoiceItem from "@/components/chapter1/VoiceItem";
+import { useSharedAudio } from "@/context/AudioContext";
 
 const sampleVoices = [
   {
@@ -21,28 +21,32 @@ const sampleVoices = [
     id: "neutral",
     name: "Neutrální hlas",
   },
-]
+];
 
-export default function VoiceRoom({onFinish}) {
-  const [selectedVoice, setSelectedVoice] = useState<string>("male")
+export default function VoiceRoom({
+  onFinish,
+}: {
+  onFinish: (voice: string) => void;
+}) {
+  const [selectedVoice, setSelectedVoice] = useState<string>("male");
   const { playPreloaded, isPlaying, toggle, stop, playOnce } = useSharedAudio();
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
   const [disableSelection, setDisableSelection] = useState<boolean>(false);
 
   useEffect(() => {
-    playPreloaded("voice-loop")
+    playPreloaded("voice-loop");
   }, []);
   useEffect(() => {
     sampleVoices.forEach((voice) => {
       if (voice.audioKey && isPlaying[voice.audioKey]) {
         setCurrentlyPlaying(voice.audioKey);
       }
-    })
+    });
   }, [isPlaying]);
 
   const playTrackZero = () => {
-    setDisableSelection((prevState)=>!prevState);
-    console.log(disableSelection)
+    setDisableSelection((prevState) => !prevState);
+    console.log(disableSelection);
     stop("voice-loop");
     const path = `${selectedVoice}/track0.mp3`;
     playOnce({
@@ -50,38 +54,49 @@ export default function VoiceRoom({onFinish}) {
       type: "sound",
       onFinish: () => {
         onFinish(selectedVoice);
-      }
+      },
     });
-  }
+  };
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-4">
       <div className="w-full max-w-2xl space-y-8">
         {/* Title */}
         <div className="text-center space-y-3">
-          <h1 className="text-4xl md:text-5xl font-bold text-white text-balance">Jak na tebe mám mluvit?</h1>
-          <p className="text-zinc-400 text-lg">Vyber si hlas, který ti nejvíce vyhovuje</p>
+          <h1 className="text-4xl md:text-5xl font-bold text-white text-balance">
+            Jak na tebe mám mluvit?
+          </h1>
+          <p className="text-zinc-400 text-lg">
+            Vyber si hlas, který ti nejvíce vyhovuje
+          </p>
         </div>
 
         {/* Voice Options */}
         <div className="space-y-4">
           <RadioGroup value={selectedVoice} onValueChange={setSelectedVoice}>
             {sampleVoices.map((voice) => {
-              const disabled = (voice.audioKey === undefined)|| disableSelection;
+              const disabled = voice.audioKey === undefined || disableSelection;
 
               return (
                 <VoiceItem
                   key={voice.id}
                   disabled={disabled}
-                  voice={voice}
+                  voice={{
+                    id: voice.id,
+                    name: voice.name,
+                    audioKey: voice.audioKey || "",
+                  }}
                   isSelected={selectedVoice === voice.id}
-                  isPlaying={disabled? false: isPlaying[voice.audioKey] }
+                  isPlaying={disabled ? false : isPlaying[voice.audioKey]}
                   onToggle={() => {
                     if (disabled) return;
-                    if (currentlyPlaying && currentlyPlaying !== voice.audioKey) {
+                    if (
+                      currentlyPlaying &&
+                      currentlyPlaying !== voice.audioKey
+                    ) {
                       stop(currentlyPlaying);
                     }
-                    toggle(voice.audioKey)
+                    toggle(voice.audioKey);
                   }}
                 />
               ) as ReactNode;
@@ -102,5 +117,5 @@ export default function VoiceRoom({onFinish}) {
         </div>
       </div>
     </main>
-  )
+  );
 }

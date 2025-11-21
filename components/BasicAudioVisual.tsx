@@ -1,47 +1,68 @@
-import {Card, CardContent} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import React from "react";
-import {AnimatePresence, motion} from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import VoiceVisualization from "@/components/VoiceVisualization";
-import {useSharedAudio} from "@/context/AudioContext";
+import { useSharedAudio } from "@/context/AudioContext";
 import SkipButton from "@/components/SkipButton";
 
-export default function BasicAudioVisual({ audio=null, id, children, coloring = "bg-white/10"}: {children?: React.ReactNode, coloring?: string}) {
+interface AudioItem {
+  filename: string;
+  onFinish: () => void;
+  type?: "sound" | "voice";
+}
 
-  const [isDesktop, setIsDesktop] = React.useState(false)
+export default function BasicAudioVisual({
+  audio = null,
+  id,
+  children,
+  coloring = "bg-white/10",
+}: {
+  audio: AudioItem | null;
+  id: string;
+  children?: React.ReactNode;
+  coloring?: string;
+}) {
+  const [isDesktop, setIsDesktop] = React.useState(false);
 
-  const {playOnce, stop} = useSharedAudio()
+  const { playOnce, stop } = useSharedAudio();
   React.useEffect(() => {
     if (audio) {
-      playOnce(audio);
+      playOnce({
+        filename: audio.filename,
+        onFinish: audio.onFinish,
+        type: audio.type || "sound",
+      });
     }
   }, [audio, playOnce]);
   // todo maybe dont need this, just always show skip button ???
   React.useEffect(() => {
     const checkIsDesktop = () => {
       // Check screen width (notebooks are typically 1024px+)
-      const isLargeScreen = window.innerWidth >= 1024
+      const isLargeScreen = window.innerWidth >= 1024;
       // Check if device has hover capability (typically desktop/laptop)
-      const hasHover = window.matchMedia("(hover: hover)").matches
+      const hasHover = window.matchMedia("(hover: hover)").matches;
       // Check if device has fine pointer (mouse)
-      const hasFinePointer = window.matchMedia("(pointer: fine)").matches
+      const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
 
-      setIsDesktop(isLargeScreen && hasHover && hasFinePointer)
-    }
+      setIsDesktop(isLargeScreen && hasHover && hasFinePointer);
+    };
 
-    checkIsDesktop()
-    window.addEventListener("resize", checkIsDesktop)
+    checkIsDesktop();
+    window.addEventListener("resize", checkIsDesktop);
 
-    return () => window.removeEventListener("resize", checkIsDesktop)
-  }, [])
+    return () => window.removeEventListener("resize", checkIsDesktop);
+  }, []);
   const skipInteraction = () => {
-    stop(audio.filename)
-    if (audio.onFinish){
-      audio.onFinish()
+    if (!audio) return;
+    stop(audio.filename);
+    if (audio.onFinish) {
+      audio.onFinish();
     }
-
-  }
+  };
   return (
-    <div className={`min-h-screen flex items-center justify-center p-4 ${coloring}`}>
+    <div
+      className={`min-h-screen flex items-center justify-center p-4 ${coloring}`}
+    >
       <AnimatePresence mode="wait">
         <motion.div
           key={id}
@@ -51,15 +72,14 @@ export default function BasicAudioVisual({ audio=null, id, children, coloring = 
           transition={{ duration: 0.3 }}
           className={"w-full flex items-center justify-center"}
         >
-        <Card className="w-full max-w-md bg-white/10 backdrop-blur-lg border-white/20 shadow-2xl rounded-xl">
-          <CardContent className="p-8 text-center">
-            {children ?? <VoiceVisualization/>}
-          </CardContent>
-        </Card>
+          <Card className="w-full max-w-md bg-white/10 backdrop-blur-lg border-white/20 shadow-2xl rounded-xl">
+            <CardContent className="p-8 text-center">
+              {children ?? <VoiceVisualization />}
+            </CardContent>
+          </Card>
         </motion.div>
       </AnimatePresence>
-      <SkipButton onSkip={skipInteraction} visible={audio}/>
-
+      <SkipButton onSkip={skipInteraction} visible={!!audio} />
     </div>
-  )
+  );
 }

@@ -1,6 +1,6 @@
 // hooks/useAudioManager.tsx
 import { useEffect, useRef, useState, useCallback } from "react";
-import {readFromStorage} from "@/scripts/local-storage";
+import { readFromStorage } from "@/scripts/local-storage";
 
 interface UseAudioManagerOptions {
   loop?: boolean;
@@ -18,7 +18,7 @@ interface PlayingInstance {
   gainNode: GainNode;
 }
 
-interface SoundMapEntry {
+export interface SoundMapEntry {
   filename: string;
   opts?: UseAudioManagerOptions;
 }
@@ -28,7 +28,7 @@ interface PlayOnceOptions extends SoundMapEntry {
   type: "sound" | "voice";
 }
 
-interface SoundMap {
+export interface SoundMap {
   [key: string]: SoundMapEntry;
 }
 
@@ -56,7 +56,7 @@ export function useAudioManager() {
     if (!playingRef.current[key]) playingRef.current[key] = [];
     playingRef.current[key].push(instance);
     setIsPlaying((prev) => ({ ...prev, [key]: true }));
-  }
+  };
 
   const removeFromPlaying = (key: string, instance: PlayingInstance) => {
     playingRef.current[key] = playingRef.current[key].filter(
@@ -65,43 +65,48 @@ export function useAudioManager() {
     if (playingRef.current[key].length === 0) {
       setIsPlaying((prev) => ({ ...prev, [key]: false }));
     }
-  }
+  };
 
   const getPath = (filename: string, type = "sound") => {
-    if (type === "voice"){
+    if (type === "voice") {
       const selectedVoice = readFromStorage("selectedVoice") || "male";
       console.log("Using voice:", selectedVoice);
       return `/audio/${selectedVoice}/${filename}`;
     }
     return `/audio/${filename}`;
-  }
+  };
 
-  const fetchSound = async (filename: string, type = "sound"): Promise<AudioBuffer> => {
+  const fetchSound = async (
+    filename: string,
+    type = "sound"
+  ): Promise<AudioBuffer> => {
     const context = getAudioContext();
     if (!context) throw new Error("AudioContext not available");
     const response = await fetch(getPath(filename, type));
     const arrayBuffer = await response.arrayBuffer();
     return await context.decodeAudioData(arrayBuffer);
-  }
+  };
 
   // --- Load a sound and decode it
-  const loadSound = useCallback(async (key: string, filename: string, opts?: UseAudioManagerOptions) => {
+  const loadSound = useCallback(
+    async (key: string, filename: string, opts?: UseAudioManagerOptions) => {
+      const buffer = await fetchSound(filename);
 
-    const buffer = await fetchSound(filename);
-
-    soundsRef.current[key] = {
-      buffer,
-      loop: opts?.loop ?? false,
-      volume: opts?.volume ?? 1,
-    };
-    setIsPlaying((prev) => ({ ...prev, [key]: false }));
-  }, []);
+      soundsRef.current[key] = {
+        buffer,
+        loop: opts?.loop ?? false,
+        volume: opts?.volume ?? 1,
+      };
+      setIsPlaying((prev) => ({ ...prev, [key]: false }));
+    },
+    []
+  );
 
   // --- Preload multiple sounds at once
   const preloadAll = useCallback(
     async (soundMap: SoundMap) => {
-      const promises = Object.entries(soundMap).map(([key, { filename, opts }]) =>
-        loadSound(key, filename, opts)
+      const promises = Object.entries(soundMap).map(
+        ([key, { filename, opts }]) => loadSound(key, filename, opts)
       );
       await Promise.all(promises);
     },
@@ -109,68 +114,72 @@ export function useAudioManager() {
   );
 
   // --- Play a sound by key
-  const play = useCallback(
-    async (sound) => {
-
-      const context = getAudioContext();
-      if(!context) {
-        console.warn("AudioContext not available");
-        return;
-      }
-      if (context.state === "suspended") {
-        console.log("Resuming suspended AudioContext");
-        await context.resume();
-      }
-      const gainNode = context.createGain();
-      gainNode.gain.value = sound.volume;
-
-      const source = context.createBufferSource();
-      source.buffer = sound.buffer;
-      source.loop = sound.loop;
-
-      source.connect(gainNode).connect(context.destination);
-      source.start();
-      return { source, gainNode };
-      },
-    []
-  );
-
-  const playPreloaded = useCallback(async (key: string) => {
-    const sound = soundsRef.current[key];
-    if (!sound) {
-      console.warn(`Sound ${key} not loaded`);
+  const play = useCallback(async (sound: Sound) => {
+    const context = getAudioContext();
+    if (!context) {
+      console.warn("AudioContext not available");
       return;
     }
-    const {source, gainNode} = await play(sound);
-
-    addToPlaying(key, {source, gainNode});
-
-    source.onended = () => {
-      source.disconnect();
-      gainNode.disconnect();
-      removeFromPlaying(key, {source, gainNode});
-    };
-
-  },[play])
-
-  const playOnce = useCallback(async ({filename, opts, type, onFinish}: PlayOnceOptions) => {
-    const buffer = await fetchSound(filename, type);
-    const sound = {
-      buffer,
-      loop: opts?.loop ?? false,
-      volume: opts?.volume ?? 1,
+    if (context.state === "suspended") {
+      console.log("Resuming suspended AudioContext");
+      await context.resume();
     }
-    const {source, gainNode} = await play(sound);
-    addToPlaying(filename, {source, gainNode});
-    source.onended = () => {
-      source.disconnect();
-      gainNode.disconnect();
-      removeFromPlaying(filename, {source, gainNode});
+    const gainNode = context.createGain();
+    gainNode.gain.value = sound.volume;
 
-      onFinish();
-    };
+    const source = context.createBufferSource();
+    source.buffer = sound.buffer;
+    source.loop = sound.loop;
 
-  },[play]);
+    source.connect(gainNode).connect(context.destination);
+    source.start();
+    return { source, gainNode };
+  }, []);
+
+  const playPreloaded = useCallback(
+    async (key: string) => {
+      const sound = soundsRef.current[key];
+      if (!sound) {
+        console.warn(`Sound ${key} not loaded`);
+        return;
+      }
+      const result = await play(sound);
+      if (!result) return;
+      const { source, gainNode } = result;
+
+      addToPlaying(key, { source, gainNode });
+
+      source.onended = () => {
+        source.disconnect();
+        gainNode.disconnect();
+        removeFromPlaying(key, { source, gainNode });
+      };
+    },
+    [play]
+  );
+
+  const playOnce = useCallback(
+    async ({ filename, opts, type, onFinish }: PlayOnceOptions) => {
+      const buffer = await fetchSound(filename, type);
+      const sound = {
+        buffer,
+        loop: opts?.loop ?? false,
+        volume: opts?.volume ?? 1,
+      };
+      const result = await play(sound);
+      if (!result) return;
+      const { source, gainNode } = result;
+      addToPlaying(filename, { source, gainNode });
+      source.onended = () => {
+        source.disconnect();
+        gainNode.disconnect();
+        removeFromPlaying(filename, { source, gainNode });
+
+        onFinish();
+      };
+    },
+    [play]
+  );
 
   // --- Stop all instances of a sound
   const stop = useCallback((key: string) => {

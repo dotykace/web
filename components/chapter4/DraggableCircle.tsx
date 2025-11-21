@@ -3,7 +3,11 @@
 import { useEffect, useRef } from "react";
 import { motion, useMotionValue } from "framer-motion";
 
-export default function DraggableCircle({percentageCallback}) {
+export default function DraggableCircle({
+  percentageCallback,
+}: {
+  percentageCallback: (percentage: number) => void;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const circleRef = useRef<HTMLDivElement>(null);
   const y = useMotionValue(0);
@@ -11,7 +15,7 @@ export default function DraggableCircle({percentageCallback}) {
   useEffect(() => {
     const updatePercentage = () => {
       if (!containerRef.current) return;
-      const circleHeight = circleRef.current.offsetHeight;
+      const circleHeight = circleRef.current?.offsetHeight || 0;
       const containerHeight = containerRef.current.offsetHeight - circleHeight;
 
       // When starting from center, y = 0 → middle of screen

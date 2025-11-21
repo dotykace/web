@@ -6,11 +6,10 @@ export default function DotykaceLogo({ width = 300 }: { width?: number }) {
       <Image
         src="/images/menu/dotykace_white.svg"
         alt="Logo"
-        preload="true"
         width={width}
         height={120}
         priority
       />
     </div>
-  )
+  );
 }

@@ -1,57 +1,61 @@
-import {ReactNode, useState} from "react";
-import {useRouter} from "next/navigation";
-import {collection, getDocs, query, where} from "firebase/firestore";
-import {db} from "@/lib/firebase";
-import {DotykaceUser} from "@/lib/dotykace-types";
-import {FormField} from "@/components/FormField";
-import {Button} from "@/components/ui/button";
-import {LoadingSpinner} from "@/components/ui/loading-spinner";
-import {setToStorage} from "@/scripts/local-storage";
+import { ReactNode, useState } from "react";
+import { useRouter } from "next/navigation";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { DotykaceUser } from "@/lib/dotykace-types";
+import { FormField } from "@/components/FormField";
+import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { setToStorage } from "@/scripts/local-storage";
 
-export default function AdminForm({setError}){
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+export default function AdminForm({
+  setError,
+}: {
+  setError: (error: string) => void;
+}) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
-  const router = useRouter()
+  const router = useRouter();
 
   const handleAdminLogin = async () => {
     if (!username || !password) {
-      setError("Prosím vyplňte všetky polia")
-      return
+      setError("Prosím vyplňte všetky polia");
+      return;
     }
 
-    setLoading(true)
-    setError("")
+    setLoading(true);
+    setError("");
 
     try {
-      const usersRef = collection(db, "admins")
-      const q = query(usersRef, where("username", "==", username))
-      const querySnapshot = await getDocs(q)
+      const usersRef = collection(db, "admins");
+      const q = query(usersRef, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
-        setError("Nesprávne prihlasovacie údaje")
-        return
+        setError("Nesprávne prihlasovacie údaje");
+        return;
       }
 
-      const userDoc = querySnapshot.docs[0]
-      const userData = userDoc.data() as DotykaceUser
+      const userDoc = querySnapshot.docs[0];
+      const userData = userDoc.data() as DotykaceUser;
 
       if (userData.password !== password || userData.role !== "admin") {
-        setError("Nesprávne prihlasovacie údaje")
-        return
+        setError("Nesprávne prihlasovacie údaje");
+        return;
       }
 
-      setToStorage("adminId", userDoc.id)
-      router.push("/dotykace/admin")
+      setToStorage("adminId", userDoc.id);
+      router.push("/dotykace/admin");
     } catch (err) {
-      setError("Chyba pri prihlasovaní")
-      console.error("Login error:", err)
+      setError("Chyba pri prihlasovaní");
+      console.error("Login error:", err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <>
@@ -70,10 +74,16 @@ export default function AdminForm({setError}){
         placeholder="Zadajte heslo"
         onKeyPress={(e) => e.key === "Enter" && handleAdminLogin()}
       />
-      <Button onClick={handleAdminLogin} disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700">
-        {loading ? (<LoadingSpinner className="mr-2" /> as ReactNode) : undefined}
+      <Button
+        onClick={handleAdminLogin}
+        disabled={loading}
+        className="w-full bg-blue-600 hover:bg-blue-700"
+      >
+        {loading
+          ? ((<LoadingSpinner className="mr-2" />) as ReactNode)
+          : undefined}
         Prihlásiť sa
       </Button>
     </>
-  )
+  );
 }

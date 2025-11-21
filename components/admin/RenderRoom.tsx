@@ -1,65 +1,92 @@
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
-import {Badge} from "@/components/ui/badge";
-import {Button} from "@/components/ui/button";
-import { Download, LockKeyhole, Play, Trash2, UnlockKeyhole, Users} from "lucide-react";
-import {ChapterPermissions, DotykaceRoom} from "@/lib/dotykace-types";
-import { deleteDoc, doc, Timestamp, updateDoc} from "firebase/firestore";
-import {db} from "@/lib/firebase";
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Download,
+  LockKeyhole,
+  Play,
+  Trash2,
+  UnlockKeyhole,
+  Users,
+} from "lucide-react";
+import { ChapterPermissions, DotykaceRoom } from "@/lib/dotykace-types";
+import { deleteDoc, doc, Timestamp, updateDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import ProgressTable from "@/components/admin/ProgressTable";
 import useParticipants from "@/hooks/use-participants";
-export const chapterList = [0, 1, 2, 3, 4, 5]
-export default function RenderRoom({room, processedRooms}) {
-  const {participants} = useParticipants({room})
+export const chapterList = [0, 1, 2, 3, 4, 5];
+export default function RenderRoom({
+  room,
+  processedRooms,
+}: {
+  room: DotykaceRoom;
+  processedRooms: React.MutableRefObject<Set<string>>;
+}) {
+  const { participants } = useParticipants({ room });
   // todo maybe remove this restriction?
   const canUnlockChapterForAll = (room: DotykaceRoom, chapter: number) => {
-    return participants.some((p) => (p.completedChapters || []).includes(chapter - 1) || chapter === 1)
-  }
+    return participants.some(
+      (p) => (p.completedChapters || []).includes(chapter - 1) || chapter === 1
+    );
+  };
 
   const isChapterGloballyUnlocked = (room: DotykaceRoom, chapter: number) => {
-    return room.globalUnlockedChapters?.includes(chapter) || false
-  }
+    return room.globalUnlockedChapters?.includes(chapter) || false;
+  };
 
-  const allowNextChapterForAll = async (room: DotykaceRoom, nextChapter: number) => {
+  const allowNextChapterForAll = async (
+    room: DotykaceRoom,
+    nextChapter: number
+  ) => {
     //if(!canUnlockChapterForAll(room, nextChapter)) return
     try {
-      const currentPermissions = room.chapterPermissions || {}
-      const updatedPermissions: ChapterPermissions = { ...currentPermissions }
-      const currentGlobalUnlocked = room.globalUnlockedChapters || []
-      const updatedGlobalUnlocked = [...currentGlobalUnlocked]
+      const currentPermissions = room.chapterPermissions || {};
+      const updatedPermissions: ChapterPermissions = { ...currentPermissions };
+      const currentGlobalUnlocked = room.globalUnlockedChapters || [];
+      const updatedGlobalUnlocked = [...currentGlobalUnlocked];
 
       if (!updatedGlobalUnlocked.includes(nextChapter)) {
-        updatedGlobalUnlocked.push(nextChapter)
-        updatedGlobalUnlocked.sort((a, b) => a - b)
+        updatedGlobalUnlocked.push(nextChapter);
+        updatedGlobalUnlocked.sort((a, b) => a - b);
       }
 
       participants.forEach((participant) => {
-        const completedChapters = participant.completedChapters || []
-        const previousChapter = nextChapter - 1
+        const completedChapters = participant.completedChapters || [];
+        const previousChapter = nextChapter - 1;
 
         if (completedChapters.includes(previousChapter) || nextChapter === 1) {
           const playerPermissions = updatedPermissions[participant.id] || {
             allowedChapters: [],
             playerName: participant.name,
-          }
+          };
           if (!playerPermissions.allowedChapters.includes(nextChapter)) {
-            playerPermissions.allowedChapters.push(nextChapter)
-            playerPermissions.allowedChapters.sort((a, b) => a - b)
+            playerPermissions.allowedChapters.push(nextChapter);
+            playerPermissions.allowedChapters.sort((a, b) => a - b);
           }
-          updatedPermissions[participant.id] = playerPermissions
+          updatedPermissions[participant.id] = playerPermissions;
         }
-      })
+      });
 
       await updateDoc(doc(db, "rooms", room.docId!), {
         chapterPermissions: updatedPermissions,
         globalUnlockedChapters: updatedGlobalUnlocked,
-      })
+      });
 
-      const keysToDelete = Array.from(processedRooms.current).filter((key) => key.startsWith(room.docId!))
-      keysToDelete.forEach((key) => processedRooms.current.delete(key))
+      const keysToDelete = Array.from(processedRooms.current).filter((key) =>
+        key.startsWith(room.docId!)
+      );
+      keysToDelete.forEach((key) => processedRooms.current.delete(key));
     } catch (error) {
-      console.error("❌ Error updating chapter permissions for all:", error)
+      console.error("❌ Error updating chapter permissions for all:", error);
     }
-  }
+  };
 
   const startRoom = async (roomDocId: string) => {
     try {
@@ -67,28 +94,36 @@ export default function RenderRoom({room, processedRooms}) {
       await updateDoc(doc(db, "rooms", roomDocId), {
         isStarted: true,
         globalUnlockedChapters: [0, 5],
-      })
+      });
     } catch (error) {
-      console.error("❌ Error starting room:", error)
+      console.error("❌ Error starting room:", error);
     }
-  }
+  };
 
   const deleteRoom = async (roomDocId: string) => {
     try {
-      await deleteDoc(doc(db, "rooms", roomDocId))
-      const keysToDelete = Array.from(processedRooms.current).filter((key) => key.startsWith(roomDocId))
-      keysToDelete.forEach((key) => processedRooms.current.delete(key))
+      await deleteDoc(doc(db, "rooms", roomDocId));
+      const keysToDelete = Array.from(processedRooms.current).filter((key) =>
+        key.startsWith(roomDocId)
+      );
+      keysToDelete.forEach((key) => processedRooms.current.delete(key));
     } catch (error) {
-      console.error("❌ Error deleting room:", error)
+      console.error("❌ Error deleting room:", error);
     }
-  }
+  };
 
   const exportData = async (room: DotykaceRoom) => {
     try {
       const csvData = [
-        ["Meno", "Čas pripojenia", "Aktuálna kapitola", "Dokončené kapitoly", "Povolené kapitoly"],
+        [
+          "Meno",
+          "Čas pripojenia",
+          "Aktuálna kapitola",
+          "Dokončené kapitoly",
+          "Povolené kapitoly",
+        ],
         ...participants.map((p) => {
-          const permissions = room.chapterPermissions?.[p.id]
+          const permissions = room.chapterPermissions?.[p.id];
           return [
             p.name,
             p.joinedAt
@@ -99,27 +134,27 @@ export default function RenderRoom({room, processedRooms}) {
             p.currentChapter?.toString() || "0",
             p.completedChapters?.join(", ") || "žiadne",
             permissions?.allowedChapters?.join(", ") || "žiadne",
-          ]
+          ];
         }),
-      ]
-      const csvContent = csvData.map((row) => row.join(",")).join("\n")
-      const blob = new Blob([csvContent], { type: "text/csv" })
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = `${room.name}_data.csv`
-      a.click()
-      window.URL.revokeObjectURL(url)
+      ];
+      const csvContent = csvData.map((row) => row.join(",")).join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${room.name}_data.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error exporting data:", error)
+      console.error("Error exporting data:", error);
     }
-  }
+  };
 
   const BulkActions = () => {
     return (
       <>
         {chapterList.map((chapterNum) => {
-          const isChapterUnlocked = isChapterGloballyUnlocked(room, chapterNum)
+          const isChapterUnlocked = isChapterGloballyUnlocked(room, chapterNum);
           //const canUnlock = canUnlockChapterForAll(room, chapterNum)
 
           return (
@@ -144,11 +179,11 @@ export default function RenderRoom({room, processedRooms}) {
                 </Button>
               </div>
             </td>
-          )
+          );
         })}
       </>
-    )
-  }
+    );
+  };
 
   return (
     <Card key={room.docId} className="border-l-4 border-l-blue-500 text-black">
@@ -163,7 +198,8 @@ export default function RenderRoom({room, processedRooms}) {
               {room.isStarted && <Badge variant="destructive">Spustená</Badge>}
             </CardTitle>
             <CardDescription>
-              Kód miestnosti: <span className="font-mono font-bold text-lg">{room.id}</span>
+              Kód miestnosti:{" "}
+              <span className="font-mono font-bold text-lg">{room.id}</span>
             </CardDescription>
             <div className="flex items-center gap-2 text-sm text-gray-600 mt-2">
               <Users className="w-4 h-4" />
@@ -180,11 +216,19 @@ export default function RenderRoom({room, processedRooms}) {
               <Play className="w-4 h-4 mr-1" />
               {room.isStarted ? "Spustená" : "Začať"}
             </Button>
-            <Button size="sm" variant="outline" onClick={() => exportData(room)}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => exportData(room)}
+            >
               <Download className="w-4 h-4 mr-1" />
               Export
             </Button>
-            <Button size="sm" variant="destructive" onClick={() => deleteRoom(room.docId!)}>
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={() => deleteRoom(room.docId!)}
+            >
               <Trash2 className="w-4 h-4" />
             </Button>
           </div>
@@ -192,10 +236,14 @@ export default function RenderRoom({room, processedRooms}) {
       </CardHeader>
       <CardContent>
         {/* Participant Progress Table */}
-        {participants && participants.length > 0 &&
-            <ProgressTable room={room} headerButtons={BulkActions} participants={participants}/>
-        }
+        {participants && participants.length > 0 && (
+          <ProgressTable
+            room={room}
+            headerButtons={BulkActions}
+            participants={participants}
+          />
+        )}
       </CardContent>
     </Card>
-  )
+  );
 }

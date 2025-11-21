@@ -1,6 +1,6 @@
 "use client"
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { redirect, useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import {readFromStorage, setToStorage} from "@/scripts/local-storage"
@@ -88,20 +88,30 @@ export default function MenuPage() {
       const ctx = (audioManager as any).audioContextRef?.current;
       if (ctx && ctx.state !== "closed") ctx.close();
     };
-  }, [])
+  }, [audioManager])
 
-  const updateSectionsState = () => {
+  const getState = useCallback((id: number): SectionState => {
+    if (completedChapters.includes(id)) {
+      return "completed"
+    } else if (allowedChapters.includes(id)) {
+      return "unlocked"
+    } else {
+      return "locked"
+    }
+  }, [completedChapters, allowedChapters])
+
+  const updateSectionsState = useCallback(() => {
     setSections((prevSections) =>{
       return prevSections.map((section) => ({
         ...section,
         state: getState(section.id),
       }))
     })
-  }
+  }, [getState])
 
   useEffect(() => {
     updateSectionsState()
-  }, [completedChapters, allowedChapters]);
+  }, [updateSectionsState]);
 
   // Listen to room changes to get updated permissions
   useEffect(() => {
@@ -144,16 +154,6 @@ export default function MenuPage() {
       unsubscribeParticipant()
     }
   }, [roomId, playerId, isClient])
-
-  const getState = (id: number): SectionState => {
-    if (completedChapters.includes(id)) {
-      return "completed"
-    } else if (allowedChapters.includes(id)) {
-      return "unlocked"
-    } else {
-      return "locked"
-    }
-  }
 
   // Handle section click
   const handleSectionClick = (section: Section) => {

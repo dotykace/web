@@ -1,15 +1,23 @@
 import { motion, AnimatePresence } from "framer-motion";
 import React from "react";
 
-export default function GlowingDot({ onClick, size = 30, color = "white"}) {
+export default function GlowingDot({
+  onClick,
+  size = 30,
+  color = "white",
+}: {
+  onClick: () => void;
+  size: number;
+  color: string;
+}) {
   return (
     <AnimatePresence mode="wait">
       <motion.div
         onClick={onClick}
         key="dot"
-        initial={{ opacity: 0}}
+        initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        exit={{ opacity: 0, animationDuration: 1 }}
+        exit={{ opacity: 0, transition: { duration: 1, ease: "easeInOut" } }}
         transition={{ duration: 0.3 }}
         style={{
           width: size,
@@ -23,12 +31,12 @@ export default function GlowingDot({ onClick, size = 30, color = "white"}) {
         <motion.div
           animate={{
             scale: [0.5, 1.5, 0.5],
-            opacity: [0.6,0.6,0.6],
+            opacity: [0.6, 0.6, 0.6],
             transition: {
               duration: 2,
               repeat: Infinity,
               ease: "easeInOut",
-            }
+            },
           }}
           exit={{
             scale: 9,
@@ -36,7 +44,7 @@ export default function GlowingDot({ onClick, size = 30, color = "white"}) {
               duration: 1,
               ease: "easeInOut",
               repeat: 0,
-            }
+            },
           }}
           style={{
             position: "absolute",
