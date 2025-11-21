@@ -24,9 +24,22 @@
   }
 }
 
+html {
+  overflow-x: hidden;
+  width: 100%;
+}
+
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(to bottom, transparent, rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
 }
 
 /* Custom emoji animations */
@@ -54,5 +67,118 @@ body {
 
 .card-hover:hover {
   transform: translateY(-5px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Decorative element animations - Flying balloons */
+@keyframes balloonDrift1 {
+  0% {
+    left: 5%;
+    top: 10%;
+    transform: rotate(0deg);
+    opacity: 0.5;
+  }
+  25% {
+    left: 20%;
+    top: 5%;
+    transform: rotate(15deg);
+    opacity: 0.7;
+  }
+  50% {
+    left: 30%;
+    top: 2%;
+    transform: rotate(-10deg);
+    opacity: 0.6;
+  }
+  75% {
+    left: 20%;
+    top: 8%;
+    transform: rotate(12deg);
+    opacity: 0.65;
+  }
+  100% {
+    left: 5%;
+    top: 10%;
+    transform: rotate(0deg);
+    opacity: 0.5;
+  }
+}
+
+@keyframes balloonDrift2 {
+  0% {
+    right: 5%;
+    bottom: 10%;
+    transform: rotate(0deg);
+    opacity: 0.5;
+  }
+  20% {
+    right: 20%;
+    bottom: 5%;
+    transform: rotate(-12deg);
+    opacity: 0.7;
+  }
+  40% {
+    right: 30%;
+    bottom: 2%;
+    transform: rotate(8deg);
+    opacity: 0.6;
+  }
+  60% {
+    right: 25%;
+    bottom: 8%;
+    transform: rotate(-10deg);
+    opacity: 0.65;
+  }
+  80% {
+    right: 15%;
+    bottom: 12%;
+    transform: rotate(5deg);
+    opacity: 0.7;
+  }
+  100% {
+    right: 5%;
+    bottom: 10%;
+    transform: rotate(0deg);
+    opacity: 0.5;
+  }
+}
+
+@keyframes balloonDrift3 {
+  0% {
+    right: 5%;
+    top: 30%;
+    transform: rotate(0deg) scale(1);
+    opacity: 0.5;
+  }
+  30% {
+    right: 25%;
+    top: 20%;
+    transform: rotate(20deg) scale(1.1);
+    opacity: 0.7;
+  }
+  60% {
+    right: 35%;
+    top: 25%;
+    transform: rotate(-15deg) scale(0.9);
+    opacity: 0.6;
+  }
+  100% {
+    right: 5%;
+    top: 30%;
+    transform: rotate(0deg) scale(1);
+    opacity: 0.5;
+  }
+}
+
+.decorative-float-1 {
+  animation: balloonDrift1 20s ease-in-out infinite;
+}
+
+.decorative-float-2 {
+  animation: balloonDrift2 25s ease-in-out infinite;
+}
+
+.decorative-float-3 {
+  animation: balloonDrift3 18s ease-in-out infinite;
 }

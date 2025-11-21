@@ -1,89 +1,130 @@
-import { ReactNode, useState } from "react";
 import { useRouter } from "next/navigation";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { DotykaceUser } from "@/lib/dotykace-types";
-import { FormField } from "@/components/FormField";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { setToStorage } from "@/scripts/local-storage";
+
+const adminFormSchema = z.object({
+  username: z.string().min(1, "Používatelské jméno je povinné"),
+  password: z.string().min(1, "Heslo je povinné"),
+});
+
+type AdminFormValues = z.infer<typeof adminFormSchema>;
 
 export default function AdminForm({
   setError,
 }: {
   setError: (error: string) => void;
 }) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-
-  const [loading, setLoading] = useState(false);
-
   const router = useRouter();
 
-  const handleAdminLogin = async () => {
-    if (!username || !password) {
-      setError("Prosím vyplňte všetky polia");
-      return;
-    }
+  const form = useForm<AdminFormValues>({
+    resolver: zodResolver(adminFormSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+  });
 
-    setLoading(true);
+  const isLoading = form.formState.isSubmitting;
+
+  const onSubmit = async (values: AdminFormValues) => {
     setError("");
 
     try {
       const usersRef = collection(db, "admins");
-      const q = query(usersRef, where("username", "==", username));
+      const q = query(usersRef, where("username", "==", values.username));
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
-        setError("Nesprávne prihlasovacie údaje");
+        setError("Nesprávné přihlašovací údaje");
         return;
       }
 
       const userDoc = querySnapshot.docs[0];
       const userData = userDoc.data() as DotykaceUser;
 
-      if (userData.password !== password || userData.role !== "admin") {
-        setError("Nesprávne prihlasovacie údaje");
+      if (userData.password !== values.password || userData.role !== "admin") {
+        setError("Nesprávné přihlašovací údaje");
         return;
       }
 
       setToStorage("adminId", userDoc.id);
       router.push("/dotykace/admin");
     } catch (err) {
-      setError("Chyba pri prihlasovaní");
+      setError("Chyba při přihlašování");
       console.error("Login error:", err);
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
-    <>
-      <FormField
-        id="username"
-        label="Používateľské meno"
-        value={username}
-        onChange={setUsername}
-        placeholder="Zadajte používateľské meno"
-      />
-      <FormField
-        id="password"
-        label="Heslo"
-        value={password}
-        onChange={setPassword}
-        placeholder="Zadajte heslo"
-        onKeyPress={(e) => e.key === "Enter" && handleAdminLogin()}
-      />
-      <Button
-        onClick={handleAdminLogin}
-        disabled={loading}
-        className="w-full bg-blue-600 hover:bg-blue-700"
-      >
-        {loading
-          ? ((<LoadingSpinner className="mr-2" />) as ReactNode)
-          : undefined}
-        Prihlásiť sa
-      </Button>
-    </>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-gray-900 font-semibold">
+                Používatelské jméno
+              </FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  placeholder="Zadejte používatelské jméno"
+                  className="bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg"
+                  autoFocus
+                />
+              </FormControl>
+              <FormMessage className="text-red-600" />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-gray-900 font-semibold">
+                Heslo
+              </FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="password"
+                  placeholder="Zadejte heslo"
+                  className="bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg"
+                />
+              </FormControl>
+              <FormMessage className="text-red-600" />
+            </FormItem>
+          )}
+        />
+
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed rounded-lg"
+        >
+          {isLoading && <LoadingSpinner className="mr-2" />}
+          Přihlásit se
+        </Button>
+      </form>
+    </Form>
   );
 }
