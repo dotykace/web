@@ -1,7 +1,7 @@
 "use client"
 import type React from "react"
 import { useState, useEffect, useCallback } from "react"
-import { redirect, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import {readFromStorage, setToStorage} from "@/scripts/local-storage"
 import { doc, onSnapshot } from "firebase/firestore"
@@ -68,17 +68,25 @@ export default function MenuPage() {
     setRoomId(storedRoomId)
     setPlayerId(storedPlayerId)
 
-    // Redirect if chapter is not set properly
-    if (storedChapter === 0) {
-      console.log("Redirecting to chapter 0 from the menu")
-      redirect("/chapter/0")
+    // Check completed chapters to see if user has finished the intro (chapter 0)
+    const storedCompletedChapters = (readFromStorage("completedChapters") as number[]) || []
+    
+    // Only redirect to chapter 0 if it hasn't been completed yet
+    if (!storedCompletedChapters.includes(0)) {
+      console.log("Redirecting to chapter 0 from the menu - intro not completed yet")
+      router.push("/chapter/0")
       return;
     }
+  }, [router])
+
+  // Handle audio separately to avoid infinite loop
+  useEffect(() => {
+    if (!isClient) return;
 
     audioManager.preloadAll({
       "menu-background": { filename: "CAKAREN.mp3", opts: { loop: true, volume: 0.3 } },
-    }).then(()=> {
-      if (!audioManager.isPlaying["menu-background"]){
+    }).then(() => {
+      if (!audioManager.isPlaying["menu-background"]) {
         audioManager.playPreloaded("menu-background")
       }
     })
@@ -88,7 +96,8 @@ export default function MenuPage() {
       const ctx = (audioManager as any).audioContextRef?.current;
       if (ctx && ctx.state !== "closed") ctx.close();
     };
-  }, [audioManager])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isClient])
 
   const getState = useCallback((id: number): SectionState => {
     if (completedChapters.includes(id)) {
@@ -166,26 +175,26 @@ export default function MenuPage() {
   // Show loading state while client-side data is being loaded
   if (!isClient || chapter === null) {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-menu flex items-center justify-center">
           <div className="text-white text-center">
-            <div className="animate-spin rounded-full border-2 border-white border-t-transparent h-8 w-8 mx-auto mb-4" />
-            <p>Načítavam...</p>
+            <div className="animate-spin-smooth rounded-full border-3 border-white/30 border-t-white h-10 w-10 mx-auto mb-4" />
+            <p className="text-white/90 font-medium">Načítavam...</p>
           </div>
         </div>
     )
   }
 
   return (
-      <div className="min-h-screen bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-menu flex flex-col items-center justify-center p-4">
         <HelpButton />
 
         {/* Logo */}
-        <div className="p-4 pb-8">
+        <div className="p-4 pb-10 animate-fade-in">
           <DotykaceLogo width={280} />
         </div>
 
         {/* Chapters Grid */}
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 gap-6 animate-scale-in">
           {sections.map((section, index) => {
             return (
                 <MenuSectionCard
@@ -200,13 +209,13 @@ export default function MenuPage() {
         {/* Admin waiting message */}
         {roomId && (
             <motion.div
-                className="mt-8 text-center"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1 }}
+                className="mt-10 text-center"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8, duration: 0.4 }}
             >
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl px-4 py-2 shadow-lg">
-                <p className="text-sky-700 text-sm">
+              <div className="bg-white/90 backdrop-blur-md rounded-2xl px-5 py-3 shadow-lg shadow-sky-900/10">
+                <p className="text-sky-700 text-sm font-medium">
                   {allowedChapters.length === 1
                       ? "Čakáte na povolenie od administrátora pre ďalšie kapitoly"
                       : `Máte povolené kapitoly: ${allowedChapters.join(", ")}`}

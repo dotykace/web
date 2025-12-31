@@ -155,25 +155,25 @@ export default function RenderRoom({
       <>
         {chapterList.map((chapterNum) => {
           const isChapterUnlocked = isChapterGloballyUnlocked(room, chapterNum);
-          //const canUnlock = canUnlockChapterForAll(room, chapterNum)
 
           return (
             <td key={chapterNum} className="p-2 text-center">
               <div className="flex items-center justify-center">
                 <Button
                   onClick={() => allowNextChapterForAll(room, chapterNum)}
-                  className={`w-9 h-9 gap-1 rounded-xl p-2 flex items-center justify-center text-xs font-bold transition-all duration-200 shadow-sm
-                  ${
-                    isChapterUnlocked
-                      ? "bg-amber-500 text-white shadow-amber-200/70 hover:bg-amber-600"
-                      : "bg-gray-300 text-gray-600 hover:bg-gray-400"
-                  }`}
+                  className={`w-10 h-10 gap-1 rounded-xl p-2 flex items-center justify-center text-xs font-bold 
+                              transition-all duration-200
+                              ${
+                                isChapterUnlocked
+                                  ? "bg-gradient-to-br from-orange-400 to-amber-500 text-white shadow-md shadow-orange-200/50 hover:from-orange-500 hover:to-amber-600"
+                                  : "bg-gray-100 text-gray-500 hover:bg-gray-200 border border-gray-200"
+                              }`}
                   variant="ghost"
                 >
                   {isChapterUnlocked ? (
-                    <UnlockKeyhole className="w-3 h-3" />
+                    <UnlockKeyhole className="w-3.5 h-3.5" />
                   ) : (
-                    <LockKeyhole className="w-3 h-3" />
+                    <LockKeyhole className="w-3.5 h-3.5" />
                   )}
                   {chapterNum}
                 </Button>
@@ -186,24 +186,33 @@ export default function RenderRoom({
   };
 
   return (
-    <Card key={room.docId} className="border-l-4 border-l-blue-500 text-black">
-      <CardHeader>
+    <Card key={room.docId} className="card-elevated border-l-4 border-l-orange-500 text-black">
+      <CardHeader className="pb-4">
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-3 text-2xl">
               {room.name}
-              <Badge variant={room.isActive ? "default" : "secondary"}>
+              <Badge 
+                variant={room.isActive ? "default" : "secondary"}
+                className={room.isActive ? "bg-green-100 text-green-700 border-green-200" : ""}
+              >
                 {room.isActive ? "Aktívna" : "Neaktívna"}
               </Badge>
-              {room.isStarted && <Badge variant="destructive">Spustená</Badge>}
+              {room.isStarted && (
+                <Badge className="bg-orange-100 text-orange-700 border-orange-200">
+                  Spustená
+                </Badge>
+              )}
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="mt-2">
               Kód miestnosti:{" "}
-              <span className="font-mono font-bold text-lg">{room.id}</span>
+              <span className="font-mono font-bold text-xl text-orange-600 bg-orange-50 px-2 py-0.5 rounded-lg">
+                {room.id}
+              </span>
             </CardDescription>
-            <div className="flex items-center gap-2 text-sm text-gray-600 mt-2">
-              <Users className="w-4 h-4" />
-              <span>{participants?.length || 0} účastníkov</span>
+            <div className="flex items-center gap-2 text-sm text-gray-500 mt-3">
+              <Users className="w-4 h-4 text-orange-500" />
+              <span className="font-medium">{participants?.length || 0} účastníkov</span>
             </div>
           </div>
           <div className="flex gap-2">
@@ -211,7 +220,9 @@ export default function RenderRoom({
               size="sm"
               onClick={() => startRoom(room.docId!)}
               disabled={room.isStarted}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 
+                         text-white font-semibold rounded-xl shadow-md shadow-green-200/50 transition-all duration-200
+                         disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Play className="w-4 h-4 mr-1" />
               {room.isStarted ? "Spustená" : "Začať"}
@@ -220,6 +231,7 @@ export default function RenderRoom({
               size="sm"
               variant="outline"
               onClick={() => exportData(room)}
+              className="rounded-xl border-2 border-gray-200 hover:border-orange-200 hover:bg-orange-50 transition-all duration-200"
             >
               <Download className="w-4 h-4 mr-1" />
               Export
@@ -228,6 +240,7 @@ export default function RenderRoom({
               size="sm"
               variant="destructive"
               onClick={() => deleteRoom(room.docId!)}
+              className="rounded-xl bg-red-500 hover:bg-red-600 transition-all duration-200"
             >
               <Trash2 className="w-4 h-4" />
             </Button>

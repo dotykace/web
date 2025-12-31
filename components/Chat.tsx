@@ -124,74 +124,94 @@ function ChatContent() {
   };
 
   return (
-    <div className="w-full mx-auto flex flex-col p-2 h-[calc(100vh)] bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
+    <main className="h-screen overflow-hidden flex flex-col bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600">
       <HelpButton />
       {mode === "overlay" && <ChatOverlay />}
-      <div className="bg-white/10 backdrop-blur-sm rounded-t-xl p-3 flex items-center gap-3 border-b border-white/20">
-        <LocalSvgRenderer filename={dotyFace} className="w-8 h-8" />
-        <h1 className="text-xl font-semibold text-white">Interaktivní chat</h1>
-      </div>
 
-      <div>
-        {currentInteraction?.id === "first-notification" && (
-          <MobileNotification
-            {...notificationProps}
-            isOpen={true}
-            duration={currentInteraction?.duration * 1000}
-            onClose={() => goToNextInteraction()}
-          />
+      <div className="w-full max-w-2xl mx-auto flex flex-1 flex-col px-4 overflow-hidden">
+        {/* Header - Fixed at top */}
+        <div className="flex-shrink-0 pt-8 pb-2">
+          <div className="bg-white/10 rounded-2xl border border-white/20 px-6 py-4 flex items-center gap-3">
+            <LocalSvgRenderer filename={dotyFace} className="w-8 h-8" />
+            <h2 className="text-white text-lg font-semibold">Zprávy</h2>
+          </div>
+        </div>
+
+        <div className="flex-shrink-0">
+          {currentInteraction?.id === "first-notification" && (
+            <MobileNotification
+              {...notificationProps}
+              isOpen={true}
+              duration={currentInteraction?.duration * 1000}
+              onClose={() => goToNextInteraction()}
+            />
+          )}
+        </div>
+
+        {/* Chat history - Scrollable */}
+        <div
+          className="flex-1 overflow-y-auto pt-2 scrollbar-thin scrollbar-thumb-white/30 scrollbar-track-transparent"
+          style={{
+            scrollbarWidth: "thin",
+            scrollbarColor: "rgba(255,255,255,0.3) transparent",
+            paddingBottom: showInput ? "140px" : "40px",
+          }}
+        >
+          <div className="py-4">
+            {history.map((interaction, index) => {
+              const isUserMessage =
+                (interaction.type as string) === "user-message" ||
+                (interaction.type as string) === "user-message-emoji";
+              return (
+                <div
+                  key={`${interaction.id}-${index}`}
+                  className={`mb-4 flex ${
+                    isUserMessage ? "justify-end pr-4" : "justify-start pl-2"
+                  }`}
+                >
+                  <div className="max-w-[85%]">
+                    <ChatBubble
+                      type={interaction.type}
+                      text={interaction.text || ""}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+            <div ref={messagesEndRef} />
+          </div>
+        </div>
+
+        {/* Fixed Input Area at Bottom - Messenger Style */}
+        {showInput && (
+          <div className="fixed bottom-0 left-0 right-0 z-30 backdrop-blur-md bg-gradient-to-t from-indigo-600/90 to-transparent">
+            <div className="w-full max-w-2xl mx-auto px-4 pb-6 pt-4">
+              <div className="bg-white/10 rounded-2xl border border-white/20 p-4">
+                {showEmojiReactions ? (
+                  <EmojiReactionButton
+                    onSelect={(emoji: string) => {
+                      console.log("Selected emoji:", emoji);
+                      setShowEmojiReactions(false);
+                      addUserInputToHistory(emoji, "emoji");
+                      goToNextInteraction("1.03");
+                    }}
+                  />
+                ) : (
+                  <UserInput
+                    onSubmit={(input) => {
+                      handleUserInput(input);
+                      addUserInputToHistory(input);
+                      console.log("User input submitted:", input);
+                    }}
+                    placeholder={"Napiš odpověď..."}
+                    buttonText="Odeslat"
+                  />
+                )}
+              </div>
+            </div>
+          </div>
         )}
       </div>
-
-      {/* Chat history */}
-      {history.length > 0 && (
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white/5 backdrop-blur-sm">
-          {history.map((interaction, index) => (
-            <div
-              key={`${interaction.id}-${index}`}
-              className={`max-w-[80%] ${
-                interaction.type === "user-message" ? "ml-auto" : "mr-auto"
-              }`}
-            >
-              <ChatBubble
-                type={interaction.type}
-                text={interaction.text || ""}
-              />
-            </div>
-          ))}
-          <div ref={messagesEndRef} />
-        </div>
-      )}
-
-      {/* Input area */}
-      {/*
-      // todo make it function properly in greater context
-      // todo either dont have user input as interaction or make it work properly
-      // todo maybe separate user inputs and interactions
-      */}
-      <div className="bg-white/10 backdrop-blur-sm rounded-b-xl p-4 border-t border-white/20">
-        {showInput &&
-          (showEmojiReactions ? (
-            <EmojiReactionButton
-              onSelect={(emoji: string) => {
-                console.log("Selected emoji:", emoji);
-                setShowEmojiReactions(false);
-                addUserInputToHistory(emoji, "emoji");
-                goToNextInteraction("1.03");
-              }}
-            />
-          ) : (
-            <UserInput
-              onSubmit={(input) => {
-                handleUserInput(input);
-                addUserInputToHistory(input);
-                console.log("User input submitted:", input);
-              }}
-              placeholder={"Napiš odpověď..."}
-              buttonText="Odeslat"
-            />
-          ))}
-      </div>
-    </div>
+    </main>
   );
 }

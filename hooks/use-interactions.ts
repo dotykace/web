@@ -138,9 +138,27 @@ export function useInteractions<T>(filename: string) {
         if (match) {
             // If it's "intro-end", chapterNumber = 0; otherwise, use the captured number
             const chapterNumber = match[1] ? Number(match[1]) : 0
-            dbHook.updateChapter(chapterNumber, () => router.push("/menu")).then()
+            const nextChapter = Math.min(chapterNumber + 1, 4)
+            
+            // Always update localStorage regardless of dbHook availability
+            const existingCompleted = (readFromStorage("completedChapters") as number[]) || []
+            const completedSet = new Set(existingCompleted)
+            completedSet.add(chapterNumber)
+            const completedArray = Array.from(completedSet).sort((a, b) => a - b)
+            
+            setToStorage("completedChapters", completedArray)
+            setToStorage("chapter", nextChapter)
+            console.log(`Chapter ${chapterNumber} completed, setting chapter to ${nextChapter}`)
+            
+            // Update database if available, then redirect
+            if (dbHook && dbHook.updateChapter) {
+                dbHook.updateChapter(chapterNumber, () => router.push("/menu")).then()
+            } else {
+                // No database hook, just redirect
+                router.push("/menu")
+            }
         }
-    }, [currentInteraction, isClient])
+    }, [currentInteraction, isClient, dbHook, router])
 
     const goToNextInteraction = useCallback(
         (nextId?: string) => {

@@ -60,7 +60,8 @@ export default function DotykaceRoomPage() {
           // Ak sa miestnosť spustila, automaticky začni introduction
           if (roomData.isStarted) {
             let currentChapter = readFromStorage("chapter");
-            if (!currentChapter) {
+            // Check for undefined/null explicitly (0 is a valid chapter!)
+            if (currentChapter === undefined || currentChapter === null) {
               currentChapter = existingParticipant?.currentChapter ?? 0;
               setToStorage("chapter", currentChapter);
             }
@@ -90,11 +91,11 @@ export default function DotykaceRoomPage() {
 
   if (!room) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-warm flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full border-2 border-gray-300 border-t-blue-600 h-8 w-8 mx-auto mb-4" />
+          <div className="animate-spin-smooth rounded-full border-3 border-white/30 border-t-white h-10 w-10 mx-auto mb-4" />
           {connectionError && (
-            <div className="text-white text-sm">
+            <div className="text-white/90 text-sm bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
               Problém s pripojením... Skúšam znovu...
             </div>
           )}
@@ -108,19 +109,21 @@ export default function DotykaceRoomPage() {
     "Administrátor ještě nespustil Dotykáče: interaktivní zkušenost s mobilem";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 p-4">
-      <div className="max-w-md mx-auto space-y-6">
+    <div className="min-h-screen bg-gradient-warm p-4 flex flex-col items-center justify-center">
+      <div className="max-w-md mx-auto space-y-8 animate-fade-in">
         {/* Header */}
         <DotykaceLogo />
 
         {/* Waiting Screen */}
-        <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-xl">
-          <CardContent className="text-center py-12">
-            <Clock className="w-16 h-16 mx-auto text-sky-500 mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+        <Card className="glass-card border-0">
+          <CardContent className="text-center py-12 px-8">
+            <div className="bg-orange-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Clock className="w-10 h-10 text-orange-500 animate-pulse" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">
               {waitingHeader}
             </h3>
-            <p className="text-gray-600 mb-4">{waitingSubheader}</p>
+            <p className="text-gray-500 leading-relaxed">{waitingSubheader}</p>
           </CardContent>
         </Card>
       </div>

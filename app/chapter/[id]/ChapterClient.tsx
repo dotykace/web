@@ -1,8 +1,8 @@
-"use client"
-import Chat from "@/components/Chat"
-import CardSequence from "@/components/CardSequence"
-import ChapterPage from "@/components/ChapterPage"
-import { notFound } from "next/navigation"
+"use client";
+import Chat from "@/components/Chat";
+import CardSequence from "@/components/CardSequence";
+import ChapterPage from "@/components/ChapterPage";
+import { notFound } from "next/navigation";
 import ScalesAndGallery from "@/components/chapter4/ScalesAndGallery";
 
 // Chapter configuration
@@ -32,21 +32,21 @@ export const chapterConfigs = {
     interactionsFileName: "chapter4-flow",
     ViewComponent: ScalesAndGallery,
   },
-}
+};
 
-type ChapterId = keyof typeof chapterConfigs
+type ChapterId = keyof typeof chapterConfigs;
 
 interface ChapterClientProps {
-  id: string
+  id: string;
 }
 
 export default function ChapterClient({ id }: ChapterClientProps) {
   // Check if the chapter exists
   if (!(id in chapterConfigs)) {
-    notFound()
+    notFound();
   }
 
-  const chapterConfig = chapterConfigs[id as ChapterId]
+  const chapterConfig = chapterConfigs[id as ChapterId];
 
-  return <ChapterPage {...chapterConfig} />
+  return <ChapterPage {...chapterConfig} />;
 }

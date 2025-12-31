@@ -14,8 +14,6 @@ import { useRouter } from "next/navigation";
 import { readFromStorage, setToStorage } from "@/scripts/local-storage";
 import SkipButton from "@/components/SkipButton";
 import AudioControl from "@/components/AudioControl";
-import Image from "next/image";
-
 // Animated Voice Visualization Component (unchanged)
 const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
   return (
@@ -27,7 +25,8 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
             isActive ? "animate-pulse scale-110" : "scale-100"
           }`}
         >
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src="/images/phone-character-simple.png"
             alt="Phone Character"
             className="w-24 h-24 drop-shadow-lg"

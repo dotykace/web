@@ -22,7 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { readFromStorage, setToStorage } from "@/scripts/local-storage";
+import { readFromStorage, setToStorage, removeFromStorage } from "@/scripts/local-storage";
 import { DotykaceParticipant } from "@/lib/dotykace-types";
 
 const playerFormSchema = z.object({
@@ -124,6 +124,11 @@ export default function PlayerForm({
           return;
         }
       }
+      
+      // Clear chapter data for new signups to ensure starting from chapter 0
+      removeFromStorage("chapter");
+      removeFromStorage("completedChapters");
+      
       setToStorage("playerName", values.playerName);
       setToStorage("roomId", roomDoc.id);
       await addPlayerToRoom(roomDoc.id, values.playerName);
@@ -143,19 +148,19 @@ export default function PlayerForm({
           name="roomCode"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-900 font-semibold">
+              <FormLabel className="text-gray-800 font-semibold text-sm">
                 Kód místnosti
               </FormLabel>
               <FormControl>
                 <Input
                   {...field}
                   placeholder="ABCD"
-                  className="bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-green-500 focus:ring-2 focus:ring-green-200 text-center text-lg font-mono uppercase rounded-lg"
+                  className="input-unified text-center text-lg font-mono uppercase tracking-widest"
                   maxLength={4}
                   autoFocus
                 />
               </FormControl>
-              <FormMessage className="text-red-600" />
+              <FormMessage className="text-red-500 text-sm" />
             </FormItem>
           )}
         />
@@ -165,17 +170,17 @@ export default function PlayerForm({
           name="playerName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-900 font-semibold">
+              <FormLabel className="text-gray-800 font-semibold text-sm">
                 Jméno
               </FormLabel>
               <FormControl>
                 <Input
                   {...field}
                   placeholder="Zadejte vaše jméno"
-                  className="bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-green-500 focus:ring-2 focus:ring-green-200 rounded-lg"
+                  className="input-unified"
                 />
               </FormControl>
-              <FormMessage className="text-red-600" />
+              <FormMessage className="text-red-500 text-sm" />
             </FormItem>
           )}
         />
@@ -183,7 +188,7 @@ export default function PlayerForm({
         <Button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-green-600 hover:bg-green-700 text-white disabled:opacity-50 disabled:cursor-not-allowed rounded-lg"
+          className="w-full btn-primary h-11 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading && <LoadingSpinner className="mr-2" />}
           {loginButtonText}

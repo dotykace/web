@@ -27,24 +27,35 @@ export default function MenuSectionCard({
   const fileName = generateSectionFileName(section.id, isLocked);
 
   return (
-    <div className="flex flex-col items-center w-[150px] relative">
-      <div className="relative w-[150px] h-[150px] rounded-xl border-white border-4 overflow-hidden">
+    <div className="flex flex-col items-center w-[150px] relative group">
+      <div 
+        className={`relative w-[150px] h-[150px] rounded-2xl border-4 overflow-hidden
+                    transition-all duration-300 cursor-pointer
+                    ${isLocked 
+                      ? 'border-white/50 opacity-70' 
+                      : 'border-white shadow-lg shadow-black/10 hover:shadow-xl hover:scale-105'
+                    }`}
+        onClick={() => handleSectionClick(section)}
+      >
         <Image
           src={fileName}
           alt={`Chapter Image ${fileName}`}
           fill
           className="object-cover"
-          onClick={() => handleSectionClick(section)}
         />
       </div>
       {isCompleted && (
-        <div className="absolute top-[-10px] right-[-10px] bg-green-500 rounded-full p-1 shadow-lg border-2 border-white">
-          <Check className="w-8 h-8 text-white" />
+        <div className="absolute top-[-8px] right-[-8px] bg-gradient-to-br from-green-400 to-green-600 
+                        rounded-full p-1.5 shadow-lg shadow-green-500/30 border-2 border-white
+                        animate-scale-in">
+          <Check className="w-6 h-6 text-white" strokeWidth={3} />
         </div>
       )}
       {/* Text block */}
-      <div className="mt-2 w-full">
-        <p className="text-lg font-semibold break-words">{section.title}</p>
+      <div className="mt-3 w-full text-center">
+        <p className={`text-lg font-bold tracking-wide ${isLocked ? 'text-white/70' : 'text-white'}`}>
+          {section.title}
+        </p>
       </div>
     </div>
   );

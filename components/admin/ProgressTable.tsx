@@ -13,22 +13,22 @@ export default function ProgressTable({
   participants: DotykaceParticipant[];
 }) {
   const thBaseClass =
-    "text-center px-2 py-3 text-sm font-semibold text-gray-800";
+    "text-center px-3 py-3 text-sm font-semibold text-gray-700";
   const statusItems = [
     { label: "Dokončené", color: "bg-green-500" },
-    { label: "Aktuálne", color: "bg-blue-500" },
-    { label: "Povolené", color: "bg-yellow-500" },
-    { label: "Zamknuté", color: "bg-gray-400" },
+    { label: "Aktuálne", color: "bg-orange-500" },
+    { label: "Povolené", color: "bg-amber-400" },
+    { label: "Zamknuté", color: "bg-gray-300" },
   ];
 
   const TableLabel = (
-    <div className="flex justify-between items-center">
-      <h4 className="font-semibold text-sm">Pokrok hráčov:</h4>
-      <div className="text-xs text-gray-500 flex items-center gap-4">
+    <div className="flex justify-between items-center mb-4">
+      <h4 className="font-bold text-gray-800">Pokrok hráčov:</h4>
+      <div className="text-xs text-gray-500 flex items-center gap-5">
         {statusItems.map(({ label, color }) => (
-          <span key={label} className="inline-flex items-center gap-1">
-            <div className={`w-2 h-2 rounded-full ${color}`}></div>
-            {label}
+          <span key={label} className="inline-flex items-center gap-1.5">
+            <div className={`w-2.5 h-2.5 rounded-full ${color}`}></div>
+            <span className="font-medium">{label}</span>
           </span>
         ))}
       </div>
@@ -36,9 +36,9 @@ export default function ProgressTable({
   );
 
   const TableHeader = (
-    <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2">
+    <thead className="bg-gradient-to-r from-gray-50 to-orange-50/50 border-b-2 border-gray-100">
       <tr>
-        <th className={"text-left min-w-[120px]" + thBaseClass}>Hráč</th>
+        <th className={"text-left min-w-[120px] " + thBaseClass}>Hráč</th>
         {room.isStarted
           ? headerButtons()
           : chapterList.map((num) => (
@@ -56,22 +56,22 @@ export default function ProgressTable({
   const secondHalf = participants.slice(middleIndex);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {/*Table Label*/}
       {TableLabel}
 
       {/*Table*/}
-      <div className="rounded-lg border overflow-hidden shadow-sm">
+      <div className="rounded-xl border border-gray-200 overflow-hidden shadow-sm bg-white">
         <div className="overflow-x-auto">
-          <div className="flex gap-2 items-start">
+          <div className="flex gap-3 items-start p-2">
             {/* First Table */}
-            <table className="table-auto border border-gray-300 w-1/2 flex-grow-0">
+            <table className="table-auto border border-gray-200 w-1/2 flex-grow-0 rounded-lg overflow-hidden">
               {TableHeader}
               <tbody className="divide-y divide-gray-100">
                 <RoomParticipants participants={firstHalf} room={room} />
               </tbody>
             </table>
-            <table className="table-auto border border-gray-300 w-1/2 flex-grow-0">
+            <table className="table-auto border border-gray-200 w-1/2 flex-grow-0 rounded-lg overflow-hidden">
               {TableHeader}
               <tbody className="divide-y divide-gray-100">
                 <RoomParticipants participants={secondHalf} room={room} />

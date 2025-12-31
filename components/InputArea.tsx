@@ -19,12 +19,12 @@ export default function InputArea() {
       );
     case "multiple-choice":
       return (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-3 justify-center">
           {currentInteraction.choices?.map((choice: any, index: number) => (
             <button
               key={index}
               onClick={() => handleChoiceSelection(choice)}
-              className="bg-purple-300 hover:bg-white-400 transition-colors py-2 px-4 rounded text-black font-medium flex-1"
+              className="bg-amber-400 hover:bg-amber-500 active:scale-95 transition-all py-3 px-6 rounded-full text-gray-900 font-semibold shadow-lg hover:shadow-xl"
             >
               {choice.type}
             </button>

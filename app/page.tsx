@@ -53,8 +53,8 @@ export default function HomePage() {
 
   if (!tryLogIn) {
     return (
-      <div className="h-screen w-screen overflow-hidden bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 p-4 flex items-center justify-center">
-        <div className="text-center text-white text-lg sm:text-xl">
+      <div className="h-screen w-screen overflow-hidden bg-gradient-warm p-4 flex items-center justify-center">
+        <div className="text-center text-white text-lg sm:text-xl animate-gentle-pulse">
           {loadingText}...
         </div>
       </div>
@@ -63,7 +63,7 @@ export default function HomePage() {
 
   function renderError(message: string) {
     return (
-      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg text-sm">
+      <div className="bg-red-50 border-l-4 border-red-400 text-red-700 px-4 py-3 rounded-lg text-sm animate-fade-in">
         {message}
       </div>
     );
@@ -81,20 +81,22 @@ export default function HomePage() {
   const adminLabel = "Administrátor";
 
   return (
-    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 p-2 sm:p-4 flex items-center justify-center">
-      <div className="w-full max-w-md space-y-2 sm:space-y-4 flex flex-col">
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-gradient-warm p-2 sm:p-4 flex items-center justify-center">
+      <div className="w-full max-w-md space-y-3 sm:space-y-5 flex flex-col animate-fade-in">
         {/* Logo */}
         <div className="text-center flex-shrink-0">
           <DotykaceLogo width={280} />
-          <p className="text-white m-2 text-xl">{appSubtitle}</p>
+          <p className="text-white/95 m-2 text-xl font-medium tracking-wide">{appSubtitle}</p>
         </div>
 
         {/* Toggle Buttons */}
-        <div className="flex bg-white/20 backdrop-blur-sm rounded-full p-1 flex-shrink-0">
+        <div className="flex bg-white/20 backdrop-blur-md rounded-full p-1.5 flex-shrink-0 shadow-lg shadow-black/10">
           <Button
             variant={!isLogin ? "default" : "ghost"}
-            className={`flex-1 rounded-full text-sm ${
-              !isLogin ? "bg-white text-gray-900" : "text-white"
+            className={`flex-1 rounded-full text-sm font-semibold transition-all duration-300 ${
+              !isLogin 
+                ? "bg-white text-gray-900 shadow-md" 
+                : "text-white/90 hover:text-white hover:bg-white/10"
             }`}
             onClick={() => handleModeSwitch(false)}
           >
@@ -102,8 +104,10 @@ export default function HomePage() {
           </Button>
           <Button
             variant={isLogin ? "default" : "ghost"}
-            className={`flex-1 rounded-full text-sm ${
-              isLogin ? "bg-white text-gray-900" : "text-white"
+            className={`flex-1 rounded-full text-sm font-semibold transition-all duration-300 ${
+              isLogin 
+                ? "bg-white text-gray-900 shadow-md" 
+                : "text-white/90 hover:text-white hover:bg-white/10"
             }`}
             onClick={() => handleModeSwitch(true)}
           >
@@ -112,16 +116,16 @@ export default function HomePage() {
         </div>
 
         {/* Login/Join Form */}
-        <Card className="bg-white border-2 border-gray-200 shadow-xl rounded-xl flex-shrink-0">
-          <CardHeader className="text-center px-3 sm:px-4 pt-3 sm:pt-4 pb-2 sm:pb-3">
-            <CardTitle className="text-sm sm:text-xl md:text-2xl text-gray-900 leading-tight">
+        <Card className="glass-card border-0 flex-shrink-0 animate-scale-in">
+          <CardHeader className="text-center px-4 sm:px-6 pt-5 sm:pt-6 pb-2 sm:pb-3">
+            <CardTitle className="text-lg sm:text-xl md:text-2xl text-gray-900 leading-tight font-bold">
               {loginTitle}
             </CardTitle>
-            <CardDescription className="text-gray-600 text-xs sm:text-sm mt-1">
+            <CardDescription className="text-gray-500 text-sm mt-1.5">
               {loginSubtitle}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2 sm:space-y-3 px-3 sm:px-4 pb-3 sm:pb-4">
+          <CardContent className="space-y-3 sm:space-y-4 px-4 sm:px-6 pb-5 sm:pb-6">
             {error && (renderError(error) as ReactNode)}
 
             {isLogin
@@ -131,10 +135,10 @@ export default function HomePage() {
         </Card>
 
         {/* Decorative Elements */}
-        <div className="fixed w-16 h-16 bg-blue-400 rounded-full opacity-60 pointer-events-none decorative-float-1"></div>
-        <div className="fixed w-12 h-12 bg-yellow-300 rounded-full opacity-60 pointer-events-none decorative-float-2"></div>
-        <div className="fixed w-8 h-8 bg-red-400 rounded-full opacity-60 pointer-events-none decorative-float-3"></div>
-        <div className="fixed w-8 h-8 bg-violet-400 rounded-full opacity-60 pointer-events-none decorative-float-3"></div>
+        <div className="fixed w-16 h-16 bg-white/30 rounded-full pointer-events-none decorative-float-1 blur-sm"></div>
+        <div className="fixed w-12 h-12 bg-amber-200/40 rounded-full pointer-events-none decorative-float-2 blur-sm"></div>
+        <div className="fixed w-10 h-10 bg-red-300/30 rounded-full pointer-events-none decorative-float-3 blur-sm"></div>
+        <div className="fixed w-8 h-8 bg-orange-200/40 rounded-full pointer-events-none decorative-float-3 blur-sm" style={{ animationDelay: '5s' }}></div>
       </div>
     </div>
   );

@@ -34,32 +34,39 @@ export default function Modal({ isOpen, onClose, title, content, footer }: Modal
 //zvedni ruku a počkej na pomoc
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in">
       {/* Backdrop/Overlay */}
-      <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm" aria-hidden="true" />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" aria-hidden="true" onClick={onClose} />
 
       {/* Modal Content */}
       <div
-        className="relative bg-white rounded-xl shadow-xl max-w-md w-full mx-4 p-6"
+        className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-8 animate-scale-in"
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
       >
         {/* Modal Header */}
-        <div className="mb-4">
-          <h2 id="modal-title" className="text-xl font-semibold text-gray-900 text-center">
+        <div className="mb-5">
+          <h2 id="modal-title" className="text-2xl font-bold text-gray-900 text-center">
             {title || "Modal Title"}
           </h2>
         </div>
 
         {content && (
-          <div className="mb-6">
+          <div className="mb-8 text-gray-600 text-center leading-relaxed">
             {content}
           </div>
         )}
 
         <div className="flex justify-center space-x-3">
-          {footer || (<button className={"bg-primary text-primary-foreground font-medium rounded-xl shadow-md px-5 py-2.5"} onClick={onClose}>OK</button>)}
+          {footer || (
+            <button 
+              className="btn-primary px-8 py-3 font-semibold"
+              onClick={onClose}
+            >
+              OK
+            </button>
+          )}
         </div>
       </div>
     </div>

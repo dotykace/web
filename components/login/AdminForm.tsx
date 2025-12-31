@@ -79,18 +79,18 @@ export default function AdminForm({
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-900 font-semibold">
+              <FormLabel className="text-gray-800 font-semibold text-sm">
                 Používatelské jméno
               </FormLabel>
               <FormControl>
                 <Input
                   {...field}
                   placeholder="Zadejte používatelské jméno"
-                  className="bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg"
+                  className="input-unified"
                   autoFocus
                 />
               </FormControl>
-              <FormMessage className="text-red-600" />
+              <FormMessage className="text-red-500 text-sm" />
             </FormItem>
           )}
         />
@@ -100,7 +100,7 @@ export default function AdminForm({
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-900 font-semibold">
+              <FormLabel className="text-gray-800 font-semibold text-sm">
                 Heslo
               </FormLabel>
               <FormControl>
@@ -108,10 +108,10 @@ export default function AdminForm({
                   {...field}
                   type="password"
                   placeholder="Zadejte heslo"
-                  className="bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg"
+                  className="input-unified"
                 />
               </FormControl>
-              <FormMessage className="text-red-600" />
+              <FormMessage className="text-red-500 text-sm" />
             </FormItem>
           )}
         />
@@ -119,7 +119,7 @@ export default function AdminForm({
         <Button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed rounded-lg"
+          className="w-full btn-primary h-11 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading && <LoadingSpinner className="mr-2" />}
           Přihlásit se

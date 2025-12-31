@@ -12,10 +12,17 @@ export default function DotykacePage() {
     setFinished(()=>!!isFinished);
   }, []);
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
-      {finished ? (
-        <h1>{finishText}</h1>
-      ):defaultText}
+    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-warm">
+      <div className="text-center text-white animate-fade-in">
+        {finished ? (
+          <div className="glass-card px-8 py-12 text-center">
+            <div className="text-6xl mb-6">🎉</div>
+            <h1 className="text-2xl font-bold text-gray-900 whitespace-pre-line">{finishText}</h1>
+          </div>
+        ) : (
+          <h1 className="text-4xl font-bold">{defaultText}</h1>
+        )}
+      </div>
     </main>
   )
 }
