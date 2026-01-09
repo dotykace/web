@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRightIcon } from "lucide-react";
 import EmojiList from "@/components/EmojiList";
+import UserInput from "./UserInput";
 
 export default function EmojiReactionButton({
   onSelect,
@@ -25,23 +26,14 @@ export default function EmojiReactionButton({
   return (
     <div className="relative w-full max-w-md">
       {/* Fake input button */}
-      <button
-        onClick={handleButtonClick}
-        className="w-full bg-gray-900 text-gray-400 rounded-full py-4 px-6 text-left focus:outline-none"
-        style={{
-          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-          background: "#1e1e24",
+      <UserInput
+        onSubmit={(input) => {
+          onSelect(input);
+          setShowEmojis(false);
         }}
-      >
-        Napiš odpověď...
-      </button>
-
-      {/* Arrow button */}
-      <div className="absolute right-2 top-1/2 -translate-y-1/2">
-        <div className="bg-purple-600 rounded-full p-3 flex items-center justify-center">
-          <ArrowRightIcon className="h-5 w-5 text-white" />
-        </div>
-      </div>
+        placeholder={"Napiš odpověď..."}
+        buttonText="Odeslat"
+      />
 
       {/* Emoji reactions */}
       <AnimatePresence>

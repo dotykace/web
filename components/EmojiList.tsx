@@ -8,14 +8,13 @@ export default function EmojiList({
   className?: string;
 }) {
   return (
-    <div className="bg-gray-50 dark:bg-gray-800 rounded-xl">
-      <div className={(className ?? "") + " flex justify-around"}>
+    <div className="">
+      <div className={(className ?? "") + " flex justify-around gap-2"}>
         {emojis.map((emoji, index) => (
           <button
             key={index}
-            className={
-              "text-3xl hover:scale-110 transition-transform duration-200 p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
-            }
+            className="text-xl hover:scale-125 active:scale-95 transition-all duration-200 
+                       p-3 rounded-2xl hover:bg-white/20 active:bg-white/30"
             onClick={() => onEmojiClick(emoji)}
           >
             {emoji}

@@ -23,11 +23,7 @@ export default function PlaceSend({
   const Request = ({ text, visible }: { text: string; visible: boolean }) => {
     if (!visible) return null;
     return (
-      <div
-        className={
-          "request absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-center text-3xl p-6 py-8 bg-black/50 rounded-3xl "
-        }
-      >
+      <div className="request absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-center text-xl px-2 py-2 backdrop-blur-md bg-white/10 rounded-3xl border border-white/20 shadow-2xl font-light tracking-wide">
         {text}
       </div>
     );

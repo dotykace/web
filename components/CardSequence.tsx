@@ -124,36 +124,39 @@ export default function CardSequence() {
     totalInStack: number
   ) => {
     const isTopCard = stackIndex === totalInStack - 1;
-    const depth = totalInStack - 1 - stackIndex; // 0 for top card, 1 for second, etc.
+    const depth = totalInStack - 1 - stackIndex;
 
     // Calculate stack effect values
-    const scale = 1 - depth * 0.05;
-    const yOffset = depth * -12;
-    const opacity = isTopCard ? 1 : Math.max(0.3, 1 - depth * 0.25);
+    const scale = 1 - depth * 0.04;
+    const yOffset = depth * -16;
+    const opacity = isTopCard ? 1 : Math.max(0.4, 1 - depth * 0.2);
     const zIndex = totalInStack - depth;
+    const blur = isTopCard ? 0 : depth * 1;
 
     return (
       <motion.div
         key={interaction.id || `card-${stackStartIndex + stackIndex}`}
-        initial={{ opacity: 0, y: 40, scale: 0.9 }}
+        initial={{ opacity: 0, y: 50, scale: 0.9 }}
         animate={{
           opacity,
           y: yOffset,
           scale,
+          filter: `blur(${blur}px)`,
         }}
-        exit={{ opacity: 0, y: -20, scale: 0.95 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="absolute inset-x-0 mx-auto w-full max-w-md px-4"
+        exit={{ opacity: 0, y: -30, scale: 0.95 }}
+        transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="absolute inset-x-0 mx-auto w-full max-w-md px-6"
         style={{ zIndex }}
       >
         <div
-          className={`rounded-3xl px-6 py-8 shadow-2xl transition-all duration-300 ${
-            interaction.isUserResponse
-              ? "bg-amber-400/95 text-gray-900"
-              : "bg-white/95 backdrop-blur-md text-gray-800"
-          } ${isTopCard ? "ring-2 ring-white/30" : ""}`}
+          className={`rounded-3xl px-8 py-10 shadow-2xl transition-all duration-300 
+                      backdrop-blur-md border ${
+                        interaction.isUserResponse
+                          ? "bg-white/20 border-white/30"
+                          : "bg-white/10 border-white/20"
+                      } ${isTopCard ? "ring-1 ring-white/20" : ""}`}
         >
-          <p className="text-lg leading-relaxed text-center">
+          <p className="text-xl leading-relaxed text-center text-white font-light tracking-wide">
             {typeof interaction.text === "function"
               ? interaction.text()
               : interaction.text}
@@ -166,9 +169,37 @@ export default function CardSequence() {
   return (
     <main className="flex min-h-screen flex-col bg-gradient-chapter0">
       <div className="w-full max-w-2xl mx-auto flex h-screen flex-col px-4">
+        {/* Progress Indicator */}
+        {visibleHistory.length > 1 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="fixed top-6 left-0 right-0 z-20"
+          >
+            <div className="w-full max-w-md mx-auto px-6">
+              <div className="backdrop-blur-md bg-white/5 rounded-full border border-white/10 px-4 py-2">
+                <div className="flex gap-2 justify-center items-center">
+                  {visibleHistory.slice(-8).map((_, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className={`rounded-full transition-all duration-300 ${
+                        index === visibleHistory.slice(-8).length - 1
+                          ? "bg-white h-2 w-8"
+                          : "bg-white/30 h-2 w-2"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Card Stack Container */}
         <div className="flex-1 flex items-center justify-center relative">
-          <div className="relative w-full h-64">
+          <div className="relative w-full h-72">
             <AnimatePresence mode="popLayout">
               {stackedCards.map((interaction, index) =>
                 renderCard(interaction, index, stackedCards.length)
@@ -179,94 +210,96 @@ export default function CardSequence() {
 
         {/* Bottom Action Area */}
         <div className="fixed bottom-0 left-0 right-0 z-30">
-          <div className="w-full max-w-2xl mx-auto px-4 pb-8 pt-4">
-            {/* Continue Button - for message type */}
-            {isMessage && (
-              <motion.button
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                onClick={handleContinue}
-                className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 
-                           text-white font-semibold py-4 px-8 rounded-2xl shadow-lg
-                           transition-all duration-200 active:scale-98 flex items-center justify-center gap-2"
-              >
-                Pokračovat
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+          <div className="w-full max-w-md mx-auto px-6 pb-10 pt-4">
+            <AnimatePresence mode="wait">
+              {/* Continue Button - for message type */}
+              {isMessage && (
+                <motion.button
+                  key="continue"
+                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  onClick={handleContinue}
+                  className="w-full backdrop-blur-md bg-white/10 hover:bg-white/20 
+                             border border-white/20 hover:border-white/30
+                             text-white font-light tracking-wide py-4 px-8 rounded-3xl shadow-2xl
+                             transition-all duration-300 active:scale-[0.98] 
+                             flex items-center justify-center gap-3"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
+                  <span className="text-lg">Pokračovat</span>
+                  <motion.svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    animate={{ x: [0, 4, 0] }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </motion.svg>
+                </motion.button>
+              )}
+
+              {/* Input Field - for input type */}
+              {needsInput && (
+                <motion.div
+                  key="input"
+                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="backdrop-blur-md bg-white/10 rounded-3xl border border-white/20 p-5 shadow-2xl"
+                >
+                  <UserInput
+                    onSubmit={handleUserResponse}
+                    placeholder="Napiš odpověď..."
+                    buttonText="Odeslat"
                   />
-                </svg>
-              </motion.button>
-            )}
+                </motion.div>
+              )}
 
-            {/* Input Field - for input type */}
-            {needsInput && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-4"
-              >
-                <UserInput
-                  onSubmit={handleUserResponse}
-                  placeholder="Napiš odpověď..."
-                  buttonText="Odeslat"
-                />
-              </motion.div>
-            )}
-
-            {/* Choice Buttons - for multiple-choice type */}
-            {needsChoice && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex flex-wrap gap-3 justify-center"
-              >
-                {currentInteraction.choices?.map(
-                  (choice: any, index: number) => (
-                    <button
-                      key={index}
-                      onClick={() => handleChoiceResponse(choice)}
-                      className="bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30
-                               text-white font-semibold py-3 px-6 rounded-full shadow-lg
-                               transition-all duration-200 active:scale-95"
-                    >
-                      {choice.type}
-                    </button>
-                  )
-                )}
-              </motion.div>
-            )}
+              {/* Choice Buttons - for multiple-choice type */}
+              {needsChoice && (
+                <motion.div
+                  key="choices"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="flex flex-col gap-3"
+                >
+                  {currentInteraction.choices?.map(
+                    (choice: any, index: number) => (
+                      <motion.button
+                        key={index}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1, duration: 0.3 }}
+                        onClick={() => handleChoiceResponse(choice)}
+                        className="w-full backdrop-blur-md bg-white/10 hover:bg-white/20 
+                                   border border-white/20 hover:border-white/30
+                                   text-white font-light tracking-wide py-4 px-6 rounded-3xl shadow-2xl
+                                   transition-all duration-300 active:scale-[0.98]"
+                      >
+                        {choice.type}
+                      </motion.button>
+                    )
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
-
-        {/* Progress Dots */}
-        {visibleHistory.length > 1 && (
-          <div className="fixed top-8 left-0 right-0 z-20">
-            <div className="w-full max-w-2xl mx-auto px-4">
-              <div className="flex gap-1.5 justify-center">
-                {visibleHistory.slice(-10).map((_, index) => (
-                  <div
-                    key={index}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                      index === visibleHistory.slice(-10).length - 1
-                        ? "bg-white w-6"
-                        : "bg-white/30 w-1.5"
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </main>
   );

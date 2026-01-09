@@ -22,27 +22,29 @@ export default function SocialMediaPost({
   });
   return (
     <Card
-      className={`m-5 h-full rounded-xl transition-all duration-300 ring-2 ring-blue-500 shadow-xl bg-white`}
+      className="m-5 h-full rounded-3xl transition-all duration-300 ring-1 ring-white/20 shadow-2xl backdrop-blur-md bg-white/10 border border-white/20"
     >
       <CardHeader className="pb-3">
-        <div className="flex items-center space-x-3">
-          <LocalSvgRenderer filename={avatar} className="w-10 h-10" />
+        <div className="flex items-center space-x-4">
+          <LocalSvgRenderer filename={avatar} className="w-12 h-12" />
           <div className="flex-1 justify-between">
-            <h3 className="font-semibold text-sm">{username}</h3>
-            <p className="text-xs text-gray-500">{timestamp}</p>
+            <h3 className="font-medium text-white tracking-wide">{username}</h3>
+            <p className="text-xs text-white/60">{timestamp}</p>
           </div>
         </div>
       </CardHeader>
 
       <CardContent className="pt-0">
-        <div className="mb-6">
-          <p className="text-sm leading-relaxed text-gray-800">{content}</p>
+        <div className="mb-4">
+          <p className="text-lg leading-relaxed text-white font-light tracking-wide">{content}</p>
           {choices && choices.length > 0 && (
-            <div className="mt-4 flex flex-col space-y-2 rounded-xl">
+            <div className="mt-6 flex flex-col space-y-3">
               {choices.map((choice, index) => (
                 <Button
                   key={index}
-                  className="flex-1 rounded-full bg-gray-800 text-white"
+                  className="flex-1 rounded-3xl py-6 backdrop-blur-md bg-white/20 hover:bg-white/30 
+                             border border-white/30 text-white font-light tracking-wide 
+                             transition-all duration-300 active:scale-[0.98]"
                   onClick={choice.callback}
                 >
                   {choice.text}

@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import type { ReactNode } from "react"
+import type { ReactNode } from "react";
 
 interface CardProps {
-  children: ReactNode
-  onClick?: () => void
-  className?: string
+  children: ReactNode;
+  onClick?: () => void;
+  className?: string;
 }
 
 export default function Card({ children, onClick, className = "" }: CardProps) {
@@ -17,5 +17,5 @@ export default function Card({ children, onClick, className = "" }: CardProps) {
     >
       {children}
     </div>
-  )
+  );
 }
