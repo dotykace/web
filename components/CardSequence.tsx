@@ -1,53 +1,65 @@
 "use client";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useChatContext } from "@/context/ChatContext";
 import { useAudioManager } from "@/hooks/use-audio";
 import { useRouter } from "next/navigation";
 import UserInput from "@/components/UserInput";
 
 const MESSAGE_DELAY_MS = 200;
+const MAX_VISIBLE_CARDS = 4;
 
 export default function CardSequence() {
-  const { currentInteraction, goToNextInteraction, handleUserInput, handleChoiceSelection } = useChatContext();
+  const {
+    currentInteraction,
+    goToNextInteraction,
+    handleUserInput,
+    handleChoiceSelection,
+  } = useChatContext();
   const [history, setHistory] = useState<any[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [displayCount, setDisplayCount] = useState(0);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { preloadAll, playPreloaded } = useAudioManager();
+  const router = useRouter();
+
   const soundMap = {
     "sound-test": { filename: "vykreslovanie TECKY.mp3" },
     "game-confirm": { filename: "JINGEL - pozitiv.mp3" },
   };
 
   // Add user response to history and then call the original handler
-  const handleUserResponse = useCallback((text: string) => {
-    // Add user's response as a message bubble
-    const userMessage = {
-      id: `user-response-${Date.now()}`,
-      text: text,
-      isUserResponse: true,
-    };
-    setHistory((prev) => [...prev, userMessage]);
-    setDisplayCount((prev) => prev + 1);
-    
-    // Call the original handler
-    handleUserInput(text);
-  }, [handleUserInput]);
+  const handleUserResponse = useCallback(
+    (text: string) => {
+      const userMessage = {
+        id: `user-response-${Date.now()}`,
+        text: text,
+        isUserResponse: true,
+      };
+      setHistory((prev) => [...prev, userMessage]);
+      setDisplayCount((prev) => prev + 1);
+      handleUserInput(text);
+    },
+    [handleUserInput]
+  );
 
-  const handleChoiceResponse = useCallback((choice: any) => {
-    // Add user's choice as a message bubble
-    const userMessage = {
-      id: `user-choice-${Date.now()}`,
-      text: choice.type || choice.label || choice,
-      isUserResponse: true,
-    };
-    setHistory((prev) => [...prev, userMessage]);
-    setDisplayCount((prev) => prev + 1);
-    
-    // Call the original handler
-    handleChoiceSelection(choice);
-  }, [handleChoiceSelection]);
+  const handleChoiceResponse = useCallback(
+    (choice: any) => {
+      const userMessage = {
+        id: `user-choice-${Date.now()}`,
+        text: choice.type || choice.label || choice,
+        isUserResponse: true,
+      };
+      setHistory((prev) => [...prev, userMessage]);
+      setDisplayCount((prev) => prev + 1);
+      handleChoiceSelection(choice);
+    },
+    [handleChoiceSelection]
+  );
+
+  const handleContinue = () => {
+    if (currentInteraction?.type === "message") {
+      goToNextInteraction();
+    }
+  };
 
   useEffect(() => {
     preloadAll(soundMap).then(() => {
@@ -86,88 +98,62 @@ export default function CardSequence() {
     return () => clearTimeout(timer);
   }, [history.length, displayCount]);
 
-  const visibleHistory = history.slice(0, displayCount);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!scrollContainerRef.current) return;
-    scrollContainerRef.current.scrollTo({
-      top: scrollContainerRef.current.scrollHeight,
-      behavior: "smooth",
-    });
-  }, [visibleHistory.length]);
-
   useEffect(() => {
     if (currentInteraction?.type === "checkpoint") {
       router.push("/menu");
     }
   }, [currentInteraction, router]);
 
-  const prevVisibleCountRef = useRef(0);
-  useEffect(() => {
-    if (visibleHistory.length > prevVisibleCountRef.current) {
-      setCurrentIndex(visibleHistory.length - 1);
-    }
-    prevVisibleCountRef.current = visibleHistory.length;
-  }, [visibleHistory.length]);
+  const visibleHistory = history.slice(0, displayCount);
 
-  const handleMessageClick = () => {
-    if (currentInteraction?.type === "message") {
-      goToNextInteraction();
-    }
-  };
+  // Get the last N cards for the stack effect
+  const stackedCards = visibleHistory.slice(-MAX_VISIBLE_CARDS);
+  const stackStartIndex = Math.max(
+    0,
+    visibleHistory.length - MAX_VISIBLE_CARDS
+  );
 
-  const goToMessage = (index: number) => {
-    if (visibleHistory.length === 0) return;
-    const boundedIndex = Math.min(
-      visibleHistory.length - 1,
-      Math.max(0, index)
-    );
-    setDisplayCount((prev) => Math.max(prev, boundedIndex + 1));
-    setCurrentIndex(boundedIndex);
+  // Check interaction types
+  const needsInput = currentInteraction?.type === "input";
+  const needsChoice = currentInteraction?.type === "multiple-choice";
+  const isMessage = currentInteraction?.type === "message";
 
-    if (!scrollContainerRef.current) return;
-    const messageElement = scrollContainerRef.current.children[0]?.children[
-      boundedIndex
-    ] as HTMLElement;
-    if (messageElement) {
-      messageElement.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  };
+  const renderCard = (
+    interaction: any,
+    stackIndex: number,
+    totalInStack: number
+  ) => {
+    const isTopCard = stackIndex === totalInStack - 1;
+    const depth = totalInStack - 1 - stackIndex; // 0 for top card, 1 for second, etc.
 
-  // Check if current interaction needs input
-  const needsInput =
-    currentInteraction?.type === "input" ||
-    currentInteraction?.type === "multiple-choice";
-
-  const renderMessage = (interaction: any, index: number) => {
-    const isActive = index === currentIndex;
-    // User responses are shown on the right (these are messages with isUserResponse flag)
-    const isUserResponse = interaction.isUserResponse === true;
-    // Input prompts are shown on the left like regular messages
-    const isInputPrompt =
-      interaction.type === "input" || interaction.type === "multiple-choice";
+    // Calculate stack effect values
+    const scale = 1 - depth * 0.05;
+    const yOffset = depth * -12;
+    const opacity = isTopCard ? 1 : Math.max(0.3, 1 - depth * 0.25);
+    const zIndex = totalInStack - depth;
 
     return (
       <motion.div
-        key={interaction.id || index}
-        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -10, scale: 0.98 }}
-        transition={{ duration: 0.35 }}
-        className={`mb-4 flex ${
-          isUserResponse ? "justify-end pr-4" : "justify-start pl-2"
-        }`}
-        onClick={handleMessageClick}
+        key={interaction.id || `card-${stackStartIndex + stackIndex}`}
+        initial={{ opacity: 0, y: 40, scale: 0.9 }}
+        animate={{
+          opacity,
+          y: yOffset,
+          scale,
+        }}
+        exit={{ opacity: 0, y: -20, scale: 0.95 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="absolute inset-x-0 mx-auto w-full max-w-md px-4"
+        style={{ zIndex }}
       >
         <div
-          className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-md transition-all duration-300 ${
-            isUserResponse
-              ? "bg-amber-400 text-gray-900"
-              : "bg-white/95 backdrop-blur-sm text-gray-800"
-          } ${isActive ? "ring-2 ring-amber-400/70" : ""}`}
+          className={`rounded-3xl px-6 py-8 shadow-2xl transition-all duration-300 ${
+            interaction.isUserResponse
+              ? "bg-amber-400/95 text-gray-900"
+              : "bg-white/95 backdrop-blur-md text-gray-800"
+          } ${isTopCard ? "ring-2 ring-white/30" : ""}`}
         >
-          <p className="text-base leading-relaxed">
+          <p className="text-lg leading-relaxed text-center">
             {typeof interaction.text === "function"
               ? interaction.text()
               : interaction.text}
@@ -178,82 +164,105 @@ export default function CardSequence() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600">
+    <main className="flex min-h-screen flex-col bg-gradient-chapter0">
       <div className="w-full max-w-2xl mx-auto flex h-screen flex-col px-4">
-        {/* Header */}
-        <div className="sticky top-0 z-20 pt-8 pb-2 backdrop-blur-md">
-          <div className="bg-white/10 rounded-2xl border border-white/20 px-6 py-4">
-            <h2 className="text-white text-lg font-semibold">Zprávy</h2>
-          </div>
-        </div>
-
-        {/* Messages Container */}
-        <div
-          ref={scrollContainerRef}
-          className="flex-1 overflow-y-auto pt-2 scrollbar-thin scrollbar-thumb-white/30 scrollbar-track-transparent"
-          style={{
-            scrollbarWidth: "thin",
-            scrollbarColor: "rgba(255,255,255,0.3) transparent",
-            paddingBottom: needsInput ? "180px" : "100px",
-          }}
-        >
-          <div className="py-4">
-            <AnimatePresence>
-              {visibleHistory.map((interaction, index) =>
-                renderMessage(interaction, index)
+        {/* Card Stack Container */}
+        <div className="flex-1 flex items-center justify-center relative">
+          <div className="relative w-full h-64">
+            <AnimatePresence mode="popLayout">
+              {stackedCards.map((interaction, index) =>
+                renderCard(interaction, index, stackedCards.length)
               )}
             </AnimatePresence>
           </div>
         </div>
 
-        {/* Fixed Input Area at Bottom - Messenger Style */}
-        {needsInput && (
-          <div className="fixed bottom-0 left-0 right-0 z-30 backdrop-blur-md bg-gradient-to-t from-indigo-600/90 to-transparent">
-            <div className="w-full max-w-2xl mx-auto px-4 pb-6 pt-4">
-              <div className="bg-white/10 rounded-2xl border border-white/20 p-4">
-                {currentInteraction?.type === "input" ? (
-                  <UserInput
-                    onSubmit={handleUserResponse}
-                    placeholder="Napiš odpověď..."
-                    buttonText="Odeslat"
+        {/* Bottom Action Area */}
+        <div className="fixed bottom-0 left-0 right-0 z-30">
+          <div className="w-full max-w-2xl mx-auto px-4 pb-8 pt-4">
+            {/* Continue Button - for message type */}
+            {isMessage && (
+              <motion.button
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                onClick={handleContinue}
+                className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 
+                           text-white font-semibold py-4 px-8 rounded-2xl shadow-lg
+                           transition-all duration-200 active:scale-98 flex items-center justify-center gap-2"
+              >
+                Pokračovat
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
                   />
-                ) : currentInteraction?.type === "multiple-choice" ? (
-                  <div className="flex flex-wrap gap-3 justify-center">
-                    {currentInteraction.choices?.map((choice: any, index: number) => (
-                      <button
-                        key={index}
-                        onClick={() => handleChoiceResponse(choice)}
-                        className="bg-amber-400 hover:bg-amber-500 active:scale-95 transition-all py-3 px-6 rounded-full text-gray-900 font-semibold shadow-lg hover:shadow-xl"
-                      >
-                        {choice.type}
-                      </button>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          </div>
-        )}
+                </svg>
+              </motion.button>
+            )}
 
-        {/* Carousel Navigation - Only show when not in input mode */}
-        {visibleHistory.length > 1 && !needsInput && (
-          <div className="fixed bottom-0 left-0 right-0 z-20 backdrop-blur-md">
-            <div className="w-full max-w-2xl mx-auto px-4 pb-6 pt-2">
-              <div className="bg-white/10 rounded-2xl border border-white/20 px-4 py-3">
-                <div className="flex gap-2 justify-center overflow-x-auto pb-1">
-                  {visibleHistory.map((_, index) => (
+            {/* Input Field - for input type */}
+            {needsInput && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-4"
+              >
+                <UserInput
+                  onSubmit={handleUserResponse}
+                  placeholder="Napiš odpověď..."
+                  buttonText="Odeslat"
+                />
+              </motion.div>
+            )}
+
+            {/* Choice Buttons - for multiple-choice type */}
+            {needsChoice && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex flex-wrap gap-3 justify-center"
+              >
+                {currentInteraction.choices?.map(
+                  (choice: any, index: number) => (
                     <button
                       key={index}
-                      onClick={() => goToMessage(index)}
-                      className={`flex-shrink-0 h-2 rounded-full transition-all duration-300 ${
-                        index === currentIndex
-                          ? "bg-amber-400 w-8"
-                          : "bg-white/30 w-2 hover:bg-amber-300/50"
-                      }`}
-                      aria-label={`Go to message ${index + 1}`}
-                    />
-                  ))}
-                </div>
+                      onClick={() => handleChoiceResponse(choice)}
+                      className="bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30
+                               text-white font-semibold py-3 px-6 rounded-full shadow-lg
+                               transition-all duration-200 active:scale-95"
+                    >
+                      {choice.type}
+                    </button>
+                  )
+                )}
+              </motion.div>
+            )}
+          </div>
+        </div>
+
+        {/* Progress Dots */}
+        {visibleHistory.length > 1 && (
+          <div className="fixed top-8 left-0 right-0 z-20">
+            <div className="w-full max-w-2xl mx-auto px-4">
+              <div className="flex gap-1.5 justify-center">
+                {visibleHistory.slice(-10).map((_, index) => (
+                  <div
+                    key={index}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      index === visibleHistory.slice(-10).length - 1
+                        ? "bg-white w-6"
+                        : "bg-white/30 w-1.5"
+                    }`}
+                  />
+                ))}
               </div>
             </div>
           </div>

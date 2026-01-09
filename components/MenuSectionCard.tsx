@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { Check } from "lucide-react";
+import { Check, Lock } from "lucide-react";
 
 type SectionState = "locked" | "unlocked" | "completed";
 
@@ -27,33 +27,53 @@ export default function MenuSectionCard({
   const fileName = generateSectionFileName(section.id, isLocked);
 
   return (
-    <div className="flex flex-col items-center w-[150px] relative group">
-      <div 
-        className={`relative w-[150px] h-[150px] rounded-2xl border-4 overflow-hidden
+    <div className="flex flex-col items-center relative group">
+      {/* Card Container */}
+      <div
+        className={`relative w-[140px] h-[140px] rounded-3xl overflow-hidden
                     transition-all duration-300 cursor-pointer
-                    ${isLocked 
-                      ? 'border-white/50 opacity-70' 
-                      : 'border-white shadow-lg shadow-black/10 hover:shadow-xl hover:scale-105'
+                    ${
+                      isLocked
+                        ? "bg-white/10 backdrop-blur-sm border border-white/20 opacity-60"
+                        : "bg-white/20 backdrop-blur-md border border-white/30 shadow-xl shadow-black/10 hover:shadow-2xl hover:scale-105 hover:bg-white/25"
                     }`}
         onClick={() => handleSectionClick(section)}
       >
         <Image
           src={fileName}
-          alt={`Chapter Image ${fileName}`}
+          alt={`Chapter ${section.id}`}
           fill
           className="object-cover"
         />
+
+        {/* Lock overlay for locked chapters */}
+        {isLocked && (
+          <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+            <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
+              <Lock className="w-6 h-6 text-white/80" strokeWidth={2} />
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Completed badge */}
       {isCompleted && (
-        <div className="absolute top-[-8px] right-[-8px] bg-gradient-to-br from-green-400 to-green-600 
-                        rounded-full p-1.5 shadow-lg shadow-green-500/30 border-2 border-white
-                        animate-scale-in">
-          <Check className="w-6 h-6 text-white" strokeWidth={3} />
+        <div
+          className="absolute top-[-6px] right-[-6px] bg-white/20 backdrop-blur-md
+                        rounded-full p-1.5 shadow-lg border border-white/30
+                        animate-scale-in"
+        >
+          <Check className="w-5 h-5 text-white" strokeWidth={3} />
         </div>
       )}
-      {/* Text block */}
+
+      {/* Title */}
       <div className="mt-3 w-full text-center">
-        <p className={`text-lg font-bold tracking-wide ${isLocked ? 'text-white/70' : 'text-white'}`}>
+        <p
+          className={`text-base font-semibold tracking-wide ${
+            isLocked ? "text-white/50" : "text-white"
+          }`}
+        >
           {section.title}
         </p>
       </div>
