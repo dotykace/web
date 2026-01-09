@@ -118,14 +118,13 @@ function ChatContent() {
 
   const notificationProps = {
     id: currentInteraction.id,
-    title: "New Message",
+    title: "Nová zpráva",
     message: currentInteraction?.text() ?? "",
     icon: <MessageSquare className="h-6 w-6 text-white" />,
   };
 
   return (
     <main className="h-screen overflow-hidden flex flex-col bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600">
-      <HelpButton />
       {mode === "overlay" && <ChatOverlay />}
 
       <div className="w-full max-w-2xl mx-auto flex flex-1 flex-col px-4 overflow-hidden">
@@ -134,6 +133,8 @@ function ChatContent() {
           <div className="bg-white/10 rounded-2xl border border-white/20 px-6 py-4 flex items-center gap-3">
             <LocalSvgRenderer filename={dotyFace} className="w-8 h-8" />
             <h2 className="text-white text-lg font-semibold">Zprávy</h2>
+            <div className="flex-1" />
+            <HelpButton variant="inline" />
           </div>
         </div>
 

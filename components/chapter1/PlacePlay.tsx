@@ -22,7 +22,7 @@ export default function PlacePlay({
 
   const notificationProps = {
     id: current.id,
-    title: "New Message",
+    title: "Nová zpráva",
     message: current?.text() ?? "",
     icon: (
       <LocalSvgRenderer

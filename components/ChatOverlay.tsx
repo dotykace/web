@@ -68,7 +68,7 @@ export default function ChatOverlay() {
 
   const notificationProps = {
     id: currentInteraction.id,
-    title: "New Message",
+    title: "Nová zpráva",
     message: currentInteraction?.text() ?? "",
     icon: <LocalSvgRenderer filename={dotyFace} className="w-8 h-8" />,
   };

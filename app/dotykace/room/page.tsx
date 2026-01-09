@@ -29,54 +29,70 @@ export default function DotykaceRoomPage() {
     if (!storedPlayerId) {
       console.log("Player ID not found in localStorage. Redirecting to root");
       router.push("/");
+      return;
     }
+
+    let hasRedirected = false;
 
     const roomRef = doc(db, "rooms", storedRoomId);
     const unsubscribe = onSnapshot(
       roomRef,
       async (document) => {
+        if (hasRedirected) return;
+
         if (document.exists()) {
           const roomData = document.data() as DotykaceRoom;
           setRoom(roomData);
           setConnectionError(false);
           console.log(
-            `Connected to room "${storedRoomId}" as player "${storedPlayerName}"`
+            `Connected to room "${storedRoomId}" as player "${storedPlayerName}" (ID: ${storedPlayerId})`
           );
-
-          // Skontroluj či hráč už existuje v miestnosti
-          const participantRef = doc(
-            db,
-            "rooms",
-            storedRoomId,
-            "participants",
-            storedPlayerId
-          );
-          const participantDoc = await getDoc(participantRef);
-          const existingParticipant = participantDoc.exists()
-            ? (participantDoc.data() as DotykaceParticipant)
-            : null;
-          console.log("Existing participant data:", existingParticipant);
 
           // Ak sa miestnosť spustila, automaticky začni introduction
           if (roomData.isStarted) {
-            let currentChapter = readFromStorage("chapter");
-            // Check for undefined/null explicitly (0 is a valid chapter!)
-            if (currentChapter === undefined || currentChapter === null) {
-              currentChapter = existingParticipant?.currentChapter ?? 0;
-              setToStorage("chapter", currentChapter);
-            }
-            if (currentChapter > 0) {
-              console.log(
-                "Current chapter from existing participant:",
-                currentChapter
-              );
-              router.push(`/menu`);
+            hasRedirected = true;
+
+            // Always fetch fresh participant data from Firestore
+            const participantRef = doc(
+              db,
+              "rooms",
+              storedRoomId,
+              "participants",
+              storedPlayerId
+            );
+            const participantDoc = await getDoc(participantRef);
+            const existingParticipant = participantDoc.exists()
+              ? (participantDoc.data() as DotykaceParticipant)
+              : null;
+
+            console.log(
+              "Participant data from Firestore:",
+              existingParticipant
+            );
+
+            // Use Firestore data as source of truth, ignore localStorage
+            const currentChapter = existingParticipant?.currentChapter ?? 0;
+            const completedChapters =
+              existingParticipant?.completedChapters ?? [];
+
+            // Sync to localStorage
+            setToStorage("chapter", currentChapter);
+            setToStorage("completedChapters", completedChapters);
+
+            // New players (chapter 0 not completed) must start at intro
+            if (!completedChapters.includes(0)) {
+              console.log("Chapter 0 not completed, redirecting to chapter 0");
+              router.push("/chapter/0");
+            } else if (currentChapter > 0) {
+              console.log("Chapter 0 completed, going to menu");
+              router.push("/menu");
             } else {
               console.log("Current chapter is 0, redirecting to chapter 0");
               router.push("/chapter/0");
             }
           }
         } else {
+          hasRedirected = true;
           router.push("/");
         }
       },

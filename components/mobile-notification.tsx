@@ -20,8 +20,8 @@ interface NotificationProps {
 
 export default function MobileNotification({
   id = "basic-notification",
-  title = "New Notification",
-  message = "You have a new message",
+  title = "Nová notifikace",
+  message = "Máte novou zprávu",
   icon = <Bell className="h-6 w-6 text-primary" />,
   duration = 5000,
   onClose,
@@ -76,13 +76,9 @@ export default function MobileNotification({
                     <p className="text-sm font-semibold text-gray-900">
                       {title}
                     </p>
-                    <p className="text-xs text-amber-600">
-                      {timestapm}
-                    </p>
+                    <p className="text-xs text-amber-600">{timestapm}</p>
                   </div>
-                  <p className="mt-1 text-sm text-gray-700">
-                    {message}
-                  </p>
+                  <p className="mt-1 text-sm text-gray-700">{message}</p>
                   {content && (
                     <QuickReplyButton
                       onClick={() => setShowQuickReply(!showQuickReply)}
@@ -147,7 +143,9 @@ function QuickReplyButton({
           : { duration: 0.3 }
       }
       onClick={onClick}
-      className={"my-2 rounded-full h-8 px-4 text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-gray-900 transition-colors"}
+      className={
+        "my-2 rounded-full h-8 px-4 text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-gray-900 transition-colors"
+      }
     >
       Quick Reply
     </motion.button>

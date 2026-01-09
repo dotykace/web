@@ -21,7 +21,7 @@ import { deleteDoc, doc, Timestamp, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import ProgressTable from "@/components/admin/ProgressTable";
 import useParticipants from "@/hooks/use-participants";
-export const chapterList = [0, 1, 2, 3, 4, 5];
+export const chapterList = [1, 2, 3, 4];
 export default function RenderRoom({
   room,
   processedRooms,
@@ -93,7 +93,7 @@ export default function RenderRoom({
       // Spusti room a automaticky odomkni introduction (kapitolu 0)
       await updateDoc(doc(db, "rooms", roomDocId), {
         isStarted: true,
-        globalUnlockedChapters: [0, 5],
+        globalUnlockedChapters: [0],
       });
     } catch (error) {
       console.error("❌ Error starting room:", error);

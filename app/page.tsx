@@ -86,7 +86,9 @@ export default function HomePage() {
         {/* Logo */}
         <div className="text-center flex-shrink-0">
           <DotykaceLogo width={280} />
-          <p className="text-white/95 m-2 text-xl font-medium tracking-wide">{appSubtitle}</p>
+          <p className="text-white/95 m-2 text-xl font-medium tracking-wide">
+            {appSubtitle}
+          </p>
         </div>
 
         {/* Toggle Buttons */}
@@ -94,8 +96,8 @@ export default function HomePage() {
           <Button
             variant={!isLogin ? "default" : "ghost"}
             className={`flex-1 rounded-full text-sm font-semibold transition-all duration-300 ${
-              !isLogin 
-                ? "bg-white text-gray-900 shadow-md" 
+              !isLogin
+                ? "bg-white text-gray-900 shadow-md"
                 : "text-white/90 hover:text-white hover:bg-white/10"
             }`}
             onClick={() => handleModeSwitch(false)}
@@ -105,8 +107,8 @@ export default function HomePage() {
           <Button
             variant={isLogin ? "default" : "ghost"}
             className={`flex-1 rounded-full text-sm font-semibold transition-all duration-300 ${
-              isLogin 
-                ? "bg-white text-gray-900 shadow-md" 
+              isLogin
+                ? "bg-white text-gray-900 shadow-md"
                 : "text-white/90 hover:text-white hover:bg-white/10"
             }`}
             onClick={() => handleModeSwitch(true)}
@@ -138,7 +140,10 @@ export default function HomePage() {
         <div className="fixed w-16 h-16 bg-white/30 rounded-full pointer-events-none decorative-float-1 blur-sm"></div>
         <div className="fixed w-12 h-12 bg-amber-200/40 rounded-full pointer-events-none decorative-float-2 blur-sm"></div>
         <div className="fixed w-10 h-10 bg-red-300/30 rounded-full pointer-events-none decorative-float-3 blur-sm"></div>
-        <div className="fixed w-8 h-8 bg-orange-200/40 rounded-full pointer-events-none decorative-float-3 blur-sm" style={{ animationDelay: '5s' }}></div>
+        <div
+          className="fixed w-8 h-8 bg-orange-200/40 rounded-full pointer-events-none decorative-float-3 blur-sm"
+          style={{ animationDelay: "5s" }}
+        ></div>
       </div>
     </div>
   );

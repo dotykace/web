@@ -17,27 +17,37 @@ export default function useParticipants({
   useEffect(() => {
     if (!room.docId) return;
 
+    // If participants are already provided, use them
+    if (room.participants) {
+      setParticipants(room.participants);
+      return;
+    }
+
     const participantsCol = collection(db, "rooms", room.docId, "participants");
-    console.log("new room docId:", room.docId);
-    getParticipantsOnce(room).then((fetchedParticipants) => {
-      setParticipants(fetchedParticipants);
-    });
-    if (room.participants) return;
-    onSnapshot(participantsCol, (snapshot) => {
+    console.log("Setting up participants listener for room:", room.docId);
+
+    // Set up realtime listener
+    const unsubscribe = onSnapshot(participantsCol, (snapshot) => {
       const newParticipants = snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() } as DotykaceParticipant)
+        (doc) => ({ id: doc.id, ...doc.data() }) as DotykaceParticipant
       );
       setParticipants(newParticipants);
-      console.log("Realtime participants:", newParticipants);
+      console.log("Realtime participants update:", newParticipants.length);
     });
-  }, [room]);
+
+    // Cleanup on unmount or when room changes
+    return () => {
+      console.log("Cleaning up participants listener for room:", room.docId);
+      unsubscribe();
+    };
+  }, [room.docId, room.participants]);
 
   return { participants };
 }
+
 export async function getParticipantsOnce(
   room: RoomWithParticipants
 ): Promise<DotykaceParticipant[]> {
-  console.log(room);
   if (room.participants) {
     return room.participants;
   }
@@ -49,6 +59,6 @@ export async function getParticipantsOnce(
   const snapshot = await getDocs(participantsCol);
   console.log("Fetched participants snapshot for room", roomDocId);
   return snapshot.docs.map(
-    (doc) => ({ id: doc.id, ...doc.data() } as DotykaceParticipant)
+    (doc) => ({ id: doc.id, ...doc.data() }) as DotykaceParticipant
   );
 }

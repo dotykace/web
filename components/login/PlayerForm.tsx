@@ -2,9 +2,11 @@ import { useRouter } from "next/navigation";
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   query,
   setDoc,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -22,8 +24,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { readFromStorage, setToStorage, removeFromStorage } from "@/scripts/local-storage";
-import { DotykaceParticipant } from "@/lib/dotykace-types";
+import {
+  readFromStorage,
+  setToStorage,
+  removeFromStorage,
+} from "@/scripts/local-storage";
+import {
+  DotykaceParticipant,
+  DotykaceRoom,
+  ChapterPermissions,
+} from "@/lib/dotykace-types";
 
 const playerFormSchema = z.object({
   roomCode: z
@@ -57,15 +67,16 @@ export default function PlayerForm({
 
   const isLoading = form.formState.isSubmitting;
 
-  const addPlayerToRoom = async (roomId: string, playerName: string) => {
+  const addPlayerToRoom = async (roomDocId: string, playerName: string) => {
     try {
       const newPlayerId = Date.now().toString();
       setToStorage("playerId", newPlayerId);
 
+      // Create the participant document
       const newParticipant: DotykaceParticipant = {
         id: newPlayerId,
         name: playerName,
-        roomId,
+        roomId: roomDocId,
         joinedAt: new Date(),
         responses: {
           isComplete: false,
@@ -78,12 +89,34 @@ export default function PlayerForm({
       const participantRef = doc(
         db,
         "rooms",
-        roomId,
+        roomDocId,
         "participants",
         newPlayerId
       );
       await setDoc(participantRef, newParticipant);
       console.log("Participant added:", newPlayerId);
+
+      // Also add the player to room's chapterPermissions with chapter 0 allowed
+      const roomRef = doc(db, "rooms", roomDocId);
+      const roomSnap = await getDoc(roomRef);
+
+      if (roomSnap.exists()) {
+        const roomData = roomSnap.data() as DotykaceRoom;
+        const currentPermissions = roomData.chapterPermissions || {};
+
+        const updatedPermissions: ChapterPermissions = {
+          ...currentPermissions,
+          [newPlayerId]: {
+            allowedChapters: [0],
+            playerName: playerName,
+          },
+        };
+
+        await updateDoc(roomRef, {
+          chapterPermissions: updatedPermissions,
+        });
+        console.log("Player permissions added for chapter 0");
+      }
 
       console.log("✅ Player added successfully");
     } catch (error) {
@@ -111,24 +144,10 @@ export default function PlayerForm({
         setError("Místnost není aktivní");
         return;
       }
-      const savedRoomId = readFromStorage("roomId");
-      if (savedRoomId) {
-        if (savedRoomId !== roomDoc.id) {
-          localStorage.clear();
-        } else {
-          const savedPlayerId = readFromStorage("playerId");
-          console.log(
-            `User with ID ${savedPlayerId} is re-joining room "${roomDoc.id}"`
-          );
-          router.push("/dotykace/room");
-          return;
-        }
-      }
-      
-      // Clear chapter data for new signups to ensure starting from chapter 0
-      removeFromStorage("chapter");
-      removeFromStorage("completedChapters");
-      
+      // Always clear all chapter-related data for new signups
+      // This ensures new players start fresh from chapter 0
+      localStorage.clear();
+
       setToStorage("playerName", values.playerName);
       setToStorage("roomId", roomDoc.id);
       await addPlayerToRoom(roomDoc.id, values.playerName);

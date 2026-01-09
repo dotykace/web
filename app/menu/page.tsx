@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { readFromStorage, setToStorage } from "@/scripts/local-storage";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import type { DotykaceParticipant, DotykaceRoom } from "@/lib/dotykace-types";
 import HelpButton from "@/components/HelpButton";
@@ -43,6 +43,7 @@ export default function MenuPage() {
   const [roomId, setRoomId] = useState<string | null>(null);
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [isClient, setIsClient] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [allowedChapters, setAllowedChapters] = useState<number[]>([0]);
   const [completedChapters, setCompletedChapters] = useState<number[]>([]);
 
@@ -50,7 +51,7 @@ export default function MenuPage() {
 
   const audioManager = useAudioManager();
 
-  // Initialize client-side data
+  // Initialize client-side data and check Firestore for intro completion
   useEffect(() => {
     setIsClient(true);
 
@@ -60,7 +61,6 @@ export default function MenuPage() {
     const storedPlayerId = readFromStorage("playerId") as string;
 
     const selectedVoice = readFromStorage("selectedVoice") as string;
-    console.log("Selected voice from storage:", selectedVoice);
     if (!selectedVoice) {
       setToStorage("selectedVoice", "male");
     }
@@ -70,16 +70,60 @@ export default function MenuPage() {
     setRoomId(storedRoomId);
     setPlayerId(storedPlayerId);
 
-    const storedCompletedChapters =
-      (readFromStorage("completedChapters") as number[]) || [];
+    // Check Firestore for completed chapters (source of truth)
+    const checkIntroCompletion = async () => {
+      if (storedRoomId && storedPlayerId) {
+        try {
+          const participantRef = doc(
+            db,
+            "rooms",
+            storedRoomId,
+            "participants",
+            storedPlayerId
+          );
+          const participantDoc = await getDoc(participantRef);
 
-    if (!storedCompletedChapters.includes(0)) {
-      console.log(
-        "Redirecting to chapter 0 from the menu - intro not completed yet"
-      );
-      router.push("/chapter/0");
-      return;
-    }
+          if (participantDoc.exists()) {
+            const participant = participantDoc.data() as DotykaceParticipant;
+            const firestoreCompletedChapters =
+              participant.completedChapters || [];
+
+            if (!firestoreCompletedChapters.includes(0)) {
+              console.log(
+                "Firestore says chapter 0 not completed, redirecting"
+              );
+              router.push("/chapter/0");
+              return;
+            }
+
+            // Sync to localStorage
+            setToStorage("completedChapters", firestoreCompletedChapters);
+            setCompletedChapters(firestoreCompletedChapters);
+          } else {
+            // Participant doesn't exist, redirect to chapter 0
+            console.log("Participant not found, redirecting to chapter 0");
+            router.push("/chapter/0");
+            return;
+          }
+        } catch (error) {
+          console.error("Error checking intro completion:", error);
+        }
+      } else {
+        // No room/player ID - check localStorage as fallback
+        const storedCompletedChapters =
+          (readFromStorage("completedChapters") as number[]) || [];
+
+        if (!storedCompletedChapters.includes(0)) {
+          console.log("localStorage says chapter 0 not completed, redirecting");
+          router.push("/chapter/0");
+          return;
+        }
+      }
+
+      setIsLoading(false);
+    };
+
+    checkIntroCompletion();
   }, [router]);
 
   // Handle audio separately to avoid infinite loop
@@ -198,7 +242,7 @@ export default function MenuPage() {
   const hasNoAllowedChapters = displayableAllowedChapters.length === 0;
 
   // Show loading state while client-side data is being loaded
-  if (!isClient || chapter === null) {
+  if (!isClient || isLoading) {
     return (
       <div className="min-h-screen bg-gradient-menu flex items-center justify-center">
         <div className="text-white text-center">
