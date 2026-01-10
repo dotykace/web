@@ -17,10 +17,6 @@ const sampleVoices = [
     name: "Mužský hlas",
     audioKey: "voice-male",
   },
-  {
-    id: "neutral",
-    name: "Neutrální hlas",
-  },
 ]
 
 export default function VoiceRoom({onFinish}) {
@@ -44,6 +40,11 @@ export default function VoiceRoom({onFinish}) {
     setDisableSelection((prevState)=>!prevState);
     console.log(disableSelection)
     stop("voice-loop");
+    sampleVoices.forEach((voice) => {
+      if (voice.audioKey && isPlaying[voice.audioKey]) {
+        stop(voice.audioKey);
+      }
+    })
     const path = `${selectedVoice}/track0.mp3`;
     playOnce({
       filename: path,
