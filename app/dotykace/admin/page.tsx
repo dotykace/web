@@ -154,6 +154,19 @@ export default function AdminPage() {
           <Sidebar className="text-black">
               <SidebarHeader>
                   <p className="text-3xl font-bold text-gray-900">Admin Panel</p>
+                  <div className={"flex-row justify-between flex"}>
+                      <Button size="sm" variant="outline" onClick={() => {
+                          window.location.href = "/api/export-csv/chapter2"
+                      }}>
+                          Chapter 2 Data
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => {
+                          window.location.href = "/api/export-csv/chapter3"
+                      }}>
+                          Chapter 3 Data
+                      </Button>
+                  </div>
+
                   {/* Create Room */}
                   <CreateRoom adminId={adminId}/>
               </SidebarHeader>
