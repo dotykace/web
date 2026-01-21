@@ -3,14 +3,8 @@
   "name": "Introduction",
   "description": "Introduction sequence before main menu",
   "version": "1.0.0",
-  "startInteractionId": "1",
+  "startInteractionId": "username-input",
   "interactions": {
-    "1": {
-      "type": "message",
-      "duration": 9,
-      "next-id": "username-input",
-      "text": "Ahoj, já jsem appka. Jsem kus softwaru, víš jak: 0-1-1-0-0-1...\n"
-    },
     "username-input": {
       "type": "input",
       "duration": 15,
