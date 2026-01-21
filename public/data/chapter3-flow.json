@@ -116,71 +116,7 @@
       "label": "Popiš, jak rychle a jak spolehlivě to poznáš",
       "duration": 20,
       "save-label": "Potvrdit",
-      "next-id": "3.11.6"
-    },
-    "3.11.6": {
-      "type": "voice",
-      "sound": "track27.mp3",
-      "animation": {
-        "type": "choice",
-        "buttons": [
-          {
-            "label": "je to různé",
-            "next-id": "3.11.a1"
-          },
-          {
-            "label": "nic zvláštního",
-            "next-id": "3.11.b1"
-          },
-          {
-            "label": "cítím neklid",
-            "next-id": "3.11.c1"
-          },
-          {
-            "label": "cítím obavu",
-            "next-id": "3.11.c1"
-          }
-        ]
-      }
-    },
-    "3.11.a1": {
-      "type": "voice",
-      "sound": "track28a.mp3",
-      "animation": {
-        "type": "multiselect",
-        "options": [
-          "nechci aby tě někdo rozbil",
-          "mám v tobě svoje tajemství",
-          "je divné, když se tě dotýká někdo jiný"
-        ],
-        "button": {
-          "label": "Potvrdit a pokračovat",
-          "next-id": "3.11.final"
-        }
-      }
-    },
-    "3.11.b1": {
-      "type": "voice",
-      "sound": "track28b.mp3",
       "next-id": "3.11.final"
-    },
-    "3.11.c1": {
-      "type": "voice",
-      "sound": "track28c.mp3",
-      "animation": {
-        "type": "multiselect",
-        "options": [
-          "máš v sobě moje tajemství",
-          "bojím se, aby tě někdo nerozbil",
-          "prostě se mi to nelíbí",
-          "neumím to vysvětlit",
-          "jiné - doplnit vlastní text"
-        ],
-        "button": {
-          "label": "Potvrdit a pokračovat",
-          "next-id": "3.11.final"
-        }
-      }
     },
     "3.11.final": {
       "type": "voice",
