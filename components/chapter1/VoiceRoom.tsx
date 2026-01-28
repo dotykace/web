@@ -21,7 +21,7 @@ const sampleVoices = [
 
 export default function VoiceRoom({onFinish}) {
   const [selectedVoice, setSelectedVoice] = useState<string>("male")
-  const { playPreloaded, isPlaying, toggle, stop, playOnce } = useSharedAudio();
+  const { playPreloaded, isPlaying, togglePreloaded, stop, playOnce } = useSharedAudio();
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
   const [disableSelection, setDisableSelection] = useState<boolean>(false);
 
@@ -82,7 +82,7 @@ export default function VoiceRoom({onFinish}) {
                     if (currentlyPlaying && currentlyPlaying !== voice.audioKey) {
                       stop(currentlyPlaying);
                     }
-                    toggle(voice.audioKey)
+                    togglePreloaded(voice.audioKey)
                   }}
                 />
               ) as ReactNode;

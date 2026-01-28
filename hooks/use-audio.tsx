@@ -166,8 +166,6 @@ export function useAudioManager() {
       source.disconnect();
       gainNode.disconnect();
       removeFromPlaying(filename, {source, gainNode});
-
-      onFinish();
     };
 
   },[play]);
@@ -188,19 +186,26 @@ export function useAudioManager() {
   }, []);
 
   // --- Toggle a sound
-  // todo toggle only work for preloaded sounds
-  // todo make sure to handle the case when sound is not preloaded
   const toggle = useCallback(
-    (key: string) => {
+    (key, onReplay) => {
       if (isPlaying[key]) {
+        console.log("Stopping", key);
         stop(key);
       } else {
         console.log("Toggling play for", key);
-        playPreloaded(key);
+        onReplay()
       }
     },
-    [isPlaying, playPreloaded, stop]
+    [isPlaying, stop]
   );
+
+  const togglePreloaded = (key: string) => {
+    toggle(key, () => playPreloaded(key));
+  }
+
+  const toggleOnce = (options: PlayOnceOptions) => {
+    toggle(options.filename, () => playOnce(options));
+  }
 
   // --- Cleanup on unmount
   useEffect(() => {
@@ -210,5 +215,5 @@ export function useAudioManager() {
     };
   }, [stop]);
 
-  return { preloadAll, playPreloaded, playOnce, stop, toggle, isPlaying };
+  return { preloadAll, playPreloaded, playOnce, stop, togglePreloaded, toggleOnce, isPlaying };
 }
