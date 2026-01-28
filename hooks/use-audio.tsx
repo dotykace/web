@@ -23,8 +23,8 @@ interface SoundMapEntry {
   opts?: UseAudioManagerOptions;
 }
 
-interface PlayOnceOptions extends SoundMapEntry {
-  onFinish: () => void;
+export interface PlayOnceOptions extends SoundMapEntry {
+  onFinish?: () => void;
   type: "sound" | "voice";
 }
 
@@ -153,7 +153,7 @@ export function useAudioManager() {
 
   },[play])
 
-  const playOnce = useCallback(async ({filename, opts, type, onFinish}: PlayOnceOptions) => {
+  const playOnce = useCallback(async ({filename, opts, type}: PlayOnceOptions) => {
     const buffer = await fetchSound(filename, type);
     const sound = {
       buffer,
