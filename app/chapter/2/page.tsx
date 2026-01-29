@@ -7,13 +7,15 @@ import { db } from "@/lib/firebase"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Volume2, VolumeX, Star } from "lucide-react"
+import { Star } from "lucide-react"
 import HelpButton from "@/components/HelpButton";
 import useDB from "@/hooks/use-db";
 import {useRouter} from "next/navigation";
 import {readFromStorage, setToStorage} from "@/scripts/local-storage";
-import SkipButton from "@/components/SkipButton";
-import AudioControl from "@/components/AudioControl";
+import BasicAudioVisual from "@/components/BasicAudioVisual";
+import {useInteractions} from "@/hooks/use-interactions";
+import AudioWrapper from "@/components/audio/AudioWrapper";
+import {ProcessedInteraction} from "@/interactions";
 
 // Animated Voice Visualization Component (unchanged)
 const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
@@ -114,12 +116,6 @@ interface Interaction {
     source?: string
 }
 
-interface FlowData {
-    id: string
-    startInteractionId: string
-    interactions: Record<string, Interaction>
-}
-
 // LocalStorage keys
 const CHAPTER2_PROGRESS_KEY = "chapter2_progress"
 
@@ -130,9 +126,9 @@ interface Chapter2Progress {
 }
 
 function Chapter2Content() {
-    const [flowData, setFlowData] = useState<FlowData | null>(null)
-    const [currentInteractionId, setCurrentInteractionId] = useState<string>("")
-    const [isLoading, setIsLoading] = useState(true)
+    const { state, currentInteraction, goToNextInteraction, handleUserInput, handleChoiceSelection } =
+      useInteractions("chapter2-flow")
+
     const [displayText, setDisplayText] = useState("")
     const [showButtons, setShowButtons] = useState(false)
     const [inputValue, setInputValue] = useState("")
@@ -226,38 +222,6 @@ function Chapter2Content() {
             console.warn("Audio initialization failed:", error)
         }
     }, [audioInitialized])
-
-    useEffect(() => {
-        const loadFlowData = async () => {
-            try {
-                const response = await fetch("/data/chapter2-flow.json");
-                if (!response.ok) throw new Error("Failed to load flow data");
-                const data: FlowData = await response.json();
-                if (!mountedRef.current) return;
-
-                setFlowData(data);
-
-                const savedProgress = loadProgressFromLocalStorage();
-                if (savedProgress) {
-                    setCurrentInteractionId(savedProgress.currentInteractionId);
-                    setSavedUserMessage(savedProgress.savedUserMessage);
-                    setHasStartedExperience(savedProgress.hasStartedExperience);
-
-                    // nastav príznak, že je potrebná nová interakcia
-                    setAudioInitialized(false);
-                }
-
-                setIsLoading(false);
-            } catch (error) {
-                console.error("Error loading flow data:", error);
-                if (mountedRef.current) {
-                    setIsLoading(false);
-                }
-            }
-        };
-
-        loadFlowData();
-    }, []);
 
 
     // Enhanced saveToFirestore to include choice data
@@ -387,10 +351,10 @@ function Chapter2Content() {
     }, [])
 
     const processInteraction = useCallback(
-        (interaction: Interaction) => {
+        (interaction: ProcessedInteraction) => {
             if (!mountedRef.current) return
 
-            console.log("Processing interaction:", currentInteractionId, interaction.type)
+            console.log("Processing interaction:", currentInteraction.id, interaction.type)
 
             // Clear timeouts and intervals
             if (timeoutRef.current) {
@@ -460,11 +424,9 @@ function Chapter2Content() {
                     } else if (interaction["next-id"]) {
                         timeoutRef.current = setTimeout(
                             () => {
-                                if (mountedRef.current) {
-                                    setCurrentInteractionId(interaction["next-id"]!)
-                                }
+                                //todo go to next interaction
                             },
-                            (interaction.duration || 3) * 1000,
+                            (interaction.duration || 1) * 1000,
                         )
                     }
                     break
@@ -480,9 +442,7 @@ function Chapter2Content() {
                         } else if (interaction["next-id"]) {
                             timeoutRef.current = setTimeout(
                                 () => {
-                                    if (mountedRef.current) {
-                                        setCurrentInteractionId(interaction["next-id"]!)
-                                    }
+                                    goToNextInteraction()
                                 },
                                 (interaction.duration || 3) * 1000,
                             )
@@ -495,9 +455,7 @@ function Chapter2Content() {
                     if (interaction["next-id"]) {
                         timeoutRef.current = setTimeout(
                             () => {
-                                if (mountedRef.current) {
-                                    setCurrentInteractionId(interaction["next-id"]!)
-                                }
+                                //todo go to next interaction
                             },
                             (interaction.duration || 2) * 1000,
                         )
@@ -505,7 +463,7 @@ function Chapter2Content() {
                     break
 
                 case "music":
-                    setCurrentInteractionId(interaction["next-id"]!)
+                    //todo go to next interaction
                     break
 
                 case "pause":
@@ -513,9 +471,7 @@ function Chapter2Content() {
                     if (interaction["next-id"]) {
                         timeoutRef.current = setTimeout(
                             () => {
-                                if (mountedRef.current) {
-                                    setCurrentInteractionId(interaction["next-id"]!)
-                                }
+                                //todo go to next interaction
                             },
                             (interaction.duration || 3) * 1000,
                         )
@@ -558,9 +514,7 @@ function Chapter2Content() {
                     if (interaction["next-id"]) {
                         timeoutRef.current = setTimeout(
                             () => {
-                                if (mountedRef.current) {
-                                    setCurrentInteractionId(interaction["next-id"]!)
-                                }
+                                //todo go to next interaction
                             },
                             (interaction.duration || 3) * 1000,
                         )
@@ -568,25 +522,24 @@ function Chapter2Content() {
                     break
             }
         },
-        [currentInteractionId, typeText, playAudio, stopAllAudio, savedUserMessage],
+        [currentInteraction, typeText, playAudio, stopAllAudio, savedUserMessage],
     )
 
     // Effect to handle delayed button display for voice interactions
     useEffect(() => {
-        if (!flowData || !currentInteractionId) return
+        if (!currentInteraction) return
 
-        const currentInteraction = flowData.interactions[currentInteractionId]
         if (currentInteraction?.type === "voice" && currentInteraction.button?.["show-after-first-play"] && hasPlayedOnce) {
             setShowButtons(true)
         }
-    }, [hasPlayedOnce, currentInteractionId, flowData])
+    }, [hasPlayedOnce, currentInteraction])
 
-    // Save progress to localStorage whenever currentInteractionId or savedUserMessage changes
+    // Save progress to localStorage whenever currentInteraction.id or savedUserMessage changes
     useEffect(() => {
-        if (currentInteractionId && hasStartedExperience) {
-            saveProgressToLocalStorage(currentInteractionId, savedUserMessage, hasStartedExperience)
+        if (currentInteraction && hasStartedExperience) {
+            saveProgressToLocalStorage(currentInteraction.id, savedUserMessage, hasStartedExperience)
         }
-    }, [currentInteractionId, savedUserMessage, hasStartedExperience, saveProgressToLocalStorage])
+    }, [currentInteraction, savedUserMessage, hasStartedExperience, saveProgressToLocalStorage])
 
     // Auto-initialize audio and process interaction when loading from localStorage
     useEffect(() => {
@@ -603,7 +556,7 @@ function Chapter2Content() {
             }
 
             if (inputValue.trim()) {
-                await saveToFirestore(inputValue, currentInteractionId)
+                await saveToFirestore(inputValue, currentInteraction.id)
                 if (interaction.label?.includes("Když držíš můj mobil")) {
                     setSavedUserMessage(inputValue)
                 }
@@ -612,11 +565,9 @@ function Chapter2Content() {
             setTimeLeft(null)
             setShowWarning(false)
 
-            if (interaction["next-id"]) {
-                setCurrentInteractionId(interaction["next-id"])
-            }
+            goToNextInteraction()
         },
-        [inputValue, currentInteractionId],
+        [inputValue, currentInteraction],
     )
 
     // Enhanced handleButtonClick to save choice data
@@ -626,20 +577,18 @@ function Chapter2Content() {
             stopAllAudio()
 
             // Save choice to Firestore
-            await saveToFirestore("", currentInteractionId, {
+            await saveToFirestore("", currentInteraction.id, {
                 label: button.label,
                 nextId: button["next-id"],
             })
 
-            setCurrentInteractionId(button["next-id"])
+            goToNextInteraction(button["next-id"])
         },
-        [initializeAudio, stopAllAudio, currentInteractionId],
+        [initializeAudio, stopAllAudio, currentInteraction],
     )
 
     const handleSkip = useCallback(() => {
-        if (!flowData || !currentInteractionId) return
-
-        const currentInteraction = flowData.interactions[currentInteractionId]
+        if (!currentInteraction) return
 
         if (isTyping && typingIntervalRef.current && currentInteraction.type === "message") {
             skipFlagRef.current = true
@@ -651,25 +600,24 @@ function Chapter2Content() {
             timeoutRef.current = null
         }
 
-        if (currentInteraction["next-id"]) {
-            setCurrentInteractionId(currentInteraction["next-id"])
-        }
-    }, [flowData, currentInteractionId, isTyping, typeText])
+        goToNextInteraction()
+    }, [currentInteraction, isTyping, typeText])
 
     // Process current interaction only if experience has started
     // todo add here voice selection check
     useEffect(() => {
-        if ( hasStartedExperience && flowData && currentInteractionId && flowData.interactions[currentInteractionId]) {
-            processInteraction(flowData.interactions[currentInteractionId])
+        if ( hasStartedExperience && currentInteraction) {
+            processInteraction(currentInteraction)
         }
-    }, [currentInteractionId, flowData, processInteraction, hasStartedExperience])
+    }, [currentInteraction, processInteraction, hasStartedExperience])
 
     // Handle chapter completion
     useEffect(() => {
-        if (flowData && currentInteractionId === "end") {
+        if (!currentInteraction) return
+        if (currentInteraction.id === "end") {
             dbHook.updateChapter(2, () => router.push("/menu")).then()
         }
-    }, [currentInteractionId, flowData])
+    }, [currentInteraction])
 
     // Handle audio muting
     useEffect(() => {
@@ -683,10 +631,9 @@ function Chapter2Content() {
     const handleStartExperience = async () => {
         await initializeAudio()
         setHasStartedExperience(true)
-        setCurrentInteractionId(flowData!.startInteractionId) // Set initial interaction after start
     }
 
-    if (isLoading) {
+    if (state === "loading") {
         return (
             <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
                 <div className="text-white text-xl">Načítavam Chapter 2...</div>
@@ -694,7 +641,7 @@ function Chapter2Content() {
         )
     }
 
-    if (!flowData) {
+    if (state === "error") {
         return (
             <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
                 <div className="text-white text-xl">Chyba pri načítaní</div>
@@ -733,7 +680,7 @@ function Chapter2Content() {
                             onClick={async () => {
                                 await initializeAudio();
                                 setAudioInitialized(true);
-                                processInteraction(flowData!.interactions[currentInteractionId]);
+                                processInteraction(currentInteraction!);
                             }}
                             className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30 transition-all duration-200 hover:scale-105"
                         >
@@ -745,141 +692,121 @@ function Chapter2Content() {
         );
     }
 
-
-    const currentInteraction = flowData.interactions[currentInteractionId]
-
-    // Show skip button only for desktop/laptop screens (lg and above)
-    const showSkipButton = true;
-    // todo solve the skip button visibility properly
-        // currentInteraction &&
-        // currentInteraction["next-id"] &&
-        // !currentInteraction.animation?.buttons &&
-        // currentInteraction.type !== "input" &&
-        // currentInteraction.type !== "loop" &&
-        // !currentInteraction.button
+    const chapter2Coloring = "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900"
+    const audio = {
+        filename: currentInteraction.filename || "",
+        type: "voice",
+        onFinish: () => {
+            console.log("Played chapter 2 audio:", currentInteraction.filename);
+            goToNextInteraction()
+        }
+    }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col">
-
-            {/* Skip Button - Only visible on desktop/laptop screens (lg and above) */}
-            <SkipButton onSkip={handleSkip} visible={showSkipButton}/>
-
-            {/* Main Content */}
-            <div className="flex-1 flex items-center justify-center p-4">
-                <Card className="w-full max-w-lg bg-white/10 backdrop-blur-lg border-white/20 shadow-2xl">
-                    <AudioControl
-                      onClick={() => {
-                        initializeAudio() // Ensure audio is initialized even if toggling mute
-                        setAudioEnabled(!audioEnabled)
-                        }}
-                      audioEnabled={audioEnabled}
-                    />
-                    <CardContent className="p-6 space-y-6">
-                        {/* Display Text with Voice/Music Visualization */}
-                        <div className="min-h-[200px] flex flex-col items-center justify-center">
-                            {currentInteraction?.type === "voice" ? (
-                                <>
-                                    <VoiceVisualization isActive={!isTyping} />
-                                    {displayText && (
-                                        <p className="text-white text-sm leading-relaxed text-center mt-4 px-4 opacity-80">{displayText}</p>
-                                    )}
-                                </>
-                            ) : currentInteraction?.type === "music" ? (
-                                <>
-                                    <MusicStarAnimation isActive={isMusicPlaying} />
-                                    {displayText && <p className="text-white text-lg leading-relaxed text-center">{displayText}</p>}
-                                </>
-                            ) : (
-                                <div className="min-h-[120px] flex items-center justify-center px-4">
-                                    <p className="text-white text-lg leading-relaxed text-center">
-                                        {displayText}
-                                        {isTyping && <span className="animate-pulse">|</span>}
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Input Field */}
-                        {currentInteraction?.type === "input" && showButtons && (
-                            <div className="space-y-4">
-                                <Textarea
-                                    value={inputValue}
-                                    onChange={(e) => setInputValue(e.target.value)}
-                                    placeholder="Napíš svoju odpoveď..."
-                                    className="bg-white/20 border-white/30 text-white placeholder:text-white/60 resize-none"
-                                    rows={3}
-                                />
-                                {timeLeft !== null && (
-                                    <div className="text-center">
-                                        <div className="text-white/80 text-sm">
-                                            Zostáva: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}
-                                        </div>
-                                        {showWarning && currentInteraction["warning-text"] && (
-                                            <div className="text-yellow-300 text-sm mt-1">{currentInteraction["warning-text"]}</div>
-                                        )}
-                                    </div>
-                                )}
-                                <Button
-                                    onClick={() => handleInputSave(currentInteraction)}
-                                    className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30"
-                                    disabled={!inputValue.trim()}
-                                >
-                                    {currentInteraction["save-label"] || "Uložiť"}
-                                </Button>
-                            </div>
-                        )}
-
-                        {/* Choice Buttons */}
-                        {showButtons && currentInteraction?.animation?.buttons && (
-                            <div className="space-y-3">
-                                {currentInteraction.animation.buttons.map((button, index) => (
-                                    <Button
-                                        key={index}
-                                        onClick={() => handleButtonClick(button)}
-                                        className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30 transition-all duration-200 hover:scale-105"
-                                    >
-                                        {button.label}
-                                    </Button>
-                                ))}
-                            </div>
-                        )}
-
-                        {/* Loop/Continue Button */}
-                        {showButtons && currentInteraction?.button && (
-                            <Button
-                                onClick={() => handleButtonClick(currentInteraction.button!)}
-                                className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30 transition-all duration-200 hover:scale-105"
-                            >
-                                {currentInteraction.button.label}
-                            </Button>
-                        )}
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Progress Indicator */}
-            <div className="p-4">
-                <div className="max-w-lg mx-auto">
-                    <div className="h-1 bg-white/20 rounded-full overflow-hidden">
-                        <div
-                            className="h-full bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-500"
-                            style={{
-                                width: `${Math.min(100, (Object.keys(flowData.interactions).indexOf(currentInteractionId) / Object.keys(flowData.interactions).length) * 100)}%`,
-                            }}
-                        />
-                    </div>
+      <BasicAudioVisual coloring={chapter2Coloring} audio={audio} id={currentInteraction.id}>
+          {/* Display Text with Voice/Music Visualization */}
+          <div className="min-h-[200px] flex flex-col items-center justify-center">
+              {currentInteraction?.type === "voice" ? (
+                <>
+                    <VoiceVisualization isActive={!isTyping} />
+                    {displayText && (
+                      <p className="text-white text-sm leading-relaxed text-center mt-4 px-4 opacity-80">{displayText}</p>
+                    )}
+                </>
+              ) : currentInteraction?.type === "music" ? (
+                <>
+                    <MusicStarAnimation isActive={isMusicPlaying} />
+                    {displayText && <p className="text-white text-lg leading-relaxed text-center">{displayText}</p>}
+                </>
+              ) : (
+                <div className="min-h-[120px] flex items-center justify-center px-4">
+                    <p className="text-white text-lg leading-relaxed text-center">
+                        {displayText}
+                        {isTyping && <span className="animate-pulse">|</span>}
+                    </p>
                 </div>
+              )}
+          </div>
+
+          {/* Input Field */}
+          {currentInteraction?.type === "input" && showButtons && (
+            <div className="space-y-4">
+                <Textarea
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder="Napíš svoju odpoveď..."
+                  className="bg-white/20 border-white/30 text-white placeholder:text-white/60 resize-none"
+                  rows={3}
+                />
+                {timeLeft !== null && (
+                  <div className="text-center">
+                      <div className="text-white/80 text-sm">
+                          Zostáva: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}
+                      </div>
+                      {showWarning && currentInteraction["warning-text"] && (
+                        <div className="text-yellow-300 text-sm mt-1">{currentInteraction["warning-text"]}</div>
+                      )}
+                  </div>
+                )}
+                <Button
+                  onClick={() => handleInputSave(currentInteraction)}
+                  className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30"
+                  disabled={!inputValue.trim()}
+                >
+                    {currentInteraction["save-label"] || "Uložiť"}
+                </Button>
             </div>
-        </div>
+          )}
+
+          {/* Choice Buttons */}
+          {showButtons && currentInteraction?.animation?.buttons && (
+            <div className="space-y-3">
+                {currentInteraction.animation.buttons.map((button, index) => (
+                  <Button
+                    key={index}
+                    onClick={() => handleButtonClick(button)}
+                    className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30 transition-all duration-200 hover:scale-105"
+                  >
+                      {button.label}
+                  </Button>
+                ))}
+            </div>
+          )}
+
+          {/* Loop/Continue Button */}
+          {showButtons && currentInteraction?.button && (
+            <Button
+              onClick={() => handleButtonClick(currentInteraction.button!)}
+              className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30 transition-all duration-200 hover:scale-105"
+            >
+                {currentInteraction.button.label}
+            </Button>
+          )}
+      </BasicAudioVisual>
     )
 }
 
 
 export default function Chapter2() {
     return (
-      <>
+      <AudioWrapper>
           <HelpButton />
           <Chapter2Content />
-      </>
+      </AudioWrapper>
     )
 }
+
+
+{/*/!* Progress Indicator *!/*/}
+{/*<div className="p-4">*/}
+{/*    <div className="max-w-lg mx-auto">*/}
+{/*        <div className="h-1 bg-white/20 rounded-full overflow-hidden">*/}
+{/*            <div*/}
+{/*                className="h-full bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-500"*/}
+{/*                style={{*/}
+{/*                    width: `${Math.min(100, (Object.keys(flowData.interactions).indexOf(currentInteraction.id) / Object.keys(flowData.interactions).length) * 100)}%`,*/}
+{/*                }}*/}
+{/*            />*/}
+{/*        </div>*/}
+{/*    </div>*/}
+{/*</div>*/}

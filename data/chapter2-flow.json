@@ -145,19 +145,8 @@
       "button": {
         "wait_to_show": 15,
         "label": "Pokračuj",
-        "next-id": "9.0"
+        "next-id": "9.2"
       }
-    },
-    "9.0": {
-      "type": "sound",
-      "key": "round_sound",
-      "next-id": "9.1"
-    },
-    "9.1": {
-      "type": "display",
-      "text": "5. kolo",
-      "duration": 2,
-      "next-id": "9.2"
     },
     "9.2": {
       "type": "voice",
