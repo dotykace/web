@@ -56,7 +56,7 @@ export default function BasicAudioVisual({ audio=null, id, children, coloring = 
           <AudioControl
             onClick={() => toggleOnce(audio)}
             audioEnabled={isPlaying[audio?.filename] || false}
-            isVisible={!!audio}
+            disabled={!audio}
           />
           <CardContent className="p-8 text-center">
             {children ?? <VoiceVisualization/>}

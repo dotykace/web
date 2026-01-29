@@ -773,7 +773,6 @@ function Chapter2Content() {
                         setAudioEnabled(!audioEnabled)
                         }}
                       audioEnabled={audioEnabled}
-                      isVisible={true}
                     />
                     <CardContent className="p-6 space-y-6">
                         {/* Display Text with Voice/Music Visualization */}

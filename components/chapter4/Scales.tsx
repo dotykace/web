@@ -99,7 +99,7 @@ export default function Scales({currentInteraction, onComplete}) {
           }
         }}
         audioEnabled={isPlaying[currentAudio?.filename] || false}
-        isVisible={!!currentAudio}
+        disabled={!currentAudio}
       />
       <ScaleTemplate
         topText={currentScale.top}
