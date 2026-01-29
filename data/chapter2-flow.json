@@ -52,7 +52,6 @@
       "filename": "track7_loop.mp3",
       "loop": true,
       "button": {
-        "wait_to_show": 21,
         "label": "Pokračovat",
         "next-id": "7.1"
       }
@@ -62,7 +61,6 @@
       "filename": "track8_loop.mp3",
       "loop": true,
       "button": {
-        "wait_to_show": 26,
         "label": "Pokračovat",
         "next-id": "7.2"
       }
@@ -87,7 +85,6 @@
       "filename": "track11_loop.mp3",
       "loop": true,
       "button": {
-        "wait_to_show": 13,
         "label": "Zase spolu!",
         "next-id": "7.13"
       }
@@ -113,7 +110,7 @@
       ]
     },
     "8.1": {
-      "type": "display",
+      "type": "message",
       "text": "Když držíš můj mobil...",
       "duration": 2,
       "next-id": "8.1a"
@@ -128,14 +125,13 @@
       "type": "message",
       "text": "Jak chceš.",
       "duration": 2,
-      "next-id": "9.0"
+      "next-id": "8.3"
     },
     "8.3": {
       "type": "voice",
       "filename": "track13_loop.mp3",
       "loop": true,
       "button": {
-        "wait_to_show": 10,
         "label": "Pokračuj",
         "next-id": "9.2"
       }

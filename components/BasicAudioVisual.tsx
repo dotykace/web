@@ -6,7 +6,7 @@ import {useSharedAudio} from "@/context/AudioContext";
 import SkipButton from "@/components/SkipButton";
 import AudioControl from "@/components/AudioControl";
 
-export default function BasicAudioVisual({ audio=null, id, children, coloring = "bg-white/10"}: {children?: React.ReactNode, coloring?: string}) {
+export default function BasicAudioVisual({ audio=null, id, children, coloring = "bg-white/10", canSkip}: {children?: React.ReactNode, coloring?: string, canSkip?:boolean}) {
 
   const {playOnce, stop, toggleOnce, isPlaying} = useSharedAudio()
   React.useEffect(() => {
@@ -44,7 +44,7 @@ export default function BasicAudioVisual({ audio=null, id, children, coloring = 
         </Card>
         </motion.div>
       </AnimatePresence>
-      <SkipButton onSkip={skipInteraction} visible={audio}/>
+      <SkipButton onSkip={skipInteraction} visible={audio && canSkip}/>
     </div>
   )
 }

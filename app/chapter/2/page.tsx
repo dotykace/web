@@ -66,14 +66,11 @@ function Chapter2Content() {
     const {state, currentInteraction, goToNextInteraction} = useChatContext()
     const { stop, stopAll, isPlaying} = useSharedAudio()
 
-    const [displayText, setDisplayText] = useState("")
-    const [showButtons, setShowButtons] = useState(false)
     const [inputValue, setInputValue] = useState("")
     const [savedUserMessage, setSavedUserMessage] = useState("")
     const [timeLeft, setTimeLeft] = useState<number | null>(null)
     const [showWarning, setShowWarning] = useState(false)
     const [audioEnabled, setAudioEnabled] = useState(true)
-    const [isTyping, setIsTyping] = useState(false)
     const [audioInitialized, setAudioInitialized] = useState(false)
     const [hasStartedExperience, setHasStartedExperience] = useState(false)
 
@@ -81,7 +78,6 @@ function Chapter2Content() {
     const voiceAudioRef = useRef<HTMLAudioElement | null>(null) // For voice tracks
     const sfxAudioRef = useRef<HTMLAudioElement | null>(null) // For sound effects
     const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-    const typingIntervalRef = useRef<NodeJS.Timeout | null>(null)
     const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
     const buttonTimeoutRef = useRef<NodeJS.Timeout | null>(null) // New ref for button timing
     const skipFlagRef = useRef(false)
@@ -149,10 +145,6 @@ function Chapter2Content() {
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current)
             timeoutRef.current = null
-        }
-        if (typingIntervalRef.current) {
-            clearInterval(typingIntervalRef.current)
-            typingIntervalRef.current = null
         }
         if (countdownIntervalRef.current) {
             clearInterval(countdownIntervalRef.current)
@@ -238,10 +230,6 @@ function Chapter2Content() {
                 clearTimeout(timeoutRef.current)
                 timeoutRef.current = null
             }
-            if (typingIntervalRef.current) {
-                clearInterval(typingIntervalRef.current)
-                typingIntervalRef.current = null
-            }
             if (countdownIntervalRef.current) {
                 clearInterval(countdownIntervalRef.current)
                 countdownIntervalRef.current = null
@@ -253,32 +241,15 @@ function Chapter2Content() {
 
             // Stop all audio
             stopAllAudio()
-            setShowButtons(false)
             setTimeLeft(null)
             setShowWarning(false)
             skipFlagRef.current = false
-            setIsTyping(false)
 
             switch (interaction.type) {
 
 
-                case "display":
-                    setDisplayText(interaction.text || "")
-                    if (interaction["next-id"]) {
-                        timeoutRef.current = setTimeout(
-                            () => {
-                                //todo go to next interaction
-                            },
-                            (interaction.duration || 2) * 1000,
-                        )
-                    }
-                    break
-
-
                 case "input":
-                    setDisplayText(interaction.text || interaction.label || "")
                     setInputValue("")
-                    setShowButtons(true)
 
                     if (interaction.duration) {
                         setTimeLeft(interaction.duration)
@@ -298,18 +269,6 @@ function Chapter2Content() {
                                 return prev - 1
                             })
                         }, 1000)
-                    }
-                    break
-
-                case "show-message":
-                    setDisplayText(savedUserMessage || "Žiadny vzkaz")
-                    if (interaction["next-id"]) {
-                        timeoutRef.current = setTimeout(
-                            () => {
-                                //todo go to next interaction
-                            },
-                            (interaction.duration || 3) * 1000,
-                        )
                     }
                     break
             }
@@ -353,7 +312,6 @@ function Chapter2Content() {
                 console.log("Button clicked, stopping audio:", currentAudio.filename)
                 stop(currentAudio.filename)
             }
-            setShowButtons(false)
 
             // Save choice to Firestore
             await saveToFirestore("", currentInteraction.id, {
@@ -505,28 +463,35 @@ function Chapter2Content() {
             case "voice":
                 if (currentInteraction.loop === true) {
                     const button = currentInteraction.button
-                    setTimeout(
-                      () => {
-                          setShowButtons(true)
-                      },
-                      currentInteraction.button.wait_to_show * 1000,
-                    )
-
                     return (
                       <div>
-                          <VoiceVisualization isActive={!isTyping} />
-                          {showButtons && CustomButton(button)}
+                          <VoiceVisualization/>
+                          {CustomButton(button)}
                       </div>
 
                     )
                 }
+                break
+            case "message":
+                return (
+                  <div className="p-6">
+                      <p className="text-lg mb-4 text-white">{currentInteraction?.text()}</p>
+                  </div>
+                )
+            case "show-message":
+                const messageText = savedUserMessage || "Žadny vzkaz"
+                return (
+                  <div className="p-6">
+                      <p className="text-lg mb-4 text-white">{messageText}</p>
+                  </div>
+                )
             default:
                 return null
         }
     }
 
     return (
-      <BasicAudioVisual coloring={chapter2Coloring} audio={currentAudio} id={currentInteraction.id}>
+      <BasicAudioVisual coloring={chapter2Coloring} audio={currentAudio} id={currentInteraction.id} canSkip={!currentInteraction.loop}>
           {BIGCONTENT()}
       </BasicAudioVisual>
     )
