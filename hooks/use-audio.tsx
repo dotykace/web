@@ -207,13 +207,14 @@ export function useAudioManager() {
     toggle(options.filename, () => playOnce(options));
   }
 
-  // --- Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      Object.keys(playingRef.current).forEach(stop);
-      //audioContextRef.current?.close();
-    };
+  const stopAll = useCallback(() => {
+    Object.keys(playingRef.current).forEach(stop);
   }, [stop]);
 
-  return { preloadAll, playPreloaded, playOnce, stop, togglePreloaded, toggleOnce, isPlaying };
+  // --- Cleanup on unmount
+  useEffect(() => {
+    stopAll();
+  }, [stop]);
+
+  return { preloadAll, playPreloaded, playOnce, stop, stopAll, togglePreloaded, toggleOnce, isPlaying };
 }

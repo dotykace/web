@@ -13,27 +13,24 @@
       "next-id": "2.2"
     },
     "2.2": {
-      "type": "message",
+      "type": "multiple-choice",
       "text": "Je divný, že to říkám?",
-      "animation": {
-        "type": "normal",
-        "buttons": [
-          {
-            "label": "Je to divný!",
-            "next-id": "2.2a"
-          },
-          {
-            "label": "Ne, proč?",
-            "next-id": "2.2b"
-          }
-        ]
-      },
+      "choices": [
+        {
+          "label": "Je to divný!",
+          "next-id": "2.2a"
+        },
+        {
+          "label": "Ne, proč?",
+          "next-id": "2.2b"
+        }
+      ],
       "duration": 10
     },
     "2.2a": {
       "type": "voice",
       "filename": "track2a.mp3",
-      "next-id": "3.1"
+      "next-id": "3.3"
     },
     "2.2b": {
       "type": "voice",
@@ -55,10 +52,9 @@
       "filename": "track7_loop.mp3",
       "loop": true,
       "button": {
-        "wait_to_show": 25,
+        "wait_to_show": 21,
         "label": "Pokračovat",
-        "next-id": "7.1",
-        "persistent": true
+        "next-id": "7.1"
       }
     },
     "7.1": {
@@ -66,10 +62,9 @@
       "filename": "track8_loop.mp3",
       "loop": true,
       "button": {
-        "wait_to_show": 30,
+        "wait_to_show": 26,
         "label": "Pokračovat",
-        "next-id": "7.2",
-        "persistent": true
+        "next-id": "7.2"
       }
     },
     "7.2": {
@@ -79,7 +74,7 @@
     },
     "7.11": {
       "type": "input",
-      "label": "Když držíš můj mobil...",
+      "text": "Když držíš můj mobil...",
       "duration": 40,
       "save-label": "Uložit",
       "warning-after": 20,
@@ -92,7 +87,7 @@
       "filename": "track11_loop.mp3",
       "loop": true,
       "button": {
-        "wait_to_show": 15,
+        "wait_to_show": 13,
         "label": "Zase spolu!",
         "next-id": "7.13"
       }
@@ -103,22 +98,19 @@
       "next-id": "8.0"
     },
     "8.0": {
-      "type": "message",
+      "type": "multiple-choice",
       "text": "Možná mám pro tebe nějaký vzkaz. Chceš se podívat?",
       "duration": 4,
-      "animation": {
-        "type": "choice",
-        "buttons": [
-          {
-            "label": "Zobrazit vzkaz",
-            "next-id": "8.1"
-          },
-          {
-            "label": "Třeba později",
-            "next-id": "8.2"
-          }
-        ]
-      }
+      "choices": [
+        {
+          "label": "Zobrazit vzkaz",
+          "next-id": "8.1"
+        },
+        {
+          "label": "Třeba později",
+          "next-id": "8.2"
+        }
+      ]
     },
     "8.1": {
       "type": "display",
@@ -143,7 +135,7 @@
       "filename": "track13_loop.mp3",
       "loop": true,
       "button": {
-        "wait_to_show": 15,
+        "wait_to_show": 10,
         "label": "Pokračuj",
         "next-id": "9.2"
       }
@@ -151,17 +143,11 @@
     "9.2": {
       "type": "voice",
       "filename": "track14.mp3",
-      "next-id": "9.2a"
-    },
-    "9.2a": {
-      "type": "sound",
-      "key": "highfive_sound",
-      "duration": 1,
       "next-id": "9.7"
     },
     "9.7": {
       "type": "input",
-      "label": "Mám o tebe strach, když...",
+      "text": "Mám o tebe strach, když...",
       "save-label": "Uložiť",
       "waiting-label": "Čekám na ostatní",
       "warning-after": 20,

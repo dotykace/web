@@ -7,7 +7,6 @@ import { db } from "@/lib/firebase"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Star } from "lucide-react"
 import HelpButton from "@/components/HelpButton";
 import useDB from "@/hooks/use-db";
 import {useRouter} from "next/navigation";
@@ -16,73 +15,10 @@ import BasicAudioVisual from "@/components/BasicAudioVisual";
 import {useInteractions} from "@/hooks/use-interactions";
 import AudioWrapper from "@/components/audio/AudioWrapper";
 import {ProcessedInteraction} from "@/interactions";
-
-// Animated Voice Visualization Component (unchanged)
-const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
-    return (
-        <div className="relative w-full h-48 flex items-center justify-center">
-            {/* Central phone character with pulsing effect */}
-            <div className="relative z-10">
-                <div className={`relative transition-all duration-1000 ${isActive ? "animate-pulse scale-110" : "scale-100"}`}>
-                    <img src="/images/phone-character-simple.png" alt="Phone Character" className="w-24 h-24 drop-shadow-lg" />
-                    {/* Animated rings around character */}
-                    {isActive && (
-                        <>
-                            <div className="absolute inset-0 rounded-full border-2 border-yellow-300/50 animate-ping" />
-                            <div
-                                className="absolute inset-0 rounded-full border-2 border-orange-300/50 animate-ping"
-                                style={{ animationDelay: "0.5s" }}
-                            />
-                            <div
-                                className="absolute inset-0 rounded-full border-2 border-pink-300/50 animate-ping"
-                                style={{ animationDelay: "1s" }}
-                            />
-                        </>
-                    )}
-                </div>
-                {/* Sound waves */}
-                {isActive && (
-                    <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
-                        {[...Array(3)].map((_, i) => (
-                            <div
-                                key={i}
-                                className="absolute w-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full animate-pulse"
-                                style={{
-                                    height: `${20 + i * 8}px`,
-                                    right: `${i * 8}px`,
-                                    top: "50%",
-                                    transform: "translateY(-50%)",
-                                    animationDelay: `${i * 0.2}s`,
-                                    animationDuration: "0.8s",
-                                }}
-                            />
-                        ))}
-                    </div>
-                )}
-            </div>
-        </div>
-    )
-}
-
-// New Music Star Animation Component
-const MusicStarAnimation = ({ isActive }: { isActive: boolean }) => {
-    if (!isActive) return null
-
-    return (
-        <div className="relative w-full h-full flex items-center justify-center">
-            <Star
-                className="text-yellow-300 drop-shadow-lg animate-star-scale-pulse"
-                size={100} // Base size for the star
-            />
-            {/* Subtle glowing rings around the star */}
-            <div className="absolute w-24 h-24 rounded-full bg-yellow-300/30 animate-ping-slow" />
-            <div
-                className="absolute w-32 h-32 rounded-full bg-orange-300/20 animate-ping-slow"
-                style={{ animationDelay: "0.5s" }}
-            />
-        </div>
-    )
-}
+import InputArea from "@/components/InputArea";
+import {ChatProvider, useChatContext} from "@/context/ChatContext";
+import {useSharedAudio} from "@/context/AudioContext";
+import VoiceVisualization from "@/components/VoiceVisualization";
 
 interface Interaction {
     type: string
@@ -126,8 +62,9 @@ interface Chapter2Progress {
 }
 
 function Chapter2Content() {
-    const { state, currentInteraction, goToNextInteraction, handleUserInput, handleChoiceSelection } =
-      useInteractions("chapter2-flow")
+
+    const {state, currentInteraction, goToNextInteraction} = useChatContext()
+    const { stop, stopAll, isPlaying} = useSharedAudio()
 
     const [displayText, setDisplayText] = useState("")
     const [showButtons, setShowButtons] = useState(false)
@@ -139,8 +76,6 @@ function Chapter2Content() {
     const [isTyping, setIsTyping] = useState(false)
     const [audioInitialized, setAudioInitialized] = useState(false)
     const [hasStartedExperience, setHasStartedExperience] = useState(false)
-    const [isMusicPlaying, setIsMusicPlaying] = useState(false) // New state for music star animation
-    const [hasPlayedOnce, setHasPlayedOnce] = useState(false) // Track if audio has played once for delayed button
 
     // Only two audio channels now: voice and sfx
     const voiceAudioRef = useRef<HTMLAudioElement | null>(null) // For voice tracks
@@ -158,10 +93,41 @@ function Chapter2Content() {
 
     const [dbHook, setDbHook] = useState<any>(null);
 
+    const [currentAudio, setCurrentAudio] = useState<{} | null>(null);
+
+    useEffect(() => {
+        if (!currentInteraction) return
+
+        saveProgressToLocalStorage(
+            currentInteraction.id,
+            savedUserMessage,
+            hasStartedExperience,
+        )
+
+        if (currentInteraction.type === "voice"){
+            const audio = {
+                filename: currentInteraction.filename || "",
+                type: "voice",
+                opts:{
+                    loop: currentInteraction.loop || false,
+                },
+                onFinish: () => {
+                    console.log("Played chapter 2 audio:", currentInteraction.filename);
+                    goToNextInteraction()
+                }
+            }
+            setCurrentAudio(audio)
+        }
+        else {
+            setCurrentAudio(null)
+        }
+    }, [currentInteraction]);
+
     useEffect(() => {
         const hook = useDB();
         setDbHook(hook);
         setSelectedVoice(readFromStorage("selectedVoice"))
+        stopAll()
     }, []);
 
     // LocalStorage functions
@@ -250,95 +216,6 @@ function Chapter2Content() {
         }
     }
 
-    const typeText = useCallback((text: string, callback?: () => void) => {
-        if (!mountedRef.current) return
-
-        setIsTyping(true)
-        setDisplayText("")
-
-        if (typingIntervalRef.current) {
-            clearInterval(typingIntervalRef.current)
-        }
-
-        if (skipFlagRef.current) {
-            setDisplayText(text)
-            setIsTyping(false)
-            skipFlagRef.current = false
-            if (callback) callback()
-            return
-        }
-
-        let charIndex = 0
-        let currentTypedText = ""
-
-        typingIntervalRef.current = setInterval(() => {
-            if (!mountedRef.current) {
-                if (typingIntervalRef.current) {
-                    clearInterval(typingIntervalRef.current)
-                }
-                return
-            }
-
-            if (charIndex < text.length) {
-                currentTypedText += text[charIndex]
-                setDisplayText(currentTypedText)
-                charIndex++
-            } else {
-                if (typingIntervalRef.current) {
-                    clearInterval(typingIntervalRef.current)
-                    typingIntervalRef.current = null
-                }
-                setIsTyping(false)
-                if (callback) callback()
-            }
-        }, 30)
-    }, [])
-
-    // Multi-channel audio playback
-    const playAudio = useCallback(
-        async (src: string, channel: "voice" | "sfx", loop = false) => {
-            if (!audioEnabled || !audioInitialized) {
-                console.warn(
-                    `Audio playback skipped for ${channel} channel (${src}): audioEnabled=${audioEnabled}, audioInitialized=${audioInitialized}`,
-                )
-                return
-            }
-
-            let audioRef: React.MutableRefObject<HTMLAudioElement | null>
-            let volume: number
-
-            switch (channel) {
-                case "voice":
-                    audioRef = voiceAudioRef
-                    volume = 1.0
-                    break
-                case "sfx":
-                    audioRef = sfxAudioRef
-                    volume = 0.7
-                    break
-            }
-
-            // Stop current audio on this channel and clear previous onended handler
-            if (audioRef.current) {
-                audioRef.current.pause()
-                audioRef.current.src = ""
-                audioRef.current.onended = null // Clear previous onended handler
-            }
-
-            try {
-                const audio = new Audio(`/audio/${src}`)
-                audio.loop = loop
-                audio.volume = volume
-                audio.preload = "auto"
-                audioRef.current = audio
-                await audio.play()
-            } catch (error) {
-                console.warn(`Audio playback failed for ${channel} channel (${src}):`, error)
-            }
-        },
-        [audioEnabled, audioInitialized],
-    )
-
     // Stop all audio (voice and SFX)
     const stopAllAudio = useCallback(() => {
         ;[voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
@@ -381,74 +258,9 @@ function Chapter2Content() {
             setShowWarning(false)
             skipFlagRef.current = false
             setIsTyping(false)
-            setIsMusicPlaying(false) // Reset music animation state
-            setHasPlayedOnce(false) // Reset first play tracking for the new interaction
 
             switch (interaction.type) {
-                case "voice":
-                    if (interaction.sound) {
-                        const filePath = selectedVoice? `${selectedVoice}/${interaction.sound}`:interaction.sound
-                        console.log("Interaction sound file path:",filePath)
-                        playAudio(filePath, "voice", interaction.loop)
 
-                        // Special handling for looping voice with delayed button
-                        if (interaction.loop && interaction.button?.["show-after-first-play"]) {
-                            // Set onended handler *after* playAudio has set voiceAudioRef.current
-                            if (voiceAudioRef.current) {
-                                voiceAudioRef.current.onended = () => {
-                                    if (mountedRef.current && voiceAudioRef.current) {
-                                        setHasPlayedOnce(true) // This will trigger the button display
-                                        voiceAudioRef.current.currentTime = 0 // Reset for next loop
-                                        voiceAudioRef.current.play().catch(console.error)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    setDisplayText(interaction.text || "")
-                    if (interaction.button) {
-                        // Handle different button display modes
-                        if (interaction.button["show-after-first-play"]) {
-                            // Don't show button immediately, wait for first play to complete
-                        } else if (interaction.button["wait_to_show"]) {
-                            // Show button after specified seconds
-                            buttonTimeoutRef.current = setTimeout(() => {
-                                if (mountedRef.current) {
-                                    setShowButtons(true)
-                                }
-                            }, interaction.button["wait_to_show"] * 1000)
-                        } else {
-                            // Show button immediately
-                            setShowButtons(true)
-                        }
-                    } else if (interaction["next-id"]) {
-                        timeoutRef.current = setTimeout(
-                            () => {
-                                //todo go to next interaction
-                            },
-                            (interaction.duration || 1) * 1000,
-                        )
-                    }
-                    break
-
-                case "message":
-                    typeText(interaction.text || "", () => {
-                        if (!mountedRef.current) return
-
-                        if (interaction.animation?.type === "normal" || interaction.animation?.type === "choice") {
-                            timeoutRef.current = setTimeout(() => {
-                                if (mountedRef.current) setShowButtons(true)
-                            }, 500)
-                        } else if (interaction["next-id"]) {
-                            timeoutRef.current = setTimeout(
-                                () => {
-                                    goToNextInteraction()
-                                },
-                                (interaction.duration || 3) * 1000,
-                            )
-                        }
-                    })
-                    break
 
                 case "display":
                     setDisplayText(interaction.text || "")
@@ -462,26 +274,6 @@ function Chapter2Content() {
                     }
                     break
 
-                case "music":
-                    //todo go to next interaction
-                    break
-
-                case "pause":
-                    setDisplayText("...")
-                    if (interaction["next-id"]) {
-                        timeoutRef.current = setTimeout(
-                            () => {
-                                //todo go to next interaction
-                            },
-                            (interaction.duration || 3) * 1000,
-                        )
-                    }
-                    break
-
-                case "loop":
-                    setDisplayText(interaction.text || "")
-                    setShowButtons(true)
-                    break
 
                 case "input":
                     setDisplayText(interaction.text || interaction.label || "")
@@ -522,24 +314,8 @@ function Chapter2Content() {
                     break
             }
         },
-        [currentInteraction, typeText, playAudio, stopAllAudio, savedUserMessage],
+        [currentInteraction, stopAllAudio, savedUserMessage],
     )
-
-    // Effect to handle delayed button display for voice interactions
-    useEffect(() => {
-        if (!currentInteraction) return
-
-        if (currentInteraction?.type === "voice" && currentInteraction.button?.["show-after-first-play"] && hasPlayedOnce) {
-            setShowButtons(true)
-        }
-    }, [hasPlayedOnce, currentInteraction])
-
-    // Save progress to localStorage whenever currentInteraction.id or savedUserMessage changes
-    useEffect(() => {
-        if (currentInteraction && hasStartedExperience) {
-            saveProgressToLocalStorage(currentInteraction.id, savedUserMessage, hasStartedExperience)
-        }
-    }, [currentInteraction, savedUserMessage, hasStartedExperience, saveProgressToLocalStorage])
 
     // Auto-initialize audio and process interaction when loading from localStorage
     useEffect(() => {
@@ -573,8 +349,11 @@ function Chapter2Content() {
     // Enhanced handleButtonClick to save choice data
     const handleButtonClick = useCallback(
         async (button: { label: string; "next-id": string }) => {
-            await initializeAudio() // Ensure audio is initialized on any user interaction
-            stopAllAudio()
+            if (currentAudio){
+                console.log("Button clicked, stopping audio:", currentAudio.filename)
+                stop(currentAudio.filename)
+            }
+            setShowButtons(false)
 
             // Save choice to Firestore
             await saveToFirestore("", currentInteraction.id, {
@@ -584,32 +363,8 @@ function Chapter2Content() {
 
             goToNextInteraction(button["next-id"])
         },
-        [initializeAudio, stopAllAudio, currentInteraction],
+        [stop, currentInteraction, currentAudio],
     )
-
-    const handleSkip = useCallback(() => {
-        if (!currentInteraction) return
-
-        if (isTyping && typingIntervalRef.current && currentInteraction.type === "message") {
-            skipFlagRef.current = true
-            typeText(currentInteraction.text || "")
-        }
-
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current)
-            timeoutRef.current = null
-        }
-
-        goToNextInteraction()
-    }, [currentInteraction, isTyping, typeText])
-
-    // Process current interaction only if experience has started
-    // todo add here voice selection check
-    useEffect(() => {
-        if ( hasStartedExperience && currentInteraction) {
-            processInteraction(currentInteraction)
-        }
-    }, [currentInteraction, processInteraction, hasStartedExperience])
 
     // Handle chapter completion
     useEffect(() => {
@@ -632,6 +387,49 @@ function Chapter2Content() {
         await initializeAudio()
         setHasStartedExperience(true)
     }
+    const CustomButton = useCallback((choice) => {
+        if (!choice) return null
+        return (
+          <Button
+            key={currentInteraction.id+"-button-"+choice.label}
+            onClick={() => handleButtonClick(choice)}
+            className={"w-full bg-white/20 hover:bg-white/30 text-white border-white/30 transition-all duration-200 hover:scale-105"}
+          >
+              {choice.label}
+          </Button>
+        )
+    }, [currentInteraction, handleButtonClick])
+
+    const CustomInput = useCallback(() => {
+        return (
+          <div className="space-y-4">
+              <Textarea
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Napíš svoju odpoveď..."
+                className="bg-white/20 border-white/30 text-white placeholder:text-white/60 resize-none"
+                rows={3}
+              />
+              {timeLeft !== null && (
+                <div className="text-center">
+                    <div className="text-white/80 text-sm">
+                        Zostáva: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}
+                    </div>
+                    {showWarning && currentInteraction["warning-text"] && (
+                      <div className="text-yellow-300 text-sm mt-1">{currentInteraction["warning-text"]}</div>
+                    )}
+                </div>
+              )}
+              <Button
+                onClick={() => handleInputSave(currentInteraction)}
+                className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30"
+                disabled={!inputValue.trim()}
+              >
+                  {currentInteraction["save-label"] || "Uložiť"}
+              </Button>
+          </div>
+        )
+    },[inputValue, timeLeft, showWarning, currentInteraction, handleInputSave])
 
     if (state === "loading") {
         return (
@@ -680,7 +478,6 @@ function Chapter2Content() {
                             onClick={async () => {
                                 await initializeAudio();
                                 setAudioInitialized(true);
-                                processInteraction(currentInteraction!);
                             }}
                             className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30 transition-all duration-200 hover:scale-105"
                         >
@@ -693,106 +490,60 @@ function Chapter2Content() {
     }
 
     const chapter2Coloring = "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900"
-    const audio = {
-        filename: currentInteraction.filename || "",
-        type: "voice",
-        onFinish: () => {
-            console.log("Played chapter 2 audio:", currentInteraction.filename);
-            goToNextInteraction()
+    const BIGCONTENT = () => {
+        if (!currentInteraction) return null
+        switch (currentInteraction?.type) {
+            case "input":
+            case "multiple-choice":
+            return (
+              <div className="p-6">
+                  <p className="text-lg mb-4 text-white">{currentInteraction?.text()}</p>
+                  <InputArea InputElement={CustomInput} ButtonElement={CustomButton}/>
+              </div>
+            );
+
+            case "voice":
+                if (currentInteraction.loop === true) {
+                    const button = currentInteraction.button
+                    setTimeout(
+                      () => {
+                          setShowButtons(true)
+                      },
+                      currentInteraction.button.wait_to_show * 1000,
+                    )
+
+                    return (
+                      <div>
+                          <VoiceVisualization isActive={!isTyping} />
+                          {showButtons && CustomButton(button)}
+                      </div>
+
+                    )
+                }
+            default:
+                return null
         }
     }
 
     return (
-      <BasicAudioVisual coloring={chapter2Coloring} audio={audio} id={currentInteraction.id}>
-          {/* Display Text with Voice/Music Visualization */}
-          <div className="min-h-[200px] flex flex-col items-center justify-center">
-              {currentInteraction?.type === "voice" ? (
-                <>
-                    <VoiceVisualization isActive={!isTyping} />
-                    {displayText && (
-                      <p className="text-white text-sm leading-relaxed text-center mt-4 px-4 opacity-80">{displayText}</p>
-                    )}
-                </>
-              ) : currentInteraction?.type === "music" ? (
-                <>
-                    <MusicStarAnimation isActive={isMusicPlaying} />
-                    {displayText && <p className="text-white text-lg leading-relaxed text-center">{displayText}</p>}
-                </>
-              ) : (
-                <div className="min-h-[120px] flex items-center justify-center px-4">
-                    <p className="text-white text-lg leading-relaxed text-center">
-                        {displayText}
-                        {isTyping && <span className="animate-pulse">|</span>}
-                    </p>
-                </div>
-              )}
-          </div>
-
-          {/* Input Field */}
-          {currentInteraction?.type === "input" && showButtons && (
-            <div className="space-y-4">
-                <Textarea
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Napíš svoju odpoveď..."
-                  className="bg-white/20 border-white/30 text-white placeholder:text-white/60 resize-none"
-                  rows={3}
-                />
-                {timeLeft !== null && (
-                  <div className="text-center">
-                      <div className="text-white/80 text-sm">
-                          Zostáva: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}
-                      </div>
-                      {showWarning && currentInteraction["warning-text"] && (
-                        <div className="text-yellow-300 text-sm mt-1">{currentInteraction["warning-text"]}</div>
-                      )}
-                  </div>
-                )}
-                <Button
-                  onClick={() => handleInputSave(currentInteraction)}
-                  className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30"
-                  disabled={!inputValue.trim()}
-                >
-                    {currentInteraction["save-label"] || "Uložiť"}
-                </Button>
-            </div>
-          )}
-
-          {/* Choice Buttons */}
-          {showButtons && currentInteraction?.animation?.buttons && (
-            <div className="space-y-3">
-                {currentInteraction.animation.buttons.map((button, index) => (
-                  <Button
-                    key={index}
-                    onClick={() => handleButtonClick(button)}
-                    className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30 transition-all duration-200 hover:scale-105"
-                  >
-                      {button.label}
-                  </Button>
-                ))}
-            </div>
-          )}
-
-          {/* Loop/Continue Button */}
-          {showButtons && currentInteraction?.button && (
-            <Button
-              onClick={() => handleButtonClick(currentInteraction.button!)}
-              className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30 transition-all duration-200 hover:scale-105"
-            >
-                {currentInteraction.button.label}
-            </Button>
-          )}
+      <BasicAudioVisual coloring={chapter2Coloring} audio={currentAudio} id={currentInteraction.id}>
+          {BIGCONTENT()}
       </BasicAudioVisual>
     )
 }
 
 
 export default function Chapter2() {
+    const { state, currentInteraction, goToNextInteraction, handleUserInput, handleChoiceSelection } =
+      useInteractions("chapter2-flow")
     return (
-      <AudioWrapper>
-          <HelpButton />
-          <Chapter2Content />
-      </AudioWrapper>
+      <ChatProvider handleUserInput={handleUserInput} handleChoiceSelection={handleChoiceSelection} currentInteraction={currentInteraction} goToNextInteraction={goToNextInteraction}>
+          <AudioWrapper>
+              <HelpButton />
+              <Chapter2Content />
+          </AudioWrapper>
+      </ChatProvider>
+
     )
 }
 
