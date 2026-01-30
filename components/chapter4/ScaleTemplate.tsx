@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import DraggableCircle from "@/components/chapter4/DraggableCircle";
 import { Button } from "@/components/ui/button";
 
@@ -51,15 +52,21 @@ export default function ScaleTemplate({
         />
       </div>
 
-      {/* Top label with emoji */}
+      {/* Top label with Doty */}
       <motion.div
         className="shrink-0 py-1 px-4 z-10 flex justify-center"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="bg-green-500/20 backdrop-blur-md rounded-full px-3 py-1 border border-green-400/30 flex items-center gap-1">
-          <span className="text-sm">😊</span>
+        <div className="bg-green-500/20 backdrop-blur-md rounded-full px-3 py-1 border border-green-400/30 flex items-center gap-1.5">
+          <Image
+            src="/images/doty/happy.svg"
+            alt="Happy Doty"
+            width={20}
+            height={20}
+            className="w-5 h-5"
+          />
           <span className="text-xs font-bold text-white tracking-wide">
             {topText}
           </span>
@@ -71,15 +78,21 @@ export default function ScaleTemplate({
         <DraggableCircle percentageCallback={setPercentage} key={resetKey} />
       </div>
 
-      {/* Bottom label with emoji */}
+      {/* Bottom label with Doty */}
       <motion.div
         className="shrink-0 py-1 px-4 z-10 flex justify-center"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        <div className="bg-red-500/20 backdrop-blur-md rounded-full px-3 py-1 border border-red-400/30 flex items-center gap-1">
-          <span className="text-sm">😔</span>
+        <div className="bg-red-500/20 backdrop-blur-md rounded-full px-3 py-1 border border-red-400/30 flex items-center gap-1.5">
+          <Image
+            src="/images/doty/sad.svg"
+            alt="Sad Doty"
+            width={20}
+            height={20}
+            className="w-5 h-5"
+          />
           <span className="text-xs font-bold text-white tracking-wide">
             {bottomText}
           </span>

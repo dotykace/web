@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
+import Image from "next/image";
 
 export default function DraggableCircle({
   percentageCallback,
@@ -40,12 +41,11 @@ export default function DraggableCircle({
     return () => unsubscribe();
   }, [y, percentageCallback]);
 
-  // Get emoji based on percentage
-  const getEmoji = () => {
-    if (currentPercent >= 75) return "😄";
-    if (currentPercent >= 50) return "🙂";
-    if (currentPercent >= 25) return "😐";
-    return "😕";
+  // Get Doty expression based on percentage
+  const getDotyExpression = () => {
+    if (currentPercent >= 67) return "/images/doty/happy.svg";
+    if (currentPercent >= 34) return "/images/doty/ok.svg";
+    return "/images/doty/sad.svg";
   };
 
   return (
@@ -56,7 +56,7 @@ export default function DraggableCircle({
       {/* Vertical track */}
       <div className="absolute left-1/2 -translate-x-1/2 w-4 h-[70%] rounded-full bg-gradient-to-b from-green-400 via-amber-400 to-red-400 opacity-40" />
 
-      {/* Draggable circle with emoji */}
+      {/* Draggable circle with Doty expression */}
       <motion.div
         ref={circleRef}
         drag="y"
@@ -68,10 +68,14 @@ export default function DraggableCircle({
         whileTap={{ scale: 1.15 }}
         className="absolute w-28 h-28 md:w-32 md:h-32 rounded-full shadow-2xl cursor-grab active:cursor-grabbing touch-none flex items-center justify-center border-4 border-white z-10"
       >
-        {/* Emoji face */}
-        <span className="text-6xl md:text-7xl select-none drop-shadow-lg">
-          {getEmoji()}
-        </span>
+        {/* Doty face */}
+        <Image
+          src={getDotyExpression()}
+          alt="Doty expression"
+          width={80}
+          height={80}
+          className="w-16 h-16 md:w-20 md:h-20 select-none drop-shadow-lg"
+        />
       </motion.div>
 
       {/* Instruction text */}
