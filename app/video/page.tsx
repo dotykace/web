@@ -1,20 +1,21 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
-import HelpButton from "@/components/HelpButton";
 import { readFromStorage, setToStorage } from "@/scripts/local-storage";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import useDB from "@/hooks/use-db";
 import { useRouter } from "next/navigation";
 import type { DocumentReference } from "firebase/firestore";
+import { ThumbsUp, Share2, ChevronDown, ChevronUp } from "lucide-react";
 
 interface VideoItem {
   id: number;
   title: string;
   description: string;
   fileName: string;
+  channel: string;
+  views: string;
 }
 
 const videos: VideoItem[] = [
@@ -24,6 +25,8 @@ const videos: VideoItem[] = [
     description:
       "Co je dopamin, jak používání mobilu ovlivňuje jeho vyplavování do mozku, a proč je to důležité?",
     fileName: "DOPAMIN.mp4",
+    channel: "Dotykače",
+    views: "Pro tebe",
   },
 ];
 
@@ -39,19 +42,19 @@ type UseDBReturn =
   | undefined;
 
 export default function VideoPage() {
-  const pageHeader = "Video na závěr";
   const finishButtonText = "Dokončit zážitek";
 
   const [selectedVoice, setSelectedVoice] = useState<string>();
   const dbHook = useDB() as UseDBReturn;
   const router = useRouter();
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const [filePathLoaded, setFilePathLoaded] = useState(false);
   const [showFinishButton, setShowFinishButton] = useState(false);
+  const [showDescription, setShowDescription] = useState(false);
+  const [liked, setLiked] = useState(false);
 
   useEffect(() => {
-    console.log("Loading selected voice from storage");
-    // todo get voice from firebase
     const savedVoice = readFromStorage("selectedVoice") || "male";
     if (savedVoice) {
       setSelectedVoice(savedVoice);
@@ -70,77 +73,145 @@ export default function VideoPage() {
   };
 
   const filePath = `/videos/${selectedVoice}/`;
-  const coloring =
-    "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900";
+  const video = videos[0];
 
   if (!filePathLoaded) {
-    const loadingText = "Načítavam video obsah...";
     return (
-      <div
-        className={`min-h-screen text-white flex items-center justify-center p-4 ${coloring}`}
-      >
-        {loadingText}
+      <div className="h-screen overflow-hidden bg-black text-white flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex items-center gap-3"
+        >
+          <div className="w-8 h-8 border-2 border-white/30 border-t-red-500 rounded-full animate-spin" />
+          <span className="text-white/70">Načítavam...</span>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div
-      className={`min-h-screen flex flex-col items-center p-4 sm:p-6 md:p-8 ${coloring}`}
-    >
-      <HelpButton />
+    <div className="h-screen overflow-hidden flex flex-col bg-black">
 
+      {/* Video Player - Full Width */}
       <motion.div
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-center mb-8 mt-12 sm:mt-16"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        className="w-full bg-black"
       >
-        <h1 className="text-4xl sm:text-5xl font-bold text-white drop-shadow-lg">
-          {pageHeader}
-        </h1>
+        <div className="relative w-full aspect-video max-h-[40vh] sm:max-h-[50vh]">
+          <video
+            ref={videoRef}
+            className="w-full h-full object-contain bg-black"
+            src={`${filePath}${video.fileName}`}
+            title={video.title}
+            controls
+            playsInline
+            controlsList="nodownload"
+          />
+        </div>
       </motion.div>
 
-      <div className="w-full max-w-3xl space-y-8 mb-12">
-        {videos.map((video, index) => (
-          <motion.div
-            key={video.id}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
+      {/* Video Info - YouTube Style */}
+      <div className="flex-1 overflow-y-auto bg-zinc-900">
+        <div className="p-4">
+          {/* Title */}
+          <motion.h1
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-white text-lg sm:text-xl font-semibold leading-tight"
           >
-            <Card className="bg-white/10 backdrop-blur-lg border-white/20 shadow-2xl rounded-xl overflow-hidden">
-              <CardContent className="p-4 sm:p-6">
-                <h2 className="text-xl sm:text-2xl font-semibold text-white mb-3">
-                  {video.title}
-                </h2>
-                <p className="text-white/80 text-sm sm:text-base mb-4">
-                  {video.description}
-                </p>
-                <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg">
-                  <video
-                    className="absolute top-0 left-0 w-full h-full"
-                    src={`${filePath}${video.fileName}`}
-                    title={video.title}
-                    controls
-                    playsInline
-                  />
-                </div>
-              </CardContent>
-            </Card>
+            {video.title}
+          </motion.h1>
+
+          {/* Views & Channel */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="flex items-center gap-2 mt-2 text-sm text-zinc-400"
+          >
+            <span>{video.views}</span>
+            <span>•</span>
+            <span>{video.channel}</span>
           </motion.div>
-        ))}
+
+          {/* Action Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="flex items-center gap-2 mt-4 overflow-x-auto pb-2"
+          >
+            <button
+              onClick={() => setLiked(!liked)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                liked
+                  ? "bg-white text-black"
+                  : "bg-zinc-800 text-white hover:bg-zinc-700"
+              }`}
+            >
+              <ThumbsUp className={`w-4 h-4 ${liked ? "fill-current" : ""}`} />
+              <span>Líbí se mi</span>
+            </button>
+
+            <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-800 text-white text-sm font-medium hover:bg-zinc-700 transition-all">
+              <Share2 className="w-4 h-4" />
+              <span>Sdílet</span>
+            </button>
+          </motion.div>
+
+          {/* Description Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="mt-4"
+          >
+            <button
+              onClick={() => setShowDescription(!showDescription)}
+              className="w-full bg-zinc-800 hover:bg-zinc-700 rounded-xl p-4 text-left transition-all"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <p className={`text-zinc-300 text-sm ${showDescription ? "" : "line-clamp-2"}`}>
+                    {video.description}
+                  </p>
+                </div>
+                <div className="ml-2 text-zinc-400">
+                  {showDescription ? (
+                    <ChevronUp className="w-5 h-5" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5" />
+                  )}
+                </div>
+              </div>
+            </button>
+          </motion.div>
+
+          {/* Finish Button */}
+          {showFinishButton && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+              className="mt-6"
+            >
+              <Button
+                onClick={handleFinish}
+                className="w-full bg-red-600 hover:bg-red-700 text-white rounded-full py-6 text-lg font-semibold transition-all duration-200"
+              >
+                {finishButtonText}
+              </Button>
+            </motion.div>
+          )}
+
+          {/* Spacer for bottom padding */}
+          <div className="h-8" />
+        </div>
       </div>
-      {showFinishButton && (
-        <Button
-          onClick={handleFinish}
-          className={
-            "rounded-full border-2 border-blue-950 bg-blue-700 text-white text-xl p-6"
-          }
-        >
-          {finishButtonText}
-        </Button>
-      )}
     </div>
   );
 }

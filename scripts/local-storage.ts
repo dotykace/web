@@ -29,3 +29,18 @@ export const removeFromStorage = (key: string) => {
     console.error(error);
   }
 };
+
+// Tester mode utilities
+export const TESTER_ROOM_CODE = "TEST";
+
+export const enableTesterMode = () => {
+  setToStorage("testerMode", true);
+};
+
+export const disableTesterMode = () => {
+  removeFromStorage("testerMode");
+};
+
+export const isTesterMode = (): boolean => {
+  return readFromStorage("testerMode") === true;
+};

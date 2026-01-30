@@ -3,7 +3,7 @@ import type React from "react";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { readFromStorage, setToStorage } from "@/scripts/local-storage";
+import { readFromStorage, setToStorage, isTesterMode } from "@/scripts/local-storage";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import type { DotykaceParticipant, DotykaceRoom } from "@/lib/dotykace-types";
@@ -48,6 +48,7 @@ export default function MenuPage() {
   const [completedChapters, setCompletedChapters] = useState<number[]>([]);
 
   const [sections, setSections] = useState<Section[]>(defaultSections);
+  const [testerMode, setTesterMode] = useState(false);
 
   const audioManager = useAudioManager();
 
@@ -59,6 +60,9 @@ export default function MenuPage() {
     const storedUserName = (readFromStorage("UN") as string) || "";
     const storedRoomId = readFromStorage("roomId") as string;
     const storedPlayerId = readFromStorage("playerId") as string;
+    const isInTesterMode = isTesterMode();
+
+    setTesterMode(isInTesterMode);
 
     const selectedVoice = readFromStorage("selectedVoice") as string;
     if (!selectedVoice) {
@@ -69,6 +73,17 @@ export default function MenuPage() {
     setUserName(storedUserName);
     setRoomId(storedRoomId);
     setPlayerId(storedPlayerId);
+
+    // In tester mode, unlock all chapters and skip Firestore checks
+    if (isInTesterMode) {
+      console.log("🧪 Tester mode: Unlocking all chapters");
+      setAllowedChapters([0, 1, 2, 3, 4]);
+      const storedCompletedChapters =
+        (readFromStorage("completedChapters") as number[]) || [];
+      setCompletedChapters(storedCompletedChapters);
+      setIsLoading(false);
+      return;
+    }
 
     // Check Firestore for completed chapters (source of truth)
     const checkIntroCompletion = async () => {
@@ -178,6 +193,12 @@ export default function MenuPage() {
 
   // Listen to room changes to get updated permissions
   useEffect(() => {
+    // Skip Firestore listeners in tester mode
+    if (testerMode) {
+      console.log("🧪 Tester mode: Skipping room listeners");
+      return;
+    }
+
     console.log(
       "Setting up room listener for roomId:",
       roomId,
@@ -225,7 +246,7 @@ export default function MenuPage() {
       unsubscribe();
       unsubscribeParticipant();
     };
-  }, [roomId, playerId, isClient]);
+  }, [roomId, playerId, isClient, testerMode]);
 
   // Handle section click
   const handleSectionClick = (section: Section) => {
@@ -254,7 +275,7 @@ export default function MenuPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-menu flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-menu flex flex-col items-center justify-center p-4 py-8 relative overflow-x-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-white/5 rounded-full blur-3xl" />
@@ -265,17 +286,22 @@ export default function MenuPage() {
 
       {/* Logo */}
       <motion.div
-        className="p-4 pb-10"
+        className="p-4 pb-6 sm:pb-10"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <DotykaceLogo width={280} />
+        <div className="block sm:hidden">
+          <DotykaceLogo width={200} />
+        </div>
+        <div className="hidden sm:block">
+          <DotykaceLogo width={280} />
+        </div>
       </motion.div>
 
       {/* Chapters Grid */}
       <motion.div
-        className="grid grid-cols-2 gap-6 relative z-10"
+        className="grid grid-cols-2 gap-3 sm:gap-6 relative z-10 w-full max-w-[340px] sm:max-w-none sm:w-auto px-2"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4, delay: 0.2 }}
@@ -289,24 +315,40 @@ export default function MenuPage() {
         ))}
       </motion.div>
 
-      {/* Admin status message */}
-      {roomId && (
+      {/* Tester mode indicator */}
+      {testerMode && (
         <motion.div
-          className="mt-10 text-center relative z-10"
+          className="mt-6 sm:mt-10 text-center relative z-10 px-4"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.4 }}
         >
-          <div className="bg-white/15 backdrop-blur-md rounded-2xl px-5 py-3 border border-white/20 shadow-lg">
+          <div className="bg-yellow-500/20 backdrop-blur-md rounded-2xl px-4 sm:px-5 py-2 sm:py-3 border border-yellow-400/40 shadow-lg">
+            <p className="text-yellow-200 text-xs sm:text-sm font-medium">
+              🧪 Tester Mode - All chapters unlocked
+            </p>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Admin status message */}
+      {roomId && !testerMode && (
+        <motion.div
+          className="mt-6 sm:mt-10 text-center relative z-10 px-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.4 }}
+        >
+          <div className="bg-white/15 backdrop-blur-md rounded-2xl px-4 sm:px-5 py-2 sm:py-3 border border-white/20 shadow-lg">
             {hasNoAllowedChapters ? (
               <div className="flex items-center gap-2 text-white/90">
-                <Info className="w-4 h-4" />
-                <p className="text-sm font-medium">
+                <Info className="w-4 h-4 shrink-0" />
+                <p className="text-xs sm:text-sm font-medium">
                   Čakáte na povolenie od administrátora
                 </p>
               </div>
             ) : (
-              <p className="text-white/90 text-sm font-medium">
+              <p className="text-white/90 text-xs sm:text-sm font-medium">
                 Máte povolené kapitoly: {displayableAllowedChapters.join(", ")}
               </p>
             )}

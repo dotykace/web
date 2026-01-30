@@ -50,9 +50,9 @@
 }
 
 html {
-  overflow-x: hidden;
+  overflow: hidden;
   width: 100%;
-  scroll-behavior: smooth;
+  height: 100%;
 }
 
 body {
@@ -62,10 +62,11 @@ body {
     rgb(var(--background-start-rgb)) 0%,
     rgb(var(--background-end-rgb)) 100%
   );
-  overflow-x: hidden;
+  overflow: hidden;
   width: 100%;
-  position: relative;
-  min-height: 100vh;
+  height: 100%;
+  position: fixed;
+  inset: 0;
 }
 
 /* Custom utility classes for unified styling */
@@ -83,6 +84,11 @@ body {
   /* Chapter 0 gradient - fresh meadow yellow/green */
   .bg-gradient-chapter0 {
     @apply bg-gradient-to-br from-lime-400 via-yellow-400 to-amber-500;
+  }
+
+  /* Chapter 2 gradient - dreamy violet/pink */
+  .bg-gradient-chapter2 {
+    @apply bg-gradient-to-br from-violet-500 via-purple-600 to-fuchsia-700;
   }
 
   /* Admin gradient */

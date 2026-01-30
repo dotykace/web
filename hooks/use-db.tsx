@@ -28,7 +28,10 @@ export default function useDB() {
       await runTransaction(db, async (transaction) => {
         const data = await transaction.get(participantRef);
         if (!data.exists()) {
-          throw new Error("Participant document does not exist!");
+          // Document doesn't exist - skip update but don't throw error
+          // This can happen in development or when testing without Firebase
+          console.warn("Participant document does not exist, skipping update.");
+          return;
         }
         const participantData = data.data() as DotykaceParticipant;
         const updates = updateCallback(participantData);

@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react"
 import type { Choice, Interaction, InteractionRecord, RawInteraction, ProcessedInteraction } from "@/interactions"
 import { useRouter } from "next/navigation"
-import { readFromStorage, setToStorage } from "@/scripts/local-storage"
+import { readFromStorage, setToStorage, isTesterMode } from "@/scripts/local-storage"
 import useDB from "@/hooks/use-db";
 
 export function useInteractions<T>(filename: string) {
@@ -227,6 +227,45 @@ export function useInteractions<T>(filename: string) {
         },
         [goToNextInteraction],
     )
+
+    // Tester mode: Press Space to skip to next interaction
+    useEffect(() => {
+        if (!isClient || !isTesterMode()) return
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Skip on Space key press (only in tester mode)
+            if (e.code === "Space" && currentInteraction) {
+                e.preventDefault()
+                console.log("🧪 Tester mode: Skipping to next interaction")
+                
+                // For input types, auto-fill with test data
+                if (currentInteraction.type === "input") {
+                    if (currentInteraction.id === "username-input") {
+                        setToStorage("UN", "Tester")
+                        handleUserInput("Tester")
+                    } else if (currentInteraction.id === "botname-input") {
+                        setToStorage("BN", "TestBot")
+                        handleUserInput("TestBot")
+                    } else {
+                        handleUserInput("test input")
+                    }
+                } else if (currentInteraction.type === "multiple-choice" && currentInteraction.choices && currentInteraction.choices.length > 0) {
+                    // Auto-select first choice
+                    handleChoiceSelection(currentInteraction.choices[0])
+                } else {
+                    // For all other types, just go to next
+                    if (currentInteraction["timeout-id"]) {
+                        goToNextInteraction(currentInteraction["timeout-id"])
+                    } else if (currentInteraction["next-id"]) {
+                        goToNextInteraction(currentInteraction["next-id"])
+                    }
+                }
+            }
+        }
+
+        window.addEventListener("keydown", handleKeyDown)
+        return () => window.removeEventListener("keydown", handleKeyDown)
+    }, [isClient, currentInteraction, handleUserInput, handleChoiceSelection, goToNextInteraction])
 
     // todo vsetko musi ist do pice je tu toho moc vela
     return {

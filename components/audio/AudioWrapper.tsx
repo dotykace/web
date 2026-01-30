@@ -34,7 +34,9 @@ export default function AudioWrapper({
   return (
     <AudioProvider>
       <AudioInitializer soundMap={soundMap} setLoaded={setLoaded} />
-      {children}
+      <div className="h-full w-full flex flex-col">
+        {children}
+      </div>
     </AudioProvider>
   );
 }

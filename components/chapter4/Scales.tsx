@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import ScaleTemplate from "@/components/chapter4/ScaleTemplate";
 import { useSharedAudio } from "@/context/AudioContext";
 import type { ProcessedInteraction } from "@/interactions";
@@ -27,7 +27,7 @@ const classifyData = (number: number) => {
 // connections = {A: B, B: C, C: A}
 const interpretData = (
   connections: Record<string, string>,
-  data: Record<string, number>
+  data: Record<string, number>,
 ): Record<string, Interpretation> => {
   const interpretations: Record<string, Interpretation> = {};
   for (const key in data) {
@@ -39,9 +39,8 @@ const interpretData = (
   }
   for (const key in interpretations) {
     const secondaryKey = connections[key];
-    interpretations[
-      key
-    ].combo = `${key}${interpretations[key].class}${secondaryKey}${interpretations[secondaryKey].class}`;
+    interpretations[key].combo =
+      `${key}${interpretations[key].class}${secondaryKey}${interpretations[secondaryKey].class}`;
   }
   return interpretations;
 };
@@ -55,13 +54,14 @@ export default function Scales({
 }) {
   const [data, setData] = useState<Record<string, number>>({});
   const [dataCollected, setDataCollected] = useState(false);
+  const playedVoicesRef = useRef<Set<string>>(new Set());
 
   const { playOnce, isPlaying, stop } = useSharedAudio();
 
   const scalesObject =
     (currentInteraction.scales as Record<string, Scale>) || {};
   const [currentScale, setCurrentScale] = useState<Scale | undefined>(
-    scalesObject["A"]
+    scalesObject["A"],
   );
 
   useEffect(() => {
@@ -99,7 +99,11 @@ export default function Scales({
   useEffect(() => {
     if (!currentScale) return;
     if (currentScale.voice) {
+      // Skip if already playing or already played for this scale
       if (isPlaying[currentScale.voice]) return;
+      if (playedVoicesRef.current.has(currentScale.id)) return;
+
+      playedVoicesRef.current.add(currentScale.id);
       const audio = {
         filename: currentScale.voice,
         type: "voice" as const,
@@ -109,7 +113,7 @@ export default function Scales({
       };
       playOnce(audio);
     }
-  }, [currentScale, isPlaying, playOnce, stop]);
+  }, [currentScale, isPlaying, playOnce]);
 
   if (!currentScale) return null;
 

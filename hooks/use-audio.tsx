@@ -16,6 +16,7 @@ interface Sound {
 interface PlayingInstance {
   source: AudioBufferSourceNode;
   gainNode: GainNode;
+  manuallyStopped?: boolean;
 }
 
 export interface SoundMapEntry {
@@ -169,13 +170,17 @@ export function useAudioManager() {
       const result = await play(sound);
       if (!result) return;
       const { source, gainNode } = result;
-      addToPlaying(filename, { source, gainNode });
+      const instance: PlayingInstance = { source, gainNode, manuallyStopped: false };
+      addToPlaying(filename, instance);
       source.onended = () => {
         source.disconnect();
         gainNode.disconnect();
-        removeFromPlaying(filename, { source, gainNode });
+        removeFromPlaying(filename, instance);
 
-        onFinish();
+        // Only call onFinish if audio ended naturally (not manually stopped)
+        if (!instance.manuallyStopped) {
+          onFinish();
+        }
       };
     },
     [play]
@@ -186,10 +191,12 @@ export function useAudioManager() {
     const instances = playingRef.current[key];
     if (!instances) return;
 
-    instances.forEach(({ source, gainNode }) => {
-      source.stop();
-      source.disconnect();
-      gainNode.disconnect();
+    instances.forEach((instance) => {
+      // Mark as manually stopped so onended doesn't call onFinish
+      instance.manuallyStopped = true;
+      instance.source.stop();
+      instance.source.disconnect();
+      instance.gainNode.disconnect();
     });
 
     playingRef.current[key] = [];

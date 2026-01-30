@@ -24,7 +24,8 @@ export default function InputArea() {
             <button
               key={index}
               onClick={() => handleChoiceSelection(choice)}
-              className="bg-amber-400 hover:bg-amber-500 active:scale-95 transition-all py-3 px-6 rounded-full text-gray-900 font-semibold shadow-lg hover:shadow-xl"
+              className="active:scale-95 transition-all py-3 px-6 rounded-full text-white font-semibold shadow-lg hover:shadow-xl"
+              style={{ backgroundColor: '#0EA5E9' }}
             >
               {choice.type}
             </button>

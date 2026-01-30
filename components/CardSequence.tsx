@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import UserInput from "@/components/UserInput";
 
 const MESSAGE_DELAY_MS = 200;
+const USER_RESPONSE_DISPLAY_MS = 1500; // Time to show user response before next card
 const MAX_VISIBLE_CARDS = 4;
 
 export default function CardSequence() {
@@ -26,7 +27,7 @@ export default function CardSequence() {
     "game-confirm": { filename: "JINGEL - pozitiv.mp3" },
   };
 
-  // Add user response to history and then call the original handler
+  // Add user response to history and then call the original handler after delay
   const handleUserResponse = useCallback(
     (text: string) => {
       const userMessage = {
@@ -36,7 +37,10 @@ export default function CardSequence() {
       };
       setHistory((prev) => [...prev, userMessage]);
       setDisplayCount((prev) => prev + 1);
-      handleUserInput(text);
+      // Delay before moving to next interaction so user can see their response
+      setTimeout(() => {
+        handleUserInput(text);
+      }, USER_RESPONSE_DISPLAY_MS);
     },
     [handleUserInput]
   );
@@ -50,7 +54,10 @@ export default function CardSequence() {
       };
       setHistory((prev) => [...prev, userMessage]);
       setDisplayCount((prev) => prev + 1);
-      handleChoiceSelection(choice);
+      // Delay before moving to next interaction so user can see their response
+      setTimeout(() => {
+        handleChoiceSelection(choice);
+      }, USER_RESPONSE_DISPLAY_MS);
     },
     [handleChoiceSelection]
   );
@@ -149,14 +156,13 @@ export default function CardSequence() {
         style={{ zIndex }}
       >
         <div
-          className={`rounded-3xl px-8 py-10 shadow-2xl transition-all duration-300 
-                      backdrop-blur-md border ${
-                        interaction.isUserResponse
-                          ? "bg-white/20 border-white/30"
-                          : "bg-white/10 border-white/20"
-                      } ${isTopCard ? "ring-1 ring-white/20" : ""}`}
+          className={`rounded-3xl px-6 py-8 shadow-2xl transition-all duration-300 ${
+            interaction.isUserResponse
+              ? "bg-[#0EA5E9] text-white"
+              : "bg-white/95 backdrop-blur-md text-gray-800"
+          } ${isTopCard ? "ring-2 ring-white/30" : ""}`}
         >
-          <p className="text-xl leading-relaxed text-center text-white font-light tracking-wide">
+          <p className="text-lg leading-relaxed text-center">
             {typeof interaction.text === "function"
               ? interaction.text()
               : interaction.text}
@@ -167,36 +173,8 @@ export default function CardSequence() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col bg-gradient-chapter0">
+    <main className="flex h-screen overflow-hidden flex-col bg-gradient-chapter0">
       <div className="w-full max-w-2xl mx-auto flex h-screen flex-col px-4">
-        {/* Progress Indicator */}
-        {visibleHistory.length > 1 && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="fixed top-6 left-0 right-0 z-20"
-          >
-            <div className="w-full max-w-md mx-auto px-6">
-              <div className="backdrop-blur-md bg-white/5 rounded-full border border-white/10 px-4 py-2">
-                <div className="flex gap-2 justify-center items-center">
-                  {visibleHistory.slice(-8).map((_, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className={`rounded-full transition-all duration-300 ${
-                        index === visibleHistory.slice(-8).length - 1
-                          ? "bg-white h-2 w-8"
-                          : "bg-white/30 h-2 w-2"
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
         {/* Card Stack Container */}
         <div className="flex-1 flex items-center justify-center relative">
           <div className="relative w-full h-72">
@@ -212,44 +190,6 @@ export default function CardSequence() {
         <div className="fixed bottom-0 left-0 right-0 z-30">
           <div className="w-full max-w-md mx-auto px-6 pb-10 pt-4">
             <AnimatePresence mode="wait">
-              {/* Continue Button - for message type */}
-              {isMessage && (
-                <motion.button
-                  key="continue"
-                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                  onClick={handleContinue}
-                  className="w-full backdrop-blur-md bg-white/10 hover:bg-white/20 
-                             border border-white/20 hover:border-white/30
-                             text-white font-light tracking-wide py-4 px-8 rounded-3xl shadow-2xl
-                             transition-all duration-300 active:scale-[0.98] 
-                             flex items-center justify-center gap-3"
-                >
-                  <span className="text-lg">Pokračovat</span>
-                  <motion.svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    animate={{ x: [0, 4, 0] }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </motion.svg>
-                </motion.button>
-              )}
-
               {/* Input Field - for input type */}
               {needsInput && (
                 <motion.div
@@ -276,7 +216,7 @@ export default function CardSequence() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="flex flex-col gap-3"
+                  className="flex flex-wrap justify-center gap-3"
                 >
                   {currentInteraction.choices?.map(
                     (choice: any, index: number) => (
@@ -286,10 +226,12 @@ export default function CardSequence() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.1, duration: 0.3 }}
                         onClick={() => handleChoiceResponse(choice)}
-                        className="w-full backdrop-blur-md bg-white/10 hover:bg-white/20 
-                                   border border-white/20 hover:border-white/30
-                                   text-white font-light tracking-wide py-4 px-6 rounded-3xl shadow-2xl
-                                   transition-all duration-300 active:scale-[0.98]"
+                        className="py-3 px-6 rounded-full font-semibold shadow-lg
+                                   transition-all duration-300 active:scale-[0.98] hover:shadow-xl"
+                        style={{ 
+                          backgroundColor: '#0EA5E9',
+                          color: 'white'
+                        }}
                       >
                         {choice.type}
                       </motion.button>

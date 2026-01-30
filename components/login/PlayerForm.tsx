@@ -28,6 +28,8 @@ import {
   readFromStorage,
   setToStorage,
   removeFromStorage,
+  enableTesterMode,
+  TESTER_ROOM_CODE,
 } from "@/scripts/local-storage";
 import {
   DotykaceParticipant,
@@ -128,6 +130,22 @@ export default function PlayerForm({
     setError("");
 
     try {
+      // Check for tester mode - room code "TEST"
+      if (values.roomCode === TESTER_ROOM_CODE) {
+        console.log("🧪 Tester mode activated!");
+        localStorage.clear();
+        enableTesterMode();
+        setToStorage("playerName", values.playerName);
+        setToStorage("UN", values.playerName);
+        setToStorage("roomId", "TESTER_ROOM");
+        setToStorage("playerId", "TESTER_" + Date.now());
+        setToStorage("completedChapters", []);
+        setToStorage("chapter", 0);
+        // Skip waiting room, go directly to chapter 0
+        router.push("/chapter/0");
+        return;
+      }
+
       const roomsRef = collection(db, "rooms");
       const idQuery = query(roomsRef, where("id", "==", values.roomCode));
       const querySnapshot = await getDocs(idQuery);

@@ -1,12 +1,18 @@
-export default function LoadingScreen({message = "Načítání interakcí..."}) {
+export default function LoadingScreen({
+  message = "Načítavam...",
+  colorClass = "bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600",
+  spinnerAccent = "border-t-white"
+}: {
+  message?: string;
+  colorClass?: string;
+  spinnerAccent?: string;
+}) {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-warm">
-      <div className="w-full max-w-md mx-auto text-center">
-        <div className="glass-card p-8 animate-scale-in">
-          <div className="animate-spin-smooth rounded-full border-3 border-orange-200 border-t-orange-500 h-12 w-12 mx-auto mb-6" />
-          <p className="text-gray-700 font-medium animate-gentle-pulse">{message}</p>
-        </div>
+    <main className={`flex h-screen overflow-hidden flex-col items-center justify-center p-4 ${colorClass}`}>
+      <div className="flex flex-col items-center gap-4">
+        <div className={`w-12 h-12 border-4 border-white/30 ${spinnerAccent} rounded-full animate-spin`} />
+        <span className="text-white/80 font-medium">{message}</span>
       </div>
     </main>
-  )
+  );
 }

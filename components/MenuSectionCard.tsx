@@ -30,7 +30,7 @@ export default function MenuSectionCard({
     <div className="flex flex-col items-center relative group">
       {/* Card Container */}
       <div
-        className={`relative w-[140px] h-[140px] rounded-3xl overflow-hidden
+        className={`relative w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] rounded-2xl sm:rounded-3xl overflow-hidden
                     transition-all duration-300 cursor-pointer
                     ${
                       isLocked
@@ -49,8 +49,8 @@ export default function MenuSectionCard({
         {/* Lock overlay for locked chapters */}
         {isLocked && (
           <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-            <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
-              <Lock className="w-6 h-6 text-white/80" strokeWidth={2} />
+            <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 sm:p-3">
+              <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-white/80" strokeWidth={2} />
             </div>
           </div>
         )}
@@ -59,18 +59,18 @@ export default function MenuSectionCard({
       {/* Completed badge */}
       {isCompleted && (
         <div
-          className="absolute top-[-6px] right-[-6px] bg-white/20 backdrop-blur-md
-                        rounded-full p-1.5 shadow-lg border border-white/30
+          className="absolute top-[-4px] right-[-4px] sm:top-[-6px] sm:right-[-6px] bg-white/20 backdrop-blur-md
+                        rounded-full p-1 sm:p-1.5 shadow-lg border border-white/30
                         animate-scale-in"
         >
-          <Check className="w-5 h-5 text-white" strokeWidth={3} />
+          <Check className="w-4 h-4 sm:w-5 sm:h-5 text-white" strokeWidth={3} />
         </div>
       )}
 
       {/* Title */}
-      <div className="mt-3 w-full text-center">
+      <div className="mt-2 sm:mt-3 w-full text-center">
         <p
-          className={`text-base font-semibold tracking-wide ${
+          className={`text-sm sm:text-base font-semibold tracking-wide ${
             isLocked ? "text-white/50" : "text-white"
           }`}
         >

@@ -5,15 +5,13 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Volume2, VolumeX, Check } from "lucide-react";
+import { Volume2, VolumeX, Check, SkipForward } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import HelpButton from "@/components/HelpButton";
+import ChapterHeader from "@/components/ChapterHeader";
 import useDB from "@/hooks/use-db";
 import { useRouter } from "next/navigation";
 import { readFromStorage } from "@/scripts/local-storage";
-import SkipButton from "@/components/SkipButton";
 import AudioControl from "@/components/AudioControl";
 
 // Voice Visualization Component (similar to Chapter 2)
@@ -25,7 +23,7 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
-            className={`absolute rounded-full bg-gradient-to-r from-orange-400/20 to-pink-400/20 animate-pulse`}
+            className={`absolute rounded-full bg-orange-100 animate-pulse`}
             style={{
               width: `${60 + i * 20}px`,
               height: `${60 + i * 20}px`,
@@ -53,13 +51,13 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
           {/* Animated rings around character */}
           {isActive && (
             <>
-              <div className="absolute inset-0 rounded-full border-2 border-orange-300/50 animate-ping" />
+              <div className="absolute inset-0 rounded-full border-2 border-orange-400 animate-ping" />
               <div
-                className="absolute inset-0 rounded-full border-2 border-pink-300/50 animate-ping"
+                className="absolute inset-0 rounded-full border-2 border-orange-300 animate-ping"
                 style={{ animationDelay: "0.5s" }}
               />
               <div
-                className="absolute inset-0 rounded-full border-2 border-yellow-300/50 animate-ping"
+                className="absolute inset-0 rounded-full border-2 border-orange-200 animate-ping"
                 style={{ animationDelay: "1s" }}
               />
             </>
@@ -71,7 +69,7 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
             {[...Array(3)].map((_, i) => (
               <div
                 key={i}
-                className="absolute w-2 bg-gradient-to-r from-orange-400 to-pink-400 rounded-full animate-pulse"
+                className="absolute w-2 bg-orange-500 rounded-full animate-pulse"
                 style={{
                   height: `${20 + i * 8}px`,
                   right: `${i * 8}px`,
@@ -173,16 +171,50 @@ function Chapter3Content() {
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const skipFlagRef = useRef(false);
   const mountedRef = useRef(true);
+  const currentInteractionIdRef = useRef<string>("");
+  const lastProcessedIdRef = useRef<string>("");
+  const processInteractionRef = useRef<
+    ((interaction: Interaction) => void) | null
+  >(null);
 
-  const [selectedVoice, setSelectedVoice] = useState();
+  // Refs for functions used in processInteraction to avoid stale closures
+  const playAudioRef = useRef<
+    | ((
+        src: string,
+        channel: "voice" | "sfx" | "music",
+        loop?: boolean,
+        onEnded?: () => void,
+      ) => Promise<void>)
+    | null
+  >(null);
+  const typeTextRef = useRef<
+    ((text: string, callback?: () => void) => void) | null
+  >(null);
+  const handleInputSaveRef = useRef<
+    ((interaction: Interaction) => Promise<void>) | null
+  >(null);
+  const selectedVoiceRef = useRef<string | undefined>(undefined);
+
+  const [selectedVoice, setSelectedVoice] = useState<string | undefined>();
 
   const router = useRouter();
 
   const dbHook = useDB();
 
   useEffect(() => {
-    setSelectedVoice(readFromStorage("selectedVoice"));
+    const voice = readFromStorage("selectedVoice") as string | undefined;
+    setSelectedVoice(voice);
+    selectedVoiceRef.current = voice;
   }, []);
+
+  // Keep refs in sync with state to avoid circular dependencies
+  useEffect(() => {
+    currentInteractionIdRef.current = currentInteractionId;
+  }, [currentInteractionId]);
+
+  useEffect(() => {
+    selectedVoiceRef.current = selectedVoice;
+  }, [selectedVoice]);
 
   // Detect if device is desktop/laptop
   useEffect(() => {
@@ -233,7 +265,7 @@ function Chapter3Content() {
     try {
       // Play a silent audio to unlock audio context
       const silentAudio = new Audio(
-        "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OSNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT"
+        "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OSNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT",
       );
       silentAudio.volume = 0;
       await silentAudio.play();
@@ -245,6 +277,7 @@ function Chapter3Content() {
   }, [audioInitialized]);
 
   useEffect(() => {
+    mountedRef.current = true; // Reset on mount (fixes React Strict Mode issue)
     loadFlowData();
     return () => {
       mountedRef.current = false;
@@ -269,30 +302,33 @@ function Chapter3Content() {
   };
 
   // Enhanced saveToFirestore to include choice data
-  const saveToFirestore = async (
-    inputData: string | string[],
-    interactionId: string,
-    interactionType: string,
-    choiceData?: { label: string; nextId: string }
-  ) => {
-    try {
-      const docData: any = {
-        interactionId,
-        responseValue: inputData,
-        interactionType,
-        timestamp: serverTimestamp(),
-        sessionId: `session_${Date.now()}`,
-        chapter: "chapter3",
-      };
-      // Add choice data if provided
-      if (choiceData) {
-        docData.choice = choiceData;
+  const saveToFirestore = useCallback(
+    async (
+      inputData: string | string[],
+      interactionId: string,
+      interactionType: string,
+      choiceData?: { label: string; nextId: string },
+    ) => {
+      try {
+        const docData: any = {
+          interactionId,
+          responseValue: inputData,
+          interactionType,
+          timestamp: serverTimestamp(),
+          sessionId: `session_${Date.now()}`,
+          chapter: "chapter3",
+        };
+        // Add choice data if provided
+        if (choiceData) {
+          docData.choice = choiceData;
+        }
+        await addDoc(collection(db, "chapter3"), docData);
+      } catch (error) {
+        console.error("Error saving to Firestore:", error);
       }
-      await addDoc(collection(db, "chapter3"), docData);
-    } catch (error) {
-      console.error("Error saving to Firestore:", error);
-    }
-  };
+    },
+    [],
+  );
 
   const typeText = useCallback((text: string, callback?: () => void) => {
     if (!mountedRef.current) return;
@@ -332,17 +368,22 @@ function Chapter3Content() {
     }, 30);
   }, []);
 
+  // Keep typeText ref in sync
+  useEffect(() => {
+    typeTextRef.current = typeText;
+  }, [typeText]);
+
   // Multi-channel audio playback
   const playAudio = useCallback(
     async (
       src: string,
       channel: "voice" | "sfx" | "music",
       loop = false,
-      onEnded?: () => void
+      onEnded?: () => void,
     ) => {
       if (!audioEnabled || !audioInitialized) {
         console.warn(
-          `Audio playback skipped for ${channel} channel (${src}): audioEnabled=${audioEnabled}, audioInitialized=${audioInitialized}`
+          `Audio playback skipped for ${channel} channel (${src}): audioEnabled=${audioEnabled}, audioInitialized=${audioInitialized}`,
         );
         return;
       }
@@ -388,12 +429,17 @@ function Chapter3Content() {
       } catch (error) {
         console.warn(
           `Audio playback failed for ${channel} channel (${src}):`,
-          error
+          error,
         );
       }
     },
-    [audioEnabled, audioInitialized]
+    [audioEnabled, audioInitialized],
   );
+
+  // Keep playAudio ref in sync
+  useEffect(() => {
+    playAudioRef.current = playAudio;
+  }, [playAudio]);
 
   // Stop all audio
   const stopAllAudio = useCallback(() => {
@@ -413,7 +459,11 @@ function Chapter3Content() {
         countdownIntervalRef.current = null;
       }
       if (inputValue.trim()) {
-        await saveToFirestore(inputValue, currentInteractionId, "input");
+        await saveToFirestore(
+          inputValue,
+          currentInteractionIdRef.current,
+          "input",
+        );
       }
       setTimeLeft(null);
       setShowWarning(false);
@@ -421,8 +471,14 @@ function Chapter3Content() {
         setCurrentInteractionId(interaction["next-id"]);
       }
     },
-    [inputValue, currentInteractionId, saveToFirestore]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [inputValue],
   );
+
+  // Keep handleInputSave ref in sync
+  useEffect(() => {
+    handleInputSaveRef.current = handleInputSave;
+  }, [handleInputSave]);
 
   const processInteraction = useCallback(
     (interaction: Interaction) => {
@@ -464,11 +520,19 @@ function Chapter3Content() {
                 setCurrentInteractionId(interaction["next-id"]!);
               }
             };
-            const filePath = selectedVoice
-              ? `${selectedVoice}/${interaction.sound}`
+            const voice = selectedVoiceRef.current;
+            const filePath = voice
+              ? `${voice}/${interaction.sound}`
               : interaction.sound;
             console.log("Interaction sound file path:", filePath);
-            playAudio(filePath, "voice", interaction.loop, onAudioEnd);
+            if (playAudioRef.current) {
+              playAudioRef.current(
+                filePath,
+                "voice",
+                interaction.loop,
+                onAudioEnd,
+              );
+            }
           }
           setDisplayText(interaction.text || "");
           if (interaction.button) setShowButtons(true);
@@ -484,7 +548,9 @@ function Chapter3Content() {
               setTimeLeft((prev) => {
                 if (!mountedRef.current || prev === null) return null;
                 if (prev <= 1) {
-                  handleInputSave(interaction);
+                  if (handleInputSaveRef.current) {
+                    handleInputSaveRef.current(interaction);
+                  }
                   return null;
                 }
                 if (
@@ -502,8 +568,14 @@ function Chapter3Content() {
         // ostatné typy nechaj tak ako sú...
       }
     },
-    [currentInteractionId, typeText, playAudio, handleInputSave, selectedVoice]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
   );
+
+  // Keep processInteraction in a ref to avoid dependency issues
+  useEffect(() => {
+    processInteractionRef.current = processInteraction;
+  }, [processInteraction]);
 
   // Enhanced handleButtonClick to save choice data
   const handleButtonClick = useCallback(
@@ -511,20 +583,20 @@ function Chapter3Content() {
       await initializeAudio(); // Ensure audio is initialized on any user interaction
       stopAllAudio();
       // Save choice to Firestore
-      await saveToFirestore("", currentInteractionId, "choice", {
+      await saveToFirestore("", currentInteractionIdRef.current, "choice", {
         label: button.label,
         nextId: button["next-id"],
       });
       setCurrentInteractionId(button["next-id"]);
     },
-    [initializeAudio, stopAllAudio, currentInteractionId]
+    [initializeAudio, stopAllAudio],
   );
 
   const handleOptionToggle = useCallback((option: string) => {
     setSelectedOptions((prev) =>
       prev.includes(option)
         ? prev.filter((item) => item !== option)
-        : [...prev, option]
+        : [...prev, option],
     );
   }, []);
 
@@ -532,19 +604,28 @@ function Chapter3Content() {
     async (interaction: Interaction) => {
       await saveToFirestore(
         selectedOptions,
-        currentInteractionId,
-        "multiselect"
+        currentInteractionIdRef.current,
+        "multiselect",
       );
       if (interaction.animation?.button?.["next-id"]) {
         setCurrentInteractionId(interaction.animation.button["next-id"]);
       }
     },
-    [selectedOptions, currentInteractionId]
+    [selectedOptions],
   );
 
   const handleSkip = useCallback(() => {
     if (!flowData || !currentInteractionId) return;
     const currentInteraction = flowData.interactions[currentInteractionId];
+
+    // Stop any currently playing audio before advancing
+    [voiceAudioRef, sfxAudioRef, musicAudioRef].forEach((audioRef) => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    });
+
     if (
       isTyping &&
       typingIntervalRef.current &&
@@ -568,16 +649,16 @@ function Chapter3Content() {
       hasStartedExperience &&
       flowData &&
       currentInteractionId &&
-      flowData.interactions[currentInteractionId]
+      flowData.interactions[currentInteractionId] &&
+      lastProcessedIdRef.current !== currentInteractionId && // Prevent re-processing same interaction
+      processInteractionRef.current
     ) {
-      processInteraction(flowData.interactions[currentInteractionId]);
+      lastProcessedIdRef.current = currentInteractionId;
+      processInteractionRef.current(
+        flowData.interactions[currentInteractionId],
+      );
     }
-  }, [
-    currentInteractionId,
-    flowData,
-    processInteraction,
-    hasStartedExperience,
-  ]);
+  }, [currentInteractionId, flowData, hasStartedExperience]);
 
   // Handle chapter completion
   useEffect(() => {
@@ -603,13 +684,14 @@ function Chapter3Content() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 flex items-center justify-center">
+      <div className="h-screen overflow-hidden bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
         <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="text-white text-xl font-medium"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center gap-4"
         >
-          Načítavam Kapitolu 3...
+          <div className="w-12 h-12 border-4 border-white/30 border-t-orange-200 rounded-full animate-spin" />
+          <span className="text-white/80 font-medium">Načítavam...</span>
         </motion.div>
       </div>
     );
@@ -617,8 +699,14 @@ function Chapter3Content() {
 
   if (!flowData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 flex items-center justify-center">
-        <div className="text-white text-xl">Chyba pri načítaní</div>
+      <div className="h-screen overflow-hidden bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-white text-xl font-medium"
+        >
+          Chyba pri načítaní
+        </motion.div>
       </div>
     );
   }
@@ -626,23 +714,70 @@ function Chapter3Content() {
   // Show start button if experience hasn't started
   if (!hasStartedExperience) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-white/10 backdrop-blur-lg border-white/20 shadow-2xl">
-          <CardContent className="p-8 text-center">
-            <h2 className="text-2xl font-bold text-white mb-4">
-              Vitajte v Kapitole 3
-            </h2>
-            <p className="text-white/80 mb-6">
-              Pre spustenie zážitku kliknite na tlačidlo.
-            </p>
-            <Button
-              onClick={handleStartExperience}
-              className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30 transition-all duration-200 hover:scale-105"
+      <div className="h-screen overflow-hidden bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center p-4">
+        {/* Decorative elements */}
+        <div
+          className="fixed w-24 h-24 bg-yellow-300/30 rounded-full pointer-events-none blur-xl animate-pulse"
+          style={{ top: "15%", left: "10%" }}
+        />
+        <div
+          className="fixed w-20 h-20 bg-orange-300/25 rounded-full pointer-events-none blur-xl animate-pulse"
+          style={{ top: "25%", right: "15%", animationDelay: "1s" }}
+        />
+
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="w-full max-w-md space-y-6"
+        >
+          {/* Chapter badge */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3, duration: 0.4, type: "spring" }}
+            className="flex justify-center"
+          >
+            <div className="w-20 h-20 rounded-full bg-white border-2 border-orange-500 shadow-xl flex items-center justify-center">
+              <span className="text-3xl font-bold text-orange-600">3</span>
+            </div>
+          </motion.div>
+
+          {/* Main card */}
+          <div className="bg-white rounded-2xl border-2 border-orange-500 p-8 text-center shadow-xl">
+            <motion.h2
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.4 }}
+              className="text-2xl font-bold text-orange-600 mb-2"
             >
-              Spustiť
-            </Button>
-          </CardContent>
-        </Card>
+              Kapitola 3
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 0.4 }}
+              className="text-orange-500 mb-8 font-medium text-sm"
+            >
+              Pre spustenie zážitku kliknite na tlačidlo
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.4 }}
+            >
+              <Button
+                onClick={handleStartExperience}
+                className="w-full bg-orange-500 hover:bg-orange-600 
+                           text-white font-bold py-4 px-8 rounded-full shadow-lg shadow-orange-500/30
+                           transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                Spustiť
+              </Button>
+            </motion.div>
+          </div>
+        </motion.div>
       </div>
     );
   }
@@ -660,22 +795,32 @@ function Chapter3Content() {
   // currentInteraction.animation?.type !== "multiselect"
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 flex flex-col relative overflow-hidden">
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-orange-400 to-red-500 flex flex-col relative">
+      {/* Chapter Header */}
+      <ChapterHeader chapterNumber={3} />
+
       <AnimationStyles />
       {/* Decorative background pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-300 rounded-full"></div>
-        <div className="absolute top-32 right-16 w-16 h-16 bg-blue-300 rounded-full"></div>
-        <div className="absolute bottom-20 left-20 w-24 h-24 bg-green-300 rounded-full"></div>
-        <div className="absolute bottom-40 right-10 w-12 h-12 bg-pink-300 rounded-full"></div>
+      <div className="absolute inset-0">
+        <div className="absolute top-10 left-10 w-24 h-24 bg-yellow-300/25 rounded-full blur-xl animate-pulse"></div>
+        <div
+          className="absolute top-32 right-16 w-20 h-20 bg-orange-300/20 rounded-full blur-xl animate-pulse"
+          style={{ animationDelay: "1s" }}
+        ></div>
+        <div
+          className="absolute bottom-20 left-20 w-28 h-28 bg-yellow-200/20 rounded-full blur-xl animate-pulse"
+          style={{ animationDelay: "2s" }}
+        ></div>
+        <div
+          className="absolute bottom-40 right-10 w-16 h-16 bg-red-300/25 rounded-full blur-xl animate-pulse"
+          style={{ animationDelay: "0.5s" }}
+        ></div>
       </div>
-      {/* Skip Button - Only visible on desktop/laptop */}
-      <SkipButton onSkip={handleSkip} visible={showSkipButton} />
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center p-4 relative z-10">
+      <div className="flex-1 flex items-center justify-center p-4 relative z-10 min-h-0">
         <div className="w-full max-w-lg">
-          {/* Content Card */}
+          {/* Content */}
           <AnimatePresence mode="wait">
             <motion.div
               key={currentInteractionId}
@@ -684,32 +829,34 @@ function Chapter3Content() {
               exit={{ y: -20, opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <Card className="bg-white/20 backdrop-blur-lg border-white/30 shadow-2xl rounded-3xl">
+              <div className="relative">
                 <AudioControl
                   onClick={() => {
-                    initializeAudio(); // Ensure audio is initialized even if toggling mute
+                    initializeAudio();
                     setAudioEnabled(!audioEnabled);
                   }}
                   audioEnabled={audioEnabled}
                 />
-                <CardContent className="p-6 space-y-6">
+                <div className="space-y-6">
                   {/* Display Text with Voice Visualization */}
                   <div className="min-h-[200px] flex flex-col items-center justify-center">
                     {currentInteraction?.type === "voice" ? (
                       <>
                         <VoiceVisualization isActive={!isTyping} />
                         {displayText && (
-                          <p className="text-white text-sm leading-relaxed text-center mt-4 px-4 opacity-80">
+                          <p className="text-white text-sm leading-relaxed text-center mt-4 px-4 font-medium drop-shadow-lg">
                             {displayText}
                           </p>
                         )}
                       </>
                     ) : (
                       <div className="min-h-[120px] flex items-center justify-center px-4">
-                        <p className="text-white text-lg leading-relaxed text-center font-medium">
+                        <p className="text-white text-xl leading-relaxed text-center font-semibold drop-shadow-lg">
                           {displayText}
                           {isTyping && (
-                            <span className="animate-pulse ml-1">|</span>
+                            <span className="animate-pulse ml-1 text-white/70">
+                              |
+                            </span>
                           )}
                         </p>
                       </div>
@@ -723,18 +870,19 @@ function Chapter3Content() {
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         placeholder="Napíš svoju odpoveď..."
-                        className="bg-white/30 border-white/40 text-white placeholder:text-white/70 resize-none rounded-2xl"
+                        className="bg-white/10 border-2 border-white/30 text-white placeholder:text-white/50 
+                                   resize-none rounded-2xl font-medium focus:border-white/50 focus:ring-white/20 backdrop-blur-sm"
                         rows={3}
                       />
                       {timeLeft !== null && (
                         <div className="text-center">
-                          <div className="text-white/90 text-sm font-medium">
+                          <div className="text-white text-sm font-bold drop-shadow-md">
                             Zostáva: {Math.floor(timeLeft / 60)}:
                             {(timeLeft % 60).toString().padStart(2, "0")}
                           </div>
                           {showWarning &&
                             currentInteraction["warning-text"] && (
-                              <div className="text-yellow-200 text-sm mt-1 font-medium">
+                              <div className="text-yellow-300 text-sm mt-1 font-bold drop-shadow-md">
                                 {currentInteraction["warning-text"]}
                               </div>
                             )}
@@ -742,7 +890,10 @@ function Chapter3Content() {
                       )}
                       <Button
                         onClick={() => handleInputSave(currentInteraction)}
-                        className="w-full bg-white/30 hover:bg-white/40 text-white border-white/40 rounded-2xl font-medium"
+                        className="w-full bg-white hover:bg-white/90 
+                                   disabled:bg-white/30 disabled:text-white/50
+                                   text-orange-600 font-bold rounded-full shadow-lg disabled:shadow-none
+                                   transition-all duration-300 active:scale-[0.98]"
                         disabled={!inputValue.trim()}
                       >
                         {currentInteraction["save-label"] || "Uložiť"}
@@ -765,12 +916,14 @@ function Chapter3Content() {
                             >
                               <Button
                                 onClick={() => handleButtonClick(button)}
-                                className="w-full bg-white/30 hover:bg-white/40 text-white border-white/40 rounded-2xl font-medium py-3 h-auto whitespace-normal"
+                                className="w-full bg-white hover:bg-white/90 
+                                           text-orange-600 font-bold rounded-full py-3 h-auto whitespace-normal 
+                                           shadow-lg transition-all duration-300 active:scale-[0.98]"
                               >
                                 {button.label}
                               </Button>
                             </motion.div>
-                          )
+                          ),
                         )}
                       </div>
                     )}
@@ -791,10 +944,10 @@ function Chapter3Content() {
                               >
                                 <Button
                                   onClick={() => handleOptionToggle(option)}
-                                  className={`w-full rounded-2xl font-medium py-3 h-auto whitespace-normal transition-all ${
+                                  className={`w-full rounded-full font-bold py-3 h-auto whitespace-normal transition-all duration-300 ${
                                     selectedOptions.includes(option)
-                                      ? "bg-yellow-400 text-yellow-900 border-yellow-500 shadow-lg"
-                                      : "bg-white/30 hover:bg-white/40 text-white border-white/40"
+                                      ? "bg-white text-orange-600 shadow-lg"
+                                      : "bg-white/20 hover:bg-white/30 text-white border border-white/30"
                                   }`}
                                 >
                                   {selectedOptions.includes(option) && (
@@ -803,7 +956,7 @@ function Chapter3Content() {
                                   {option}
                                 </Button>
                               </motion.div>
-                            )
+                            ),
                           )}
                         </div>
                         {currentInteraction.animation.button && (
@@ -811,7 +964,9 @@ function Chapter3Content() {
                             onClick={() =>
                               handleMultiselectSave(currentInteraction)
                             }
-                            className="w-full bg-white/40 hover:bg-white/50 text-white border-white/50 rounded-2xl font-medium mt-4"
+                            className="w-full bg-white hover:bg-white/90 
+                                       text-orange-600 font-bold rounded-full shadow-lg mt-4
+                                       transition-all duration-300 active:scale-[0.98]"
                           >
                             {currentInteraction.animation.button.label}
                           </Button>
@@ -825,33 +980,49 @@ function Chapter3Content() {
                       onClick={() =>
                         handleButtonClick(currentInteraction.button!)
                       }
-                      className="w-full bg-white/30 hover:bg-white/40 text-white border-white/40 rounded-2xl font-medium"
+                      className="w-full bg-white hover:bg-white/90 
+                                 text-orange-600 font-bold rounded-full shadow-lg
+                                 transition-all duration-300 active:scale-[0.98]"
                     >
                       {currentInteraction.button.label}
                     </Button>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </motion.div>
           </AnimatePresence>
+
+          {/* Skip Button - Below the card */}
+          {showSkipButton && (
+            <div className="flex justify-center mt-4">
+              <Button
+                onClick={handleSkip}
+                variant="ghost"
+                className="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm flex items-center gap-2 rounded-full px-4 py-2"
+              >
+                <SkipForward className="h-4 w-4" />
+                <span>Přeskočit</span>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Progress Indicator */}
-      <div className="p-4 relative z-10">
+      <div className="p-6 relative z-10">
         <div className="max-w-lg mx-auto">
-          <div className="h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
+          <div className="h-3 bg-white/20 border border-white/30 rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full"
+              className="h-full bg-white rounded-full"
               initial={{ width: 0 }}
               animate={{
                 width: `${Math.min(
                   100,
                   (Object.keys(flowData.interactions).indexOf(
-                    currentInteractionId
+                    currentInteractionId,
                   ) /
                     Object.keys(flowData.interactions).length) *
-                    100
+                    100,
                 )}%`,
               }}
               transition={{ duration: 0.5 }}
@@ -864,10 +1035,5 @@ function Chapter3Content() {
 }
 
 export default function Chapter3() {
-  return (
-    <>
-      <HelpButton />
-      <Chapter3Content />
-    </>
-  );
+  return <Chapter3Content />;
 }

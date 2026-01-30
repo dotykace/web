@@ -81,7 +81,7 @@
     },
     "5.1": {
       "type": "display",
-      "text": "3. kolo",
+      "text": "Třetí kolo",
       "duration": 2,
       "next-id": "5.2"
     },
@@ -99,7 +99,7 @@
     },
     "6.1": {
       "type": "display",
-      "text": "4. kolo",
+      "text": "Čtvrté kolo",
       "duration": 2,
       "next-id": "6.2"
     },

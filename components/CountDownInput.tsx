@@ -51,9 +51,9 @@ export default function CountDownInput({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full">
       {questionText && (
-        <div className="text-white/90 text-lg font-medium text-center">
+        <div className="text-white text-lg font-medium text-center">
           {questionText}
         </div>
       )}
@@ -61,13 +61,13 @@ export default function CountDownInput({
         value={inputValue}
         onChange={handleInputChange}
         placeholder={textAreaPlaceholder}
-        className="bg-white/30 border-white/40 text-white placeholder:text-white/70 resize-none rounded-xl"
+        className="bg-white/10 border-2 border-white/30 text-white placeholder:text-white/50 resize-none rounded-2xl font-medium focus:border-white/50 focus:ring-white/20"
         rows={3}
       />
 
       {timeLeft !== null && (
         <div className="text-center">
-          <div className="text-white/90 text-sm font-medium">
+          <div className="text-white/90 text-sm font-bold">
             {timeLeftText}
             {Math.floor(timeLeft / 60)}:
             {(timeLeft % 60).toString().padStart(2, "0")}
@@ -77,7 +77,7 @@ export default function CountDownInput({
 
       <Button
         onClick={handleInputSave}
-        className="w-full bg-white/30 hover:bg-white/40 text-white border-white/40 rounded-xl font-medium"
+        className="w-full bg-white text-indigo-900 hover:bg-white/90 rounded-full font-bold shadow-lg disabled:bg-white/20 disabled:text-white/40 disabled:shadow-none"
         disabled={!inputValue.trim()}
       >
         {buttonLabel}

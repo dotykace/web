@@ -12,7 +12,7 @@ export default function DotykacePage() {
     setFinished(()=>!!isFinished);
   }, []);
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-warm">
+    <main className="flex h-screen overflow-hidden flex-col items-center justify-center p-4 bg-gradient-warm">
       <div className="text-center text-white animate-fade-in">
         {finished ? (
           <div className="glass-card px-8 py-12 text-center">

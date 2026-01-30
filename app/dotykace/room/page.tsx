@@ -107,7 +107,7 @@ export default function DotykaceRoomPage() {
 
   if (!room) {
     return (
-      <div className="min-h-screen bg-gradient-warm flex items-center justify-center">
+      <div className="h-screen overflow-hidden bg-gradient-warm flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin-smooth rounded-full border-3 border-white/30 border-t-white h-10 w-10 mx-auto mb-4" />
           {connectionError && (
@@ -125,7 +125,7 @@ export default function DotykaceRoomPage() {
     "Administrátor ještě nespustil Dotykáče: interaktivní zkušenost s mobilem";
 
   return (
-    <div className="min-h-screen bg-gradient-warm p-4 flex flex-col items-center justify-center">
+    <div className="h-screen overflow-hidden bg-gradient-warm p-4 flex flex-col items-center justify-center">
       <div className="max-w-md mx-auto space-y-8 animate-fade-in">
         {/* Header */}
         <DotykaceLogo />

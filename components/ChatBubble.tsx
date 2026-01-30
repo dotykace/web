@@ -17,12 +17,12 @@ export default function ChatBubble({ text, type }: ChatBubbleProps) {
         transition={{ duration: 0.35 }}
       >
         {type === "user-message" ? (
-          <div className="bg-amber-400 text-gray-900 px-4 py-3 rounded-2xl shadow-md">
+          <div className="bg-[#0EA5E9] text-white px-4 py-3 rounded-2xl shadow-md">
             <p className="text-base leading-relaxed">{renderText}</p>
           </div>
         ) : type === "user-message-emoji" ? (
           <div className="flex justify-end items-center h-20 w-full max-w-full mx-auto">
-            <div className="text-5xl border-amber-400 border-4 bg-amber-400/50 rounded-2xl p-3 shadow-md">
+            <div className="text-5xl border-[#0EA5E9] border-4 bg-[#0EA5E9]/50 rounded-2xl p-3 shadow-md">
               {renderText}
             </div>
           </div>
