@@ -153,19 +153,25 @@ export function useAudioManager() {
 
   },[play])
 
-  const playOnce = useCallback(async ({filename, opts, type}: PlayOnceOptions) => {
+  const playOnce = useCallback(async ({filename, opts, type, onFinish}: PlayOnceOptions) => {
     const buffer = await fetchSound(filename, type);
     const sound = {
       buffer,
       loop: opts?.loop ?? false,
       volume: opts?.volume ?? 1,
     }
+    const duration = buffer.duration;
+    const timeOut = setTimeout(() => {
+      console.log("Sound timeout reached, calling onFinish if exists");
+      if(onFinish) onFinish();
+    }, (duration - 0.1) * 1000);
     const {source, gainNode} = await play(sound);
     addToPlaying(filename, {source, gainNode});
     source.onended = () => {
       source.disconnect();
       gainNode.disconnect();
       removeFromPlaying(filename, {source, gainNode});
+      clearTimeout(timeOut);
     };
 
   },[play]);
