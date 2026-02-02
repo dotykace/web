@@ -53,6 +53,13 @@ export default function VideoPage() {
     }, 1000 * 2 * 60); // Show finish button after 2 minutes
   }, []);
 
+  const onVideoEnded = () => {
+    setShowFinishButton(true);
+    setTimeout(() => {
+      handleFinish()
+    }, 1000 * 30);
+  }
+
   const handleFinish = () => {
     if(dbHook){
       dbHook.updateChapter(5, () => setToStorage("dotykaceFinished", true));
@@ -105,6 +112,7 @@ export default function VideoPage() {
                                     title={video.title}
                                     controls
                                     playsInline
+                                    onEnded={onVideoEnded}
                                   />
                                 </div>
                             </CardContent>
