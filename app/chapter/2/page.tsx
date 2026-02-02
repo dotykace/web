@@ -389,10 +389,10 @@ function Chapter2Content() {
         )
     },[inputValue, timeLeft, showWarning, currentInteraction, handleInputSave])
 
-    if (state === "loading") {
+    if (state === "loading" || currentInteraction === "checkpoint") {
         return (
             <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-                <div className="text-white text-xl">Načítavam Chapter 2...</div>
+                <div className="text-white text-xl">Načítavam...</div>
             </div>
         )
     }
@@ -503,7 +503,7 @@ export default function Chapter2() {
     const { state, currentInteraction, goToNextInteraction, handleUserInput, handleChoiceSelection } =
       useInteractions("chapter2-flow", savedProgress.currentInteractionId)
     return (
-      <ChatProvider handleUserInput={handleUserInput} handleChoiceSelection={handleChoiceSelection} currentInteraction={currentInteraction} goToNextInteraction={goToNextInteraction}>
+      <ChatProvider state={state} handleUserInput={handleUserInput} handleChoiceSelection={handleChoiceSelection} currentInteraction={currentInteraction} goToNextInteraction={goToNextInteraction}>
           <AudioWrapper>
               <HelpButton />
               <Chapter2Content />
