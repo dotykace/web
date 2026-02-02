@@ -159,6 +159,7 @@ export default function MenuPage() {
   const handleSectionClick = (section: Section) => {
     const currentState = getState(section.id)
     if (currentState !== "locked") {
+      audioManager.stop("menu-background")
       router.push(section.path)
     }
   }
