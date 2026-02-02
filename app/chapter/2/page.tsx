@@ -499,8 +499,9 @@ function Chapter2Content() {
 
 
 export default function Chapter2() {
+    const savedProgress = readFromStorage(CHAPTER2_PROGRESS_KEY)
     const { state, currentInteraction, goToNextInteraction, handleUserInput, handleChoiceSelection } =
-      useInteractions("chapter2-flow")
+      useInteractions("chapter2-flow", savedProgress.currentInteractionId)
     return (
       <ChatProvider handleUserInput={handleUserInput} handleChoiceSelection={handleChoiceSelection} currentInteraction={currentInteraction} goToNextInteraction={goToNextInteraction}>
           <AudioWrapper>
