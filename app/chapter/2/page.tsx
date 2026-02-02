@@ -284,7 +284,7 @@ function Chapter2Content() {
     }, [hasStartedExperience, audioInitialized, initializeAudio])
 
     const handleInputSave = useCallback(
-        async (interaction: Interaction) => {
+        async (interaction: ProcessedInteraction) => {
             if (countdownIntervalRef.current) {
                 clearInterval(countdownIntervalRef.current)
                 countdownIntervalRef.current = null
@@ -292,7 +292,7 @@ function Chapter2Content() {
 
             if (inputValue.trim()) {
                 await saveToFirestore(inputValue, currentInteraction.id)
-                if (interaction.label?.includes("Když držíš můj mobil")) {
+                if (interaction.id === "pairs-text-field") {
                     setSavedUserMessage(inputValue)
                 }
             }

@@ -68,16 +68,15 @@
     "7.2": {
       "type": "voice",
       "filename": "track9.mp3",
-      "next-id": "7.11"
+      "next-id": "pairs-text-field"
     },
-    "7.11": {
+    "pairs-text-field": {
       "type": "input",
       "text": "Když držíš můj mobil...",
       "duration": 40,
       "save-label": "Uložit",
       "warning-after": 20,
       "warning-text": "Ještě máš na psaní 20 vteřin.",
-      "countdown-last": 10,
       "next-id": "7.12"
     },
     "7.12": {
