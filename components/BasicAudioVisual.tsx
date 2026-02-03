@@ -6,7 +6,7 @@ import {useSharedAudio} from "@/context/AudioContext";
 import SkipButton from "@/components/SkipButton";
 import AudioControl from "@/components/AudioControl";
 
-export default function BasicAudioVisual({ audio=null, id, children, coloring = "bg-white/10", canSkip}: {children?: React.ReactNode, coloring?: string, canSkip?:boolean}) {
+export default function BasicAudioVisual({ audio=null, id, children, coloring = "bg-white/10", canSkip=true}: {children?: React.ReactNode, coloring?: string, canSkip?:boolean}) {
 
   const {playOnce, stop, toggleOnce, isPlaying} = useSharedAudio()
   React.useEffect(() => {
