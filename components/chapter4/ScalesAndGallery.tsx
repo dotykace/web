@@ -8,7 +8,7 @@ import CountDownInput from "@/components/CountDownInput";
 import {useRouter} from "next/navigation";
 import useDB from "@/hooks/use-db";
 import FullScreenVideo from "@/components/FullScreenVideo";
-import {readFromStorage} from "@/scripts/local-storage";
+import {readFromStorage, setToStorage} from "@/scripts/local-storage";
 
 const coloring = "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900";
 export default function ScalesAndGallery() {
@@ -65,7 +65,19 @@ function ScalesAndGalleryContent(){
   const router = useRouter();
   const finishChapter = (finalResponse) => {
     console.log("Final response:", finalResponse);
-    dbHook.updateChapter(4, () => router.push("/video")).then()
+    dbHook.canShowVideo().then(
+      (canShow) => {
+        const showVideo = canShow;
+        console.log("Can show video:", showVideo);
+        if (showVideo){
+          dbHook.updateChapter(4, () => router.push("/video")).then()
+        }
+        else {
+          setToStorage("dotykaceFinished", true)
+          dbHook.updateChapter(4, () => router.push("/dotykace")).then()
+        }
+      }
+    )
   }
 
   if (currentInteraction.id === "scales") return <Scales currentInteraction={currentInteraction} onComplete={collectData} />;

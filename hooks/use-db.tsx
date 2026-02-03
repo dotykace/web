@@ -1,5 +1,5 @@
 import {readFromStorage, setToStorage} from "@/scripts/local-storage";
-import {doc, runTransaction} from "firebase/firestore";
+import {doc, getDoc, runTransaction} from "firebase/firestore";
 import {db} from "@/lib/firebase";
 import {DotykaceParticipant} from "@/lib/dotykace-types";
 
@@ -17,6 +17,14 @@ export default function useDB() {
   if (!participantRef) {
     console.warn("Participant reference could not be created.")
     return undefined;
+  }
+
+  const canShowVideo = async () => {
+    // todo get this from room settings in firestore
+    const roomRef = doc(db, "rooms", roomId)
+    const snapshot = await getDoc(roomRef)
+    console.log("Checking if video can be shown for room:", roomId)
+    return snapshot.data()?.showVideo || false
   }
 
   const updatePlayerData = async (updateCallback: (oldData: DotykaceParticipant) => Partial<DotykaceParticipant>, onFinish: () => void) => {
@@ -67,5 +75,5 @@ export default function useDB() {
     }, ()=>{})
   }
 
-  return {updateVoice, updateChapter, participantRef}
+  return {updateVoice, updateChapter, participantRef, canShowVideo}
 }

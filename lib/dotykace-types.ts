@@ -15,6 +15,7 @@ export interface DotykaceRoom {
     adminId: string
     isActive: boolean
     isStarted: boolean
+    showVideo: boolean
     createdAt: Timestamp | Date
     chapterPermissions?: ChapterPermissions
     globalUnlockedChapters?: number[] // Nové pole pre sledovanie globálne odomknutých kapitol
