@@ -3,14 +3,8 @@
   "name": "Introduction",
   "description": "Introduction sequence before main menu",
   "version": "1.0.0",
-  "startInteractionId": "1",
+  "startInteractionId": "username-input",
   "interactions": {
-    "1": {
-      "type": "message",
-      "duration": 9,
-      "next-id": "username-input",
-      "text": "Ahoj, já jsem appka. Jsem kus softwaru, víš jak: 0-1-1-0-0-1...\n"
-    },
     "username-input": {
       "type": "input",
       "duration": 15,
@@ -60,11 +54,11 @@
       "text": "Teď s tebou chci ale řešit to, co spolu my dva zažíváme, ok?",
       "choices": [
         {
-          "type": "Hraju",
+          "label": "Hraju",
           "next-id": "game-confirm_a"
         },
         {
-          "type": "O co jde?",
+          "label": "O co jde?",
           "next-id": "10b"
         }
       ]
@@ -87,7 +81,7 @@
       "text": "Připoj ke mně sluchátka, ať se nepřekřikujeme s ostatními.",
       "choices": [
           {
-          "type": "Mám sluchátka v uších",
+          "label": "Mám sluchátka v uších",
           "next-id": "first-sound-test_a"
           }
       ]
@@ -104,11 +98,11 @@
       "text": "Slyšíš, jak šeptám?",
       "choices": [
         {
-          "type": "Ano!",
+          "label": "Ano!",
           "next-id": "botname-input"
         },
         {
-          "type": "Neslyším nic...",
+          "label": "Neslyším nic...",
           "next-id": "sound-test"
         }
       ]
@@ -125,11 +119,11 @@
       "text": "Zkontroluj hlasitost a připojení a zkus to znovu.",
       "choices": [
         {
-          "type": "Zkouška",
+          "label": "Zkouška",
           "next-id": "sound-test_a"
         },
         {
-          "type": "Slyším!",
+          "label": "Slyším!",
           "next-id": "botname-input"
         }
       ]
@@ -153,11 +147,11 @@
       "text": "Můžeš si vybrat:",
       "choices": [
         {
-          "type": "Hraju",
+          "label": "Hraju",
           "next-id": "game-confirm_a"
         },
         {
-          "type": "Videa",
+          "label": "Videa",
           "next-id": "videos"
         }
       ]
@@ -190,7 +184,7 @@
       "text": "Tak co, jdeš do toho?",
       "choices": [
         {
-          "type": "Hraju",
+          "label": "Hraju",
           "next-id": "game-confirm_a"
         }
       ]

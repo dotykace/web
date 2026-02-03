@@ -19,6 +19,7 @@ export default function CreateRoom({adminId}) {
         id: roomCode,
         name: newRoomName.trim(),
         adminId,
+        showVideo: false,
         isActive: true,
         isStarted: false,
         createdAt: new Date(),

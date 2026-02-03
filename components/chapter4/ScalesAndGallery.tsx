@@ -1,12 +1,14 @@
 import {useChatContext} from "@/context/ChatContext";
 import Scales from "@/components/chapter4/Scales";
 import Gallery from "@/components/chapter4/Gallery";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import BasicAudioVisual from "@/components/BasicAudioVisual";
 import AudioWrapper from "@/components/audio/AudioWrapper";
 import CountDownInput from "@/components/CountDownInput";
 import {useRouter} from "next/navigation";
 import useDB from "@/hooks/use-db";
+import FullScreenVideo from "@/components/FullScreenVideo";
+import {readFromStorage, setToStorage} from "@/scripts/local-storage";
 
 const coloring = "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900";
 export default function ScalesAndGallery() {
@@ -63,11 +65,29 @@ function ScalesAndGalleryContent(){
   const router = useRouter();
   const finishChapter = (finalResponse) => {
     console.log("Final response:", finalResponse);
-    dbHook.updateChapter(4, () => router.push("/video")).then()
+    dbHook.canShowVideo().then(
+      (canShow) => {
+        const showVideo = canShow;
+        console.log("Can show video:", showVideo);
+        if (showVideo){
+          dbHook.updateChapter(4, () => router.push("/video")).then()
+        }
+        else {
+          setToStorage("dotykaceFinished", true)
+          dbHook.updateChapter(4, () => router.push("/dotykace")).then()
+        }
+      }
+    )
   }
 
   if (currentInteraction.id === "scales") return <Scales currentInteraction={currentInteraction} onComplete={collectData} />;
   else {
+    if (currentInteraction.type == "video"){
+      const selectedVoice = readFromStorage("selectedVoice") || "male";
+      if (currentInteraction){
+        return (<FullScreenVideo videoSrc={`${selectedVoice}/painter.mp4`} onEnded={()=> goToNextInteraction()} />)
+      }
+    }
     if (currentInteraction.type === "voice"){
       const audio = {
         filename: currentInteraction.filename,

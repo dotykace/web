@@ -1,6 +1,8 @@
 import {useEffect, useState} from "react";
 import ScaleTemplate from "@/components/chapter4/ScaleTemplate";
 import {useSharedAudio} from "@/context/AudioContext";
+import AudioControl from "@/components/AudioControl";
+import {PlayOnceOptions} from "@/hooks/use-audio";
 
 const classifyData = (number) => {
   if (number >= 67) return 1; // high
@@ -29,7 +31,7 @@ export default function Scales({currentInteraction, onComplete}) {
   const [data, setData] = useState({});
   const [dataCollected, setDataCollected] = useState(false);
 
-  const { playOnce, isPlaying, stop } = useSharedAudio();
+  const { playOnce, toggleOnce, isPlaying, stop } = useSharedAudio();
 
   useEffect(() => {
     if(dataCollected){
@@ -45,6 +47,7 @@ export default function Scales({currentInteraction, onComplete}) {
 
   const scalesObject = currentInteraction.scales;
   const [currentScale, setCurrentScale] = useState(scalesObject["A"]);
+  const [currentAudio, setCurrentAudio] = useState<PlayOnceOptions>();
 
   const updateData = (key, value) => {
     setData(prev => ({
@@ -68,27 +71,43 @@ export default function Scales({currentInteraction, onComplete}) {
     if (!currentScale) return;
     if (currentScale.voice){
       if(isPlaying[currentScale.voice]) return;
-      const audio = {
+      const audio : PlayOnceOptions = {
         filename: currentScale.voice as string,
         type: "voice",
         onFinish: () => {
           console.log("Played sound for scales:", currentScale.voice);
         }
       }
-      playOnce(audio);
+      setCurrentAudio(audio);
     }
   }, [currentScale]);
+
+  useEffect(() => {
+    if (currentAudio){
+      playOnce(currentAudio);
+    }
+  }, [currentAudio, playOnce]);
 
   if (!currentScale) return null;
 
   return (
-    <ScaleTemplate
-      topText={currentScale.top}
-      bottomText={currentScale.bottom}
-      onConfirm={updateScale}
-      // todo bring it back when audio on Iphone plays correctly
-      //disabled={isPlaying[currentScale.voice]}
-      confirmationText={!(currentScale.next) ? "Potvrdit a dokončit" : undefined}
-    />
+    <div>
+      <AudioControl
+        onClick={() => {
+          if (currentAudio){
+            toggleOnce(currentAudio)
+          }
+        }}
+        audioEnabled={isPlaying[currentAudio?.filename] || false}
+        disabled={!currentAudio}
+      />
+      <ScaleTemplate
+        topText={currentScale.top}
+        bottomText={currentScale.bottom}
+        onConfirm={updateScale}
+        confirmationText={!(currentScale.next) ? "Potvrdit a dokončit" : undefined}
+      />
+    </div>
+
   )
 }

@@ -1,0 +1,164 @@
+{
+  "id": "chapter2-flow",
+  "startInteractionId": "chapter-2-start",
+  "interactions": {
+    "chapter-2-start": {
+      "type": "checkpoint",
+      "duration": 0,
+      "next-id": "2.1"
+    },
+    "2.1": {
+      "type": "voice",
+      "filename": "track1.mp3",
+      "next-id": "2.2"
+    },
+    "2.2": {
+      "type": "multiple-choice",
+      "text": "Je divný, že to říkám?",
+      "choices": [
+        {
+          "label": "Je to divný!",
+          "next-id": "2.2a"
+        },
+        {
+          "label": "Ne, proč?",
+          "next-id": "2.2b"
+        }
+      ],
+      "duration": 10
+    },
+    "2.2a": {
+      "type": "voice",
+      "filename": "track2a.mp3",
+      "next-id": "3.3"
+    },
+    "2.2b": {
+      "type": "voice",
+      "filename": "track2b.mp3",
+      "next-id": "3.3"
+    },
+    "3.3": {
+      "type": "voice",
+      "filename": "track3.mp3",
+      "next-id": "4.2"
+    },
+    "4.2": {
+      "type": "voice",
+      "filename": "track4-6.mp3",
+      "next-id": "7.0"
+    },
+    "7.0": {
+      "type": "voice",
+      "filename": "track7_loop.mp3",
+      "loop": true,
+      "button": {
+        "label": "Pokračovat",
+        "next-id": "7.1"
+      }
+    },
+    "7.1": {
+      "type": "voice",
+      "filename": "track8_loop.mp3",
+      "loop": true,
+      "button": {
+        "label": "Pokračovat",
+        "next-id": "7.2"
+      }
+    },
+    "7.2": {
+      "type": "voice",
+      "filename": "track9.mp3",
+      "next-id": "pairs-text-field"
+    },
+    "pairs-text-field": {
+      "type": "input",
+      "text": "Když držíš můj mobil...",
+      "duration": 40,
+      "save-label": "Uložit",
+      "warning-after": 20,
+      "warning-text": "Ještě máš na psaní 20 vteřin.",
+      "next-id": "7.12"
+    },
+    "7.12": {
+      "type": "voice",
+      "filename": "track11_loop.mp3",
+      "loop": true,
+      "button": {
+        "label": "Zase spolu!",
+        "next-id": "7.13"
+      }
+    },
+    "7.13": {
+      "type": "voice",
+      "filename": "track12.mp3",
+      "next-id": "8.0"
+    },
+    "8.0": {
+      "type": "multiple-choice",
+      "text": "Možná mám pro tebe nějaký vzkaz. Chceš se podívat?",
+      "duration": 4,
+      "choices": [
+        {
+          "label": "Zobrazit vzkaz",
+          "next-id": "8.1"
+        },
+        {
+          "label": "Třeba později",
+          "next-id": "8.2"
+        }
+      ]
+    },
+    "8.1": {
+      "type": "message",
+      "text": "Když držíš můj mobil...",
+      "duration": 2,
+      "next-id": "8.1a"
+    },
+    "8.1a": {
+      "type": "show-message",
+      "source": "saved-user-message",
+      "duration": 10,
+      "next-id": "8.3"
+    },
+    "8.2": {
+      "type": "message",
+      "text": "Jak chceš.",
+      "duration": 2,
+      "next-id": "8.3"
+    },
+    "8.3": {
+      "type": "voice",
+      "filename": "track13_loop.mp3",
+      "loop": true,
+      "button": {
+        "label": "Pokračuj",
+        "next-id": "9.2"
+      }
+    },
+    "9.2": {
+      "type": "voice",
+      "filename": "track14.mp3",
+      "next-id": "9.7"
+    },
+    "9.7": {
+      "type": "input",
+      "text": "Mám o tebe strach, když...",
+      "save-label": "Uložiť",
+      "waiting-label": "Čekám na ostatní",
+      "warning-after": 20,
+      "warning-text": "Ještě máš na psaní 20 vteřin.",
+      "countdown-last": 10,
+      "next-id": "9.8"
+    },
+    "9.8": {
+      "type": "message",
+      "text": "A máme hotových všech 5 kol. Dobrá práce!",
+      "duration": 6,
+      "next-id": "chapter-2-end"
+    },
+    "chapter-2-end": {
+      "type": "checkpoint",
+      "duration": 0
+    }
+  }
+}

@@ -7,9 +7,32 @@ import { deleteDoc, doc, Timestamp, updateDoc} from "firebase/firestore";
 import {db} from "@/lib/firebase";
 import ProgressTable from "@/components/admin/ProgressTable";
 import useParticipants from "@/hooks/use-participants";
+import {useEffect, useState} from "react";
+import {Switch} from "@/components/ui/switch";
 export const chapterList = [0, 1, 2, 3, 4, 5]
 export default function RenderRoom({room, processedRooms}) {
   const {participants} = useParticipants({room})
+  const [showVideo, setShowVideo] = useState(false)
+
+  const changeVideoSettings = async (showVideo: boolean) => {
+    const videoUnlocked = room.showVideo || false
+    if (showVideo && !videoUnlocked) {
+      await updateDoc(doc(db, "rooms", room.docId!), {
+        showVideo: true,
+      } as Partial<DotykaceRoom>)
+    }
+    else if (!showVideo && videoUnlocked) {
+      await updateDoc(doc(db, "rooms", room.docId!), {
+        showVideo: false,
+      } as Partial<DotykaceRoom>)
+    }
+  }
+
+  useEffect(() => {
+    changeVideoSettings(showVideo)
+  }, [showVideo]);
+
+
   // todo maybe remove this restriction?
   const canUnlockChapterForAll = (room: DotykaceRoom, chapter: number) => {
     return participants.some((p) => (p.completedChapters || []).includes(chapter - 1) || chapter === 1)
@@ -170,7 +193,12 @@ export default function RenderRoom({room, processedRooms}) {
               <span>{participants?.length || 0} účastníkov</span>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
+            <h3>Dopamin:</h3>
+            <Switch
+              checked={showVideo}
+              onCheckedChange={setShowVideo}
+            />
             <Button
               size="sm"
               onClick={() => startRoom(room.docId!)}

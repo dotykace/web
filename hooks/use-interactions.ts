@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { readFromStorage, setToStorage } from "@/scripts/local-storage"
 import useDB from "@/hooks/use-db";
 
-export function useInteractions<T>(filename: string) {
+export function useInteractions<T>(filename: string, progressId?: string) {
     const [interactions, setInteractions] = useState<InteractionRecord | null>(null)
     const [currentInteraction, setCurrentInteraction] = useState<ProcessedInteraction | null>(null)
     const [state, setState] = useState<"loading" | "initialized" | "error" | null>(null)
@@ -87,7 +87,7 @@ export function useInteractions<T>(filename: string) {
                 setInteractions(data.interactions)
                 console.log("Interactions set successfully")
 
-                const startOfChapter = data.startInteractionId || "1"
+                const startOfChapter = progressId?? (data.startInteractionId || "1")
                 const firstInteraction = data.interactions[startOfChapter]
                 if (firstInteraction) {
                     console.log("Found first interaction:", firstInteraction)

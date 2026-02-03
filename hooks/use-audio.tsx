@@ -23,8 +23,8 @@ interface SoundMapEntry {
   opts?: UseAudioManagerOptions;
 }
 
-interface PlayOnceOptions extends SoundMapEntry {
-  onFinish: () => void;
+export interface PlayOnceOptions extends SoundMapEntry {
+  onFinish?: () => void;
   type: "sound" | "voice";
 }
 
@@ -160,14 +160,18 @@ export function useAudioManager() {
       loop: opts?.loop ?? false,
       volume: opts?.volume ?? 1,
     }
+    const duration = buffer.duration;
+    const timeOut = setTimeout(() => {
+      console.log("Sound timeout reached, calling onFinish if exists");
+      if(onFinish) onFinish();
+    }, (duration - 0.1) * 1000);
     const {source, gainNode} = await play(sound);
     addToPlaying(filename, {source, gainNode});
     source.onended = () => {
       source.disconnect();
       gainNode.disconnect();
       removeFromPlaying(filename, {source, gainNode});
-
-      onFinish();
+      clearTimeout(timeOut);
     };
 
   },[play]);
@@ -188,27 +192,35 @@ export function useAudioManager() {
   }, []);
 
   // --- Toggle a sound
-  // todo toggle only work for preloaded sounds
-  // todo make sure to handle the case when sound is not preloaded
   const toggle = useCallback(
-    (key: string) => {
+    (key, onReplay) => {
       if (isPlaying[key]) {
+        console.log("Stopping", key);
         stop(key);
       } else {
         console.log("Toggling play for", key);
-        playPreloaded(key);
+        onReplay()
       }
     },
-    [isPlaying, playPreloaded, stop]
+    [isPlaying, stop]
   );
+
+  const togglePreloaded = (key: string) => {
+    toggle(key, () => playPreloaded(key));
+  }
+
+  const toggleOnce = (options: PlayOnceOptions) => {
+    toggle(options.filename, () => playOnce(options));
+  }
+
+  const stopAll = useCallback(() => {
+    Object.keys(playingRef.current).forEach(stop);
+  }, [stop]);
 
   // --- Cleanup on unmount
   useEffect(() => {
-    return () => {
-      Object.keys(playingRef.current).forEach(stop);
-      //audioContextRef.current?.close();
-    };
+    stopAll();
   }, [stop]);
 
-  return { preloadAll, playPreloaded, playOnce, stop, toggle, isPlaying };
+  return { preloadAll, playPreloaded, playOnce, stop, stopAll, togglePreloaded, toggleOnce, isPlaying };
 }

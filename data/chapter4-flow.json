@@ -61,8 +61,7 @@
       "next-id": "painter"
     },
     "painter": {
-      "type": "voice",
-      "filename": "track37.mp3",
+      "type": "video",
       "next-id": "gallery"
     },
     "gallery": {

@@ -6,9 +6,10 @@ import {GalleryModal} from "@/components/chapter4/GalleryModal";
 import SwipeComponent from "@/components/chapter4/SwipeComponent";
 import {setToStorage} from "@/scripts/local-storage";
 import {useSharedAudio} from "@/context/AudioContext";
+import AudioControl from "@/components/AudioControl";
 
 export default function Gallery({images, helpText, onFinish, audio}) {
-  const { playOnce, stop } = useSharedAudio();
+  const { playOnce, toggleOnce, isPlaying, stop } = useSharedAudio();
   const confirmText = "Potvrdit";
   const strings = images.slice(0, 5);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -96,9 +97,14 @@ export default function Gallery({images, helpText, onFinish, audio}) {
   }, []);
 
   return (
-    <div className="w-full h-screen p-6 flex bg-blue-100">
+    <div className="w-full h-screen p-6 flex bg-slate-950">
+      <AudioControl
+        onClick={() => toggleOnce(audio)}
+        audioEnabled={isPlaying[audio?.filename] || false}
+        disabled={!audio}
+      />
       {/* Grid gallery */}
-      <div className="grid grid-cols-2 grid-rows-3 gap-2">
+      <div className="grid grid-cols-2 grid-rows-3 gap-2 my-12">
         {strings.map((slot, i) => (
           <div key={i} className="relative w-full h-full rounded-xl overflow-hidden flex items-center justify-center">
             <Image
@@ -116,18 +122,16 @@ export default function Gallery({images, helpText, onFinish, audio}) {
           </div>
         ))}
         <div className="flex flex-col items-center justify-center">
-          <div className="flex items-center justify-center p-2 pb-6">
-                  <span className="font-semibold text-gray-800 text-sm sm:text-base">
-                    {helpText}
-                  </span>
-            <Hand className="w-5 h-5 text-gray-700 ml-2 flex-shrink-0" />
+          <div className="flex items-center justify-center p-4 pb-6">
+            <span className="font-semibold text-white text-sm sm:text-base">
+              {helpText}
+            </span>
           </div>
           <Button
             onClick={()=> {
               stop(audio.filename)
               setShowModal(true)
             }}
-            // todo maybe disable when audio is playing, but after Iphone audio is fixed ???
             disabled={selectedIndex === null}
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xl py-2 px-4 rounded-xl shadow-lg">
             {confirmText}
