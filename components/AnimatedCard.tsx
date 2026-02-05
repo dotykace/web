@@ -1,7 +1,22 @@
-import { AnimatePresence, motion } from "framer-motion"
-import SocialMediaPost from "@/components/SocialMediaPost"
+import { AnimatePresence, motion } from "framer-motion";
+import SocialMediaPost from "@/components/SocialMediaPost";
 
-export default function AnimatedCard({ currentCard, visible, dotyFace }) {
+interface CardData {
+  id?: string;
+  username?: string;
+  content?: string;
+  choices?: { text: string; callback: () => {} }[];
+}
+
+export default function AnimatedCard({
+  currentCard,
+  visible,
+  dotyFace,
+}: {
+  currentCard?: CardData;
+  visible: boolean;
+  dotyFace: string;
+}) {
   return (
     <div className="items-center flex justify-center">
       <AnimatePresence mode="wait">
@@ -36,13 +51,12 @@ export default function AnimatedCard({ currentCard, visible, dotyFace }) {
             <SocialMediaPost
               username={currentCard?.username}
               avatar={dotyFace}
-              content={currentCard?.content}
-              timestamp={currentCard?.title}
+              content={currentCard?.content || ""}
               choices={currentCard?.choices}
             />
           </motion.div>
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }

@@ -1,54 +1,59 @@
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
-import React, { useEffect, useState } from "react"
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import React, { useEffect, useState } from "react";
 
 export default function CountDownInput({
   onSave,
   questionText = "",
   buttonLabel = "Uložit",
   countdownSeconds = 15,
+}: {
+  onSave: (value: string) => void;
+  questionText?: string;
+  buttonLabel?: string;
+  countdownSeconds?: number;
 }) {
-  const [inputValue, setInputValue] = useState("")
-  const [timeLeft, setTimeLeft] = useState<number | null>(null)
+  const [inputValue, setInputValue] = useState("");
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
 
-  const timeLeftText = "Zustáva: "
-  const textAreaPlaceholder = "Napíš odpověď..."
+  const timeLeftText = "Zustáva: ";
+  const textAreaPlaceholder = "Napíš odpověď...";
 
   useEffect(() => {
-    if (!countdownSeconds || countdownSeconds <= 0) return
+    if (!countdownSeconds || countdownSeconds <= 0) return;
 
-    setTimeLeft(countdownSeconds)
+    setTimeLeft(countdownSeconds);
     const interval = setInterval(() => {
       setTimeLeft((prev) => {
-        if (prev === null) return null
-        if (prev <= 1) return 0
-        return prev - 1
-      })
-    }, 1000)
+        if (prev === null) return null;
+        if (prev <= 1) return 0;
+        return prev - 1;
+      });
+    }, 1000);
 
-    return () => clearInterval(interval)
-  }, [countdownSeconds])
+    return () => clearInterval(interval);
+  }, [countdownSeconds]);
 
   useEffect(() => {
     if (timeLeft === 0) {
-      onSave(inputValue)
-      setTimeLeft(null) // stop countdown
+      onSave(inputValue);
+      setTimeLeft(null); // stop countdown
     }
-  }, [timeLeft, inputValue, onSave])
+  }, [timeLeft, inputValue, onSave]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInputValue(e.target.value)
-  }
+    setInputValue(e.target.value);
+  };
 
   const handleInputSave = () => {
-    onSave(inputValue)
-    setTimeLeft(null)
-  }
+    onSave(inputValue);
+    setTimeLeft(null);
+  };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full">
       {questionText && (
-        <div className="text-white/90 text-lg font-medium text-center">
+        <div className="text-white text-lg font-medium text-center">
           {questionText}
         </div>
       )}
@@ -56,13 +61,13 @@ export default function CountDownInput({
         value={inputValue}
         onChange={handleInputChange}
         placeholder={textAreaPlaceholder}
-        className="bg-white/30 border-white/40 text-white placeholder:text-white/70 resize-none rounded-xl"
+        className="bg-white/10 border-2 border-white/30 text-white placeholder:text-white/50 resize-none rounded-2xl font-medium focus:border-white/50 focus:ring-white/20"
         rows={3}
       />
 
       {timeLeft !== null && (
         <div className="text-center">
-          <div className="text-white/90 text-sm font-medium">
+          <div className="text-white/90 text-sm font-bold">
             {timeLeftText}
             {Math.floor(timeLeft / 60)}:
             {(timeLeft % 60).toString().padStart(2, "0")}
@@ -72,11 +77,11 @@ export default function CountDownInput({
 
       <Button
         onClick={handleInputSave}
-        className="w-full bg-white/30 hover:bg-white/40 text-white border-white/40 rounded-xl font-medium"
+        className="w-full bg-white text-indigo-900 hover:bg-white/90 rounded-full font-bold shadow-lg disabled:bg-white/20 disabled:text-white/40 disabled:shadow-none"
         disabled={!inputValue.trim()}
       >
         {buttonLabel}
       </Button>
     </div>
-  )
+  );
 }

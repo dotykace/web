@@ -1,27 +1,33 @@
-import { AnimatePresence, motion } from "framer-motion"
-import { useState } from "react"
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
 
 export interface EmojiParams {
-  id: number
-  emoji: string
-  text: string
-  position: { x: number; y: number }
+  id: number;
+  emoji: string;
+  text: string;
+  position: { x: number; y: number };
 }
-export default function InteractiveEmoji({ emoji, clickCallback }) {
-  const [clicked, setClicked] = useState(false)
-  const [showText, setShowText] = useState(false)
+export default function InteractiveEmoji({
+  emoji,
+  clickCallback,
+}: {
+  emoji: EmojiParams;
+  clickCallback: (id: number) => void;
+}) {
+  const [clicked, setClicked] = useState(false);
+  const [showText, setShowText] = useState(false);
 
   const handleEmojiClick = (id: number) => {
     if (!clicked) {
-      setClicked(true)
-      clickCallback(id)
+      setClicked(true);
+      clickCallback(id);
     }
-    setShowText(true)
+    setShowText(true);
     // Auto-hide text after 3 seconds
     setTimeout(() => {
-      setShowText(false)
-    }, 3000)
-  }
+      setShowText(false);
+    }, 3000);
+  };
 
   return (
     <div>
@@ -101,5 +107,5 @@ export default function InteractiveEmoji({ emoji, clickCallback }) {
         </div>
       </motion.div>
     </div>
-  )
+  );
 }

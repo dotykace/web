@@ -1,23 +1,25 @@
-"use client"
+"use client";
 
-import { useState, useEffect, type ReactNode, JSX } from "react"
-import { motion, AnimatePresence, type Variants } from "framer-motion"
+import { useState, useEffect, type ReactNode, JSX } from "react";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 
 type AnimatedDotProps = {
-  isVisible: boolean
-  position: { x: number | string; y: number | string }
-  revealComponent: JSX.Element
-  onAnimationComplete?: () => void
-  dotSize?: number
-  dotColor?: string
-  glowColor?: string
+  isVisible: boolean;
+  position: { x: number | string; y: number | string };
+  revealComponent: JSX.Element;
+  onAnimationComplete?: () => void;
+  dotSize?: number;
+  glowSize?: number;
+  dotColor?: string;
+  glowColor?: string;
   animationDuration?: {
-    grow?: number
-    pulse?: number
-    reveal?: number
-  }
-  className?: string
-}
+    grow?: number;
+    pulse?: number;
+    reveal?: number;
+    expand?: number;
+  };
+  className?: string;
+};
 
 export default function AnimatedDot({
   isVisible = false,
@@ -38,33 +40,33 @@ export default function AnimatedDot({
 }: AnimatedDotProps) {
   const [state, setState] = useState<
     "disabled" | "growing" | "pulsing" | "expanding" | "revealed"
-  >("disabled")
+  >("disabled");
 
   useEffect(() => {
     if (isVisible && state === "disabled") {
-      setState("growing")
+      setState("growing");
     } else if (!isVisible && state !== "disabled") {
-      setState("disabled")
+      setState("disabled");
     }
-  }, [isVisible, state])
+  }, [isVisible, state]);
 
   const handleClick = () => {
     if (state === "pulsing") {
-      setState("expanding")
+      setState("expanding");
       if (onAnimationComplete) {
-        onAnimationComplete()
+        onAnimationComplete();
       }
       setTimeout(() => {
-        setState("revealed")
-      }, animationDuration.expand) // Start revealing when glow is 30% expanded
+        setState("revealed");
+      }, (animationDuration?.expand || 1) * 1000); // Start revealing when glow is 30% expanded
     }
-  }
+  };
 
   const handleExpandComplete = () => {
     setTimeout(() => {
-      setState("revealed")
-    }, animationDuration.reveal * 1000)
-  }
+      setState("revealed");
+    }, (animationDuration?.reveal || 0.5) * 1000);
+  };
   const dotVariants: Variants = {
     disabled: {
       scale: 0,
@@ -74,7 +76,7 @@ export default function AnimatedDot({
       scale: 1,
       opacity: 1,
       transition: {
-        duration: animationDuration.grow,
+        duration: animationDuration?.grow || 0.5,
         ease: "easeIn",
       },
     },
@@ -92,7 +94,7 @@ export default function AnimatedDot({
         duration: 0.3,
       },
     },
-  }
+  };
 
   const glowVariants: Variants = {
     hidden: {
@@ -103,7 +105,7 @@ export default function AnimatedDot({
       opacity: [0, 0.6, 0],
       scale: [1, 2, 1],
       transition: {
-        duration: animationDuration.pulse,
+        duration: animationDuration?.pulse || 2,
         repeat: Number.POSITIVE_INFINITY,
         repeatType: "loop",
       },
@@ -112,7 +114,7 @@ export default function AnimatedDot({
       opacity: 0.8,
       scale: 100, // Scale up to cover the screen
       transition: {
-        duration: animationDuration.expand,
+        duration: animationDuration?.expand || 1,
         ease: "easeOut",
       },
     },
@@ -120,17 +122,10 @@ export default function AnimatedDot({
       opacity: 0,
       transition: {
         duration: 0.5,
-        delay: animationDuration.reveal * 0.7, // Start fading out when component is mostly revealed
-      },
-      exit: {
-        opacity: 0,
-        scale: 0,
-        transition: {
-          duration: 0.3,
-        },
+        delay: (animationDuration?.reveal || 0.5) * 0.7, // Start fading out when component is mostly revealed
       },
     },
-  }
+  };
 
   const revealVariants: Variants = {
     hidden: {
@@ -141,11 +136,11 @@ export default function AnimatedDot({
       opacity: 1,
       scale: 1,
       transition: {
-        duration: animationDuration.reveal,
+        duration: animationDuration?.reveal || 0.5,
         ease: "easeInOut",
       },
     },
-  }
+  };
 
   return (
     <div
@@ -181,7 +176,7 @@ export default function AnimatedDot({
                 }}
                 onAnimationComplete={(definition) => {
                   if (definition === "expanding") {
-                    handleExpandComplete()
+                    handleExpandComplete();
                   }
                 }}
               />
@@ -205,7 +200,7 @@ export default function AnimatedDot({
               onClick={handleClick}
               onAnimationComplete={(definition) => {
                 if (definition === "growing") {
-                  setState("pulsing")
+                  setState("pulsing");
                 }
               }}
             />
@@ -224,5 +219,5 @@ export default function AnimatedDot({
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }
