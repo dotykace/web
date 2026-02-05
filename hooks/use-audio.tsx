@@ -59,9 +59,6 @@ export function useAudioManager() {
   }
 
   const removeFromPlaying = (key: string, instance: PlayingInstance) => {
-    // Guard against undefined (can happen if stopAll was called)
-    if (!playingRef.current[key]) return;
-    
     playingRef.current[key] = playingRef.current[key].filter(
       (inst) => inst.source !== instance.source
     );
@@ -184,42 +181,14 @@ export function useAudioManager() {
     const instances = playingRef.current[key];
     if (!instances) return;
 
-    instances.forEach((instance) => {
-      // Mark as manually stopped so onended doesn't call onFinish
-      instance.manuallyStopped = true;
-      try {
-        instance.source.stop();
-        instance.source.disconnect();
-        instance.gainNode.disconnect();
-      } catch (e) {
-        // Ignore errors if already stopped
-      }
+    instances.forEach(({ source, gainNode }) => {
+      source.stop();
+      source.disconnect();
+      gainNode.disconnect();
     });
 
     playingRef.current[key] = [];
     setIsPlaying((prev) => ({ ...prev, [key]: false }));
-  }, []);
-
-  // --- Stop ALL currently playing sounds
-  const stopAll = useCallback(() => {
-    Object.keys(playingRef.current).forEach((key) => {
-      const instances = playingRef.current[key];
-      if (!instances) return;
-
-      instances.forEach((instance) => {
-        instance.manuallyStopped = true;
-        try {
-          instance.source.stop();
-          instance.source.disconnect();
-          instance.gainNode.disconnect();
-        } catch (e) {
-          // Ignore errors if already stopped
-        }
-      });
-    });
-
-    playingRef.current = {};
-    setIsPlaying({});
   }, []);
 
   // --- Toggle a sound
@@ -253,5 +222,5 @@ export function useAudioManager() {
     stopAll();
   }, [stop]);
 
-  return { preloadAll, playPreloaded, playOnce, stop, stopAll, toggle, isPlaying };
+  return { preloadAll, playPreloaded, playOnce, stop, stopAll, togglePreloaded, toggleOnce, isPlaying };
 }
