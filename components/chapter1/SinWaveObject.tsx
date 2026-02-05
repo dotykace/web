@@ -1,7 +1,7 @@
 "use client";
 
-import {AnimatePresence, motion, useAnimationFrame} from "framer-motion";
-import { useEffect, useState } from "react";
+import { AnimatePresence, motion, useAnimationFrame } from "framer-motion";
+import React, { useEffect, useState } from "react";
 
 interface SineWaveObjectProps {
   periods?: number; // Number of sine wave periods
@@ -11,8 +11,8 @@ interface SineWaveObjectProps {
   endYPercent?: number; // End Y position as percentage of height
   offset?: number; // Offset to account for circle size
   startX?: number; // Starting X position
-  animatedObject?: JSX.Element; // The object to animate (e.g., a div with styles)
-  object: JSX.Element; // The object to animate (e.g., a div with styles)
+  animatedObject?: React.ReactElement; // The object to animate (e.g., a div with styles)
+  object: React.ReactElement; // The object to animate (e.g., a div with styles)
   onFinish?: () => void; // Callback when animation finishes
 }
 export default function SineWaveObject(props: SineWaveObjectProps) {
@@ -23,10 +23,10 @@ export default function SineWaveObject(props: SineWaveObjectProps) {
     periods = 3,
     margin = 50,
     speed = 0.0035,
-    endXPercent,
-    endYPercent,
-    offset,
-    startX,
+    endXPercent = 0.5,
+    endYPercent = 0.5,
+    offset = 0,
+    startX = 0,
   } = props;
 
   const isFinished = progress >= 1;
@@ -73,7 +73,7 @@ export default function SineWaveObject(props: SineWaveObjectProps) {
   return (
     <AnimatePresence mode={"wait"}>
       <div className="relative w-full h-screen overflow-hidden">
-        {isFinished?(
+        {isFinished ? (
           <motion.div
             className="absolute"
             style={{
@@ -82,7 +82,7 @@ export default function SineWaveObject(props: SineWaveObjectProps) {
           >
             {props.object}
           </motion.div>
-        ):(
+        ) : (
           <motion.div
             key={"moving-object"}
             style={{ transform: `translate(${x}px, ${y}px)` }}

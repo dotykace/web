@@ -1,8 +1,15 @@
-import {AnimatePresence, motion} from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import React from "react";
 
-export default function ScreenTransition({firstScreen, secondScreen, showSecond}) {
-
+export default function ScreenTransition({
+  firstScreen,
+  secondScreen,
+  showSecond,
+}: {
+  firstScreen: React.ReactNode;
+  secondScreen: React.ReactNode;
+  showSecond: boolean;
+}) {
   return (
     <div className="relative h-screen overflow-hidden">
       <AnimatePresence mode="sync">
@@ -12,8 +19,8 @@ export default function ScreenTransition({firstScreen, secondScreen, showSecond}
             className="absolute inset-0"
             initial={{ y: 0 }}
             animate={{ y: 0 }}
-            exit={{ y: '-100%' }}
-            transition={{ duration: 1, ease: 'easeInOut' }}
+            exit={{ y: "-100%" }}
+            transition={{ duration: 1, ease: "easeInOut" }}
           >
             {firstScreen}
           </motion.div>
@@ -21,10 +28,10 @@ export default function ScreenTransition({firstScreen, secondScreen, showSecond}
           <motion.div
             key="second"
             className="absolute inset-0"
-            initial={{ y: '100%' }}
+            initial={{ y: "100%" }}
             animate={{ y: 0 }}
-            exit={{ y: '-100%' }}
-            transition={{ duration: 1, ease: 'easeInOut' }}
+            exit={{ y: "-100%" }}
+            transition={{ duration: 1, ease: "easeInOut" }}
           >
             {secondScreen}
           </motion.div>
