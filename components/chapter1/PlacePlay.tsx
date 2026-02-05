@@ -1,21 +1,28 @@
-import Place from "@/components/chapter1/Place"
-import CustomPlay from "@/components/chapter1/CustomPlay"
-import React, { useEffect, useState } from "react"
-import { LocalSvgRenderer } from "@/components/LocalSvgRenderer"
-import MobileNotification from "@/components/mobile-notification"
-import EmojiList from "@/components/EmojiList"
+import Place from "@/components/chapter1/Place";
+import CustomPlay from "@/components/chapter1/CustomPlay";
+import React, { useEffect, useState } from "react";
+import { LocalSvgRenderer } from "@/components/LocalSvgRenderer";
+import MobileNotification from "@/components/mobile-notification";
+import EmojiList from "@/components/EmojiList";
+import type { ProcessedInteraction } from "@/interactions";
 
-export default function PlacePlay({ current, goToNext }) {
-  const dotPosition = { start: 100 }
+export default function PlacePlay({
+  current,
+  goToNext,
+}: {
+  current: ProcessedInteraction;
+  goToNext: (nextId?: string) => void;
+}) {
+  const dotPosition = { x: 0.5, y: 0.5, offset: 20, start: 100 };
 
-  const PREDEFINED_EMOJIS = ["🍽", "️😋", "🤤", "🥴", "🤢", "☠️"]
-  const [animatingEmoji, setAnimatingEmoji] = useState<string | null>(null)
-  const [isAnimating, setIsAnimating] = useState(false)
-  const [placeVisible, setPlaceVisible] = useState(true)
+  const PREDEFINED_EMOJIS = ["🍽", "️😋", "🤤", "🥴", "🤢", "☠️"];
+  const [animatingEmoji, setAnimatingEmoji] = useState<string | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [placeVisible, setPlaceVisible] = useState(true);
 
   const notificationProps = {
     id: current.id,
-    title: "New Message",
+    title: "Nová zpráva",
     message: current?.text() ?? "",
     icon: (
       <LocalSvgRenderer
@@ -23,32 +30,32 @@ export default function PlacePlay({ current, goToNext }) {
         className="w-8 h-8"
       />
     ),
-  }
+  };
 
-  const [showNotification, setShowNotification] = useState(false)
+  const [showNotification, setShowNotification] = useState(false);
 
   useEffect(() => {
-    if (!current) return
+    if (!current) return;
     if (current.id === "input-place-2") {
-      setShowNotification(true)
-      return
+      setShowNotification(true);
+      return;
     }
-  }, [current])
+  }, [current]);
 
   const handleEmojiClick = (emoji: string) => {
-    setPlaceVisible(false)
-    setAnimatingEmoji(emoji)
-    setIsAnimating(true)
-    setShowNotification(false)
-    setPlaceVisible(false)
+    setPlaceVisible(false);
+    setAnimatingEmoji(emoji);
+    setIsAnimating(true);
+    setShowNotification(false);
+    setPlaceVisible(false);
 
     // Reset animation after completion
     setTimeout(() => {
-      setIsAnimating(false)
-      setAnimatingEmoji(null)
-      goToNext("place-3")
-    }, 1500)
-  }
+      setIsAnimating(false);
+      setAnimatingEmoji(null);
+      goToNext("place-3");
+    }, 1500);
+  };
 
   return (
     <>
@@ -76,7 +83,7 @@ export default function PlacePlay({ current, goToNext }) {
         {...notificationProps}
         isOpen={showNotification}
         onClose={() => {
-          setShowNotification(false)
+          setShowNotification(false);
         }}
         duration={current?.duration * 1000}
         content={() => (
@@ -116,5 +123,5 @@ export default function PlacePlay({ current, goToNext }) {
         }
       `}</style>
     </>
-  )
+  );
 }

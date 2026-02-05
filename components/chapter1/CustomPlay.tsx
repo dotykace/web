@@ -1,48 +1,49 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { AnimatePresence, motion } from "framer-motion"
-import { Pause, Play } from "lucide-react"
-import { useSharedAudio } from "@/context/AudioContext"
-import Image from "next/image"
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Pause, Play } from "lucide-react";
+import { useSharedAudio } from "@/context/AudioContext";
 
-export default function CustomPlay({ onClick }) {
-  const [showLogos, setShowLogos] = useState(false)
-  const [logos, setLogos] = useState<[{}]>([])
+export default function CustomPlay({ onClick }: { onClick: () => void }) {
+  const [showLogos, setShowLogos] = useState(false);
+  const [logos, setLogos] = useState<
+    { id: number; text: string; position: { x: number; y: number } }[]
+  >([]);
 
-  const logoData = ["Facebook", "Instagram", "TikTok", "YouTube"]
+  const logoData = ["Facebook", "Instagram", "TikTok", "YouTube"];
 
   const generateLogoList = () => {
-    const radius = 110
-    const angleStep = Math.PI / (logoData.length + 1)
+    const radius = 110;
+    const angleStep = Math.PI / (logoData.length + 1);
 
     const newEmojis = logoData.map((data, index) => {
-      const angle = Math.PI + angleStep * (index + 1) // Left hemisphere angles
-      const x = Math.cos(angle) * radius
-      const y = Math.sin(angle) * radius
+      const angle = Math.PI + angleStep * (index + 1); // Left hemisphere angles
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius;
 
       return {
         id: index,
         text: data,
         position: { x, y },
-      }
-    })
-    setLogos(newEmojis)
-  }
+      };
+    });
+    setLogos(newEmojis);
+  };
 
-  const { playPreloaded } = useSharedAudio()
+  const { playPreloaded } = useSharedAudio();
 
   const handleClick = () => {
-    generateLogoList()
+    generateLogoList();
     if (!showLogos) {
       if (onClick) {
         playPreloaded("chaos").then(() => {
-          onClick()
-        })
+          onClick();
+        });
       }
     }
-    setShowLogos((prevState) => !prevState)
-  }
+    setShowLogos((prevState) => !prevState);
+  };
 
   return (
     <div>
@@ -87,7 +88,7 @@ export default function CustomPlay({ onClick }) {
                   }}
                   className="absolute top-0 left-0 "
                 >
-                  <Image
+                  <img
                     src={"/logos/" + emoji.text + "_logo.svg"}
                     alt={"My Icon " + emoji.text}
                     className="w-20 h-20"
@@ -98,5 +99,5 @@ export default function CustomPlay({ onClick }) {
           ))}
       </AnimatePresence>
     </div>
-  )
+  );
 }
