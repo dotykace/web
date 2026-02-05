@@ -3,7 +3,6 @@ import { createContext, useContext, ReactNode } from "react"
 import { Choice } from "@/interactions"
 
 type ChatContextType = {
-  state: "loading" | "initialized" | "error" | null
   handleUserInput: (input: string) => void
   handleChoiceSelection: (choice: Choice) => void
   currentInteraction: any // Define this type based on your interaction structure
@@ -18,8 +17,7 @@ export const ChatProvider = ({
   handleChoiceSelection,
   currentInteraction,
   goToNextInteraction,
-  state,
-}) => {
+}: ChatContextType & { children: ReactNode }) => {
   return (
     <ChatContext.Provider
       value={{
@@ -27,7 +25,6 @@ export const ChatProvider = ({
         handleChoiceSelection,
         currentInteraction,
         goToNextInteraction,
-        state,
       }}
     >
       {children}

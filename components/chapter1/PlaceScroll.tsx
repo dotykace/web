@@ -4,11 +4,18 @@ import { setToStorage } from "@/scripts/local-storage"
 import ScrollableCards from "@/components/ScrollableCard"
 import Place from "@/components/chapter1/Place"
 import { useSharedAudio } from "@/context/AudioContext"
+import type { ProcessedInteraction } from "@/interactions"
 
-export default function PlaceScroll({ current, goToNext }) {
+export default function PlaceScroll({
+  current,
+  goToNext,
+}: {
+  current: ProcessedInteraction
+  goToNext: (nextId?: string) => void
+}) {
   const [showBackToChat, setShowBackToChat] = useState(false)
 
-  const dotPosition = { start: 200 }
+  const dotPosition = { x: 0.5, y: 0.5, offset: 20, start: 200 }
 
   const { stop } = useSharedAudio()
 
@@ -29,13 +36,13 @@ export default function PlaceScroll({ current, goToNext }) {
     }
   }, [current, goToNext])
 
-  const choiceCallback = (option, choice) => {
+  const choiceCallback = (option: string, choice?: string) => {
     if (option === "compare") {
       setShowBackToChat(true)
       goToNext("back-to-chat")
       return
     }
-    if (option === "choice") {
+    if (option === "choice" && choice) {
       setToStorage("finger-choice", choice)
       goToNext("finger-compare")
     }

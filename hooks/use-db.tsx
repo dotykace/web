@@ -50,24 +50,30 @@ export default function useDB() {
     }
   }
 
-  const updateChapter = async (chapterNumber: number, onFinish) => {
-    await updatePlayerData((oldData) => {
-      const completedChapters = new Set(oldData.completedChapters || [])
-      completedChapters.add(chapterNumber)
-      const arrayFromSet = Array.from(completedChapters).sort((a, b) => a - b)
-      const currentChapter = Math.min(chapterNumber + 1, 4)
+  const updateChapter = async (
+    chapterNumber: number,
+    onFinish?: () => void,
+  ) => {
+    await updatePlayerData(
+      (oldData) => {
+        const completedChapters = new Set(oldData.completedChapters || [])
+        completedChapters.add(chapterNumber)
+        const arrayFromSet = Array.from(completedChapters).sort((a, b) => a - b)
+        const currentChapter = Math.min(chapterNumber + 1, 4)
 
-      setToStorage("completedChapters", arrayFromSet)
-      setToStorage("chapter", currentChapter)
-      console.log(
-        `Chapter ${chapterNumber} end interaction reached, setting chapter to ${currentChapter}`,
-      )
+        setToStorage("completedChapters", arrayFromSet)
+        setToStorage("chapter", currentChapter)
+        console.log(
+          `Chapter ${chapterNumber} end interaction reached, setting chapter to ${currentChapter}`,
+        )
 
-      return {
-        completedChapters: arrayFromSet,
-        currentChapter: currentChapter,
-      }
-    }, onFinish)
+        return {
+          completedChapters: arrayFromSet,
+          currentChapter: currentChapter,
+        }
+      },
+      onFinish || (() => {}),
+    )
   }
   const updateVoice = async (newVoice: string) => {
     await updatePlayerData(
@@ -84,5 +90,29 @@ export default function useDB() {
     )
   }
 
-  return { updateVoice, updateChapter, participantRef, canShowVideo }
+  const saveChapterData = async (
+    chapterNumber: number,
+    chapterResponses: Record<string, string>,
+  ) => {
+    await updatePlayerData(
+      (oldData) => {
+        const existingResponses = oldData.responses || {}
+        return {
+          responses: {
+            ...existingResponses,
+            [`chapter${chapterNumber}`]: chapterResponses,
+          },
+        } as Partial<DotykaceParticipant>
+      },
+      () => {},
+    )
+  }
+
+  return {
+    updateVoice,
+    updateChapter,
+    participantRef,
+    canShowVideo,
+    saveChapterData,
+  }
 }

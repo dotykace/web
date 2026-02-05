@@ -68,13 +68,13 @@ export default function ChatOverlay() {
 
   const notificationProps = {
     id: currentInteraction.id,
-    title: "New Message",
+    title: "Nová zpráva",
     message: currentInteraction?.text() ?? "",
     icon: <LocalSvgRenderer filename={dotyFace} className="w-8 h-8" />,
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50">
+    <div className="fixed inset-0 bg-gradient-to-br from-sky-500/80 via-blue-600/80 to-indigo-700/80 backdrop-blur-md z-50">
       <HelpButton />
       <MobileNotification
         {...notificationProps}

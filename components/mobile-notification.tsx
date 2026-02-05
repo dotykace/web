@@ -20,8 +20,8 @@ interface NotificationProps {
 
 export default function MobileNotification({
   id = "basic-notification",
-  title = "New Notification",
-  message = "You have a new message",
+  title = "Nová notifikace",
+  message = "Máte novou zprávu",
   icon = <Bell className="h-6 w-6 text-primary" />,
   duration = 5000,
   onClose,
@@ -31,7 +31,7 @@ export default function MobileNotification({
   const [showQuickReply, setShowQuickReply] = useState(false)
 
   useEffect(() => {
-    let timer: number
+    let timer: ReturnType<typeof setTimeout>
 
     if (isOpen && duration > 0) {
       timer = setTimeout(() => {
@@ -66,23 +66,19 @@ export default function MobileNotification({
               damping: 40,
               mass: 1,
             }}
-            className=" absolute top-0 bg-white dark:bg-gray-800 w-full max-w-sm mt-4 rounded-xl shadow-lg pointer-events-auto border border-gray-200 dark:border-gray-700 overflow-hidden"
+            className="absolute top-0 bg-white/95 backdrop-blur-sm w-full max-w-sm mt-4 rounded-2xl shadow-xl pointer-events-auto border border-amber-200/50 overflow-hidden"
           >
             <div className="p-4">
               <div className="flex items-start">
                 <div className="flex-shrink-0 mr-3">{icon}</div>
                 <div className="flex-1 pt-0.5">
                   <div className="flex-row flex justify-between">
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    <p className="text-sm font-semibold text-gray-900">
                       {title}
                     </p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">
-                      {timestapm}
-                    </p>
+                    <p className="text-xs text-amber-600">{timestapm}</p>
                   </div>
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    {message}
-                  </p>
+                  <p className="mt-1 text-sm text-gray-700">{message}</p>
                   {content && (
                     <QuickReplyButton
                       onClick={() => setShowQuickReply(!showQuickReply)}
@@ -94,7 +90,7 @@ export default function MobileNotification({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="ml-1 h-5 w-5 p-0 dark:text-white"
+                    className="ml-1 h-5 w-5 p-0 text-gray-500 hover:text-amber-600 hover:bg-amber-100 rounded-full transition-colors"
                     onClick={onClose}
                   >
                     <X className="h-3 w-3" />
@@ -102,7 +98,7 @@ export default function MobileNotification({
                 )}
               </div>
               {content && showQuickReply && (
-                <div className="p-2 border-t border-gray-200 dark:border-gray-700">
+                <div className="p-2 border-t border-amber-200/50">
                   {content()}
                 </div>
               )}
@@ -114,21 +110,27 @@ export default function MobileNotification({
   )
 }
 
-function QuickReplyButton({ onClick, isActive }) {
+function QuickReplyButton({
+  onClick,
+  isActive,
+}: {
+  onClick: () => void
+  isActive: boolean
+}) {
   return (
     <motion.button
-      initial={{ boxShadow: "0 0 0px rgba(59,130,246,0)" }}
+      initial={{ boxShadow: "0 0 0px rgba(251,191,36,0)" }}
       animate={
         isActive
           ? {
               boxShadow: [
-                "0 0 0px rgba(59,130,246,0)",
-                "0 0 15px rgba(59,130,246,0.8)",
-                "0 0 0px rgba(59,130,246,0)",
+                "0 0 0px rgba(251,191,36,0)",
+                "0 0 15px rgba(251,191,36,0.8)",
+                "0 0 0px rgba(251,191,36,0)",
               ],
             }
           : {
-              boxShadow: "0 0 0px rgba(59,130,246,0)",
+              boxShadow: "0 0 0px rgba(251,191,36,0)",
             }
       }
       transition={
@@ -141,7 +143,9 @@ function QuickReplyButton({ onClick, isActive }) {
           : { duration: 0.3 }
       }
       onClick={onClick}
-      className={"my-2 rounded-xl h-8 px-3 text-xs bg-blue-900 text-white"}
+      className={
+        "my-2 rounded-full h-8 px-4 text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-gray-900 transition-colors"
+      }
     >
       Quick Reply
     </motion.button>

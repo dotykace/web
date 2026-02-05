@@ -19,7 +19,11 @@ const sampleVoices = [
   },
 ]
 
-export default function VoiceRoom({ onFinish }) {
+export default function VoiceRoom({
+  onFinish,
+}: {
+  onFinish: (voice: string) => void
+}) {
   const [selectedVoice, setSelectedVoice] = useState<string>("male")
   const { playPreloaded, isPlaying, togglePreloaded, stop, playOnce } =
     useSharedAudio()
@@ -57,14 +61,14 @@ export default function VoiceRoom({ onFinish }) {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-4">
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-slate-900 to-gray-950 p-4">
       <div className="w-full max-w-2xl space-y-8">
         {/* Title */}
         <div className="text-center space-y-3">
-          <h1 className="text-4xl md:text-5xl font-bold text-white text-balance">
+          <h1 className="text-4xl md:text-5xl font-bold text-white text-balance drop-shadow-lg">
             Jak na tebe mám mluvit?
           </h1>
-          <p className="text-zinc-400 text-lg">
+          <p className="text-white/80 text-lg">
             Vyber si hlas, který ti nejvíce vyhovuje
           </p>
         </div>
@@ -79,7 +83,11 @@ export default function VoiceRoom({ onFinish }) {
                 <VoiceItem
                   key={voice.id}
                   disabled={disabled}
-                  voice={voice}
+                  voice={{
+                    id: voice.id,
+                    name: voice.name,
+                    audioKey: voice.audioKey || "",
+                  }}
                   isSelected={selectedVoice === voice.id}
                   isPlaying={disabled ? false : isPlaying[voice.audioKey]}
                   onToggle={() => {
@@ -104,7 +112,7 @@ export default function VoiceRoom({ onFinish }) {
             disabled={disableSelection}
             onClick={playTrackZero}
             size="lg"
-            className="px-12 py-6 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-lg shadow-blue-600/30 transition-all hover:shadow-blue-600/50 hover:scale-105"
+            className="px-12 py-6 text-lg font-semibold bg-amber-500 hover:bg-amber-600 text-gray-900 rounded-full shadow-lg shadow-amber-500/30 transition-all hover:shadow-amber-500/50 hover:scale-105"
           >
             Pokračovat
           </Button>

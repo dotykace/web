@@ -7,6 +7,11 @@ export default function Place({
   onAnimationEnd,
   onReveal,
   children,
+}: {
+  dotPosition: { x: number; y: number; offset: number; start: number }
+  onAnimationEnd: () => void
+  onReveal: () => void
+  children: () => React.ReactNode
 }) {
   const sinWaveProps = {
     endXPercent: dotPosition.x ?? 0.5,
@@ -27,7 +32,7 @@ export default function Place({
       style={{ backgroundColor: "white" }}
     />
   )
-  const object = <GlowingDot onClick={handleReveal} visible={true} size={40} />
+  const object = <GlowingDot onClick={handleReveal} size={40} color="white" />
   return (
     <SineWaveObject
       speed={0.007}

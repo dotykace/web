@@ -1,17 +1,20 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
-import VoicePicker from "@/components/VoicePicker"
 import Modal from "@/components/Modal"
 
-export function GalleryModal({ isOpen, onClose }) {
-  const closeModal = (save) => {
+export function GalleryModal({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean
+  onClose: (save: boolean) => void
+}) {
+  const closeModal = (save: boolean) => {
     if (save) {
       return onClose(true)
     }
-    onClose()
+    onClose(false)
   }
 
   const title = "Chceš si obrázek stáhnout do telefonu?"
@@ -36,6 +39,11 @@ export function GalleryModal({ isOpen, onClose }) {
   )
 
   return (
-    <Modal isOpen={isOpen} onClose={closeModal} title={title} footer={footer} />
+    <Modal
+      isOpen={isOpen}
+      onClose={() => closeModal(false)}
+      title={title}
+      footer={footer}
+    />
   )
 }

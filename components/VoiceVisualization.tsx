@@ -13,7 +13,7 @@ export default function VoiceVisualization({
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
-            className={`absolute rounded-full bg-gradient-to-r from-orange-400/20 to-pink-400/20 animate-pulse`}
+            className={`absolute rounded-full bg-white/10 animate-pulse`}
             style={{
               width: `${60 + i * 20}px`,
               height: `${60 + i * 20}px`,
@@ -36,18 +36,20 @@ export default function VoiceVisualization({
             height={96}
             src="/images/phone-character-simple.png"
             alt="Phone Character"
+            width={96}
+            height={96}
             className="w-24 h-24 drop-shadow-lg"
           />
           {/* Animated rings around character */}
           {isActive && (
             <>
-              <div className="absolute inset-0 rounded-full border-2 border-orange-300/50 animate-ping" />
+              <div className="absolute inset-0 rounded-full border-2 border-white/50 animate-ping" />
               <div
-                className="absolute inset-0 rounded-full border-2 border-pink-300/50 animate-ping"
+                className="absolute inset-0 rounded-full border-2 border-white/40 animate-ping"
                 style={{ animationDelay: "0.5s" }}
               />
               <div
-                className="absolute inset-0 rounded-full border-2 border-yellow-300/50 animate-ping"
+                className="absolute inset-0 rounded-full border-2 border-white/30 animate-ping"
                 style={{ animationDelay: "1s" }}
               />
             </>
@@ -59,7 +61,7 @@ export default function VoiceVisualization({
             {[...Array(3)].map((_, i) => (
               <div
                 key={i}
-                className="absolute w-2 bg-gradient-to-r from-orange-400 to-pink-400 rounded-full animate-pulse"
+                className="absolute w-2 bg-white/70 rounded-full animate-pulse"
                 style={{
                   height: `${20 + i * 8}px`,
                   right: `${i * 8}px`,

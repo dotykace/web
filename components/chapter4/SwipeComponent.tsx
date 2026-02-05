@@ -1,23 +1,28 @@
 "use client"
-import { useState } from "react"
+import React, { useState } from "react"
 
 export default function SwipeComponent({
   onSwipeLeft,
   onSwipeRight,
   children,
   className,
+}: {
+  onSwipeLeft: () => void
+  onSwipeRight: () => void
+  children: React.ReactNode
+  className?: string
 }) {
-  const [touchStart, setTouchStart] = useState(null)
-  const [touchEnd, setTouchEnd] = useState(null)
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [touchEnd, setTouchEnd] = useState<number | null>(null)
 
   const minSwipeDistance = 50 // minimum swipe distance in pixels
 
-  const handleTouchStart = (e) => {
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     setTouchEnd(null) // reset previous touch
     setTouchStart(e.targetTouches[0].clientX)
   }
 
-  const handleTouchMove = (e) => {
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
     setTouchEnd(e.targetTouches[0].clientX)
   }
 
@@ -36,7 +41,7 @@ export default function SwipeComponent({
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      className={"w-full h-full " + className ?? ""}
+      className={`w-full h-full ${className ?? ""}`}
     >
       {children}
     </div>

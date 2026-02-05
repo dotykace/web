@@ -24,7 +24,7 @@ export default function InputArea({
       )
     case "multiple-choice":
       return (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-3 justify-center">
           {currentInteraction.choices?.map((choice, index) =>
             ButtonElement ? (
               ButtonElement(choice)
@@ -32,7 +32,8 @@ export default function InputArea({
               <button
                 key={index}
                 onClick={() => handleChoiceSelection(choice)}
-                className="bg-purple-300 hover:bg-white-400 transition-colors py-2 px-4 rounded text-black font-medium flex-1"
+                className="active:scale-95 transition-all py-3 px-6 rounded-full text-white font-semibold shadow-lg hover:shadow-xl"
+                style={{ backgroundColor: "#0EA5E9" }}
               >
                 {choice.label}
               </button>
