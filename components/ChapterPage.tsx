@@ -1,16 +1,17 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { readFromStorage } from "@/scripts/local-storage"
-import { useInteractions } from "@/hooks/use-interactions"
-import { redirect, usePathname } from "next/navigation"
-import LoadingScreen from "@/components/LoadingScreen"
-import { ChatProvider } from "@/context/ChatContext"
+import type React from "react";
+import { useState, useEffect } from "react";
+import { readFromStorage } from "@/scripts/local-storage";
+import { useInteractions } from "@/hooks/use-interactions";
+import { useRouter } from "next/navigation";
+import LoadingScreen from "@/components/LoadingScreen";
+import { ChatProvider } from "@/context/ChatContext";
 
 interface ChapterPageProps {
-  chapterNumber: number
-  interactionsFileName: string
-  ViewComponent: React.ComponentType<any>
+  chapterNumber: number;
+  interactionsFileName: string;
+  ViewComponent: React.ComponentType<any>;
 }
 
 export default function ChapterPage({
@@ -18,29 +19,42 @@ export default function ChapterPage({
   interactionsFileName,
   ViewComponent,
 }: ChapterPageProps) {
-  const chapter = readFromStorage("chapter") as number
+  const [chapterChecked, setChapterChecked] = useState(false);
+  const [hasValidChapter, setHasValidChapter] = useState(false);
+  const router = useRouter();
+
   const {
     state,
     currentInteraction,
     goToNextInteraction,
     handleUserInput,
     handleChoiceSelection,
-  } = useInteractions(interactionsFileName)
+  } = useInteractions(interactionsFileName);
 
-  const pathname = usePathname()
+  // Check localStorage for chapter on client-side only
+  useEffect(() => {
+    const storedChapter = readFromStorage("chapter");
+    // Chapter is valid if it exists (including 0)
+    const isValid = storedChapter !== undefined && storedChapter !== null;
 
-  if (chapter == undefined && pathname !== "/") {
-    console.log("Redirecting to root")
-    redirect("/")
-  }
-  // todo maybe get rid of current chapter altogether and just use completed vs unlocked chapters
-  // if (chapter && chapter !== chapterNumber && pathname !== "/menu") {
-  //   console.log("Redirecting to menu from chapter", chapter)
-  //   redirect("/menu")
-  // }
+    if (!isValid) {
+      console.log("No chapter found in localStorage, redirecting to root");
+      router.push("/");
+    } else {
+      setHasValidChapter(true);
+    }
+    setChapterChecked(true);
+  }, [router]);
 
-  if (!state || state === "loading" || !currentInteraction) {
-    return <LoadingScreen />
+  // Show loading while checking chapter or loading interactions
+  if (
+    !chapterChecked ||
+    !hasValidChapter ||
+    !state ||
+    state === "loading" ||
+    !currentInteraction
+  ) {
+    return <LoadingScreen />;
   }
 
   return (
@@ -52,5 +66,5 @@ export default function ChapterPage({
     >
       <ViewComponent />
     </ChatProvider>
-  )
+  );
 }
