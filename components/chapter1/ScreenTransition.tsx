@@ -1,10 +1,14 @@
-import { AnimatePresence, motion } from "framer-motion"
-import React from "react"
+import { AnimatePresence, motion } from "framer-motion";
+import React from "react";
 
 export default function ScreenTransition({
   firstScreen,
   secondScreen,
   showSecond,
+}: {
+  firstScreen: React.ReactNode;
+  secondScreen: React.ReactNode;
+  showSecond: boolean;
 }) {
   return (
     <div className="relative h-screen overflow-hidden">
@@ -34,5 +38,5 @@ export default function ScreenTransition({
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }
