@@ -1,15 +1,18 @@
-import Card from "@/components/Card";
-
-export default function LoadingScreen({message = "Načítání interakcí..."}) {
+export default function LoadingScreen({
+  message = "Načítavam...",
+  colorClass = "bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600",
+  spinnerAccent = "border-t-white"
+}: {
+  message?: string;
+  colorClass?: string;
+  spinnerAccent?: string;
+}) {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
-      <div className="w-full max-w-md mx-auto">
-        <Card>
-          <div className="p-6 text-center">
-            <div className="animate-pulse">{message}</div>
-          </div>
-        </Card>
+    <main className={`flex h-screen overflow-hidden flex-col items-center justify-center p-4 ${colorClass}`}>
+      <div className="flex flex-col items-center gap-4">
+        <div className={`w-12 h-12 border-4 border-white/30 ${spinnerAccent} rounded-full animate-spin`} />
+        <span className="text-white/80 font-medium">{message}</span>
       </div>
     </main>
-  )
+  );
 }
