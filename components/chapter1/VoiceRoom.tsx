@@ -17,10 +17,6 @@ const sampleVoices = [
     name: "Mužský hlas",
     audioKey: "voice-male",
   },
-  {
-    id: "neutral",
-    name: "Neutrální hlas",
-  },
 ];
 
 export default function VoiceRoom({
@@ -65,7 +61,7 @@ export default function VoiceRoom({
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600 p-4">
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-slate-900 to-gray-950 p-4">
       <div className="w-full max-w-2xl space-y-8">
         {/* Title */}
         <div className="text-center space-y-3">
@@ -81,8 +77,7 @@ export default function VoiceRoom({
         <div className="space-y-4">
           <RadioGroup value={selectedVoice} onValueChange={setSelectedVoice}>
             {sampleVoices.map((voice) => {
-              const disabled =
-                voice.audioKey === undefined || disableSelection;
+              const disabled = voice.audioKey === undefined || disableSelection;
 
               return (
                 <VoiceItem
