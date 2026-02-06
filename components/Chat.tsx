@@ -1,21 +1,21 @@
-import React, { useEffect, useRef, useState } from "react";
-import { MessageSquare } from "lucide-react";
-import UserInput from "@/components/UserInput";
-import { useChatContext } from "@/context/ChatContext";
-import MobileNotification from "@/components/mobile-notification";
-import { Interaction } from "@/interactions";
-import EmojiReactionButton from "@/components/EmojiReactions";
+import React, { useEffect, useRef, useState } from "react"
+import { MessageSquare } from "lucide-react"
+import UserInput from "@/components/UserInput"
+import { useChatContext } from "@/context/ChatContext"
+import MobileNotification from "@/components/mobile-notification"
+import { Interaction } from "@/interactions"
+import EmojiReactionButton from "@/components/EmojiReactions"
 
-import ChatOverlay from "@/components/ChatOverlay";
-import ChatBubble from "@/components/ChatBubble";
-import { LocalSvgRenderer } from "@/components/LocalSvgRenderer";
-import HelpButton from "@/components/HelpButton";
-import { useSharedAudio } from "@/context/AudioContext";
-import AudioWrapper from "@/components/audio/AudioWrapper";
-import ScreenTransition from "@/components/chapter1/ScreenTransition";
-import VoiceRoom from "@/components/chapter1/VoiceRoom";
-import { setToStorage } from "@/scripts/local-storage";
-import useDB from "@/hooks/use-db";
+import ChatOverlay from "@/components/ChatOverlay"
+import ChatBubble from "@/components/ChatBubble"
+import { LocalSvgRenderer } from "@/components/LocalSvgRenderer"
+import HelpButton from "@/components/HelpButton"
+import { useSharedAudio } from "@/context/AudioContext"
+import AudioWrapper from "@/components/audio/AudioWrapper"
+import ScreenTransition from "@/components/chapter1/ScreenTransition"
+import VoiceRoom from "@/components/chapter1/VoiceRoom"
+import { setToStorage } from "@/scripts/local-storage"
+import useDB from "@/hooks/use-db"
 
 const soundMap = {
   "overlay-on": { filename: "vykreslovanie TECKY.mp3" },
@@ -29,16 +29,16 @@ const soundMap = {
   "voice-male": { filename: "sample_muz.mp3" },
   "voice-female": { filename: "sample_zena.mp3" },
   "voice-loop": { filename: "SVET HLASOV.mp3", opts: { loop: true } },
-};
+}
 
 export default function Chat() {
-  const { currentInteraction, goToNextInteraction } = useChatContext();
-  const dbHook = useDB();
+  const { currentInteraction, goToNextInteraction } = useChatContext()
+  const dbHook = useDB()
   const finishChapter = (voice: string) => {
-    console.log("Selected voice:", voice);
-    setToStorage("selectedVoice", voice);
-    dbHook?.updateVoice(voice).then(() => goToNextInteraction());
-  };
+    console.log("Selected voice:", voice)
+    setToStorage("selectedVoice", voice)
+    dbHook?.updateVoice(voice).then(() => goToNextInteraction())
+  }
 
   return (
     <AudioWrapper soundMap={soundMap} setLoaded={() => {}}>
@@ -48,72 +48,72 @@ export default function Chat() {
         secondScreen={<VoiceRoom onFinish={finishChapter} />}
       />
     </AudioWrapper>
-  );
+  )
 }
 
 function ChatContent() {
-  const { currentInteraction, goToNextInteraction } = useChatContext();
-  const { playPreloaded } = useSharedAudio();
+  const { currentInteraction, goToNextInteraction } = useChatContext()
+  const { playPreloaded } = useSharedAudio()
 
-  const [dotyFace, setDotyFace] = useState("happy_1");
+  const [dotyFace, setDotyFace] = useState("happy_1")
 
-  const [mode, setMode] = useState<"default" | "overlay">("default");
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const [mode, setMode] = useState<"default" | "overlay">("default")
+  const messagesEndRef = useRef<HTMLDivElement | null>(null)
 
-  const { handleUserInput } = useChatContext();
-  const [showInput, setShowInput] = useState(false);
-  const [showEmojiReactions, setShowEmojiReactions] = useState(false);
+  const { handleUserInput } = useChatContext()
+  const [showInput, setShowInput] = useState(false)
+  const [showEmojiReactions, setShowEmojiReactions] = useState(false)
 
-  const [history, setHistory] = useState<Interaction[]>([]);
+  const [history, setHistory] = useState<Interaction[]>([])
 
   useEffect(() => {
-    if (!currentInteraction) return;
+    if (!currentInteraction) return
     if (currentInteraction.type === "music") {
-      playPreloaded(currentInteraction.key).then(() => goToNextInteraction());
-      return;
+      playPreloaded(currentInteraction.key).then(() => goToNextInteraction())
+      return
     }
     if (currentInteraction.type === "message") {
-      setHistory((prev) => [...prev, currentInteraction]);
-      playPreloaded("click");
+      setHistory((prev) => [...prev, currentInteraction])
+      playPreloaded("click")
     }
 
     if (currentInteraction.face && currentInteraction.face !== dotyFace) {
-      setDotyFace(currentInteraction.face);
+      setDotyFace(currentInteraction.face)
     }
     if (currentInteraction.id === "1.12") {
-      setShowEmojiReactions(true);
+      setShowEmojiReactions(true)
     }
     if (currentInteraction.type === "checkpoint") {
       if (currentInteraction.id === "overlay-on") {
-        setMode("overlay");
+        setMode("overlay")
       }
       if (currentInteraction.id === "overlay-off") {
-        console.log("Setting mode to default");
-        setMode("default");
+        console.log("Setting mode to default")
+        setMode("default")
       }
       if (currentInteraction?.id === "input-on") {
-        console.log("opening input");
-        setShowInput(true);
+        console.log("opening input")
+        setShowInput(true)
       }
     }
-  }, [currentInteraction]);
+  }, [currentInteraction])
 
   // Scroll to bottom when history updates
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [history]);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [history])
   const addUserInputToHistory = (input: string, type?: string) => {
     const userMessage: Interaction = {
       id: `user-${Date.now()}-${Math.random()}`, // FIXED: Ensure unique IDs
       type: "user-message",
       text: input,
       duration: 0,
-    };
-    setHistory((prev) => [...prev, userMessage]);
-  };
+    }
+    setHistory((prev) => [...prev, userMessage])
+  }
 
   if (!currentInteraction) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
 
   const notificationProps = {
@@ -121,7 +121,7 @@ function ChatContent() {
     title: "Nová zpráva",
     message: currentInteraction?.text() ?? "",
     icon: <MessageSquare className="h-6 w-6 text-white" />,
-  };
+  }
 
   return (
     <main className="h-screen overflow-hidden flex flex-col bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600">
@@ -162,7 +162,7 @@ function ChatContent() {
             {history.map((interaction, index) => {
               const isUserMessage =
                 (interaction.type as string) === "user-message" ||
-                (interaction.type as string) === "user-message-emoji";
+                (interaction.type as string) === "user-message-emoji"
               return (
                 <div
                   key={`${interaction.id}-${index}`}
@@ -177,7 +177,7 @@ function ChatContent() {
                     />
                   </div>
                 </div>
-              );
+              )
             })}
             <div ref={messagesEndRef} />
           </div>
@@ -191,18 +191,18 @@ function ChatContent() {
                 {showEmojiReactions ? (
                   <EmojiReactionButton
                     onSelect={(emoji: string) => {
-                      console.log("Selected emoji:", emoji);
-                      setShowEmojiReactions(false);
-                      addUserInputToHistory(emoji, "emoji");
-                      goToNextInteraction("1.03");
+                      console.log("Selected emoji:", emoji)
+                      setShowEmojiReactions(false)
+                      addUserInputToHistory(emoji, "emoji")
+                      goToNextInteraction("1.03")
                     }}
                   />
                 ) : (
                   <UserInput
                     onSubmit={(input) => {
-                      handleUserInput(input);
-                      addUserInputToHistory(input);
-                      console.log("User input submitted:", input);
+                      handleUserInput(input)
+                      addUserInputToHistory(input)
+                      console.log("User input submitted:", input)
                     }}
                     placeholder={"Napiš odpověď..."}
                     buttonText="Odeslat"
@@ -214,5 +214,5 @@ function ChatContent() {
         )}
       </div>
     </main>
-  );
+  )
 }

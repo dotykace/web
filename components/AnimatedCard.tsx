@@ -1,11 +1,11 @@
-import { AnimatePresence, motion } from "framer-motion";
-import SocialMediaPost from "@/components/SocialMediaPost";
+import { AnimatePresence, motion } from "framer-motion"
+import SocialMediaPost from "@/components/SocialMediaPost"
 
 interface CardData {
-  id?: string;
-  username?: string;
-  content?: string;
-  choices?: { text: string; callback: () => {} }[];
+  id?: string
+  username?: string
+  content?: string
+  choices?: { text: string; callback: () => {} }[]
 }
 
 export default function AnimatedCard({
@@ -13,9 +13,9 @@ export default function AnimatedCard({
   visible,
   dotyFace,
 }: {
-  currentCard?: CardData;
-  visible: boolean;
-  dotyFace: string;
+  currentCard?: CardData
+  visible: boolean
+  dotyFace: string
 }) {
   return (
     <div className="items-center flex justify-center">
@@ -58,5 +58,5 @@ export default function AnimatedCard({
         )}
       </AnimatePresence>
     </div>
-  );
+  )
 }

@@ -5,11 +5,17 @@ interface LocalSvgRendererProps {
   alt?: string
 }
 
-export function LocalSvgRenderer({ filename, size = 24, className = "", alt = "SVG Icon" }: LocalSvgRendererProps) {
+export function LocalSvgRenderer({
+  filename,
+  size = 24,
+  className = "",
+  alt = "SVG Icon",
+}: LocalSvgRendererProps) {
   // Construct the path to the SVG file
   const svgPath = `/images/doty/${filename}.svg`
 
   return (
+    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={svgPath || "/placeholder.svg"}
       alt={alt}

@@ -1,14 +1,14 @@
-import { motion, AnimatePresence } from "framer-motion";
-import React from "react";
+import { motion, AnimatePresence } from "framer-motion"
+import React from "react"
 
 export default function GlowingDot({
   onClick,
   size = 30,
   color = "white",
 }: {
-  onClick: () => void;
-  size: number;
-  color: string;
+  onClick: () => void
+  size: number
+  color: string
 }) {
   return (
     <AnimatePresence mode="wait">
@@ -66,5 +66,5 @@ export default function GlowingDot({
         ))}
       </motion.div>
     </AnimatePresence>
-  );
+  )
 }

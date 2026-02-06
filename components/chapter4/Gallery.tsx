@@ -1,18 +1,18 @@
-import Image from "next/image";
-import { Check, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import React, { useEffect, useState, useRef, useCallback } from "react";
-import { GalleryModal } from "@/components/chapter4/GalleryModal";
-import { setToStorage } from "@/scripts/local-storage";
-import { useSharedAudio } from "@/context/AudioContext";
-import AudioControl from "@/components/AudioControl";
-import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image"
+import { Check, Sparkles } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import React, { useEffect, useState, useRef, useCallback } from "react"
+import { GalleryModal } from "@/components/chapter4/GalleryModal"
+import { setToStorage } from "@/scripts/local-storage"
+import { useSharedAudio } from "@/context/AudioContext"
+import AudioControl from "@/components/AudioControl"
+import { motion, AnimatePresence } from "framer-motion"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   type CarouselApi,
-} from "@/components/ui/carousel";
+} from "@/components/ui/carousel"
 
 export default function Gallery({
   images,
@@ -20,55 +20,55 @@ export default function Gallery({
   onFinish,
   audio,
 }: {
-  images: string[];
-  helpText: string;
-  onFinish: (image: string) => void;
-  audio: { filename: string; type: "sound" | "voice"; onFinish: () => void };
+  images: string[]
+  helpText: string
+  onFinish: (image: string) => void
+  audio: { filename: string; type: "sound" | "voice"; onFinish: () => void }
 }) {
-  const { playOnce, toggleOnce, isPlaying, stop } = useSharedAudio();
-  const hasPlayedRef = useRef(false);
-  const strings = images.slice(0, 5);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [api, setApi] = useState<CarouselApi>();
-  const [showModal, setShowModal] = useState(false);
+  const { playOnce, toggleOnce, isPlaying, stop } = useSharedAudio()
+  const hasPlayedRef = useRef(false)
+  const strings = images.slice(0, 5)
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [api, setApi] = useState<CarouselApi>()
+  const [showModal, setShowModal] = useState(false)
 
   // Sync carousel with current index
   useEffect(() => {
-    if (!api) return;
+    if (!api) return
 
     api.on("select", () => {
-      setCurrentIndex(api.selectedScrollSnap());
-    });
-  }, [api]);
+      setCurrentIndex(api.selectedScrollSnap())
+    })
+  }, [api])
 
   const handleSelect = useCallback(() => {
-    setSelectedIndex((prev) => (prev === currentIndex ? null : currentIndex));
-  }, [currentIndex]);
+    setSelectedIndex((prev) => (prev === currentIndex ? null : currentIndex))
+  }, [currentIndex])
 
   const saveSelection = (download: boolean) => {
-    const selectedImage = strings[selectedIndex ?? 0];
+    const selectedImage = strings[selectedIndex ?? 0]
     if (download) {
-      const link = document.createElement("a");
-      link.href = selectedImage;
-      link.download = "Dotykace-Result.jpg";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const link = document.createElement("a")
+      link.href = selectedImage
+      link.download = "Dotykace-Result.jpg"
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
     }
-    setToStorage("gallerySelection", selectedImage);
+    setToStorage("gallerySelection", selectedImage)
     if (onFinish) {
-      onFinish(selectedImage);
+      onFinish(selectedImage)
     }
-    setShowModal(false);
-  };
+    setShowModal(false)
+  }
 
   useEffect(() => {
     if (!hasPlayedRef.current) {
-      hasPlayedRef.current = true;
-      playOnce(audio);
+      hasPlayedRef.current = true
+      playOnce(audio)
     }
-  }, [audio, playOnce]);
+  }, [audio, playOnce])
 
   return (
     <div className="w-full h-full overflow-hidden relative flex flex-col">
@@ -167,8 +167,8 @@ export default function Gallery({
                       selectedIndex === index
                         ? "ring-4 ring-white shadow-2xl"
                         : currentIndex === index
-                        ? "ring-2 ring-white/50"
-                        : "ring-1 ring-white/20 opacity-60 scale-95"
+                          ? "ring-2 ring-white/50"
+                          : "ring-1 ring-white/20 opacity-60 scale-95"
                     }`}
                     whileTap={{ scale: 0.98 }}
                     onClick={currentIndex === index ? handleSelect : undefined}
@@ -239,8 +239,8 @@ export default function Gallery({
                 currentIndex === i
                   ? "bg-white w-6"
                   : selectedIndex === i
-                  ? "bg-green-400 w-1.5"
-                  : "bg-white/30 w-1.5"
+                    ? "bg-green-400 w-1.5"
+                    : "bg-white/30 w-1.5"
               }`}
               whileHover={{ scale: 1.2 }}
               whileTap={{ scale: 0.9 }}
@@ -272,8 +272,8 @@ export default function Gallery({
           <motion.div className="flex-1" whileTap={{ scale: 0.98 }}>
             <Button
               onClick={() => {
-                stop(audio.filename);
-                setShowModal(true);
+                stop(audio.filename)
+                setShowModal(true)
               }}
               disabled={selectedIndex === null}
               className={`w-full py-2.5 text-sm font-bold rounded-full transition-all duration-300 ${
@@ -290,5 +290,5 @@ export default function Gallery({
 
       <GalleryModal isOpen={showModal} onClose={saveSelection} />
     </div>
-  );
+  )
 }

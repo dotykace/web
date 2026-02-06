@@ -160,7 +160,8 @@ body {
 
 .card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px -10px rgba(251, 146, 60, 0.25),
+  box-shadow:
+    0 20px 40px -10px rgba(251, 146, 60, 0.25),
     0 8px 16px -8px rgba(0, 0, 0, 0.1);
 }
 

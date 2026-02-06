@@ -1,32 +1,32 @@
-import { useChatContext } from "@/context/ChatContext";
-import Scales from "@/components/chapter4/Scales";
-import Gallery from "@/components/chapter4/Gallery";
-import React, { useState } from "react";
-import BasicAudioVisual from "@/components/BasicAudioVisual";
-import AudioWrapper from "@/components/audio/AudioWrapper";
-import CountDownInput from "@/components/CountDownInput";
-import { useRouter } from "next/navigation";
-import useDB from "@/hooks/use-db";
-import ChapterHeader from "@/components/ChapterHeader";
-import FullScreenVideo from "@/components/FullScreenVideo";
-import { readFromStorage, setToStorage } from "@/scripts/local-storage";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { useChatContext } from "@/context/ChatContext"
+import Scales from "@/components/chapter4/Scales"
+import Gallery from "@/components/chapter4/Gallery"
+import React, { useState } from "react"
+import BasicAudioVisual from "@/components/BasicAudioVisual"
+import AudioWrapper from "@/components/audio/AudioWrapper"
+import CountDownInput from "@/components/CountDownInput"
+import { useRouter } from "next/navigation"
+import useDB from "@/hooks/use-db"
+import ChapterHeader from "@/components/ChapterHeader"
+import FullScreenVideo from "@/components/FullScreenVideo"
+import { readFromStorage, setToStorage } from "@/scripts/local-storage"
+import { motion } from "framer-motion"
+import { Button } from "@/components/ui/button"
 
-const coloring = "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900";
+const coloring = "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900"
 
-const soundMap = {};
+const soundMap = {}
 
 interface Interpretation {
-  secondary: string;
-  percentage: number;
-  class: number;
-  combo?: string;
+  secondary: string
+  percentage: number
+  class: number
+  combo?: string
 }
 
 export default function ScalesAndGallery() {
-  const [hasStartedExperience, setHasStartedExperience] = useState(false);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [hasStartedExperience, setHasStartedExperience] = useState(false)
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false)
 
   if (!hasStartedExperience) {
     return (
@@ -101,7 +101,7 @@ export default function ScalesAndGallery() {
           </div>
         </motion.div>
       </div>
-    );
+    )
   }
 
   return (
@@ -113,87 +113,91 @@ export default function ScalesAndGallery() {
         </AudioWrapper>
       </div>
     </div>
-  );
+  )
 }
 
-function ScalesAndGalleryContent({ onVideoStateChange }: { onVideoStateChange?: (isPlaying: boolean) => void }) {
-  const { currentInteraction, goToNextInteraction } = useChatContext();
-  const [data, setData] = useState<Record<string, Interpretation> | null>(null);
-  const [interactionIndex, setInteractionIndex] = useState(0);
-  const dbHook = useDB();
-  const router = useRouter();
+function ScalesAndGalleryContent({
+  onVideoStateChange,
+}: {
+  onVideoStateChange?: (isPlaying: boolean) => void
+}) {
+  const { currentInteraction, goToNextInteraction } = useChatContext()
+  const [data, setData] = useState<Record<string, Interpretation> | null>(null)
+  const [interactionIndex, setInteractionIndex] = useState(0)
+  const dbHook = useDB()
+  const router = useRouter()
 
   // Notify parent when video state changes
   React.useEffect(() => {
-    const isVideo = currentInteraction?.type === "video";
-    onVideoStateChange?.(isVideo);
-  }, [currentInteraction?.type, onVideoStateChange]);
+    const isVideo = currentInteraction?.type === "video"
+    onVideoStateChange?.(isVideo)
+  }, [currentInteraction?.type, onVideoStateChange])
 
   // Track interaction progress
-  const totalSteps = 5; // Approximate: intro voice + scales + gallery + input
+  const totalSteps = 5 // Approximate: intro voice + scales + gallery + input
 
   const collectData = (data: Record<string, Interpretation>) => {
-    console.log("Collected data:", data);
-    setData(data);
-    setInteractionIndex((prev) => prev + 1);
-    goToNextInteraction();
-  };
+    console.log("Collected data:", data)
+    setData(data)
+    setInteractionIndex((prev) => prev + 1)
+    goToNextInteraction()
+  }
 
   const pickGalleryImages = (): string[] => {
-    if (!currentInteraction) return [];
-    if (!data) return [];
+    if (!currentInteraction) return []
+    if (!data) return []
     return Object.entries(data).map(
       ([key, value]) => `/images/scales/${key}/${value.combo}.jpg`,
-    );
-  };
+    )
+  }
 
-  if (!currentInteraction) return null;
+  if (!currentInteraction) return null
 
   // Calculate progress
   const progress = Math.min(
     100,
     Math.round(((interactionIndex + 1) / totalSteps) * 100),
-  );
+  )
 
   if (data) {
     if (currentInteraction.id === "gallery") {
-      const images = pickGalleryImages();
+      const images = pickGalleryImages()
       const audio = {
         filename: currentInteraction.voice as string,
         type: "voice" as const,
         onFinish: () => {
-          console.log("Played gallery audio:", currentInteraction.voice);
+          console.log("Played gallery audio:", currentInteraction.voice)
         },
-      };
+      }
       return (
         <Gallery
           images={images}
           helpText={currentInteraction.text()}
           onFinish={() => {
-            setInteractionIndex((prev) => prev + 1);
-            goToNextInteraction();
+            setInteractionIndex((prev) => prev + 1)
+            goToNextInteraction()
           }}
           audio={audio}
         />
-      );
+      )
     }
   }
 
   const finishChapter = (finalResponse: string) => {
-    console.log("Final response:", finalResponse);
+    console.log("Final response:", finalResponse)
     if (dbHook) {
       dbHook.canShowVideo().then((canShow) => {
-        const showVideo = canShow;
-        console.log("Can show video:", showVideo);
+        const showVideo = canShow
+        console.log("Can show video:", showVideo)
         if (showVideo) {
-          dbHook.updateChapter(4, () => router.push("/video")).then();
+          dbHook.updateChapter(4, () => router.push("/video")).then()
         } else {
-          setToStorage("dotykaceFinished", true);
-          dbHook.updateChapter(4, () => router.push("/dotykace")).then();
+          setToStorage("dotykaceFinished", true)
+          dbHook.updateChapter(4, () => router.push("/dotykace")).then()
         }
-      });
+      })
     }
-  };
+  }
 
   if (currentInteraction.id === "scales")
     return (
@@ -201,17 +205,17 @@ function ScalesAndGalleryContent({ onVideoStateChange }: { onVideoStateChange?: 
         currentInteraction={currentInteraction}
         onComplete={collectData}
       />
-    );
+    )
   else {
     if (currentInteraction.type === "video") {
-      const selectedVoice = readFromStorage("selectedVoice") || "male";
+      const selectedVoice = readFromStorage("selectedVoice") || "male"
       if (currentInteraction) {
         return (
           <FullScreenVideo
             videoSrc={`${selectedVoice}/painter.mp4`}
             onEnded={() => goToNextInteraction()}
           />
-        );
+        )
       }
     }
     if (currentInteraction.type === "voice") {
@@ -219,10 +223,10 @@ function ScalesAndGalleryContent({ onVideoStateChange }: { onVideoStateChange?: 
         filename: currentInteraction.filename as string,
         type: "voice" as const,
         onFinish: () => {
-          setInteractionIndex((prev) => prev + 1);
-          goToNextInteraction();
+          setInteractionIndex((prev) => prev + 1)
+          goToNextInteraction()
         },
-      };
+      }
       return (
         <BasicAudioVisual
           id={currentInteraction.id}
@@ -230,7 +234,7 @@ function ScalesAndGalleryContent({ onVideoStateChange }: { onVideoStateChange?: 
           audio={audio}
           progress={progress}
         />
-      );
+      )
     }
     if (currentInteraction.type === "input") {
       return (
@@ -246,7 +250,7 @@ function ScalesAndGalleryContent({ onVideoStateChange }: { onVideoStateChange?: 
             onSave={finishChapter}
           />
         </BasicAudioVisual>
-      );
+      )
     } else
       return (
         <BasicAudioVisual
@@ -255,6 +259,6 @@ function ScalesAndGalleryContent({ onVideoStateChange }: { onVideoStateChange?: 
           audio={null}
           progress={progress}
         />
-      );
+      )
   }
 }

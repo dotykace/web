@@ -3,9 +3,9 @@ import Chat from "@/components/Chat"
 import CardSequence from "@/components/CardSequence"
 import ChapterPage from "@/components/ChapterPage"
 import { notFound } from "next/navigation"
-import ScalesAndGallery from "@/components/chapter4/ScalesAndGallery";
-import {useState} from "react";
-import FullScreenVideo from "@/components/FullScreenVideo";
+import ScalesAndGallery from "@/components/chapter4/ScalesAndGallery"
+import { useState } from "react"
+import FullScreenVideo from "@/components/FullScreenVideo"
 
 // Chapter configuration
 export const chapterConfigs = {
@@ -52,13 +52,23 @@ export default function ChapterClient({ id }: ChapterClientProps) {
 
   // todo fallback for video
   // todo maybe mute it?
-  const [showVideo, setShowVideo] = useState(true);
-  if (showVideo){
-    if (id === "0"){
-      return (<FullScreenVideo videoSrc={"intro.mp4"}  onEnded={()=> setShowVideo(false)} />)
+  const [showVideo, setShowVideo] = useState(true)
+  if (showVideo) {
+    if (id === "0") {
+      return (
+        <FullScreenVideo
+          videoSrc={"intro.mp4"}
+          onEnded={() => setShowVideo(false)}
+        />
+      )
     }
-    if (id === "1"){
-      return (<FullScreenVideo videoSrc={"chapter1.mp4"}  onEnded={()=> setShowVideo(false)} />)
+    if (id === "1") {
+      return (
+        <FullScreenVideo
+          videoSrc={"chapter1.mp4"}
+          onEnded={() => setShowVideo(false)}
+        />
+      )
     }
   }
 

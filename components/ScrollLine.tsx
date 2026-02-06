@@ -1,14 +1,14 @@
 "use client"
 
 export default function ScrollLine() {
-
   return (
     <div className="flex items-center justify-center w-screen h-screen">
-      <div className="relative overflow-hidden rounded-full"
-           style={{
-             width: "15vw",
-             height: "66vh",
-           }}
+      <div
+        className="relative overflow-hidden rounded-full"
+        style={{
+          width: "15vw",
+          height: "66vh",
+        }}
       >
         {/* Background track */}
         <div className="absolute inset-0 bg-white/30 rounded-full"></div>
@@ -34,5 +34,5 @@ export default function ScrollLine() {
         }
       `}</style>
     </div>
-  );
+  )
 }

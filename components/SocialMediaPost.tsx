@@ -1,29 +1,26 @@
-import {Card, CardContent, CardHeader} from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import {LocalSvgRenderer} from "@/components/LocalSvgRenderer";
+import { LocalSvgRenderer } from "@/components/LocalSvgRenderer"
 
 interface SocialMediaPostProps {
   username?: string
   avatar: string
-  content: string,
-  choices?: {text: string, callback: () => {}} []
+  content: string
+  choices?: { text: string; callback: () => {} }[]
 }
 
 export default function SocialMediaPost({
-                                          username= "Mobil",
-                                          avatar,
-                                          content,
+  username = "Mobil",
+  avatar,
+  content,
   choices,
-                                        }: SocialMediaPostProps) {
-
+}: SocialMediaPostProps) {
   const timestamp = new Date().toLocaleTimeString([], {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+    hour: "2-digit",
+    minute: "2-digit",
+  })
   return (
-    <Card
-      className="m-5 h-full rounded-3xl transition-all duration-300 ring-1 ring-white/20 shadow-2xl backdrop-blur-md bg-white/10 border border-white/20"
-    >
+    <Card className="m-5 h-full rounded-3xl transition-all duration-300 ring-1 ring-white/20 shadow-2xl backdrop-blur-md bg-white/10 border border-white/20">
       <CardHeader className="pb-3">
         <div className="flex items-center space-x-4">
           <LocalSvgRenderer filename={avatar} className="w-12 h-12" />
@@ -36,7 +33,9 @@ export default function SocialMediaPost({
 
       <CardContent className="pt-0">
         <div className="mb-4">
-          <p className="text-lg leading-relaxed text-white font-light tracking-wide">{content}</p>
+          <p className="text-lg leading-relaxed text-white font-light tracking-wide">
+            {content}
+          </p>
           {choices && choices.length > 0 && (
             <div className="mt-6 flex flex-col space-y-3">
               {choices.map((choice, index) => (

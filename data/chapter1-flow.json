@@ -38,7 +38,7 @@
       "next-id": "input-on_a",
       "face": "wink"
     },
-    "input-on_a":{
+    "input-on_a": {
       "type": "music",
       "key": "input-on",
       "next-id": "input-on"
@@ -298,7 +298,7 @@
       "text": "Kterým prstem vlastně scrolluješ?",
       "face": "nerd"
     },
-    "finger-compare":{
+    "finger-compare": {
       "type": "card",
       "text": "Porovnej svůj scrollovací prst s tím samým na druhé ruce."
     },

@@ -1,10 +1,10 @@
-import { useRouter } from "next/navigation";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { DotykaceUser } from "@/lib/dotykace-types";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { useRouter } from "next/navigation"
+import { collection, getDocs, query, where } from "firebase/firestore"
+import { db } from "@/lib/firebase"
+import { DotykaceUser } from "@/lib/dotykace-types"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
 import {
   Form,
   FormControl,
@@ -12,25 +12,25 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { setToStorage } from "@/scripts/local-storage";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { setToStorage } from "@/scripts/local-storage"
 
 const adminFormSchema = z.object({
   username: z.string().min(1, "Používatelské jméno je povinné"),
   password: z.string().min(1, "Heslo je povinné"),
-});
+})
 
-type AdminFormValues = z.infer<typeof adminFormSchema>;
+type AdminFormValues = z.infer<typeof adminFormSchema>
 
 export default function AdminForm({
   setError,
 }: {
-  setError: (error: string) => void;
+  setError: (error: string) => void
 }) {
-  const router = useRouter();
+  const router = useRouter()
 
   const form = useForm<AdminFormValues>({
     resolver: zodResolver(adminFormSchema),
@@ -38,38 +38,38 @@ export default function AdminForm({
       username: "",
       password: "",
     },
-  });
+  })
 
-  const isLoading = form.formState.isSubmitting;
+  const isLoading = form.formState.isSubmitting
 
   const onSubmit = async (values: AdminFormValues) => {
-    setError("");
+    setError("")
 
     try {
-      const usersRef = collection(db, "admins");
-      const q = query(usersRef, where("username", "==", values.username));
-      const querySnapshot = await getDocs(q);
+      const usersRef = collection(db, "admins")
+      const q = query(usersRef, where("username", "==", values.username))
+      const querySnapshot = await getDocs(q)
 
       if (querySnapshot.empty) {
-        setError("Nesprávné přihlašovací údaje");
-        return;
+        setError("Nesprávné přihlašovací údaje")
+        return
       }
 
-      const userDoc = querySnapshot.docs[0];
-      const userData = userDoc.data() as DotykaceUser;
+      const userDoc = querySnapshot.docs[0]
+      const userData = userDoc.data() as DotykaceUser
 
       if (userData.password !== values.password || userData.role !== "admin") {
-        setError("Nesprávné přihlašovací údaje");
-        return;
+        setError("Nesprávné přihlašovací údaje")
+        return
       }
 
-      setToStorage("adminId", userDoc.id);
-      router.push("/dotykace/admin");
+      setToStorage("adminId", userDoc.id)
+      router.push("/dotykace/admin")
     } catch (err) {
-      setError("Chyba při přihlašování");
-      console.error("Login error:", err);
+      setError("Chyba při přihlašování")
+      console.error("Login error:", err)
     }
-  };
+  }
 
   return (
     <Form {...form}>
@@ -126,5 +126,5 @@ export default function AdminForm({
         </Button>
       </form>
     </Form>
-  );
+  )
 }

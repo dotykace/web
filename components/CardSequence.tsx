@@ -1,16 +1,16 @@
-"use client";
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState, useCallback } from "react";
-import { useChatContext } from "@/context/ChatContext";
-import { useAudioManager } from "@/hooks/use-audio";
-import { useRouter } from "next/navigation";
-import UserInput from "@/components/UserInput";
-import { readFromStorage, setToStorage } from "@/scripts/local-storage";
-import useDB from "@/hooks/use-db";
+"use client"
+import { AnimatePresence, motion } from "framer-motion"
+import { useEffect, useState, useCallback } from "react"
+import { useChatContext } from "@/context/ChatContext"
+import { useAudioManager } from "@/hooks/use-audio"
+import { useRouter } from "next/navigation"
+import UserInput from "@/components/UserInput"
+import { readFromStorage, setToStorage } from "@/scripts/local-storage"
+import useDB from "@/hooks/use-db"
 
-const MESSAGE_DELAY_MS = 200;
-const USER_RESPONSE_DISPLAY_MS = 1500; // Time to show user response before next card
-const MAX_VISIBLE_CARDS = 4;
+const MESSAGE_DELAY_MS = 200
+const USER_RESPONSE_DISPLAY_MS = 1500 // Time to show user response before next card
+const MAX_VISIBLE_CARDS = 4
 
 export default function CardSequence() {
   const {
@@ -18,17 +18,17 @@ export default function CardSequence() {
     goToNextInteraction,
     handleUserInput,
     handleChoiceSelection,
-  } = useChatContext();
-  const [history, setHistory] = useState<any[]>([]);
-  const [displayCount, setDisplayCount] = useState(0);
-  const { preloadAll, playPreloaded } = useAudioManager();
-  const router = useRouter();
-  const dbHook = useDB();
+  } = useChatContext()
+  const [history, setHistory] = useState<any[]>([])
+  const [displayCount, setDisplayCount] = useState(0)
+  const { preloadAll, playPreloaded } = useAudioManager()
+  const router = useRouter()
+  const dbHook = useDB()
 
   const soundMap = {
     "sound-test": { filename: "vykreslovanie TECKY.mp3" },
     "game-confirm": { filename: "JINGEL - pozitiv.mp3" },
-  };
+  }
 
   // Add user response to history and then call the original handler after delay
   const handleUserResponse = useCallback(
@@ -37,16 +37,16 @@ export default function CardSequence() {
         id: `user-response-${Date.now()}`,
         text: text,
         isUserResponse: true,
-      };
-      setHistory((prev) => [...prev, userMessage]);
-      setDisplayCount((prev) => prev + 1);
+      }
+      setHistory((prev) => [...prev, userMessage])
+      setDisplayCount((prev) => prev + 1)
       // Delay before moving to next interaction so user can see their response
       setTimeout(() => {
-        handleUserInput(text);
-      }, USER_RESPONSE_DISPLAY_MS);
+        handleUserInput(text)
+      }, USER_RESPONSE_DISPLAY_MS)
     },
-    [handleUserInput]
-  );
+    [handleUserInput],
+  )
 
   const handleChoiceResponse = useCallback(
     (choice: any) => {
@@ -54,118 +54,118 @@ export default function CardSequence() {
         id: `user-choice-${Date.now()}`,
         text: choice.type || choice.label || choice,
         isUserResponse: true,
-      };
-      setHistory((prev) => [...prev, userMessage]);
-      setDisplayCount((prev) => prev + 1);
+      }
+      setHistory((prev) => [...prev, userMessage])
+      setDisplayCount((prev) => prev + 1)
       // Delay before moving to next interaction so user can see their response
       setTimeout(() => {
-        handleChoiceSelection(choice);
-      }, USER_RESPONSE_DISPLAY_MS);
+        handleChoiceSelection(choice)
+      }, USER_RESPONSE_DISPLAY_MS)
     },
-    [handleChoiceSelection]
-  );
+    [handleChoiceSelection],
+  )
 
   const handleContinue = () => {
     if (currentInteraction?.type === "message") {
-      goToNextInteraction();
+      goToNextInteraction()
     }
-  };
+  }
 
   useEffect(() => {
     preloadAll(soundMap).then(() => {
-      console.log("All sounds preloaded");
-    });
-  }, []);
+      console.log("All sounds preloaded")
+    })
+  }, [])
 
   useEffect(() => {
-    if (!currentInteraction) return;
+    if (!currentInteraction) return
     if (currentInteraction.type === "music") {
-      playPreloaded(currentInteraction.key);
-      return;
+      playPreloaded(currentInteraction.key)
+      return
     }
     setHistory((prev) => {
-      const last = prev.at(-1);
+      const last = prev.at(-1)
       if (last?.id === currentInteraction.id) {
-        return prev;
+        return prev
       }
-      return [...prev, currentInteraction];
-    });
-  }, [currentInteraction]);
+      return [...prev, currentInteraction]
+    })
+  }, [currentInteraction])
 
   useEffect(() => {
     if (history.length === 0) {
-      setDisplayCount(0);
-      return;
+      setDisplayCount(0)
+      return
     }
 
-    const needsMoreMessages = displayCount < history.length;
-    if (!needsMoreMessages) return;
+    const needsMoreMessages = displayCount < history.length
+    if (!needsMoreMessages) return
 
     const timer = setTimeout(() => {
-      setDisplayCount((prev) => Math.min(history.length, prev + 1));
-    }, MESSAGE_DELAY_MS);
+      setDisplayCount((prev) => Math.min(history.length, prev + 1))
+    }, MESSAGE_DELAY_MS)
 
-    return () => clearTimeout(timer);
-  }, [history.length, displayCount]);
+    return () => clearTimeout(timer)
+  }, [history.length, displayCount])
 
   // Handle chapter completion when checkpoint is reached
   useEffect(() => {
     if (currentInteraction?.type === "checkpoint") {
       // Extract chapter number from interaction id (e.g., "intro-end" -> 0, "chapter-1-end" -> 1)
-      const match = currentInteraction.id?.match(/^(?:chapter-(\d+)|intro)-end$/);
-      const chapterNumber = match ? (match[1] ? Number(match[1]) : 0) : 0;
-      
+      const match = currentInteraction.id?.match(
+        /^(?:chapter-(\d+)|intro)-end$/,
+      )
+      const chapterNumber = match ? (match[1] ? Number(match[1]) : 0) : 0
+
       // Save completion to localStorage
-      const existingCompleted = (readFromStorage("completedChapters") as number[]) || [];
-      const completedSet = new Set(existingCompleted);
-      completedSet.add(chapterNumber);
-      const completedArray = Array.from(completedSet).sort((a, b) => a - b);
-      
-      setToStorage("completedChapters", completedArray);
-      setToStorage("chapter", Math.min(chapterNumber + 1, 4));
-      console.log(`Chapter ${chapterNumber} completed, redirecting to menu`);
-      
+      const existingCompleted =
+        (readFromStorage("completedChapters") as number[]) || []
+      const completedSet = new Set(existingCompleted)
+      completedSet.add(chapterNumber)
+      const completedArray = Array.from(completedSet).sort((a, b) => a - b)
+
+      setToStorage("completedChapters", completedArray)
+      setToStorage("chapter", Math.min(chapterNumber + 1, 4))
+      console.log(`Chapter ${chapterNumber} completed, redirecting to menu`)
+
       // Update database if available, then redirect
       if (dbHook && dbHook.updateChapter) {
-        dbHook.updateChapter(chapterNumber, () => router.push("/menu"));
+        dbHook.updateChapter(chapterNumber, () => router.push("/menu"))
       } else {
         // No database hook, just redirect
-        router.push("/menu");
+        router.push("/menu")
       }
     }
-  }, [currentInteraction, router, dbHook]);
+  }, [currentInteraction, router, dbHook])
 
-  const visibleHistory = history.slice(0, displayCount);
+  const visibleHistory = history.slice(0, displayCount)
 
   // Get the last N cards for the stack effect
-  const stackedCards = visibleHistory.slice(-MAX_VISIBLE_CARDS);
-  const stackStartIndex = Math.max(
-    0,
-    visibleHistory.length - MAX_VISIBLE_CARDS
-  );
+  const stackedCards = visibleHistory.slice(-MAX_VISIBLE_CARDS)
+  const stackStartIndex = Math.max(0, visibleHistory.length - MAX_VISIBLE_CARDS)
 
   // Check interaction types
-  const needsInput = currentInteraction?.type === "input";
-  const needsChoice = currentInteraction?.type === "multiple-choice";
-  const isMessage = currentInteraction?.type === "message";
+  const needsInput = currentInteraction?.type === "input"
+  const needsChoice = currentInteraction?.type === "multiple-choice"
+  const isMessage = currentInteraction?.type === "message"
 
   const renderCard = (
     interaction: any,
     stackIndex: number,
-    totalInStack: number
+    totalInStack: number,
   ) => {
-    const isTopCard = stackIndex === totalInStack - 1;
-    const depth = totalInStack - 1 - stackIndex;
+    const isTopCard = stackIndex === totalInStack - 1
+    const depth = totalInStack - 1 - stackIndex
 
     // Calculate stack effect values
-    const scale = 1 - depth * 0.04;
-    const yOffset = depth * -16;
-    const opacity = isTopCard ? 1 : Math.max(0.4, 1 - depth * 0.2);
-    const zIndex = totalInStack - depth;
-    const blur = isTopCard ? 0 : depth * 1;
+    const scale = 1 - depth * 0.04
+    const yOffset = depth * -16
+    const opacity = isTopCard ? 1 : Math.max(0.4, 1 - depth * 0.2)
+    const zIndex = totalInStack - depth
+    const blur = isTopCard ? 0 : depth * 1
 
     // Check if card is clickable (top card + message type + not user response)
-    const isClickable = isTopCard && isMessage && !interaction.isUserResponse;
+    const isClickable = isTopCard && isMessage && !interaction.isUserResponse
 
     return (
       <motion.div
@@ -189,7 +189,9 @@ export default function CardSequence() {
               ? "bg-[#0EA5E9] text-white"
               : "bg-white/95 backdrop-blur-md text-gray-800"
           } ${isTopCard ? "ring-2 ring-white/30" : ""} ${
-            isClickable ? "cursor-pointer hover:scale-[1.02] active:scale-[0.98]" : ""
+            isClickable
+              ? "cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+              : ""
           }`}
         >
           <p className="text-lg leading-relaxed text-center">
@@ -199,8 +201,8 @@ export default function CardSequence() {
           </p>
         </div>
       </motion.div>
-    );
-  };
+    )
+  }
 
   return (
     <main className="flex h-screen overflow-hidden flex-col bg-gradient-chapter0">
@@ -210,7 +212,7 @@ export default function CardSequence() {
           <div className="relative w-full h-72">
             <AnimatePresence mode="popLayout">
               {stackedCards.map((interaction, index) =>
-                renderCard(interaction, index, stackedCards.length)
+                renderCard(interaction, index, stackedCards.length),
               )}
             </AnimatePresence>
           </div>
@@ -258,14 +260,14 @@ export default function CardSequence() {
                         onClick={() => handleChoiceResponse(choice)}
                         className="py-3 px-6 rounded-full font-semibold shadow-lg
                                    transition-all duration-300 active:scale-[0.98] hover:shadow-xl"
-                        style={{ 
-                          backgroundColor: '#0EA5E9',
-                          color: 'white'
+                        style={{
+                          backgroundColor: "#0EA5E9",
+                          color: "white",
                         }}
                       >
                         {choice.label || choice.type}
                       </motion.button>
-                    )
+                    ),
                   )}
                 </motion.div>
               )}
@@ -274,5 +276,5 @@ export default function CardSequence() {
         </div>
       </div>
     </main>
-  );
+  )
 }
