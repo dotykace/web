@@ -1,22 +1,21 @@
-import {readFromStorage, setToStorage} from "@/scripts/local-storage";
-import {doc, getDoc, runTransaction} from "firebase/firestore";
-import {db} from "@/lib/firebase";
-import {DotykaceParticipant} from "@/lib/dotykace-types";
+import { readFromStorage, setToStorage } from "@/scripts/local-storage"
+import { doc, getDoc, runTransaction } from "firebase/firestore"
+import { db } from "@/lib/firebase"
+import { DotykaceParticipant } from "@/lib/dotykace-types"
 
 export default function useDB() {
-
   const playerId = readFromStorage("playerId")
   const roomId = readFromStorage("roomId")
 
   if (!roomId || !playerId) {
     console.warn("Room ID or Player ID not found in localStorage.")
-    return undefined;
+    return undefined
   }
 
   const participantRef = doc(db, "rooms", roomId, "participants", playerId)
   if (!participantRef) {
     console.warn("Participant reference could not be created.")
-    return undefined;
+    return undefined
   }
 
   const canShowVideo = async () => {
@@ -27,7 +26,12 @@ export default function useDB() {
     return snapshot.data()?.showVideo || false
   }
 
-  const updatePlayerData = async (updateCallback: (oldData: DotykaceParticipant) => Partial<DotykaceParticipant>, onFinish: () => void) => {
+  const updatePlayerData = async (
+    updateCallback: (
+      oldData: DotykaceParticipant,
+    ) => Partial<DotykaceParticipant>,
+    onFinish: () => void,
+  ) => {
     try {
       await runTransaction(db, async (transaction) => {
         const data = await transaction.get(participantRef)
@@ -55,7 +59,9 @@ export default function useDB() {
 
       setToStorage("completedChapters", arrayFromSet)
       setToStorage("chapter", currentChapter)
-      console.log(`Chapter ${chapterNumber} end interaction reached, setting chapter to ${currentChapter}`)
+      console.log(
+        `Chapter ${chapterNumber} end interaction reached, setting chapter to ${currentChapter}`,
+      )
 
       return {
         completedChapters: arrayFromSet,
@@ -63,17 +69,20 @@ export default function useDB() {
       }
     }, onFinish)
   }
-  const updateVoice = async (newVoice:string) => {
-    await updatePlayerData((oldData) => {
-      const responses = {
-        ...oldData.responses,
-        voiceOption: newVoice,
-      }
-      return {
-        responses: responses
-      } as Partial<DotykaceParticipant>
-    }, ()=>{})
+  const updateVoice = async (newVoice: string) => {
+    await updatePlayerData(
+      (oldData) => {
+        const responses = {
+          ...oldData.responses,
+          voiceOption: newVoice,
+        }
+        return {
+          responses: responses,
+        } as Partial<DotykaceParticipant>
+      },
+      () => {},
+    )
   }
 
-  return {updateVoice, updateChapter, participantRef, canShowVideo}
+  return { updateVoice, updateChapter, participantRef, canShowVideo }
 }

@@ -1,10 +1,16 @@
-import {Card} from "@/components/ui/card";
-import {Label} from "@/components/ui/label";
-import {RadioGroupItem} from "@/components/ui/radio-group";
-import {Button} from "@/components/ui/button";
-import {Pause, Play} from "lucide-react";
+import { Card } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
+import { RadioGroupItem } from "@/components/ui/radio-group"
+import { Button } from "@/components/ui/button"
+import { Pause, Play } from "lucide-react"
 
-export default function VoiceItem ({voice, isSelected, isPlaying, onToggle, disabled}) {
+export default function VoiceItem({
+  voice,
+  isSelected,
+  isPlaying,
+  onToggle,
+  disabled,
+}) {
   return (
     <Card
       key={voice.id}
@@ -14,7 +20,10 @@ export default function VoiceItem ({voice, isSelected, isPlaying, onToggle, disa
           : "border-zinc-800 bg-zinc-900/50 hover:border-zinc-700"
       }`}
     >
-      <Label htmlFor={voice.id} className="flex items-center justify-between p-6 cursor-pointer">
+      <Label
+        htmlFor={voice.id}
+        className="flex items-center justify-between p-6 cursor-pointer"
+      >
         <div className="flex items-center gap-4">
           <RadioGroupItem
             value={voice.id}
@@ -24,7 +33,9 @@ export default function VoiceItem ({voice, isSelected, isPlaying, onToggle, disa
           />
           <div className="space-y-1">
             <div className="font-semibold text-xl text-white">{voice.name}</div>
-            {disabled && <div className="text-sm text-zinc-500">Brzy k dispozici</div>}
+            {disabled && (
+              <div className="text-sm text-zinc-500">Brzy k dispozici</div>
+            )}
           </div>
         </div>
         <Button
@@ -42,7 +53,11 @@ export default function VoiceItem ({voice, isSelected, isPlaying, onToggle, disa
           }}
           disabled={disabled}
         >
-          {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6 ml-0.5" />}
+          {isPlaying ? (
+            <Pause className="h-6 w-6" />
+          ) : (
+            <Play className="h-6 w-6 ml-0.5" />
+          )}
         </Button>
       </Label>
     </Card>

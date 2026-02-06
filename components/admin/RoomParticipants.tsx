@@ -1,12 +1,17 @@
-import {CheckCircle, Unlock} from "lucide-react";
-import {Button} from "@/components/ui/button";
-import {ChapterPermissions, DotykaceRoom} from "@/lib/dotykace-types";
-import {doc, updateDoc} from "firebase/firestore";
-import {db} from "@/lib/firebase";
-import {chapterList} from "@/components/admin/RenderRoom";
+import { CheckCircle, Unlock } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { ChapterPermissions, DotykaceRoom } from "@/lib/dotykace-types"
+import { doc, updateDoc } from "firebase/firestore"
+import { db } from "@/lib/firebase"
+import { chapterList } from "@/components/admin/RenderRoom"
 
 export default function RoomParticipants({ participants, room }) {
-  const allowNextChapter = async (room: DotykaceRoom, participantId: string, participantName:string, nextChapter: number) => {
+  const allowNextChapter = async (
+    room: DotykaceRoom,
+    participantId: string,
+    participantName: string,
+    nextChapter: number,
+  ) => {
     try {
       const currentPermissions = room.chapterPermissions || {}
       const playerPermissions = currentPermissions[participantId] || {
@@ -45,7 +50,9 @@ export default function RoomParticipants({ participants, room }) {
       >
         <td className="p-2">
           <div>
-            <div className="font-semibold text-gray-900 text-xs">{participant.name}</div>
+            <div className="font-semibold text-gray-900 text-xs">
+              {participant.name}
+            </div>
           </div>
         </td>
         {chapterList.map((chapterNum) => {
@@ -54,7 +61,10 @@ export default function RoomParticipants({ participants, room }) {
           const isCurrent = currentChapter === chapterNum
 
           return (
-            <td key={`${participant.id}-chapter-${chapterNum}`} className="p-2 text-center">
+            <td
+              key={`${participant.id}-chapter-${chapterNum}`}
+              className="p-2 text-center"
+            >
               <div className="flex items-center justify-center">
                 <div
                   className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-200 shadow-sm ${
@@ -67,7 +77,11 @@ export default function RoomParticipants({ participants, room }) {
                           : "bg-gray-300 text-gray-600"
                   }`}
                 >
-                  {isCompleted ? <CheckCircle className="w-2.5 h-2.5" /> : chapterNum}
+                  {isCompleted ? (
+                    <CheckCircle className="w-2.5 h-2.5" />
+                  ) : (
+                    chapterNum
+                  )}
                 </div>
               </div>
             </td>
@@ -78,7 +92,8 @@ export default function RoomParticipants({ participants, room }) {
             {[1, 2, 3, 4].map((chapterNum) => {
               const completedChapters = participant.completedChapters || []
               const allowedChapters = permissions?.allowedChapters || []
-              const canUnlock = chapterNum === Math.max(...completedChapters) + 1
+              const canUnlock =
+                chapterNum === Math.max(...completedChapters) + 1
               const isAllowed = allowedChapters.includes(chapterNum)
 
               if (!canUnlock || isAllowed || chapterNum === 0) return null
@@ -89,7 +104,14 @@ export default function RoomParticipants({ participants, room }) {
                   size="sm"
                   variant="outline"
                   className="h-5 w-5 p-0 text-xs bg-white hover:bg-blue-50 border-blue-200 hover:border-blue-300 transition-all duration-200 hover:shadow-sm"
-                  onClick={() => allowNextChapter(room, participant.id, participant.name, chapterNum)}
+                  onClick={() =>
+                    allowNextChapter(
+                      room,
+                      participant.id,
+                      participant.name,
+                      chapterNum,
+                    )
+                  }
                   title={`Odomknúť kapitolu ${chapterNum}`}
                 >
                   <Unlock className="w-2.5 h-2.5 text-blue-600" />

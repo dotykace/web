@@ -1,25 +1,24 @@
-import {Card, CardContent, CardHeader} from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import {LocalSvgRenderer} from "@/components/LocalSvgRenderer";
+import { LocalSvgRenderer } from "@/components/LocalSvgRenderer"
 
 interface SocialMediaPostProps {
   username?: string
   avatar: string
-  content: string,
-  choices?: {text: string, callback: () => {}} []
+  content: string
+  choices?: { text: string; callback: () => {} }[]
 }
 
 export default function SocialMediaPost({
-                                          username= "Mobil",
-                                          avatar,
-                                          content,
+  username = "Mobil",
+  avatar,
+  content,
   choices,
-                                        }: SocialMediaPostProps) {
-
+}: SocialMediaPostProps) {
   const timestamp = new Date().toLocaleTimeString([], {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+    hour: "2-digit",
+    minute: "2-digit",
+  })
   return (
     <Card
       className={`m-5 h-full rounded-xl transition-all duration-300 ring-2 ring-blue-500 shadow-xl bg-white`}

@@ -1,6 +1,11 @@
-import React from "react";
+import React from "react"
+import Image from "next/image"
 
-export default function VoiceVisualization ({ isActive = true }: { isActive?: boolean }) {
+export default function VoiceVisualization({
+  isActive = true,
+}: {
+  isActive?: boolean
+}) {
   return (
     <div className="relative w-full h-48 flex items-center justify-center overflow-hidden">
       {/* Background animated circles */}
@@ -23,8 +28,14 @@ export default function VoiceVisualization ({ isActive = true }: { isActive?: bo
       </div>
       {/* Central phone character with pulsing effect */}
       <div className="relative z-10">
-        <div className={`relative transition-all duration-1000 ${isActive ? "animate-pulse scale-110" : "scale-100"}`}>
-          <img src="/images/phone-character-simple.png" alt="Phone Character" className="w-24 h-24 drop-shadow-lg" />
+        <div
+          className={`relative transition-all duration-1000 ${isActive ? "animate-pulse scale-110" : "scale-100"}`}
+        >
+          <Image
+            src="/images/phone-character-simple.png"
+            alt="Phone Character"
+            className="w-24 h-24 drop-shadow-lg"
+          />
           {/* Animated rings around character */}
           {isActive && (
             <>

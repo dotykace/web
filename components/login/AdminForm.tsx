@@ -1,14 +1,14 @@
-import {ReactNode, useState} from "react";
-import {useRouter} from "next/navigation";
-import {collection, getDocs, query, where} from "firebase/firestore";
-import {db} from "@/lib/firebase";
-import {DotykaceUser} from "@/lib/dotykace-types";
-import {FormField} from "@/components/FormField";
-import {Button} from "@/components/ui/button";
-import {LoadingSpinner} from "@/components/ui/loading-spinner";
-import {setToStorage} from "@/scripts/local-storage";
+import { ReactNode, useState } from "react"
+import { useRouter } from "next/navigation"
+import { collection, getDocs, query, where } from "firebase/firestore"
+import { db } from "@/lib/firebase"
+import { DotykaceUser } from "@/lib/dotykace-types"
+import { FormField } from "@/components/FormField"
+import { Button } from "@/components/ui/button"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { setToStorage } from "@/scripts/local-storage"
 
-export default function AdminForm({setError}){
+export default function AdminForm({ setError }) {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
 
@@ -70,8 +70,14 @@ export default function AdminForm({setError}){
         placeholder="Zadajte heslo"
         onKeyPress={(e) => e.key === "Enter" && handleAdminLogin()}
       />
-      <Button onClick={handleAdminLogin} disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700">
-        {loading ? (<LoadingSpinner className="mr-2" /> as ReactNode) : undefined}
+      <Button
+        onClick={handleAdminLogin}
+        disabled={loading}
+        className="w-full bg-blue-600 hover:bg-blue-700"
+      >
+        {loading
+          ? ((<LoadingSpinner className="mr-2" />) as ReactNode)
+          : undefined}
         Prihlásiť sa
       </Button>
     </>

@@ -1,33 +1,31 @@
-
 export const readFromStorage = (key) => {
-  if (typeof window === 'undefined') {
-    console.log("localStorage is not available (server-side rendering).");
-    return undefined;
+  if (typeof window === "undefined") {
+    console.log("localStorage is not available (server-side rendering).")
+    return undefined
   }
   try {
-    const item = localStorage.getItem(key);
+    const item = localStorage.getItem(key)
     // todo highlights a lot of re-renders, solve later
     // console.log(`Read from localStorage key “${key}”:`, item);
-    return item ? JSON.parse(item) : undefined;
+    return item ? JSON.parse(item) : undefined
   } catch (error) {
-    console.warn(`Error reading localStorage key “${key}”:`, error);
-    return undefined;
+    console.warn(`Error reading localStorage key “${key}”:`, error)
+    return undefined
   }
 }
 
-export const setToStorage = (key:string, value) => {
+export const setToStorage = (key: string, value) => {
   try {
-    localStorage.setItem(key, JSON.stringify(value));
+    localStorage.setItem(key, JSON.stringify(value))
   } catch (error) {
-    console.error(error);
+    console.error(error)
   }
-};
+}
 
-export const removeFromStorage = (key:string) => {
+export const removeFromStorage = (key: string) => {
   try {
-    localStorage.removeItem(key);
-  }
-  catch (error) {
-    console.error(error);
+    localStorage.removeItem(key)
+  } catch (error) {
+    console.error(error)
   }
 }

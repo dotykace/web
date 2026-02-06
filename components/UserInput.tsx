@@ -10,7 +10,11 @@ interface UserInputProps {
   buttonText: string
 }
 
-export default function UserInput({ onSubmit, placeholder, buttonText }: UserInputProps) {
+export default function UserInput({
+  onSubmit,
+  placeholder,
+  buttonText,
+}: UserInputProps) {
   const [input, setInput] = useState("")
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -32,13 +36,13 @@ export default function UserInput({ onSubmit, placeholder, buttonText }: UserInp
         //autoFocus
       />
       <div className="absolute right-2 top-1/2 -translate-y-1/2">
-      <button
-        type="submit"
-        className="bg-purple-600 rounded-full p-3 flex items-center justify-center hover:bg-purple-700 transition-colors"
-      >
-        <ArrowRightIcon className="h-5 w-5 text-white" />
-        <span className="sr-only">{buttonText}</span>
-      </button>
+        <button
+          type="submit"
+          className="bg-purple-600 rounded-full p-3 flex items-center justify-center hover:bg-purple-700 transition-colors"
+        >
+          <ArrowRightIcon className="h-5 w-5 text-white" />
+          <span className="sr-only">{buttonText}</span>
+        </button>
       </div>
     </form>
   )

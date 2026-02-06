@@ -1,6 +1,6 @@
-import React from "react";
+import React from "react"
 
-export default function FullScreenVideo({videoSrc, onEnded}) {
+export default function FullScreenVideo({ videoSrc, onEnded }) {
   return (
     <div className="relative w-screen h-screen aspect-video rounded-lg overflow-hidden shadow-lg">
       <video

@@ -1,10 +1,10 @@
-import React from "react";
-import Image from "next/image";
-import {Check} from "lucide-react";
-function generateSectionFileName (chapterNumber: number, disabled: boolean) {
+import React from "react"
+import Image from "next/image"
+import { Check } from "lucide-react"
+function generateSectionFileName(chapterNumber: number, disabled: boolean) {
   return `/images/menu/menu${chapterNumber}_${disabled ? "dis" : "en"}.svg`
 }
-export default function MenuSectionCard({section, handleSectionClick}) {
+export default function MenuSectionCard({ section, handleSectionClick }) {
   const isLocked = section.state === "locked"
   const isCompleted = section.state === "completed"
   const fileName = generateSectionFileName(section.id, isLocked)

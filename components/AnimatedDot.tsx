@@ -1,6 +1,6 @@
 "use client"
 
-import {useState, useEffect, type ReactNode, JSX} from "react"
+import { useState, useEffect, type ReactNode, JSX } from "react"
 import { motion, AnimatePresence, type Variants } from "framer-motion"
 
 type AnimatedDotProps = {
@@ -20,23 +20,25 @@ type AnimatedDotProps = {
 }
 
 export default function AnimatedDot({
-                                      isVisible = false,
-                                      position,
-                                      revealComponent,
-                                      onAnimationComplete,
-                                      dotSize = 30,
-                                      glowSize = 1.5*dotSize,
-                                      dotColor = "#3b82f6",
-                                      glowColor = "#60a5fa",
-                                      animationDuration = {
-                                        grow: 0.5,
-                                        pulse: 2,
-                                        reveal: 0.5,
-                                        expand: 1
-                                      },
-                                      className = "",
-                                    }: AnimatedDotProps) {
-  const [state, setState] = useState<"disabled" | "growing" | "pulsing" | "expanding" | "revealed">("disabled")
+  isVisible = false,
+  position,
+  revealComponent,
+  onAnimationComplete,
+  dotSize = 30,
+  glowSize = 1.5 * dotSize,
+  dotColor = "#3b82f6",
+  glowColor = "#60a5fa",
+  animationDuration = {
+    grow: 0.5,
+    pulse: 2,
+    reveal: 0.5,
+    expand: 1,
+  },
+  className = "",
+}: AnimatedDotProps) {
+  const [state, setState] = useState<
+    "disabled" | "growing" | "pulsing" | "expanding" | "revealed"
+  >("disabled")
 
   useEffect(() => {
     if (isVisible && state === "disabled") {
@@ -127,7 +129,8 @@ export default function AnimatedDot({
           duration: 0.3,
         },
       },
-    }}
+    },
+  }
 
   const revealVariants: Variants = {
     hidden: {
@@ -144,7 +147,6 @@ export default function AnimatedDot({
     },
   }
 
-
   return (
     <div
       style={{
@@ -159,12 +161,14 @@ export default function AnimatedDot({
         {state !== "disabled" && state !== "revealed" && (
           <div className="flex items-center justify-center">
             {/* Glow effect - only shown during pulsing state */}
-            {(state === "pulsing"|| state === "expanding") && (
+            {(state === "pulsing" || state === "expanding") && (
               <motion.div
                 key="glow"
                 variants={glowVariants}
                 initial="hidden"
-                animate={state === "expanding" ? ["expanding", "fadeOut"] : "pulsing"}
+                animate={
+                  state === "expanding" ? ["expanding", "fadeOut"] : "pulsing"
+                }
                 exit="exit"
                 style={{
                   position: "absolute",
@@ -209,7 +213,12 @@ export default function AnimatedDot({
         )}
 
         {state === "revealed" && (
-          <motion.div key="reveal" variants={revealVariants} initial="hidden" animate="visible">
+          <motion.div
+            key="reveal"
+            variants={revealVariants}
+            initial="hidden"
+            animate="visible"
+          >
             {revealComponent}
           </motion.div>
         )}

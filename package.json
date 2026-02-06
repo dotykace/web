@@ -47,6 +47,7 @@
     "dagre": "latest",
     "date-fns": "4.1.0",
     "embla-carousel-react": "8.5.1",
+    "eslint-config-next": "^16.1.6",
     "firebase": "^11.10.0",
     "framer-motion": "latest",
     "input-otp": "1.4.1",
@@ -73,6 +74,7 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "eslint": "^9.39.2",
     "postcss": "^8",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"

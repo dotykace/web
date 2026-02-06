@@ -1,22 +1,22 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRightIcon } from "lucide-react";
-import EmojiList from "@/components/EmojiList";
+import React, { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { ArrowRightIcon } from "lucide-react"
+import EmojiList from "@/components/EmojiList"
 
-export default function EmojiReactionButton({onSelect}) {
-  const [showEmojis, setShowEmojis] = useState(false);
-  const emojis = ["👍", "❤️", "😂", "😮", "😢", "😡"];
+export default function EmojiReactionButton({ onSelect }) {
+  const [showEmojis, setShowEmojis] = useState(false)
+  const emojis = ["👍", "❤️", "😂", "😮", "😢", "😡"]
 
   const handleButtonClick = () => {
-    setShowEmojis(true);
-  };
+    setShowEmojis(true)
+  }
 
   const handleEmojiClick = (emoji: string) => {
-    onSelect(emoji);
-    setShowEmojis(false);
-  };
+    onSelect(emoji)
+    setShowEmojis(false)
+  }
 
   return (
     <div className="relative w-full max-w-md">
@@ -48,10 +48,14 @@ export default function EmojiReactionButton({onSelect}) {
             exit={{ opacity: 0, scale: 0.95 }}
             className="absolute left-0 right-0 top-[-65px]"
           >
-            <EmojiList className="p-2" onEmojiClick={handleEmojiClick} emojis={emojis} />
+            <EmojiList
+              className="p-2"
+              onEmojiClick={handleEmojiClick}
+              emojis={emojis}
+            />
           </motion.div>
         )}
       </AnimatePresence>
     </div>
-  );
+  )
 }

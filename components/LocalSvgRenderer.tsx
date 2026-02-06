@@ -1,3 +1,5 @@
+import Image from "next/image"
+
 interface LocalSvgRendererProps {
   filename: string
   size?: number
@@ -5,12 +7,17 @@ interface LocalSvgRendererProps {
   alt?: string
 }
 
-export function LocalSvgRenderer({ filename, size = 24, className = "", alt = "SVG Icon" }: LocalSvgRendererProps) {
+export function LocalSvgRenderer({
+  filename,
+  size = 24,
+  className = "",
+  alt = "SVG Icon",
+}: LocalSvgRendererProps) {
   // Construct the path to the SVG file
   const svgPath = `/images/doty/${filename}.svg`
 
   return (
-    <img
+    <Image
       src={svgPath || "/placeholder.svg"}
       alt={alt}
       width={size}
