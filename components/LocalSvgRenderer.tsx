@@ -1,5 +1,3 @@
-import Image from "next/image"
-
 interface LocalSvgRendererProps {
   filename: string
   size?: number
@@ -17,7 +15,8 @@ export function LocalSvgRenderer({
   const svgPath = `/images/doty/${filename}.svg`
 
   return (
-    <Image
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
       src={svgPath || "/placeholder.svg"}
       alt={alt}
       width={size}

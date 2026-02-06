@@ -1,8 +1,8 @@
-import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { RadioGroupItem } from "@/components/ui/radio-group";
-import { Button } from "@/components/ui/button";
-import { Pause, Play } from "lucide-react";
+import { Card } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
+import { RadioGroupItem } from "@/components/ui/radio-group"
+import { Button } from "@/components/ui/button"
+import { Pause, Play } from "lucide-react"
 
 export default function VoiceItem({
   voice,
@@ -11,11 +11,11 @@ export default function VoiceItem({
   onToggle,
   disabled,
 }: {
-  voice: { id: string; name: string; audioKey: string };
-  isSelected: boolean;
-  isPlaying: boolean;
-  onToggle: (audioKey: string) => void;
-  disabled: boolean;
+  voice: { id: string; name: string; audioKey: string }
+  isSelected: boolean
+  isPlaying: boolean
+  onToggle: (audioKey: string) => void
+  disabled: boolean
 }) {
   return (
     <Card
@@ -38,7 +38,9 @@ export default function VoiceItem({
             disabled={disabled}
           />
           <div className="space-y-1">
-            <div className="font-semibold text-xl text-gray-800">{voice.name}</div>
+            <div className="font-semibold text-xl text-gray-800">
+              {voice.name}
+            </div>
             {disabled && (
               <div className="text-sm text-gray-500">Brzy k dispozici</div>
             )}
@@ -54,8 +56,8 @@ export default function VoiceItem({
               : "bg-gray-200 hover:bg-gray-300 text-gray-600"
           } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
           onClick={(e) => {
-            e.preventDefault();
-            onToggle(voice.audioKey);
+            e.preventDefault()
+            onToggle(voice.audioKey)
           }}
           disabled={disabled}
         >
@@ -67,5 +69,5 @@ export default function VoiceItem({
         </Button>
       </Label>
     </Card>
-  );
+  )
 }

@@ -10,7 +10,11 @@ interface UserInputProps {
   buttonText: string
 }
 
-export default function UserInput({ onSubmit, placeholder, buttonText }: UserInputProps) {
+export default function UserInput({
+  onSubmit,
+  placeholder,
+  buttonText,
+}: UserInputProps) {
   const [input, setInput] = useState("")
 
   const handleSubmit = (e: React.FormEvent) => {

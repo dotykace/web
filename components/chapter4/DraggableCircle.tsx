@@ -1,52 +1,52 @@
-"use client";
+"use client"
 
-import { useEffect, useRef, useState } from "react";
-import { motion, useMotionValue, useTransform } from "framer-motion";
-import Image from "next/image";
+import { useEffect, useRef, useState } from "react"
+import { motion, useMotionValue, useTransform } from "framer-motion"
+import Image from "next/image"
 
 export default function DraggableCircle({
   percentageCallback,
 }: {
-  percentageCallback: (percentage: number) => void;
+  percentageCallback: (percentage: number) => void
 }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const circleRef = useRef<HTMLDivElement>(null);
-  const y = useMotionValue(0);
-  const [currentPercent, setCurrentPercent] = useState(50);
+  const containerRef = useRef<HTMLDivElement>(null)
+  const circleRef = useRef<HTMLDivElement>(null)
+  const y = useMotionValue(0)
+  const [currentPercent, setCurrentPercent] = useState(50)
 
   // Create color interpolation based on y position
   const backgroundColor = useTransform(
     y,
     [-200, 0, 200],
     ["#22c55e", "#f59e0b", "#ef4444"], // green -> amber -> red
-  );
+  )
 
   useEffect(() => {
     const updatePercentage = () => {
-      if (!containerRef.current) return;
-      const circleHeight = circleRef.current?.offsetHeight || 0;
-      const containerHeight = containerRef.current.offsetHeight - circleHeight;
+      if (!containerRef.current) return
+      const circleHeight = circleRef.current?.offsetHeight || 0
+      const containerHeight = containerRef.current.offsetHeight - circleHeight
 
-      const yValue = -y.get();
-      const halfHeight = containerHeight / 2;
-      const currentY = halfHeight + yValue;
-      const clampedY = Math.max(0, Math.min(containerHeight, currentY));
-      const percent = (clampedY / containerHeight) * 100;
-      const rounded = Number(percent.toFixed(0));
-      setCurrentPercent(rounded);
-      percentageCallback(rounded);
-    };
+      const yValue = -y.get()
+      const halfHeight = containerHeight / 2
+      const currentY = halfHeight + yValue
+      const clampedY = Math.max(0, Math.min(containerHeight, currentY))
+      const percent = (clampedY / containerHeight) * 100
+      const rounded = Number(percent.toFixed(0))
+      setCurrentPercent(rounded)
+      percentageCallback(rounded)
+    }
 
-    const unsubscribe = y.on("change", updatePercentage);
-    return () => unsubscribe();
-  }, [y, percentageCallback]);
+    const unsubscribe = y.on("change", updatePercentage)
+    return () => unsubscribe()
+  }, [y, percentageCallback])
 
   // Get Doty expression based on percentage
   const getDotyExpression = () => {
-    if (currentPercent >= 67) return "/images/doty/happy.svg";
-    if (currentPercent >= 34) return "/images/doty/ok.svg";
-    return "/images/doty/sad.svg";
-  };
+    if (currentPercent >= 67) return "/images/doty/happy.svg"
+    if (currentPercent >= 34) return "/images/doty/ok.svg"
+    return "/images/doty/sad.svg"
+  }
 
   return (
     <div
@@ -88,5 +88,5 @@ export default function DraggableCircle({
         ↕ Táhni nahoru nebo dolů
       </motion.p>
     </div>
-  );
+  )
 }

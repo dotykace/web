@@ -1,25 +1,25 @@
-"use client";
+"use client"
 
-import type React from "react";
-import Modal from "@/components/Modal";
+import type React from "react"
+import Modal from "@/components/Modal"
 
 export function GalleryModal({
   isOpen,
   onClose,
 }: {
-  isOpen: boolean;
-  onClose: (save: boolean) => void;
+  isOpen: boolean
+  onClose: (save: boolean) => void
 }) {
   const closeModal = (save: boolean) => {
     if (save) {
-      return onClose(true);
+      return onClose(true)
     }
-    onClose(false);
-  };
+    onClose(false)
+  }
 
-  const title = "Chceš si obrázek stáhnout do telefonu?";
-  const approveText = "Ano, uložit obrázek";
-  const declineText = "Ne, díky";
+  const title = "Chceš si obrázek stáhnout do telefonu?"
+  const approveText = "Ano, uložit obrázek"
+  const declineText = "Ne, díky"
 
   const footer = (
     <>
@@ -36,7 +36,7 @@ export function GalleryModal({
         {approveText}
       </button>
     </>
-  );
+  )
 
   return (
     <Modal
@@ -45,5 +45,5 @@ export function GalleryModal({
       title={title}
       footer={footer}
     />
-  );
+  )
 }

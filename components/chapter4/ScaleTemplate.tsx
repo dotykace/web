@@ -1,11 +1,11 @@
 // components/CenteredLayout.tsx
-"use client";
+"use client"
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import Image from "next/image";
-import DraggableCircle from "@/components/chapter4/DraggableCircle";
-import { Button } from "@/components/ui/button";
+import { useState } from "react"
+import { motion } from "framer-motion"
+import Image from "next/image"
+import DraggableCircle from "@/components/chapter4/DraggableCircle"
+import { Button } from "@/components/ui/button"
 
 export default function ScaleTemplate({
   disabled,
@@ -14,22 +14,22 @@ export default function ScaleTemplate({
   onConfirm,
   confirmationText = "Potvrdit a pokračovat",
 }: {
-  disabled: boolean;
-  topText: string;
-  bottomText: string;
-  onConfirm: (percentage: number) => void;
-  confirmationText?: string;
+  disabled: boolean
+  topText: string
+  bottomText: string
+  onConfirm: (percentage: number) => void
+  confirmationText?: string
 }) {
-  const [percentage, setPercentage] = useState(50);
-  const [resetKey, setResetKey] = useState(0);
+  const [percentage, setPercentage] = useState(50)
+  const [resetKey, setResetKey] = useState(0)
 
   const handleConfirm = () => {
     if (onConfirm) {
-      onConfirm(percentage);
+      onConfirm(percentage)
     }
-    setResetKey((k) => k + 1);
-    setPercentage(50);
-  };
+    setResetKey((k) => k + 1)
+    setPercentage(50)
+  }
 
   return (
     <div className="flex flex-col h-full relative overflow-hidden">
@@ -121,5 +121,5 @@ export default function ScaleTemplate({
         </motion.button>
       </motion.div>
     </div>
-  );
+  )
 }

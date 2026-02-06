@@ -1,30 +1,30 @@
-import React from "react";
-import Image from "next/image";
-import { Check, Lock } from "lucide-react";
+import React from "react"
+import Image from "next/image"
+import { Check, Lock } from "lucide-react"
 
-type SectionState = "locked" | "unlocked" | "completed";
+type SectionState = "locked" | "unlocked" | "completed"
 
 interface Section {
-  id: number;
-  title: string;
-  path: string;
-  state: SectionState;
+  id: number
+  title: string
+  path: string
+  state: SectionState
 }
 
 function generateSectionFileName(chapterNumber: number, disabled: boolean) {
-  return `/images/menu/menu${chapterNumber}_${disabled ? "dis" : "en"}.svg`;
+  return `/images/menu/menu${chapterNumber}_${disabled ? "dis" : "en"}.svg`
 }
 
 export default function MenuSectionCard({
   section,
   handleSectionClick,
 }: {
-  section: Section;
-  handleSectionClick: (section: Section) => void;
+  section: Section
+  handleSectionClick: (section: Section) => void
 }) {
-  const isLocked = section.state === "locked";
-  const isCompleted = section.state === "completed";
-  const fileName = generateSectionFileName(section.id, isLocked);
+  const isLocked = section.state === "locked"
+  const isCompleted = section.state === "completed"
+  const fileName = generateSectionFileName(section.id, isLocked)
 
   return (
     <div className="flex flex-col items-center relative group">
@@ -50,7 +50,10 @@ export default function MenuSectionCard({
         {isLocked && (
           <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
             <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 sm:p-3">
-              <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-white/80" strokeWidth={2} />
+              <Lock
+                className="w-5 h-5 sm:w-6 sm:h-6 text-white/80"
+                strokeWidth={2}
+              />
             </div>
           </div>
         )}
@@ -78,5 +81,5 @@ export default function MenuSectionCard({
         </p>
       </div>
     </div>
-  );
+  )
 }

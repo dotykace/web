@@ -1,21 +1,21 @@
-"use client";
+"use client"
 
-import type React from "react";
+import type React from "react"
 
-import { useState, useEffect, JSX } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Bell, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect, JSX } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Bell, X } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 interface NotificationProps {
-  id: string;
-  title: string;
-  message: string;
-  icon?: React.ReactNode;
-  duration?: number;
-  onClose: () => void;
-  isOpen: boolean;
-  content?: () => JSX.Element | undefined;
+  id: string
+  title: string
+  message: string
+  icon?: React.ReactNode
+  duration?: number
+  onClose: () => void
+  isOpen: boolean
+  content?: () => JSX.Element | undefined
 }
 
 export default function MobileNotification({
@@ -28,28 +28,28 @@ export default function MobileNotification({
   isOpen,
   content = undefined,
 }: NotificationProps) {
-  const [showQuickReply, setShowQuickReply] = useState(false);
+  const [showQuickReply, setShowQuickReply] = useState(false)
 
   useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
+    let timer: ReturnType<typeof setTimeout>
 
     if (isOpen && duration > 0) {
       timer = setTimeout(() => {
-        onClose();
-      }, duration);
+        onClose()
+      }, duration)
     }
 
     return () => {
-      if (timer) clearTimeout(timer);
-    };
-  }, [isOpen, duration, onClose]);
+      if (timer) clearTimeout(timer)
+    }
+  }, [isOpen, duration, onClose])
 
   const timestapm = new Date().toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
-  });
+  })
 
-  const zIndex = (Date.now() % 100000) + Math.floor(Math.random() * 10); // timestamp % 100000
+  const zIndex = (Date.now() % 100000) + Math.floor(Math.random() * 10) // timestamp % 100000
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
       <AnimatePresence>
@@ -107,15 +107,15 @@ export default function MobileNotification({
         )}
       </AnimatePresence>
     </div>
-  );
+  )
 }
 
 function QuickReplyButton({
   onClick,
   isActive,
 }: {
-  onClick: () => void;
-  isActive: boolean;
+  onClick: () => void
+  isActive: boolean
 }) {
   return (
     <motion.button
@@ -149,5 +149,5 @@ function QuickReplyButton({
     >
       Quick Reply
     </motion.button>
-  );
+  )
 }

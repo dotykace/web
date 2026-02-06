@@ -1,52 +1,52 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { setToStorage } from "@/scripts/local-storage";
-import ScrollableCards from "@/components/ScrollableCard";
-import Place from "@/components/chapter1/Place";
-import { useSharedAudio } from "@/context/AudioContext";
-import type { ProcessedInteraction } from "@/interactions";
+import React, { useCallback, useEffect, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { setToStorage } from "@/scripts/local-storage"
+import ScrollableCards from "@/components/ScrollableCard"
+import Place from "@/components/chapter1/Place"
+import { useSharedAudio } from "@/context/AudioContext"
+import type { ProcessedInteraction } from "@/interactions"
 
 export default function PlaceScroll({
   current,
   goToNext,
 }: {
-  current: ProcessedInteraction;
-  goToNext: (nextId?: string) => void;
+  current: ProcessedInteraction
+  goToNext: (nextId?: string) => void
 }) {
-  const [showBackToChat, setShowBackToChat] = useState(false);
+  const [showBackToChat, setShowBackToChat] = useState(false)
 
-  const dotPosition = { x: 0.5, y: 0.5, offset: 20, start: 200 };
+  const dotPosition = { x: 0.5, y: 0.5, offset: 20, start: 200 }
 
-  const { stop } = useSharedAudio();
+  const { stop } = useSharedAudio()
 
   useEffect(() => {
     if (current?.id === "back-to-chat") {
-      setShowBackToChat(true);
+      setShowBackToChat(true)
     }
-  }, [current]);
+  }, [current])
 
   const onScrollCard = useCallback(() => {
     if (current.type !== "card") {
-      goToNext();
-      return;
+      goToNext()
+      return
     } else {
       if (current.nextCard) {
-        goToNext(current.nextCard);
+        goToNext(current.nextCard)
       }
     }
-  }, [current, goToNext]);
+  }, [current, goToNext])
 
   const choiceCallback = (option: string, choice?: string) => {
     if (option === "compare") {
-      setShowBackToChat(true);
-      goToNext("back-to-chat");
-      return;
+      setShowBackToChat(true)
+      goToNext("back-to-chat")
+      return
     }
     if (option === "choice" && choice) {
-      setToStorage("finger-choice", choice);
-      goToNext("finger-compare");
+      setToStorage("finger-choice", choice)
+      goToNext("finger-compare")
     }
-  };
+  }
   return (
     <>
       {showBackToChat ? (
@@ -60,8 +60,8 @@ export default function PlaceScroll({
           key={"back-to-chat-button"}
           className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out"
           onClick={() => {
-            stop("loop");
-            goToNext("overlay-off_a");
+            stop("loop")
+            goToNext("overlay-off_a")
           }}
         >
           Zpět do chatu
@@ -82,5 +82,5 @@ export default function PlaceScroll({
         </Place>
       )}
     </>
-  );
+  )
 }

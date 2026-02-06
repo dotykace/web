@@ -1,15 +1,21 @@
-import { Button } from "@/components/ui/button";
-import { SkipForward } from "lucide-react";
-import React from "react";
+import { Button } from "@/components/ui/button"
+import { SkipForward } from "lucide-react"
+import React from "react"
 
-export default function SkipButton({ onSkip, visible }: { onSkip: () => void; visible: boolean }) {
+export default function SkipButton({
+  onSkip,
+  visible,
+}: {
+  onSkip: () => void
+  visible: boolean
+}) {
   if (!onSkip || typeof onSkip !== "function") {
-    return null;
+    return null
   }
   if (!visible) {
-    return null;
+    return null
   }
-  const skipText = "Přeskočit";
+  const skipText = "Přeskočit"
   return (
     <div className="absolute bottom-6 right-6 z-20">
       <Button
@@ -21,5 +27,5 @@ export default function SkipButton({ onSkip, visible }: { onSkip: () => void; vi
         {skipText}
       </Button>
     </div>
-  );
+  )
 }

@@ -1,10 +1,10 @@
-"use client";
+"use client"
 
-import { ReactNode, useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { RadioGroup } from "@/components/ui/radio-group";
-import VoiceItem from "@/components/chapter1/VoiceItem";
-import { useSharedAudio } from "@/context/AudioContext";
+import { ReactNode, useEffect, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { RadioGroup } from "@/components/ui/radio-group"
+import VoiceItem from "@/components/chapter1/VoiceItem"
+import { useSharedAudio } from "@/context/AudioContext"
 
 const sampleVoices = [
   {
@@ -17,48 +17,48 @@ const sampleVoices = [
     name: "Mužský hlas",
     audioKey: "voice-male",
   },
-];
+]
 
 export default function VoiceRoom({
   onFinish,
 }: {
-  onFinish: (voice: string) => void;
+  onFinish: (voice: string) => void
 }) {
-  const [selectedVoice, setSelectedVoice] = useState<string>("male");
+  const [selectedVoice, setSelectedVoice] = useState<string>("male")
   const { playPreloaded, isPlaying, togglePreloaded, stop, playOnce } =
-    useSharedAudio();
-  const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
-  const [disableSelection, setDisableSelection] = useState<boolean>(false);
+    useSharedAudio()
+  const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null)
+  const [disableSelection, setDisableSelection] = useState<boolean>(false)
 
   useEffect(() => {
-    playPreloaded("voice-loop");
-  }, []);
+    playPreloaded("voice-loop")
+  }, [])
   useEffect(() => {
     sampleVoices.forEach((voice) => {
       if (voice.audioKey && isPlaying[voice.audioKey]) {
-        setCurrentlyPlaying(voice.audioKey);
+        setCurrentlyPlaying(voice.audioKey)
       }
-    });
-  }, [isPlaying]);
+    })
+  }, [isPlaying])
 
   const playTrackZero = () => {
-    setDisableSelection((prevState) => !prevState);
-    console.log(disableSelection);
-    stop("voice-loop");
+    setDisableSelection((prevState) => !prevState)
+    console.log(disableSelection)
+    stop("voice-loop")
     sampleVoices.forEach((voice) => {
       if (voice.audioKey && isPlaying[voice.audioKey]) {
-        stop(voice.audioKey);
+        stop(voice.audioKey)
       }
-    });
-    const path = `${selectedVoice}/track0.mp3`;
+    })
+    const path = `${selectedVoice}/track0.mp3`
     playOnce({
       filename: path,
       type: "sound",
       onFinish: () => {
-        onFinish(selectedVoice);
+        onFinish(selectedVoice)
       },
-    });
-  };
+    })
+  }
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-slate-900 to-gray-950 p-4">
@@ -77,7 +77,7 @@ export default function VoiceRoom({
         <div className="space-y-4">
           <RadioGroup value={selectedVoice} onValueChange={setSelectedVoice}>
             {sampleVoices.map((voice) => {
-              const disabled = voice.audioKey === undefined || disableSelection;
+              const disabled = voice.audioKey === undefined || disableSelection
 
               return (
                 <VoiceItem
@@ -91,17 +91,17 @@ export default function VoiceRoom({
                   isSelected={selectedVoice === voice.id}
                   isPlaying={disabled ? false : isPlaying[voice.audioKey]}
                   onToggle={() => {
-                    if (disabled) return;
+                    if (disabled) return
                     if (
                       currentlyPlaying &&
                       currentlyPlaying !== voice.audioKey
                     ) {
-                      stop(currentlyPlaying);
+                      stop(currentlyPlaying)
                     }
-                    togglePreloaded(voice.audioKey);
+                    togglePreloaded(voice.audioKey)
                   }}
                 />
-              ) as ReactNode;
+              ) as ReactNode
             })}
           </RadioGroup>
         </div>
@@ -119,5 +119,5 @@ export default function VoiceRoom({
         </div>
       </div>
     </main>
-  );
+  )
 }
