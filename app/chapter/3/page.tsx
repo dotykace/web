@@ -7,15 +7,15 @@ import { db } from "@/lib/firebase"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Check } from "lucide-react"
+import { Volume2, VolumeX, Check } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import HelpButton from "@/components/HelpButton"
 import useDB from "@/hooks/use-db"
 import { useRouter } from "next/navigation"
 import { readFromStorage } from "@/scripts/local-storage"
+import Image from "next/image"
 import SkipButton from "@/components/SkipButton"
 import AudioControl from "@/components/AudioControl"
-import Image from "next/image"
 
 // Voice Visualization Component (similar to Chapter 2)
 const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
@@ -47,6 +47,8 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
           <Image
             src="/images/phone-character-simple.png"
             alt="Phone Character"
+            width={96}
+            height={96}
             className="w-24 h-24 drop-shadow-lg"
           />
           {/* Animated rings around character */}
@@ -417,7 +419,7 @@ function Chapter3Content() {
       if (countdownIntervalRef.current)
         clearInterval(countdownIntervalRef.current)
 
-      // Resetuj iba voice a sfx (hudbu nechaj)
+        // Resetuj iba voice a sfx (hudbu nechaj)
       ;[voiceAudioRef, sfxAudioRef].forEach((audioRef) => {
         if (audioRef.current) {
           audioRef.current.pause()

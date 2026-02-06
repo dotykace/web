@@ -1,14 +1,14 @@
-"use client";
+"use client"
 
-import { useCallback } from "react";
-import { Send } from "lucide-react";
+import { useCallback } from "react"
+import { Send } from "lucide-react"
 
 export default function CustomSend({
   onClick,
   isGlowing,
 }: {
-  onClick: () => void;
-  isGlowing: () => boolean;
+  onClick: () => void
+  isGlowing: () => boolean
 }) {
   return (
     <div className="relative">
@@ -23,5 +23,5 @@ export default function CustomSend({
         <Send />
       </button>
     </div>
-  );
+  )
 }

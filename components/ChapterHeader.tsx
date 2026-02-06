@@ -1,17 +1,16 @@
-"use client";
+"use client"
 
-import HelpButton from "@/components/HelpButton";
+import HelpButton from "@/components/HelpButton"
 
 interface ChapterHeaderProps {
-  chapterNumber: number;
-  accentColor?: string;
+  chapterNumber: number
+  accentColor?: string
 }
 
-export default function ChapterHeader({ 
-  chapterNumber, 
-  accentColor = "white" 
+export default function ChapterHeader({
+  chapterNumber,
+  accentColor = "white",
 }: ChapterHeaderProps) {
-
   return (
     <div className="shrink-0 z-50 p-4">
       <div className="max-w-2xl mx-auto">
@@ -29,5 +28,5 @@ export default function ChapterHeader({
         </div>
       </div>
     </div>
-  );
+  )
 }

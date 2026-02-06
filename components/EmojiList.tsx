@@ -3,9 +3,9 @@ export default function EmojiList({
   onEmojiClick,
   className,
 }: {
-  emojis: string[];
-  onEmojiClick: (emoji: string) => void;
-  className?: string;
+  emojis: string[]
+  onEmojiClick: (emoji: string) => void
+  className?: string
 }) {
   return (
     <div className="">
@@ -22,5 +22,5 @@ export default function EmojiList({
         ))}
       </div>
     </div>
-  );
+  )
 }

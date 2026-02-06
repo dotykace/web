@@ -1,62 +1,69 @@
-import React, { useRef } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import VoiceVisualization from "@/components/VoiceVisualization";
-import { useSharedAudio } from "@/context/AudioContext";
-import { Button } from "@/components/ui/button";
-import { SkipForward } from "lucide-react";
+import React, { useRef } from "react"
+import { AnimatePresence, motion } from "framer-motion"
+import VoiceVisualization from "@/components/VoiceVisualization"
+import { useSharedAudio } from "@/context/AudioContext"
+import { Button } from "@/components/ui/button"
+import { SkipForward } from "lucide-react"
 
 interface AudioConfig {
-  filename: string;
-  opts?: { loop?: boolean; volume?: number };
-  onFinish?: () => void;
-  type: "sound" | "voice";
+  filename: string
+  opts?: { loop?: boolean; volume?: number }
+  onFinish?: () => void
+  type: "sound" | "voice"
 }
 
 interface BasicAudioVisualProps {
-  audio?: AudioConfig | null;
-  id?: string;
-  children?: React.ReactNode;
-  coloring?: string;
-  canSkip?: boolean;
-  progress?: number;
+  audio?: AudioConfig | null
+  id?: string
+  children?: React.ReactNode
+  coloring?: string
+  canSkip?: boolean
+  progress?: number
 }
 
-export default function BasicAudioVisual({ audio = null, id, children, coloring = "bg-white/10", canSkip = true, progress = 50 }: BasicAudioVisualProps) {
-  const playedForIdRef = useRef<string | null>(null);
+export default function BasicAudioVisual({
+  audio = null,
+  id,
+  children,
+  coloring = "bg-white/10",
+  canSkip = true,
+  progress = 50,
+}: BasicAudioVisualProps) {
+  const playedForIdRef = useRef<string | null>(null)
 
-  const { playOnce, stopAll } = useSharedAudio();
+  const { playOnce, stopAll } = useSharedAudio()
 
   React.useEffect(() => {
     // Stop ALL audio before playing new audio
-    stopAll();
+    stopAll()
 
     // Only play if we have audio and haven't played for this id yet
     if (audio && playedForIdRef.current !== id) {
-      playedForIdRef.current = id || null;
+      playedForIdRef.current = id || null
       playOnce({
         filename: audio.filename,
         onFinish: audio.onFinish || (() => {}),
         type: audio.type || "sound",
-      });
+      })
     }
 
     // Cleanup: stop all audio when component unmounts
     return () => {
-      stopAll();
-    };
-  }, [id, audio, playOnce, stopAll]);
+      stopAll()
+    }
+  }, [id, audio, playOnce, stopAll])
 
   const skipInteraction = () => {
-    if (!audio) return;
+    if (!audio) return
 
     // Stop ALL audio first
-    stopAll();
+    stopAll()
 
     // Then call onFinish to advance to next interaction
     if (audio.onFinish) {
-      audio.onFinish();
+      audio.onFinish()
     }
-  };
+  }
 
   return (
     <div className={`h-screen overflow-hidden flex flex-col ${coloring}`}>
@@ -104,5 +111,5 @@ export default function BasicAudioVisual({ audio = null, id, children, coloring 
         </div>
       </div>
     </div>
-  );
+  )
 }
