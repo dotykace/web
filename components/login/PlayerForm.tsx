@@ -1,18 +1,25 @@
-import {ReactNode, useState} from "react";
-import {useRouter} from "next/navigation";
-import {collection, doc, getDocs, query, setDoc, where} from "firebase/firestore";
-import {db} from "@/lib/firebase";
-import {FormField} from "@/components/FormField";
-import {Button} from "@/components/ui/button";
-import {LoadingSpinner} from "@/components/ui/loading-spinner";
-import {readFromStorage, setToStorage} from "@/scripts/local-storage";
-import {DotykaceParticipant} from "@/lib/dotykace-types";
+import { ReactNode, useState } from "react"
+import { useRouter } from "next/navigation"
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore"
+import { db } from "@/lib/firebase"
+import { FormField } from "@/components/FormField"
+import { Button } from "@/components/ui/button"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { readFromStorage, setToStorage } from "@/scripts/local-storage"
+import { DotykaceParticipant } from "@/lib/dotykace-types"
 
-export default function PlayerForm({setError}){
-  const roomCodeLabel = "Kód místnosti";
-  const playerNameLabel = "Jméno";
-  const playerNamePlaceholder = "Zadejte vaše jméno";
-  const loginButtonText = "Připojit se";
+export default function PlayerForm({ setError }) {
+  const roomCodeLabel = "Kód místnosti"
+  const playerNameLabel = "Jméno"
+  const playerNamePlaceholder = "Zadejte vaše jméno"
+  const loginButtonText = "Připojit se"
 
   const [roomCode, setRoomCode] = useState("")
   const [playerName, setPlayerName] = useState("")
@@ -32,15 +39,21 @@ export default function PlayerForm({setError}){
         joinedAt: new Date(),
         responses: {
           isComplete: false,
-          voiceOption: "male"
+          voiceOption: "male",
         },
         currentChapter: 0,
         completedChapters: [],
       }
 
-      const participantRef = doc(db, "rooms", roomId, "participants", newPlayerId);
-      await setDoc(participantRef, newParticipant);
-      console.log("Participant added:", newPlayerId);
+      const participantRef = doc(
+        db,
+        "rooms",
+        roomId,
+        "participants",
+        newPlayerId,
+      )
+      await setDoc(participantRef, newParticipant)
+      console.log("Participant added:", newPlayerId)
 
       console.log("✅ Player added successfully")
     } catch (error) {
@@ -75,15 +88,16 @@ export default function PlayerForm({setError}){
         return
       }
       const savedRoomId = readFromStorage("roomId")
-      if (savedRoomId ) {
-        if(savedRoomId !== roomDoc.id){
+      if (savedRoomId) {
+        if (savedRoomId !== roomDoc.id) {
           localStorage.clear()
-        }
-        else {
+        } else {
           const savedPlayerId = readFromStorage("playerId")
-          console.log(`User with ID ${savedPlayerId} is re-joining room "${roomDoc.id}"`)
+          console.log(
+            `User with ID ${savedPlayerId} is re-joining room "${roomDoc.id}"`,
+          )
           router.push("/dotykace/room")
-          return;
+          return
         }
       }
       setToStorage("playerName", playerName)
@@ -99,7 +113,7 @@ export default function PlayerForm({setError}){
     }
   }
 
-  return(
+  return (
     <>
       <FormField
         id="roomCode"
@@ -118,8 +132,12 @@ export default function PlayerForm({setError}){
         onChange={setPlayerName}
         placeholder={playerNamePlaceholder}
       />
-      <Button onClick={handleUserJoin} disabled={loading} className="w-full bg-green-600 hover:bg-green-700">
-        {loading ? <LoadingSpinner className="mr-2" /> as ReactNode : null}
+      <Button
+        onClick={handleUserJoin}
+        disabled={loading}
+        className="w-full bg-green-600 hover:bg-green-700"
+      >
+        {loading ? ((<LoadingSpinner className="mr-2" />) as ReactNode) : null}
         {loginButtonText}
       </Button>
     </>

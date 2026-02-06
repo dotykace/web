@@ -1,34 +1,33 @@
-import {AnimatePresence, motion} from "framer-motion";
-import Card from "@/components/Card";
-import InputArea from "@/components/InputArea";
-import {useEffect, useState} from "react";
-import {useChatContext} from "@/context/ChatContext";
-import {useAudioManager} from "@/hooks/use-audio";
+import { AnimatePresence, motion } from "framer-motion"
+import Card from "@/components/Card"
+import InputArea from "@/components/InputArea"
+import { useEffect, useState } from "react"
+import { useChatContext } from "@/context/ChatContext"
+import { useAudioManager } from "@/hooks/use-audio"
 
-export default function CardSequence(){
-
-  const {currentInteraction, goToNextInteraction} = useChatContext()
+export default function CardSequence() {
+  const { currentInteraction, goToNextInteraction } = useChatContext()
   const [history, setHistory] = useState([])
 
-  const { preloadAll, playPreloaded } = useAudioManager();
+  const { preloadAll, playPreloaded } = useAudioManager()
   const soundMap = {
-    "sound-test": {filename: "vykreslovanie TECKY.mp3"},
-    "game-confirm": {filename: "JINGEL - pozitiv.mp3"},
+    "sound-test": { filename: "vykreslovanie TECKY.mp3" },
+    "game-confirm": { filename: "JINGEL - pozitiv.mp3" },
   }
   useEffect(() => {
     preloadAll(soundMap).then(() => {
-      console.log("All sounds preloaded");
-    });
-  }, []);
+      console.log("All sounds preloaded")
+    })
+  }, [])
 
   useEffect(() => {
-    if (!currentInteraction) return;
-    if (currentInteraction.type === "music" ) {
+    if (!currentInteraction) return
+    if (currentInteraction.type === "music") {
       playPreloaded(currentInteraction.key)
-      return;
+      return
     }
-    setHistory((prev) => [...prev, currentInteraction] )
-  }, [currentInteraction]);
+    setHistory((prev) => [...prev, currentInteraction])
+  }, [currentInteraction])
 
   // todo maybe dont go to the next interaction automatically
   return (
@@ -44,16 +43,20 @@ export default function CardSequence(){
             className="w-full"
           >
             <Card
-              onClick={()=>{
-              if(currentInteraction.type === "message"){
-                goToNextInteraction()
-              }
-            }}>
+              onClick={() => {
+                if (currentInteraction.type === "message") {
+                  goToNextInteraction()
+                }
+              }}
+            >
               <div className="p-6">
-                <p className="text-lg mb-4 text-black">{currentInteraction?.text()}</p>
+                <p className="text-lg mb-4 text-black">
+                  {currentInteraction?.text()}
+                </p>
 
-                {(currentInteraction?.type === "input" || currentInteraction?.type === "multiple-choice") && (
-                  <InputArea/>
+                {(currentInteraction?.type === "input" ||
+                  currentInteraction?.type === "multiple-choice") && (
+                  <InputArea />
                 )}
               </div>
             </Card>
@@ -64,8 +67,8 @@ export default function CardSequence(){
           <div className="flex space-x-2">
             {history.map((interaction, index) => (
               <div
-              key={index}
-              className={`w-2 h-2 rounded-full ${index+1 === history.length ? "bg-white" : "bg-white/30"}`}
+                key={index}
+                className={`w-2 h-2 rounded-full ${index + 1 === history.length ? "bg-white" : "bg-white/30"}`}
               />
             ))}
           </div>

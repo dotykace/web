@@ -15,16 +15,16 @@ interface FormFieldProps {
 }
 
 export const FormField: React.FC<FormFieldProps> = ({
-                                                      id,
-                                                      label,
-                                                      type = "text",
-                                                      value,
-                                                      onChange,
-                                                      placeholder,
-                                                      className = "",
-                                                      maxLength,
-                                                      onKeyPress,
-                                                    }) => {
+  id,
+  label,
+  type = "text",
+  value,
+  onChange,
+  placeholder,
+  className = "",
+  maxLength,
+  onKeyPress,
+}) => {
   return (
     <div className="space-y-2">
       <Label htmlFor={id} className="text-gray-900 font-medium">

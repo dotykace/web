@@ -1,33 +1,39 @@
-import Place from "@/components/chapter1/Place";
-import CustomPlay from "@/components/chapter1/CustomPlay";
-import React, {useEffect, useState} from "react";
-import {LocalSvgRenderer} from "@/components/LocalSvgRenderer";
-import MobileNotification from "@/components/mobile-notification";
-import EmojiList from "@/components/EmojiList";
+import Place from "@/components/chapter1/Place"
+import CustomPlay from "@/components/chapter1/CustomPlay"
+import React, { useEffect, useState } from "react"
+import { LocalSvgRenderer } from "@/components/LocalSvgRenderer"
+import MobileNotification from "@/components/mobile-notification"
+import EmojiList from "@/components/EmojiList"
 
-export default function PlacePlay({current, goToNext}) {
+export default function PlacePlay({ current, goToNext }) {
   const dotPosition = { start: 100 }
 
-  const PREDEFINED_EMOJIS = ["🍽","️😋","🤤","🥴","🤢","☠️"]
+  const PREDEFINED_EMOJIS = ["🍽", "️😋", "🤤", "🥴", "🤢", "☠️"]
   const [animatingEmoji, setAnimatingEmoji] = useState<string | null>(null)
   const [isAnimating, setIsAnimating] = useState(false)
   const [placeVisible, setPlaceVisible] = useState(true)
 
-  const notificationProps ={
+  const notificationProps = {
     id: current.id,
     title: "New Message",
     message: current?.text() ?? "",
-    icon: <LocalSvgRenderer filename={current.face??"happy_1"} className="w-8 h-8"/>,}
+    icon: (
+      <LocalSvgRenderer
+        filename={current.face ?? "happy_1"}
+        className="w-8 h-8"
+      />
+    ),
+  }
 
   const [showNotification, setShowNotification] = useState(false)
 
   useEffect(() => {
-    if (!current) return;
+    if (!current) return
     if (current.id === "input-place-2") {
       setShowNotification(true)
       return
     }
-  }, [current]);
+  }, [current])
 
   const handleEmojiClick = (emoji: string) => {
     setPlaceVisible(false)
@@ -44,23 +50,27 @@ export default function PlacePlay({current, goToNext}) {
     }, 1500)
   }
 
-  return(
+  return (
     <>
-      {
-        placeVisible && (
-          <Place
-            dotPosition={dotPosition}
-            onAnimationEnd={() => goToNext("1.20")}
-            onReveal={() => goToNext("1.21")}
-          >
-            {()=><div
-              style={{position: "absolute", left: "calc(50% - 25px)", top: "calc(50% - 25px)"}}
+      {placeVisible && (
+        <Place
+          dotPosition={dotPosition}
+          onAnimationEnd={() => goToNext("1.20")}
+          onReveal={() => goToNext("1.21")}
+        >
+          {() => (
+            <div
+              style={{
+                position: "absolute",
+                left: "calc(50% - 25px)",
+                top: "calc(50% - 25px)",
+              }}
             >
-              {<CustomPlay onClick={() => goToNext("input-place-2")}/>}
-            </div>}
-          </Place>
-        )
-      }
+              {<CustomPlay onClick={() => goToNext("input-place-2")} />}
+            </div>
+          )}
+        </Place>
+      )}
 
       <MobileNotification
         {...notificationProps}
@@ -69,7 +79,12 @@ export default function PlacePlay({current, goToNext}) {
           setShowNotification(false)
         }}
         duration={current?.duration * 1000}
-        content={() => <EmojiList onEmojiClick={handleEmojiClick} emojis={PREDEFINED_EMOJIS} />}
+        content={() => (
+          <EmojiList
+            onEmojiClick={handleEmojiClick}
+            emojis={PREDEFINED_EMOJIS}
+          />
+        )}
       />
       {isAnimating && animatingEmoji && (
         <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">

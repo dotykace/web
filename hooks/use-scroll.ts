@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react"
 
 export function useSwipeNavigation(
   onSwipe: (direction: "up" | "down") => void,
-  minSwipeDistance: number = 50
+  minSwipeDistance: number = 50,
 ) {
   const touchStartY = useRef(0)
   const touchEndY = useRef(0)

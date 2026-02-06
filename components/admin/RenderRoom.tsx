@@ -1,17 +1,30 @@
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
-import {Badge} from "@/components/ui/badge";
-import {Button} from "@/components/ui/button";
-import { Download, LockKeyhole, Play, Trash2, UnlockKeyhole, Users} from "lucide-react";
-import {ChapterPermissions, DotykaceRoom} from "@/lib/dotykace-types";
-import { deleteDoc, doc, Timestamp, updateDoc} from "firebase/firestore";
-import {db} from "@/lib/firebase";
-import ProgressTable from "@/components/admin/ProgressTable";
-import useParticipants from "@/hooks/use-participants";
-import {useEffect, useState} from "react";
-import {Switch} from "@/components/ui/switch";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+  Download,
+  LockKeyhole,
+  Play,
+  Trash2,
+  UnlockKeyhole,
+  Users,
+} from "lucide-react"
+import { ChapterPermissions, DotykaceRoom } from "@/lib/dotykace-types"
+import { deleteDoc, doc, Timestamp, updateDoc } from "firebase/firestore"
+import { db } from "@/lib/firebase"
+import ProgressTable from "@/components/admin/ProgressTable"
+import useParticipants from "@/hooks/use-participants"
+import { useEffect, useState } from "react"
+import { Switch } from "@/components/ui/switch"
 export const chapterList = [0, 1, 2, 3, 4, 5]
-export default function RenderRoom({room, processedRooms}) {
-  const {participants} = useParticipants({room})
+export default function RenderRoom({ room, processedRooms }) {
+  const { participants } = useParticipants({ room })
   const [showVideo, setShowVideo] = useState(false)
 
   const changeVideoSettings = async (showVideo: boolean) => {
@@ -20,8 +33,7 @@ export default function RenderRoom({room, processedRooms}) {
       await updateDoc(doc(db, "rooms", room.docId!), {
         showVideo: true,
       } as Partial<DotykaceRoom>)
-    }
-    else if (!showVideo && videoUnlocked) {
+    } else if (!showVideo && videoUnlocked) {
       await updateDoc(doc(db, "rooms", room.docId!), {
         showVideo: false,
       } as Partial<DotykaceRoom>)
@@ -30,19 +42,23 @@ export default function RenderRoom({room, processedRooms}) {
 
   useEffect(() => {
     changeVideoSettings(showVideo)
-  }, [showVideo]);
-
+  }, [showVideo])
 
   // todo maybe remove this restriction?
   const canUnlockChapterForAll = (room: DotykaceRoom, chapter: number) => {
-    return participants.some((p) => (p.completedChapters || []).includes(chapter - 1) || chapter === 1)
+    return participants.some(
+      (p) => (p.completedChapters || []).includes(chapter - 1) || chapter === 1,
+    )
   }
 
   const isChapterGloballyUnlocked = (room: DotykaceRoom, chapter: number) => {
     return room.globalUnlockedChapters?.includes(chapter) || false
   }
 
-  const allowNextChapterForAll = async (room: DotykaceRoom, nextChapter: number) => {
+  const allowNextChapterForAll = async (
+    room: DotykaceRoom,
+    nextChapter: number,
+  ) => {
     //if(!canUnlockChapterForAll(room, nextChapter)) return
     try {
       const currentPermissions = room.chapterPermissions || {}
@@ -77,7 +93,9 @@ export default function RenderRoom({room, processedRooms}) {
         globalUnlockedChapters: updatedGlobalUnlocked,
       })
 
-      const keysToDelete = Array.from(processedRooms.current).filter((key) => key.startsWith(room.docId!))
+      const keysToDelete = Array.from(processedRooms.current).filter((key) =>
+        key.startsWith(room.docId!),
+      )
       keysToDelete.forEach((key) => processedRooms.current.delete(key))
     } catch (error) {
       console.error("❌ Error updating chapter permissions for all:", error)
@@ -99,7 +117,9 @@ export default function RenderRoom({room, processedRooms}) {
   const deleteRoom = async (roomDocId: string) => {
     try {
       await deleteDoc(doc(db, "rooms", roomDocId))
-      const keysToDelete = Array.from(processedRooms.current).filter((key) => key.startsWith(roomDocId))
+      const keysToDelete = Array.from(processedRooms.current).filter((key) =>
+        key.startsWith(roomDocId),
+      )
       keysToDelete.forEach((key) => processedRooms.current.delete(key))
     } catch (error) {
       console.error("❌ Error deleting room:", error)
@@ -109,7 +129,13 @@ export default function RenderRoom({room, processedRooms}) {
   const exportData = async (room: DotykaceRoom) => {
     try {
       const csvData = [
-        ["Meno", "Čas pripojenia", "Aktuálna kapitola", "Dokončené kapitoly", "Povolené kapitoly"],
+        [
+          "Meno",
+          "Čas pripojenia",
+          "Aktuálna kapitola",
+          "Dokončené kapitoly",
+          "Povolené kapitoly",
+        ],
         ...participants.map((p) => {
           const permissions = room.chapterPermissions?.[p.id]
           return [
@@ -186,7 +212,8 @@ export default function RenderRoom({room, processedRooms}) {
               {room.isStarted && <Badge variant="destructive">Spustená</Badge>}
             </CardTitle>
             <CardDescription>
-              Kód miestnosti: <span className="font-mono font-bold text-lg">{room.id}</span>
+              Kód miestnosti:{" "}
+              <span className="font-mono font-bold text-lg">{room.id}</span>
             </CardDescription>
             <div className="flex items-center gap-2 text-sm text-gray-600 mt-2">
               <Users className="w-4 h-4" />
@@ -195,10 +222,7 @@ export default function RenderRoom({room, processedRooms}) {
           </div>
           <div className="flex gap-2 items-center">
             <h3>Dopamin:</h3>
-            <Switch
-              checked={showVideo}
-              onCheckedChange={setShowVideo}
-            />
+            <Switch checked={showVideo} onCheckedChange={setShowVideo} />
             <Button
               size="sm"
               onClick={() => startRoom(room.docId!)}
@@ -208,11 +232,19 @@ export default function RenderRoom({room, processedRooms}) {
               <Play className="w-4 h-4 mr-1" />
               {room.isStarted ? "Spustená" : "Začať"}
             </Button>
-            <Button size="sm" variant="outline" onClick={() => exportData(room)}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => exportData(room)}
+            >
               <Download className="w-4 h-4 mr-1" />
               Export
             </Button>
-            <Button size="sm" variant="destructive" onClick={() => deleteRoom(room.docId!)}>
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={() => deleteRoom(room.docId!)}
+            >
               <Trash2 className="w-4 h-4" />
             </Button>
           </div>
@@ -220,9 +252,13 @@ export default function RenderRoom({room, processedRooms}) {
       </CardHeader>
       <CardContent>
         {/* Participant Progress Table */}
-        {participants && participants.length > 0 &&
-            <ProgressTable room={room} headerButtons={BulkActions} participants={participants}/>
-        }
+        {participants && participants.length > 0 && (
+          <ProgressTable
+            room={room}
+            headerButtons={BulkActions}
+            participants={participants}
+          />
+        )}
       </CardContent>
     </Card>
   )

@@ -8,24 +8,28 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin", "latin-ext"] })
 
 export const metadata: Metadata = {
-    title: "Teen Card App",
-    description: "Interactive card-based app for teenagers",
-    generator: "v0.dev",
+  title: "Teen Card App",
+  description: "Interactive card-based app for teenagers",
+  generator: "v0.dev",
 }
 
 export default function RootLayout({
-                                       children,
-                                   }: {
-    children: React.ReactNode
+  children,
+}: {
+  children: React.ReactNode
 }) {
-    return (
-        <html lang="cs" suppressHydrationWarning>
-        <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-            {children}
-            <Toaster />
+  return (
+    <html lang="cs" suppressHydrationWarning>
+      <body className={inter.className}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+        >
+          {children}
+          <Toaster />
         </ThemeProvider>
-        </body>
-        </html>
-    )
+      </body>
+    </html>
+  )
 }

@@ -1,20 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import {AnimatePresence, motion} from "framer-motion"
-import {Pause, Play} from "lucide-react"
-import {useSharedAudio} from "@/context/AudioContext";
+import { AnimatePresence, motion } from "framer-motion"
+import { Pause, Play } from "lucide-react"
+import { useSharedAudio } from "@/context/AudioContext"
+import Image from "next/image"
 
-export default function CustomPlay({onClick}) {
+export default function CustomPlay({ onClick }) {
   const [showLogos, setShowLogos] = useState(false)
-  const [logos, setLogos] = useState<>([])
+  const [logos, setLogos] = useState<[{}]>([])
 
-  const logoData = [
-    "Facebook",
-    "Instagram",
-    "TikTok",
-    "YouTube",
-  ]
+  const logoData = ["Facebook", "Instagram", "TikTok", "YouTube"]
 
   const generateLogoList = () => {
     const radius = 110
@@ -34,18 +30,18 @@ export default function CustomPlay({onClick}) {
     setLogos(newEmojis)
   }
 
-  const {playPreloaded} = useSharedAudio()
+  const { playPreloaded } = useSharedAudio()
 
-  const handleClick = () =>{
+  const handleClick = () => {
     generateLogoList()
     if (!showLogos) {
       if (onClick) {
-        playPreloaded("chaos").then(()=> {
+        playPreloaded("chaos").then(() => {
           onClick()
         })
       }
     }
-    setShowLogos(prevState => !prevState)
+    setShowLogos((prevState) => !prevState)
   }
 
   return (
@@ -87,11 +83,15 @@ export default function CustomPlay({onClick}) {
                     delay: Math.random() * 0.1,
                     type: "spring",
                     stiffness: 200,
-                    damping: 10 * Math.random() +10,
+                    damping: 10 * Math.random() + 10,
                   }}
                   className="absolute top-0 left-0 "
                 >
-                  <img src={"/logos/" + emoji.text +"_logo.svg"} alt={"My Icon "+emoji.text} className="w-20 h-20" />
+                  <Image
+                    src={"/logos/" + emoji.text + "_logo.svg"}
+                    alt={"My Icon " + emoji.text}
+                    className="w-20 h-20"
+                  />
                 </motion.div>
               </div>
             </div>

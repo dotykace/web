@@ -1,13 +1,13 @@
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {Plus} from "lucide-react";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
-import {LoadingSpinner} from "@/components/ui/loading-spinner";
-import {addDoc, collection} from "firebase/firestore";
-import {db} from "@/lib/firebase";
-import {useState} from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Plus } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { addDoc, collection } from "firebase/firestore"
+import { db } from "@/lib/firebase"
+import { useState } from "react"
 
-export default function CreateRoom({adminId}) {
+export default function CreateRoom({ adminId }) {
   const [newRoomName, setNewRoomName] = useState("")
   const [loading, setLoading] = useState(false)
   const createRoom = async () => {
@@ -49,8 +49,17 @@ export default function CreateRoom({adminId}) {
           onChange={(e) => setNewRoomName(e.target.value)}
           className="h-8 flex-grow text-sm"
         />
-        <Button size="icon" className="h-8 w-8 flex-shrink-0" onClick={createRoom} disabled={loading || !newRoomName.trim()}>
-          {loading ? <LoadingSpinner className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+        <Button
+          size="icon"
+          className="h-8 w-8 flex-shrink-0"
+          onClick={createRoom}
+          disabled={loading || !newRoomName.trim()}
+        >
+          {loading ? (
+            <LoadingSpinner className="w-4 h-4" />
+          ) : (
+            <Plus className="w-4 h-4" />
+          )}
         </Button>
       </div>
     </div>

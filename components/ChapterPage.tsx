@@ -13,10 +13,19 @@ interface ChapterPageProps {
   ViewComponent: React.ComponentType<any>
 }
 
-export default function ChapterPage({ chapterNumber, interactionsFileName, ViewComponent }: ChapterPageProps) {
+export default function ChapterPage({
+  chapterNumber,
+  interactionsFileName,
+  ViewComponent,
+}: ChapterPageProps) {
   const chapter = readFromStorage("chapter") as number
-  const { state, currentInteraction, goToNextInteraction, handleUserInput, handleChoiceSelection } =
-      useInteractions(interactionsFileName)
+  const {
+    state,
+    currentInteraction,
+    goToNextInteraction,
+    handleUserInput,
+    handleChoiceSelection,
+  } = useInteractions(interactionsFileName)
 
   const pathname = usePathname()
 
@@ -35,8 +44,13 @@ export default function ChapterPage({ chapterNumber, interactionsFileName, ViewC
   }
 
   return (
-      <ChatProvider handleUserInput={handleUserInput} handleChoiceSelection={handleChoiceSelection} currentInteraction={currentInteraction} goToNextInteraction={goToNextInteraction}>
-        <ViewComponent/>
-      </ChatProvider>
+    <ChatProvider
+      handleUserInput={handleUserInput}
+      handleChoiceSelection={handleChoiceSelection}
+      currentInteraction={currentInteraction}
+      goToNextInteraction={goToNextInteraction}
+    >
+      <ViewComponent />
+    </ChatProvider>
   )
 }

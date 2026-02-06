@@ -80,10 +80,10 @@
       "duration": 9,
       "text": "Připoj ke mně sluchátka, ať se nepřekřikujeme s ostatními.",
       "choices": [
-          {
+        {
           "label": "Mám sluchátka v uších",
           "next-id": "first-sound-test_a"
-          }
+        }
       ]
     },
     "first-sound-test_a": {

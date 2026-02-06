@@ -1,7 +1,7 @@
 "use client"
 
-import {AnimatePresence, motion} from "framer-motion"
-import {Interaction} from "@/interactions";
+import { AnimatePresence, motion } from "framer-motion"
+import { Interaction } from "@/interactions"
 
 interface ChatBubbleProps {
   type: string
@@ -9,7 +9,7 @@ interface ChatBubbleProps {
 }
 
 export default function ChatBubble({ text, type }: ChatBubbleProps) {
-  const renderText = typeof text === "function" ? text() : text;
+  const renderText = typeof text === "function" ? text() : text
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -27,11 +27,11 @@ export default function ChatBubble({ text, type }: ChatBubbleProps) {
               {renderText}
             </div>
           </div>
-        ): type === "message" ? (
+        ) : type === "message" ? (
           <div className="bg-white/20 text-white p-3 rounded-xl rounded-tl-none">
             <p>{renderText}</p>
           </div>
-        ): null}
+        ) : null}
       </motion.div>
     </AnimatePresence>
   )

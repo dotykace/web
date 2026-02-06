@@ -1,26 +1,26 @@
-import { db } from "@/lib/firebase";
-import {collection, getDocs} from "firebase/firestore";
-import { Parser } from "json2csv";
+import { db } from "@/lib/firebase"
+import { collection, getDocs } from "firebase/firestore"
+import { Parser } from "json2csv"
 
 export async function GET(
   request: Request,
-  { params }: { params: { collection: string } }
+  { params }: { params: { collection: string } },
 ) {
-  const collectionName : string  = params.collection
+  const collectionName: string = params.collection
 
   if (!collectionName) {
-    return new Response("Missing collection name", { status: 400 });
+    return new Response("Missing collection name", { status: 400 })
   }
 
-  const collectionReference = collection(db, collectionName);
-  const snapshot = await getDocs(collectionReference);
+  const collectionReference = collection(db, collectionName)
+  const snapshot = await getDocs(collectionReference)
 
   if (snapshot.empty) {
-    return new Response("Collection is empty", { status: 404 });
+    return new Response("Collection is empty", { status: 404 })
   }
 
-  const data = snapshot.docs.map(doc => {
-    const d = doc.data();
+  const data = snapshot.docs.map((doc) => {
+    const d = doc.data()
 
     return {
       id: doc.id,
@@ -36,8 +36,8 @@ export async function GET(
       choice_label: d.choice?.label ?? "",
       choice_nextId: d.choice?.nextId ?? "",
       choice_interactionId: d.choice?.interactionId ?? "",
-    };
-  });
+    }
+  })
 
   const parser = new Parser({
     fields: [
@@ -53,14 +53,14 @@ export async function GET(
       "choice_nextId",
       "choice_interactionId",
     ],
-  });
+  })
 
-  const csv = parser.parse(data);
+  const csv = parser.parse(data)
 
   return new Response(csv, {
     headers: {
       "Content-Type": "text/csv",
       "Content-Disposition": `attachment; filename="${collectionName}.csv"`,
     },
-  });
+  })
 }

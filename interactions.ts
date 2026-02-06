@@ -5,7 +5,13 @@ export interface Choice {
 
 export interface Interaction {
   id: string
-  type: "message" | "input" | "multiple-choice" | "animation" | "notification" | "user-message"
+  type:
+    | "message"
+    | "input"
+    | "multiple-choice"
+    | "animation"
+    | "notification"
+    | "user-message"
   duration: number
   "next-id"?: string
   "timeout-id"?: string
@@ -28,7 +34,7 @@ export interface RawInteraction {
   [key: string]: any
 }
 
-export type InteractionRecord = Record<string, RawInteraction>;
+export type InteractionRecord = Record<string, RawInteraction>
 // Type for the interactions object structure in JSON
 export interface InteractionsData {
   interactions: InteractionRecord
