@@ -45,6 +45,8 @@ const VoiceVisualization = ({ isActive }: { isActive: boolean }) => {
           className={`relative transition-all duration-1000 ${isActive ? "animate-pulse scale-110" : "scale-100"}`}
         >
           <Image
+            width={96}
+            height={96}
             src="/images/phone-character-simple.png"
             alt="Phone Character"
             className="w-24 h-24 drop-shadow-lg"
