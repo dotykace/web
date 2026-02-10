@@ -5,7 +5,6 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import HelpButton from "@/components/HelpButton"
 import useDB from "@/hooks/use-db"
@@ -26,7 +25,6 @@ const CHAPTER2_PROGRESS_KEY = "chapter2_progress"
 interface Chapter2Progress {
   currentInteractionId: string
   savedUserMessage: string
-  hasStartedExperience: boolean
 }
 
 function Chapter2Content() {
@@ -38,7 +36,6 @@ function Chapter2Content() {
   const [timeLeft, setTimeLeft] = useState<number | null>(null)
   const [showWarning, setShowWarning] = useState(false)
   const [audioInitialized, setAudioInitialized] = useState(false)
-  const [hasStartedExperience, setHasStartedExperience] = useState(false)
 
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -113,11 +110,10 @@ function Chapter2Content() {
 
   // LocalStorage functions
   const saveProgressToLocalStorage = useCallback(
-    (interactionId: string, message: string, started: boolean) => {
+    (interactionId: string, message: string) => {
       const progress: Chapter2Progress = {
         currentInteractionId: interactionId,
         savedUserMessage: message,
-        hasStartedExperience: started,
       }
       setToStorage(CHAPTER2_PROGRESS_KEY, progress)
     },
@@ -194,7 +190,6 @@ function Chapter2Content() {
     saveProgressToLocalStorage(
       currentInteraction.id,
       savedUserMessage,
-      hasStartedExperience,
     )
     goToNextInteraction(nextId)
   }
@@ -225,11 +220,6 @@ function Chapter2Content() {
       dbHook.updateChapter(2, () => router.push("/menu")).then()
     }
   }, [currentInteraction])
-
-  const handleStartExperience = async () => {
-    await initializeAudio()
-    setHasStartedExperience(true)
-  }
 
   const CustomButton = useCallback(
     (choice) => {
@@ -283,7 +273,7 @@ function Chapter2Content() {
     )
   }, [inputValue, timeLeft, showWarning, currentInteraction, handleInputSave])
 
-  if (currentInteraction === "checkpoint" || state === "loading") {
+  if (!currentInteraction || currentInteraction === "checkpoint" || state === "loading") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
         <div className="text-white text-xl">Načítavam...</div>
@@ -295,30 +285,6 @@ function Chapter2Content() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
         <div className="text-white text-xl">Chyba pri načítaní</div>
-      </div>
-    )
-  }
-
-  // Show start button if experience hasn't started
-  if (!hasStartedExperience) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-white/10 backdrop-blur-lg border-white/20 shadow-2xl">
-          <CardContent className="p-8 text-center">
-            <h2 className="text-2xl font-bold text-white mb-4">
-              Vitajte v Kapitole 2
-            </h2>
-            <p className="text-white/80 mb-6">
-              Pre spustenie zážitku kliknite na tlačidlo.
-            </p>
-            <Button
-              onClick={handleStartExperience}
-              className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30 transition-all duration-200 hover:scale-105"
-            >
-              Spustiť
-            </Button>
-          </CardContent>
-        </Card>
       </div>
     )
   }

@@ -88,9 +88,10 @@ export default function CustomPlay({ onClick }) {
                   className="absolute top-0 left-0 "
                 >
                   <Image
+                    width={80}
+                    height={80}
                     src={"/logos/" + emoji.text + "_logo.svg"}
                     alt={"My Icon " + emoji.text}
-                    className="w-20 h-20"
                   />
                 </motion.div>
               </div>
