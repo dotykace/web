@@ -6,8 +6,8 @@
   "startInteractionId": "chapter-1-start",
   "interactions": {
     "chapter-1-start": {
-      "type": "checkpoint",
-      "duration": 0.5,
+      "type": "video",
+      "source": "chapter1.mp4",
       "next-id": "1.1"
     },
     "1.1": {

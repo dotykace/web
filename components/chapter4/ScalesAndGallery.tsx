@@ -92,7 +92,7 @@ function ScalesAndGalleryContent() {
       if (currentInteraction) {
         return (
           <FullScreenVideo
-            videoSrc={`${selectedVoice}/painter.mp4`}
+            videoSrc={`${selectedVoice}/${currentInteraction.source}`}
             onEnded={() => goToNextInteraction()}
           />
         )

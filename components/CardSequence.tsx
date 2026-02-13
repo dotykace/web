@@ -4,6 +4,7 @@ import InputArea from "@/components/InputArea"
 import { useEffect, useState } from "react"
 import { useChatContext } from "@/context/ChatContext"
 import { useAudioManager } from "@/hooks/use-audio"
+import FullScreenVideo from "@/components/FullScreenVideo";
 
 export default function CardSequence() {
   const { currentInteraction, goToNextInteraction } = useChatContext()
@@ -28,6 +29,16 @@ export default function CardSequence() {
     }
     setHistory((prev) => [...prev, currentInteraction])
   }, [currentInteraction])
+
+  if (currentInteraction.type === "video") {
+    console.log("Playing video:", currentInteraction.source)
+    return (
+      <FullScreenVideo
+        videoSrc={currentInteraction.source}
+        onEnded={ () => goToNextInteraction()}
+      />
+    )
+  }
 
   // todo maybe dont go to the next interaction automatically
   return (

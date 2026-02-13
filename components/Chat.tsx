@@ -16,6 +16,7 @@ import ScreenTransition from "@/components/chapter1/ScreenTransition"
 import VoiceRoom from "@/components/chapter1/VoiceRoom"
 import { setToStorage } from "@/scripts/local-storage"
 import useDB from "@/hooks/use-db"
+import FullScreenVideo from "@/components/FullScreenVideo";
 
 const soundMap = {
   "overlay-on": { filename: "vykreslovanie TECKY.mp3" },
@@ -117,8 +118,13 @@ function ChatContent() {
     setHistory((prev) => [...prev, userMessage])
   }
 
-  if (!currentInteraction) {
-    return <div>Loading...</div>
+  if (currentInteraction.type === "video") {
+    return (
+      <FullScreenVideo
+        videoSrc={currentInteraction.source}
+        onEnded={() => goToNextInteraction()}
+      />
+    )
   }
 
   const notificationProps = {
