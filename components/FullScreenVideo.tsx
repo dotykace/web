@@ -3,7 +3,8 @@ import AudioControl from "@/components/AudioControl";
 
 export default function FullScreenVideo({ videoSrc, onEnded }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [isMuted, setIsMuted] = React.useState(false)
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+  const [isMuted, setIsMuted] = React.useState(isIOS)
 
   const toggleMute = () => {
     setIsMuted((prev) => {
@@ -25,6 +26,7 @@ export default function FullScreenVideo({ videoSrc, onEnded }) {
         src={`/videos/${videoSrc}`}
         playsInline
         autoPlay={true}
+        muted={isMuted}
       />
     </div>
   )
