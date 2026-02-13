@@ -13,7 +13,7 @@ export default function FullScreenVideo({ videoSrc, onEnded }) {
   }
   return (
     <div className="relative w-screen h-screen aspect-video rounded-lg overflow-hidden shadow-lg">
-      <AudioControl onClick={toggleMute} audioEnabled={!isMuted}/>)
+      <AudioControl onClick={toggleMute} audioEnabled={!isMuted}/>
       <video
         onEnded={onEnded}
         ref={videoRef}
