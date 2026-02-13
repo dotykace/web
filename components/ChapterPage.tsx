@@ -16,16 +16,25 @@ interface ChapterPageProps {
 
 export const CHAPTER2_PROGRESS_KEY = "chapter2_progress"
 
+const getProgressId = (chapterNumber: number) => {
+  // todo handle other chapters when they have progress saving implemented
+  if (chapterNumber === 2) {
+    const progress = readFromStorage(CHAPTER2_PROGRESS_KEY) as string
+    if (progress) {
+      console.log(`Resuming chapter ${chapterNumber} from interaction ID:`, progress)
+      return progress.currentInteractionId;
+    }
+  }
+  return null
+}
+
 export default function ChapterPage({
   chapterNumber,
   interactionsFileName,
   ViewComponent,
 }: ChapterPageProps) {
   const chapter = readFromStorage("chapter") as number
-  let savedProgress = null
-  if (chapterNumber === 2) {
-    savedProgress = readFromStorage(CHAPTER2_PROGRESS_KEY) as string
-  }
+  const savedProgress = getProgressId(chapterNumber)
   const {
     state,
     soundMap,
@@ -33,7 +42,7 @@ export default function ChapterPage({
     goToNextInteraction,
     handleUserInput,
     handleChoiceSelection,
-  } = useInteractions(interactionsFileName, savedProgress ? savedProgress.currentInteractionId : null)
+  } = useInteractions(interactionsFileName, savedProgress)
 
   const pathname = usePathname()
 
