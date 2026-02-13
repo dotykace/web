@@ -1,15 +1,10 @@
-import Card from "@/components/Card"
-
-export default function LoadingScreen({ message = "Načítání interakcí..." }) {
+export default function LoadingScreen({ message = "Načítavam..." }) {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
-      <div className="w-full max-w-md mx-auto">
-        <Card>
-          <div className="p-6 text-center">
-            <div className="animate-pulse">{message}</div>
-          </div>
-        </Card>
+    <div className="min-h-screen bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex items-center justify-center">
+      <div className="text-white text-center">
+        <div className="animate-spin rounded-full border-2 border-white border-t-transparent h-8 w-8 mx-auto mb-4" />
+        <p>{message}</p>
       </div>
-    </main>
+    </div>
   )
 }
