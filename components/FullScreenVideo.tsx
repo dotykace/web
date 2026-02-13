@@ -6,11 +6,15 @@ export default function FullScreenVideo({ videoSrc, onEnded }) {
   const [isMuted, setIsMuted] = React.useState(false)
 
   const toggleMute = () => {
-    setIsMuted((prev) => !prev)
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted
-    }
+    setIsMuted((prev) => {
+      const newMuted = !prev
+      if (videoRef.current) {
+        videoRef.current.muted = newMuted
+      }
+      return newMuted
+    })
   }
+
   return (
     <div className="relative w-screen h-screen aspect-video rounded-lg overflow-hidden shadow-lg">
       <AudioControl onClick={toggleMute} audioEnabled={!isMuted}/>
