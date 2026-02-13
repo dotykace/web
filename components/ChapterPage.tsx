@@ -1,11 +1,12 @@
 "use client"
 
-import type React from "react"
+import React from "react"
 import { readFromStorage } from "@/scripts/local-storage"
 import { useInteractions } from "@/hooks/use-interactions"
 import { redirect, usePathname } from "next/navigation"
 import LoadingScreen from "@/components/LoadingScreen"
 import { ChatProvider } from "@/context/ChatContext"
+import AudioWrapper from "@/components/audio/AudioWrapper";
 
 interface ChapterPageProps {
   chapterNumber: number
@@ -27,6 +28,7 @@ export default function ChapterPage({
   }
   const {
     state,
+    soundMap,
     currentInteraction,
     goToNextInteraction,
     handleUserInput,
@@ -40,19 +42,22 @@ export default function ChapterPage({
     redirect("/")
   }
 
-  if (!state || state === "loading" || !currentInteraction) {
+  if (!state || state === "loading" || !currentInteraction || !soundMap) {
     return <LoadingScreen />
   }
 
   return (
-    <ChatProvider
-      state={state}
-      handleUserInput={handleUserInput}
-      handleChoiceSelection={handleChoiceSelection}
-      currentInteraction={currentInteraction}
-      goToNextInteraction={goToNextInteraction}
-    >
-      <ViewComponent />
-    </ChatProvider>
+    <AudioWrapper soundMap={soundMap}>
+      <ChatProvider
+        state={state}
+        handleUserInput={handleUserInput}
+        handleChoiceSelection={handleChoiceSelection}
+        currentInteraction={currentInteraction}
+        goToNextInteraction={goToNextInteraction}
+      >
+        <ViewComponent />
+      </ChatProvider>
+    </AudioWrapper>
+
   )
 }

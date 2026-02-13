@@ -3,6 +3,10 @@
   "name": "Introduction",
   "description": "Introduction sequence before main menu",
   "version": "1.0.0",
+  "soundMap": {
+    "sound-test": { "filename": "vykreslovanie TECKY.mp3" },
+    "game-confirm": { "filename": "JINGEL - pozitiv.mp3" }
+  },
   "startInteractionId": "intro-video",
   "interactions": {
     "intro-video": {

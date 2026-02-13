@@ -3,23 +3,16 @@ import Card from "@/components/Card"
 import InputArea from "@/components/InputArea"
 import { useEffect, useState } from "react"
 import { useChatContext } from "@/context/ChatContext"
-import { useAudioManager } from "@/hooks/use-audio"
 import FullScreenVideo from "@/components/FullScreenVideo";
+import {useSharedAudio} from "@/context/AudioContext";
+import LoadingScreen from "@/components/LoadingScreen";
 
 export default function CardSequence() {
   const { currentInteraction, goToNextInteraction } = useChatContext()
   const [history, setHistory] = useState([])
 
-  const { preloadAll, playPreloaded } = useAudioManager()
-  const soundMap = {
-    "sound-test": { filename: "vykreslovanie TECKY.mp3" },
-    "game-confirm": { filename: "JINGEL - pozitiv.mp3" },
-  }
-  useEffect(() => {
-    preloadAll(soundMap).then(() => {
-      console.log("All sounds preloaded")
-    })
-  }, [])
+  const { playPreloaded } = useSharedAudio()
+
 
   useEffect(() => {
     if (!currentInteraction) return
@@ -30,8 +23,11 @@ export default function CardSequence() {
     setHistory((prev) => [...prev, currentInteraction])
   }, [currentInteraction])
 
+  if (currentInteraction.type === "checkpoint") {
+    return <LoadingScreen />
+  }
+
   if (currentInteraction.type === "video") {
-    console.log("Playing video:", currentInteraction.source)
     return (
       <FullScreenVideo
         videoSrc={currentInteraction.source}
@@ -40,7 +36,6 @@ export default function CardSequence() {
     )
   }
 
-  // todo maybe dont go to the next interaction automatically
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600">
       <div className="w-full max-w-md mx-auto">
