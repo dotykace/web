@@ -18,9 +18,8 @@ import InputArea from "@/components/InputArea"
 import { ChatProvider, useChatContext } from "@/context/ChatContext"
 import { useSharedAudio } from "@/context/AudioContext"
 import VoiceVisualization from "@/components/VoiceVisualization"
+import { CHAPTER2_PROGRESS_KEY } from "@/components/ChapterPage"
 
-// LocalStorage keys
-const CHAPTER2_PROGRESS_KEY = "chapter2_progress"
 
 interface Chapter2Progress {
   currentInteractionId: string
@@ -352,29 +351,10 @@ function Chapter2Content() {
 }
 
 export default function Chapter2() {
-  const savedProgress = readFromStorage(CHAPTER2_PROGRESS_KEY)
-  const {
-    state,
-    currentInteraction,
-    goToNextInteraction,
-    handleUserInput,
-    handleChoiceSelection,
-  } = useInteractions(
-    "chapter2-flow",
-    savedProgress ? savedProgress.currentInteractionId : null,
-  )
   return (
-    <ChatProvider
-      state={state}
-      handleUserInput={handleUserInput}
-      handleChoiceSelection={handleChoiceSelection}
-      currentInteraction={currentInteraction}
-      goToNextInteraction={goToNextInteraction}
-    >
-      <AudioWrapper>
-        <HelpButton />
-        <Chapter2Content />
-      </AudioWrapper>
-    </ChatProvider>
+    <AudioWrapper>
+      <HelpButton />
+      <Chapter2Content />
+    </AudioWrapper>
   )
 }

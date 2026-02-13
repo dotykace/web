@@ -13,19 +13,25 @@ interface ChapterPageProps {
   ViewComponent: React.ComponentType<any>
 }
 
+export const CHAPTER2_PROGRESS_KEY = "chapter2_progress"
+
 export default function ChapterPage({
   chapterNumber,
   interactionsFileName,
   ViewComponent,
 }: ChapterPageProps) {
   const chapter = readFromStorage("chapter") as number
+  let savedProgress = null
+  if (chapterNumber === 2) {
+    savedProgress = readFromStorage(CHAPTER2_PROGRESS_KEY) as string
+  }
   const {
     state,
     currentInteraction,
     goToNextInteraction,
     handleUserInput,
     handleChoiceSelection,
-  } = useInteractions(interactionsFileName)
+  } = useInteractions(interactionsFileName, savedProgress ? savedProgress.currentInteractionId : null)
 
   const pathname = usePathname()
 
@@ -33,11 +39,6 @@ export default function ChapterPage({
     console.log("Redirecting to root")
     redirect("/")
   }
-  // todo maybe get rid of current chapter altogether and just use completed vs unlocked chapters
-  // if (chapter && chapter !== chapterNumber && pathname !== "/menu") {
-  //   console.log("Redirecting to menu from chapter", chapter)
-  //   redirect("/menu")
-  // }
 
   if (!state || state === "loading" || !currentInteraction) {
     return <LoadingScreen />
@@ -45,6 +46,7 @@ export default function ChapterPage({
 
   return (
     <ChatProvider
+      state={state}
       handleUserInput={handleUserInput}
       handleChoiceSelection={handleChoiceSelection}
       currentInteraction={currentInteraction}
