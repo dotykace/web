@@ -1,16 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, CardContent } from "@/components/ui/card"
 import { doc, onSnapshot, getDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import type { DotykaceRoom, DotykaceParticipant } from "@/lib/dotykace-types"
 import { useRouter } from "next/navigation"
 import { Clock } from "lucide-react"
 import { readFromStorage, setToStorage } from "@/scripts/local-storage"
-
-import DotykaceLogo from "@/components/DotykaceLogo"
-
+import DefaultWaitingScreen from "@/components/DefaultWaitingScreen"
 export default function DotykaceRoomPage() {
   const [room, setRoom] = useState<DotykaceRoom | null>(null)
   const [connectionError, setConnectionError] = useState(false)
@@ -45,7 +42,7 @@ export default function DotykaceRoomPage() {
           setRoom(roomData)
           setConnectionError(false)
           console.log(
-            `Connected to room "${storedRoomId}" as player "${storedPlayerName}" (ID: ${storedPlayerId})`,
+            `Connected to room "${storedRoomId}" as player "${storedPlayerName}" (ID: ${storedPlayerId})`
           )
 
           // Ak sa miestnosť spustila, automaticky začni introduction
@@ -58,7 +55,7 @@ export default function DotykaceRoomPage() {
               "rooms",
               storedRoomId,
               "participants",
-              storedPlayerId,
+              storedPlayerId
             )
             const participantDoc = await getDoc(participantRef)
             const existingParticipant = participantDoc.exists()
@@ -96,7 +93,7 @@ export default function DotykaceRoomPage() {
       (error) => {
         console.error("Connection error:", error)
         setConnectionError(true)
-      },
+      }
     )
 
     return () => unsubscribe()
@@ -124,21 +121,11 @@ export default function DotykaceRoomPage() {
   return (
     <div className="h-screen overflow-hidden bg-gradient-warm p-4 flex flex-col items-center justify-center">
       <div className="max-w-md mx-auto space-y-8 animate-fade-in">
-        {/* Header */}
-        <DotykaceLogo />
-
-        {/* Waiting Screen */}
-        <Card className="glass-card border-0">
-          <CardContent className="text-center py-12 px-8">
-            <div className="bg-orange-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Clock className="w-10 h-10 text-orange-500 animate-pulse" />
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">
-              {waitingHeader}
-            </h3>
-            <p className="text-gray-500 leading-relaxed">{waitingSubheader}</p>
-          </CardContent>
-        </Card>
+        <DefaultWaitingScreen
+          header={waitingHeader}
+          subheader={waitingSubheader}
+          icon={<Clock className="w-10 h-10 text-orange-500 animate-pulse" />}
+        />
       </div>
     </div>
   )
