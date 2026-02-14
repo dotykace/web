@@ -11,25 +11,11 @@ import ChatBubble from "@/components/ChatBubble"
 import { LocalSvgRenderer } from "@/components/LocalSvgRenderer"
 import HelpButton from "@/components/HelpButton"
 import { useSharedAudio } from "@/context/AudioContext"
-import AudioWrapper from "@/components/audio/AudioWrapper"
 import ScreenTransition from "@/components/chapter1/ScreenTransition"
 import VoiceRoom from "@/components/chapter1/VoiceRoom"
 import { setToStorage } from "@/scripts/local-storage"
 import useDB from "@/hooks/use-db"
-
-const soundMap = {
-  "overlay-on": { filename: "vykreslovanie TECKY.mp3" },
-  "overlay-off": { filename: "KONIEC ROZHRANIA.mp3" },
-  loop: { filename: "ZVUKOVY PODKRES.mp3", opts: { loop: true } },
-  "input-on": { filename: "ODOMKNUTIE CHATU.mp3" },
-  send: { filename: "SEND.mp3" },
-  chaos: { filename: "CHAOS.mp3" },
-  click: { filename: "KLIK.mp3" },
-
-  "voice-male": { filename: "sample_muz.mp3" },
-  "voice-female": { filename: "sample_zena.mp3" },
-  "voice-loop": { filename: "SVET HLASOV.mp3", opts: { loop: true } },
-}
+import FullScreenVideo from "@/components/FullScreenVideo"
 
 export default function Chat() {
   const { currentInteraction, goToNextInteraction } = useChatContext()
@@ -41,13 +27,11 @@ export default function Chat() {
   }
 
   return (
-    <AudioWrapper soundMap={soundMap} setLoaded={() => {}}>
-      <ScreenTransition
-        showSecond={currentInteraction.id === "voice-room"}
-        firstScreen={<ChatContent />}
-        secondScreen={<VoiceRoom onFinish={finishChapter} />}
-      />
-    </AudioWrapper>
+    <ScreenTransition
+      showSecond={currentInteraction.id === "voice-room"}
+      firstScreen={<ChatContent />}
+      secondScreen={<VoiceRoom onFinish={finishChapter} />}
+    />
   )
 }
 
@@ -112,8 +96,13 @@ function ChatContent() {
     setHistory((prev) => [...prev, userMessage])
   }
 
-  if (!currentInteraction) {
-    return <div>Loading...</div>
+  if (currentInteraction.type === "video") {
+    return (
+      <FullScreenVideo
+        videoSrc={currentInteraction.source}
+        onEnded={() => goToNextInteraction()}
+      />
+    )
   }
 
   const notificationProps = {

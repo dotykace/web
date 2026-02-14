@@ -27,12 +27,12 @@ export function useInteractions<T>(filename: string, progressId?: string) {
 
   const [dbHook, setDbHook] = useState<any>(null)
 
+  const [soundMap, setSoundMap] = useState<Record<string, { filename: string; opts?: any }>>({})
+
   useEffect(() => {
     const hook = useDB()
     setDbHook(hook)
   }, [])
-
-  const [userInput, setUserInput] = useState("")
 
   // Ensure we're on the client side
   useEffect(() => {
@@ -94,6 +94,7 @@ export function useInteractions<T>(filename: string, progressId?: string) {
           setState("error")
           throw new Error("Invalid data format - missing interactions")
         }
+        setSoundMap(data.soundMap || {})
 
         setInteractions(data.interactions)
         console.log("Interactions set successfully")
@@ -238,5 +239,6 @@ export function useInteractions<T>(filename: string, progressId?: string) {
     handleChoiceSelection,
     goToNextInteraction,
     isClient,
+    soundMap,
   }
 }

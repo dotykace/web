@@ -3,8 +3,17 @@
   "name": "Introduction",
   "description": "Introduction sequence before main menu",
   "version": "1.0.0",
-  "startInteractionId": "username-input",
+  "soundMap": {
+    "sound-test": { "filename": "vykreslovanie TECKY.mp3" },
+    "game-confirm": { "filename": "JINGEL - pozitiv.mp3" }
+  },
+  "startInteractionId": "intro-video",
   "interactions": {
+    "intro-video": {
+      "type": "video",
+      "source": "intro.mp4",
+      "next-id": "username-input"
+    },
     "username-input": {
       "type": "input",
       "duration": 15,

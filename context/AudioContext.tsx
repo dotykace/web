@@ -12,6 +12,27 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({
   const audioManager = useAudioManager()
 
   useEffect(() => {
+    if (!audioManager) return
+    const events = [
+      "pointerdown",
+      "mousedown",
+      "touchstart",
+      "keydown"
+    ]
+
+    events.forEach((e) => {
+        window.addEventListener(e, audioManager.resumeAudioContext, {passive: true})
+      }
+    )
+
+    return () => {
+      events.forEach(e =>
+        window.removeEventListener(e, audioManager.resumeAudioContext)
+      )
+    }
+  }, [audioManager.resumeAudioContext])
+
+  useEffect(() => {
     return () => {
       // Close the shared AudioContext on app exit
       const ctx = (audioManager as any).audioContextRef?.current

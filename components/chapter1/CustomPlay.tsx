@@ -90,10 +90,10 @@ export default function CustomPlay({ onClick }: { onClick: () => void }) {
                   className="absolute top-0 left-0 "
                 >
                   <Image
-                    src={"/logos/" + emoji.text + "_logo.svg"}
-                    alt={"My Icon " + emoji.text}
                     width={80}
                     height={80}
+                    src={"/logos/" + emoji.text + "_logo.svg"}
+                    alt={"My Icon " + emoji.text}
                     className="w-20 h-20"
                   />
                 </motion.div>

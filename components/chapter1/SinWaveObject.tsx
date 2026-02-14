@@ -22,7 +22,7 @@ export default function SineWaveObject(props: SineWaveObjectProps) {
   const {
     periods = 3,
     margin = 50,
-    speed = 0.0035,
+    speed = 0.006,
     endXPercent = 0.5,
     endYPercent = 0.5,
     offset = 0,

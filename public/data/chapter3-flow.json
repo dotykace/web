@@ -21,8 +21,7 @@
     },
     "3.10.18": {
       "type": "voice",
-      "sound": "track21_loop.mp3",
-      "loop": true,
+      "sound": "track21.mp3",
       "button": {
         "label": "Pokračovat",
         "next-id": "3.10.21",

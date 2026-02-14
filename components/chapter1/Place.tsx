@@ -35,6 +35,7 @@ export default function Place({
   const object = <GlowingDot onClick={handleReveal} size={40} color="white" />
   return (
     <SineWaveObject
+      speed={0.007}
       onFinish={onAnimationEnd}
       animatedObject={animatedObject}
       object={object}

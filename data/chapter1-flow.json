@@ -3,11 +3,24 @@
   "name": "Chapter 1 - Chat Experience",
   "description": "First chapter with chat interface and interactive elements",
   "version": "1.0.0",
+  "soundMap": {
+    "overlay-on": { "filename": "vykreslovanie TECKY.mp3" },
+    "overlay-off": { "filename": "KONIEC ROZHRANIA.mp3" },
+    "loop": { "filename": "ZVUKOVY PODKRES.mp3", "opts": { "loop": true } },
+    "input-on": { "filename": "ODOMKNUTIE CHATU.mp3" },
+    "send": { "filename": "SEND.mp3" },
+    "chaos": { "filename": "CHAOS.mp3" },
+    "click": { "filename": "KLIK.mp3" },
+
+    "voice-male": { "filename": "sample_muz.mp3" },
+    "voice-female": { "filename": "sample_zena.mp3" },
+    "voice-loop": { "filename": "SVET HLASOV.mp3", "opts": { "loop": true } }
+  },
   "startInteractionId": "chapter-1-start",
   "interactions": {
     "chapter-1-start": {
-      "type": "checkpoint",
-      "duration": 0.5,
+      "type": "video",
+      "source": "chapter1.mp4",
       "next-id": "1.1"
     },
     "1.1": {

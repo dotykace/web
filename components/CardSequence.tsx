@@ -2,9 +2,11 @@
 import { AnimatePresence, motion } from "framer-motion"
 import { useEffect, useState, useCallback } from "react"
 import { useChatContext } from "@/context/ChatContext"
-import { useAudioManager } from "@/hooks/use-audio"
+import { useSharedAudio } from "@/context/AudioContext"
 import { useRouter } from "next/navigation"
 import UserInput from "@/components/UserInput"
+import FullScreenVideo from "@/components/FullScreenVideo"
+import LoadingScreen from "@/components/LoadingScreen"
 import { readFromStorage, setToStorage } from "@/scripts/local-storage"
 import useDB from "@/hooks/use-db"
 
@@ -21,14 +23,9 @@ export default function CardSequence() {
   } = useChatContext()
   const [history, setHistory] = useState<any[]>([])
   const [displayCount, setDisplayCount] = useState(0)
-  const { preloadAll, playPreloaded } = useAudioManager()
+  const { playPreloaded } = useSharedAudio()
   const router = useRouter()
   const dbHook = useDB()
-
-  const soundMap = {
-    "sound-test": { filename: "vykreslovanie TECKY.mp3" },
-    "game-confirm": { filename: "JINGEL - pozitiv.mp3" },
-  }
 
   // Add user response to history and then call the original handler after delay
   const handleUserResponse = useCallback(
@@ -70,12 +67,6 @@ export default function CardSequence() {
       goToNextInteraction()
     }
   }
-
-  useEffect(() => {
-    preloadAll(soundMap).then(() => {
-      console.log("All sounds preloaded")
-    })
-  }, [])
 
   useEffect(() => {
     if (!currentInteraction) return
@@ -201,6 +192,21 @@ export default function CardSequence() {
           </p>
         </div>
       </motion.div>
+    )
+  }
+
+  // Handle checkpoint - show loading and redirect
+  if (currentInteraction?.type === "checkpoint") {
+    return <LoadingScreen />
+  }
+
+  // Handle video interactions
+  if (currentInteraction?.type === "video") {
+    return (
+      <FullScreenVideo
+        videoSrc={currentInteraction.source}
+        onEnded={() => goToNextInteraction()}
+      />
     )
   }
 

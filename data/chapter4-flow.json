@@ -62,12 +62,13 @@
     },
     "painter": {
       "type": "video",
+      "source": "painter.mp4",
       "next-id": "gallery"
     },
     "gallery": {
       "type": "message",
       "voice": "track38.mp3",
-      "text": "Který z obrázků s tebou rezonuje nejvíc? Označ jeden v pravém horním rohu.",
+      "text": "Který z obrázků tě nejvíc zaujal? Označ jeden v pravém horním rohu.",
       "next-id": "final-words-voice"
     },
     "final-words-voice": {

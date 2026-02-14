@@ -32,6 +32,8 @@ export default function VoiceVisualization({
           className={`relative transition-all duration-1000 ${isActive ? "animate-pulse scale-110" : "scale-100"}`}
         >
           <Image
+            width={96}
+            height={96}
             src="/images/phone-character-simple.png"
             alt="Phone Character"
             width={96}

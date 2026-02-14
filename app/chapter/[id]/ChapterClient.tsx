@@ -4,8 +4,7 @@ import CardSequence from "@/components/CardSequence"
 import ChapterPage from "@/components/ChapterPage"
 import { notFound } from "next/navigation"
 import ScalesAndGallery from "@/components/chapter4/ScalesAndGallery"
-import { useState } from "react"
-import FullScreenVideo from "@/components/FullScreenVideo"
+import Chapter2 from "@/components/audio/Chapter2";
 
 // Chapter configuration
 export const chapterConfigs = {
@@ -22,7 +21,7 @@ export const chapterConfigs = {
   "2": {
     chapterNumber: 2,
     interactionsFileName: "chapter2-flow",
-    ViewComponent: Chat,
+    ViewComponent: Chapter2,
   },
   "3": {
     chapterNumber: 3,
@@ -49,28 +48,6 @@ export default function ChapterClient({ id }: ChapterClientProps) {
   }
 
   const chapterConfig = chapterConfigs[id as ChapterId]
-
-  // todo fallback for video
-  // todo maybe mute it?
-  const [showVideo, setShowVideo] = useState(true)
-  if (showVideo) {
-    if (id === "0") {
-      return (
-        <FullScreenVideo
-          videoSrc={"intro.mp4"}
-          onEnded={() => setShowVideo(false)}
-        />
-      )
-    }
-    if (id === "1") {
-      return (
-        <FullScreenVideo
-          videoSrc={"chapter1.mp4"}
-          onEnded={() => setShowVideo(false)}
-        />
-      )
-    }
-  }
 
   return <ChapterPage {...chapterConfig} />
 }

@@ -12,6 +12,8 @@ import { useAudioManager } from "@/hooks/use-audio"
 import DotykaceLogo from "@/components/DotykaceLogo"
 import MenuSectionCard from "@/components/MenuSectionCard"
 import { chapterConfigs } from "@/app/chapter/[id]/ChapterClient"
+import LoadingScreen from "@/components/LoadingScreen";
+import AudioControl from "@/components/AudioControl";
 
 type SectionState = "locked" | "unlocked" | "completed"
 
@@ -184,19 +186,24 @@ export default function MenuPage() {
 
   // Show loading state while client-side data is being loaded
   if (!isClient || chapter === null) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex items-center justify-center">
-        <div className="text-white text-center">
-          <div className="animate-spin rounded-full border-2 border-white border-t-transparent h-8 w-8 mx-auto mb-4" />
-          <p>Načítavam...</p>
-        </div>
-      </div>
-    )
+    return <LoadingScreen />
+  }
+
+  const toggleBackgroundAudio = () => {
+    if (audioManager.isPlaying["menu-background"]) {
+      audioManager.stop("menu-background")
+    }
+    else {
+      audioManager.resumeAudioContext()
+      audioManager.playPreloaded("menu-background")
+    }
+
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex flex-col items-center justify-center p-4">
       <HelpButton />
+      <AudioControl onClick={toggleBackgroundAudio} audioEnabled={audioManager.isPlaying["menu-background"]}/>
 
       {/* Logo */}
       <div className="p-4 pb-8">

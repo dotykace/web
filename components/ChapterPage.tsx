@@ -7,11 +7,29 @@ import { useInteractions } from "@/hooks/use-interactions"
 import { useRouter } from "next/navigation"
 import LoadingScreen from "@/components/LoadingScreen"
 import { ChatProvider } from "@/context/ChatContext"
+import AudioWrapper from "@/components/audio/AudioWrapper"
 
 interface ChapterPageProps {
   chapterNumber: number
   interactionsFileName: string
   ViewComponent: React.ComponentType<any>
+}
+
+export const CHAPTER2_PROGRESS_KEY = "chapter2_progress"
+
+const getProgressId = (chapterNumber: number) => {
+  // todo handle other chapters when they have progress saving implemented
+  if (chapterNumber === 2) {
+    const progress = readFromStorage(CHAPTER2_PROGRESS_KEY) as string
+    if (progress) {
+      console.log(
+        `Resuming chapter ${chapterNumber} from interaction ID:`,
+        progress,
+      )
+      return progress.currentInteractionId
+    }
+  }
+  return null
 }
 
 export default function ChapterPage({
@@ -22,14 +40,15 @@ export default function ChapterPage({
   const [chapterChecked, setChapterChecked] = useState(false)
   const [hasValidChapter, setHasValidChapter] = useState(false)
   const router = useRouter()
-
+  const savedProgress = getProgressId(chapterNumber)
   const {
     state,
+    soundMap,
     currentInteraction,
     goToNextInteraction,
     handleUserInput,
     handleChoiceSelection,
-  } = useInteractions(interactionsFileName)
+  } = useInteractions(interactionsFileName, savedProgress)
 
   // Check localStorage for chapter on client-side only
   useEffect(() => {
@@ -52,19 +71,23 @@ export default function ChapterPage({
     !hasValidChapter ||
     !state ||
     state === "loading" ||
-    !currentInteraction
+    !currentInteraction ||
+    !soundMap
   ) {
     return <LoadingScreen />
   }
 
   return (
-    <ChatProvider
-      handleUserInput={handleUserInput}
-      handleChoiceSelection={handleChoiceSelection}
-      currentInteraction={currentInteraction}
-      goToNextInteraction={goToNextInteraction}
-    >
-      <ViewComponent />
-    </ChatProvider>
+    <AudioWrapper soundMap={soundMap}>
+      <ChatProvider
+        state={state}
+        handleUserInput={handleUserInput}
+        handleChoiceSelection={handleChoiceSelection}
+        currentInteraction={currentInteraction}
+        goToNextInteraction={goToNextInteraction}
+      >
+        <ViewComponent />
+      </ChatProvider>
+    </AudioWrapper>
   )
 }
