@@ -19,6 +19,7 @@ interface BasicAudioVisualProps {
   coloring?: string
   canSkip?: boolean
   progress?: number
+  showProgress?: boolean // When false, hides the progress bar (e.g. chapter 2 doesn't need it)
 }
 
 export default function BasicAudioVisual({
@@ -28,6 +29,7 @@ export default function BasicAudioVisual({
   coloring = "bg-white/10",
   canSkip = true,
   progress = 50,
+  showProgress = true,
 }: BasicAudioVisualProps) {
   const playedForIdRef = useRef<string | null>(null)
 
@@ -65,10 +67,11 @@ export default function BasicAudioVisual({
     }
   }
 
+  // Changed from h-screen to flex-1 so this component works inside parent flex layouts (e.g. below ChapterHeader)
   return (
-    <div className={`h-screen overflow-hidden flex flex-col ${coloring}`}>
+    <div className={`flex-1 min-h-0 flex flex-col ${coloring}`}>
       {/* Main content area */}
-      <div className="flex-1 flex flex-col items-center justify-center p-4">
+      <div className="flex-1 flex flex-col items-center justify-center p-4 min-h-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={id}
@@ -98,18 +101,20 @@ export default function BasicAudioVisual({
       </div>
 
       {/* Progress Indicator */}
-      <div className="p-6">
-        <div className="max-w-lg mx-auto">
-          <div className="h-3 bg-white/20 border border-white/30 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-white rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.5 }}
-            />
+      {showProgress && (
+        <div className="p-6">
+          <div className="max-w-lg mx-auto">
+            <div className="h-3 bg-white/20 border border-white/30 rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-white rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.5 }}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
