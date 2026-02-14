@@ -19,7 +19,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { setToStorage } from "@/scripts/local-storage"
 
 const adminFormSchema = z.object({
-  username: z.string().min(1, "Používatelské jméno je povinné"),
+  username: z.string().min(1, "Uživatelské jméno je povinné"),
   password: z.string().min(1, "Heslo je povinné"),
 })
 
@@ -80,12 +80,12 @@ export default function AdminForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-gray-800 font-semibold text-sm">
-                Používatelské jméno
+                Uživatelské jméno
               </FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Zadejte používatelské jméno"
+                  placeholder="Zadejte uživatelské jméno"
                   className="input-unified"
                   autoFocus
                 />
