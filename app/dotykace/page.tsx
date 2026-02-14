@@ -4,8 +4,8 @@ import { useEffect, useState } from "react"
 import { readFromStorage } from "@/scripts/local-storage"
 export default function DotykacePage() {
   const [finished, setFinished] = useState(false)
-  const defaultText = "Dotykace"
-  const finishText = `Dokončili jste zážitek Dotykace.\nDěkujeme!`
+  const defaultText = "Dotykáče"
+  const finishText = `Dokončili jste zážitek Dotykáče.\nDěkujeme!`
   useEffect(() => {
     const isFinished = readFromStorage("dotykaceFinished")
     console.log(isFinished)
