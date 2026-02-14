@@ -324,21 +324,31 @@ function Chapter2Content() {
           )
         }
         break
+      // Message type: can optionally have animation.buttons for user choices (e.g. "2.2", "8.0")
       case "message":
         return (
           <div className="p-6">
             <p className="text-lg mb-4 text-white">
               {currentInteraction?.text()}
             </p>
+            {currentInteraction?.animation?.buttons && (
+              <div className="space-y-3">
+                {currentInteraction.animation.buttons.map(
+                  (btn: { label: string; "next-id": string }, idx: number) =>
+                    CustomButton(btn),
+                )}
+              </div>
+            )}
           </div>
         )
-      case "show-message":
-        const messageText = savedUserMessage || "Žadny vzkaz"
+      case "show-message": {
+        const messageText = savedUserMessage || "Žádný vzkaz"
         return (
           <div className="p-6">
             <p className="text-lg mb-4 text-white">{messageText}</p>
           </div>
         )
+      }
       default:
         return null
     }
