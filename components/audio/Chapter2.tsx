@@ -44,7 +44,13 @@ function Chapter2Content() {
 
   const [dbHook, setDbHook] = useState<any>(null)
 
-  const [currentAudio, setCurrentAudio] = useState<{} | null>(null)
+  // Explicitly typed to match BasicAudioVisual's AudioConfig interface (was previously untyped {})
+  const [currentAudio, setCurrentAudio] = useState<{
+    filename: string
+    type: "sound" | "voice"
+    opts?: { loop?: boolean }
+    onFinish?: () => void
+  } | null>(null)
 
   useEffect(() => {
     if (!currentInteraction) return
@@ -58,15 +64,17 @@ function Chapter2Content() {
     setTimeLeft(null)
     setShowWarning(false)
 
+    // Voice interactions: flow JSON uses "sound" key (not "filename") for the audio file
     if (currentInteraction.type === "voice") {
+      const soundFile = currentInteraction.sound || currentInteraction.filename || ""
       const audio = {
-        filename: currentInteraction.filename || "",
-        type: "voice",
+        filename: soundFile,
+        type: "voice" as const,
         opts: {
           loop: currentInteraction.loop || false,
         },
         onFinish: () => {
-          console.log("Played chapter 2 audio:", currentInteraction.filename)
+          console.log("Played chapter 2 audio:", soundFile)
           saveAndContinue()
         },
       }
@@ -181,15 +189,12 @@ function Chapter2Content() {
     [inputValue, currentInteraction],
   )
 
-  const saveAndContinue = (nextId) => {
+  const saveAndContinue = (nextId?: string) => {
     console.log(
       "Saving progress and continuing from interaction:",
       currentInteraction.id,
     )
-    saveProgressToLocalStorage(
-      currentInteraction.id,
-      savedUserMessage,
-    )
+    saveProgressToLocalStorage(currentInteraction.id, savedUserMessage)
     goToNextInteraction(nextId)
   }
 
@@ -220,8 +225,9 @@ function Chapter2Content() {
     }
   }, [currentInteraction])
 
+  // Explicitly typed choice param (was previously implicit any)
   const CustomButton = useCallback(
-    (choice) => {
+    (choice: { label: string; "next-id": string } | null) => {
       if (!choice) return null
       return (
         <Button
