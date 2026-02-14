@@ -4,7 +4,6 @@ import type React from "react"
 import { useState, useEffect, useRef, useCallback } from "react"
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { db } from "@/lib/firebase"
-import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import HelpButton from "@/components/HelpButton"
 import useDB from "@/hooks/use-db"
@@ -230,15 +229,15 @@ function Chapter2Content() {
     (choice: { label: string; "next-id": string } | null) => {
       if (!choice) return null
       return (
-        <Button
+        <button
           key={currentInteraction.id + "-button-" + choice.label}
           onClick={() => handleButtonClick(choice)}
-          className={
-            "w-full bg-white/20 hover:bg-white/30 text-white border-white/30 transition-all duration-200 hover:scale-105"
-          }
+          className="w-full bg-white hover:bg-white/90
+                     text-purple-900 font-bold tracking-wide py-4 px-8 rounded-full shadow-lg
+                     transition-all duration-300 active:scale-[0.98]"
         >
           {choice.label}
-        </Button>
+        </button>
       )
     },
     [currentInteraction, handleButtonClick],
@@ -246,64 +245,72 @@ function Chapter2Content() {
 
   const CustomInput = useCallback(() => {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 w-full">
         <Textarea
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Napíš svoju odpoveď..."
-          className="bg-white/20 border-white/30 text-white placeholder:text-white/60 resize-none"
+          placeholder="Napíš svou odpověď..."
+          className="bg-white/10 border-2 border-white/30 text-white placeholder:text-white/50
+                     resize-none rounded-2xl font-medium tracking-wide focus:border-white/50 focus:ring-white/20 backdrop-blur-sm"
           rows={3}
         />
         {timeLeft !== null && (
           <div className="text-center">
-            <div className="text-white/80 text-sm">
+            <div className="text-white font-bold text-sm tracking-wide drop-shadow-md">
               Zostáva: {Math.floor(timeLeft / 60)}:
               {(timeLeft % 60).toString().padStart(2, "0")}
             </div>
             {showWarning && currentInteraction["warning-text"] && (
-              <div className="text-yellow-300 text-sm mt-1">
+              <div className="text-yellow-300 text-sm mt-2 font-bold tracking-wide drop-shadow-md">
                 {currentInteraction["warning-text"]}
               </div>
             )}
           </div>
         )}
-        <Button
+        <button
           onClick={() => handleInputSave(currentInteraction)}
-          className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30"
           disabled={!inputValue.trim()}
+          className="w-full bg-white hover:bg-white/90
+                     disabled:bg-white/30 disabled:text-white/50
+                     text-purple-900 font-bold tracking-wide py-4 px-8 rounded-full shadow-lg
+                     disabled:shadow-none transition-all duration-300 active:scale-[0.98]"
         >
-          {currentInteraction["save-label"] || "Uložiť"}
-        </Button>
+          {currentInteraction["save-label"] || "Uložit"}
+        </button>
       </div>
     )
   }, [inputValue, timeLeft, showWarning, currentInteraction, handleInputSave])
 
-  if (!currentInteraction || currentInteraction === "checkpoint" || state === "loading") {
+  if (
+    !currentInteraction ||
+    currentInteraction === "checkpoint" ||
+    state === "loading"
+  ) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-        <div className="text-white text-xl">Načítavam...</div>
+      <div className="flex-1 flex items-center justify-center">
+        <div className="text-white text-xl font-medium">Načítám...</div>
       </div>
     )
   }
 
   if (state === "error") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-        <div className="text-white text-xl">Chyba pri načítaní</div>
+      <div className="flex-1 flex items-center justify-center">
+        <div className="text-white text-xl font-medium">Chyba při načítání</div>
       </div>
     )
   }
 
-  const chapter2Coloring =
-    "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900"
+  // Empty string because background gradient is now on the parent wrapper (Chapter2 component)
+  const chapter2Coloring = ""
   const InteractionContent = () => {
     if (!currentInteraction) return null
     switch (currentInteraction?.type) {
       case "input":
       case "multiple-choice":
         return (
-          <div className="p-6">
-            <p className="text-lg mb-4 text-white">
+          <div className="w-full space-y-4">
+            <p className="text-white text-xl leading-relaxed text-center font-semibold tracking-wide drop-shadow-lg">
               {currentInteraction?.text()}
             </p>
             <InputArea
@@ -317,7 +324,7 @@ function Chapter2Content() {
         if (currentInteraction.loop === true) {
           const button = currentInteraction.button
           return (
-            <div>
+            <div className="w-full space-y-6">
               <VoiceVisualization />
               {CustomButton(button)}
             </div>
@@ -327,8 +334,8 @@ function Chapter2Content() {
       // Message type: can optionally have animation.buttons for user choices (e.g. "2.2", "8.0")
       case "message":
         return (
-          <div className="p-6">
-            <p className="text-lg mb-4 text-white">
+          <div className="w-full space-y-6">
+            <p className="text-white text-xl leading-relaxed text-center font-semibold tracking-wide drop-shadow-lg">
               {currentInteraction?.text()}
             </p>
             {currentInteraction?.animation?.buttons && (
@@ -344,8 +351,12 @@ function Chapter2Content() {
       case "show-message": {
         const messageText = savedUserMessage || "Žádný vzkaz"
         return (
-          <div className="p-6">
-            <p className="text-lg mb-4 text-white">{messageText}</p>
+          <div className="w-full">
+            <div className="bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-6 shadow-xl">
+              <p className="text-white text-lg leading-relaxed text-center font-medium">
+                {messageText}
+              </p>
+            </div>
           </div>
         )
       }
