@@ -5,19 +5,18 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Textarea } from "@/components/ui/textarea"
-import HelpButton from "@/components/HelpButton"
 import useDB from "@/hooks/use-db"
 import { useRouter } from "next/navigation"
 import { readFromStorage, setToStorage } from "@/scripts/local-storage"
 import BasicAudioVisual from "@/components/BasicAudioVisual"
-import { useInteractions } from "@/hooks/use-interactions"
-import AudioWrapper from "@/components/audio/AudioWrapper"
+// ChapterPage already wraps the ViewComponent (which is Chapter2) with AudioWrapper + ChatProvider - I removed it here to avoid double wrapping
 import { ProcessedInteraction } from "@/interactions"
 import InputArea from "@/components/InputArea"
-import { ChatProvider, useChatContext } from "@/context/ChatContext"
+import { useChatContext } from "@/context/ChatContext"
 import { useSharedAudio } from "@/context/AudioContext"
 import VoiceVisualization from "@/components/VoiceVisualization"
 import { CHAPTER2_PROGRESS_KEY } from "@/components/ChapterPage"
+import ChapterHeader from "@/components/ChapterHeader"
 
 
 interface Chapter2Progress {
@@ -27,7 +26,7 @@ interface Chapter2Progress {
 
 function Chapter2Content() {
   const { state, currentInteraction, goToNextInteraction } = useChatContext()
-  const { stop, stopAll, isPlaying } = useSharedAudio()
+  const { stop, stopAll, playOnce, isPlaying } = useSharedAudio()
 
   const [inputValue, setInputValue] = useState("")
   const [savedUserMessage, setSavedUserMessage] = useState("")
@@ -371,17 +370,66 @@ function Chapter2Content() {
       audio={currentAudio}
       id={currentInteraction.id}
       canSkip={!currentInteraction.loop}
+      showProgress={false} // Chapter 2 has no progress bar per design
     >
       {InteractionContent()}
     </BasicAudioVisual>
   )
 }
 
+const chapter2Bg =
+  "bg-gradient-to-br from-violet-500 via-purple-600 to-fuchsia-600"
+
+// Outer wrapper: manages start screen state, background gradient, ChapterHeader, and AudioWrapper
 export default function Chapter2() {
+  // Start screen gate — user must click "Spustit" before the chapter experience begins
+  const [hasStarted, setHasStarted] = useState(false)
+
+  if (!hasStarted) {
+    return (
+      <div
+        className={`h-screen overflow-hidden ${chapter2Bg} flex items-center justify-center p-4`}
+      >
+        {/* Decorative blurred circle */}
+        <div
+          className="fixed w-32 h-32 bg-yellow-300/25 rounded-full pointer-events-none blur-2xl"
+          style={{ top: "12%", left: "8%" }}
+        />
+
+        <div className="w-full max-w-md space-y-6 flex flex-col items-center">
+          {/* Chapter number badge */}
+          <div className="w-20 h-20 rounded-full bg-white shadow-xl flex items-center justify-center">
+            <span className="text-3xl font-bold text-purple-900">2</span>
+          </div>
+
+          {/* Main card */}
+          <div className="w-full bg-white rounded-3xl p-8 text-center shadow-xl">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Kapitola 2
+            </h2>
+            <p className="text-purple-600 mb-8 font-medium text-sm">
+              Připrav se na další část příběhu
+            </p>
+            <button
+              onClick={() => setHasStarted(true)}
+              className="w-full bg-purple-600 hover:bg-purple-700
+                         text-white font-bold py-4 px-8 rounded-full shadow-lg shadow-purple-500/30
+                         transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+            >
+              Spustit
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Background + ChapterHeader are here (not in BasicAudioVisual) so the header stays fixed above the content
+  // No extra AudioWrapper needed — ChapterPage already wraps with AudioWrapper + ChatProvider
   return (
-    <AudioWrapper>
-      <HelpButton />
+    <div className={`h-screen overflow-hidden ${chapter2Bg} flex flex-col`}>
+      <ChapterHeader chapterNumber={2} />
       <Chapter2Content />
-    </AudioWrapper>
+    </div>
   )
 }
