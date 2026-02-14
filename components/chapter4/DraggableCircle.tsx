@@ -77,16 +77,6 @@ export default function DraggableCircle({
           className="w-16 h-16 md:w-20 md:h-20 select-none drop-shadow-lg"
         />
       </motion.div>
-
-      {/* Instruction text */}
-      <motion.p
-        className="absolute bottom-1 left-0 right-0 text-center text-white/70 text-xs font-medium"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-      >
-        ↕ Táhni nahoru nebo dolů
-      </motion.p>
     </div>
   )
 }
