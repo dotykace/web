@@ -51,6 +51,16 @@ export function useAudioManager() {
     return audioContextRef.current
   }
 
+  const resumeAudioContext = useCallback(() => {
+    const context = getAudioContext()
+    if (context && context.state !== "running") {
+      console.log("Resuming suspended AudioContext")
+      context.resume().catch((error) => {
+        console.error("Error resuming AudioContext:", error)
+      })
+    }
+  },[audioContextRef.current])
+
   const addToPlaying = (key: string, instance: PlayingInstance) => {
     // Track instance
     if (!playingRef.current[key]) playingRef.current[key] = []
@@ -231,6 +241,7 @@ export function useAudioManager() {
   }, [stop])
 
   return {
+    resumeAudioContext,
     preloadAll,
     playPreloaded,
     playOnce,

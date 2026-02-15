@@ -18,9 +18,8 @@ import InputArea from "@/components/InputArea"
 import { ChatProvider, useChatContext } from "@/context/ChatContext"
 import { useSharedAudio } from "@/context/AudioContext"
 import VoiceVisualization from "@/components/VoiceVisualization"
+import { CHAPTER2_PROGRESS_KEY } from "@/components/ChapterPage"
 
-// LocalStorage keys
-const CHAPTER2_PROGRESS_KEY = "chapter2_progress"
 
 interface Chapter2Progress {
   currentInteractionId: string
@@ -273,7 +272,7 @@ function Chapter2Content() {
     )
   }, [inputValue, timeLeft, showWarning, currentInteraction, handleInputSave])
 
-  if (!currentInteraction || currentInteraction === "checkpoint" || state === "loading") {
+  if (!currentInteraction || currentInteraction.type === "checkpoint" || state === "loading") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
         <div className="text-white text-xl">Načítavam...</div>
@@ -352,29 +351,10 @@ function Chapter2Content() {
 }
 
 export default function Chapter2() {
-  const savedProgress = readFromStorage(CHAPTER2_PROGRESS_KEY)
-  const {
-    state,
-    currentInteraction,
-    goToNextInteraction,
-    handleUserInput,
-    handleChoiceSelection,
-  } = useInteractions(
-    "chapter2-flow",
-    savedProgress ? savedProgress.currentInteractionId : null,
-  )
   return (
-    <ChatProvider
-      state={state}
-      handleUserInput={handleUserInput}
-      handleChoiceSelection={handleChoiceSelection}
-      currentInteraction={currentInteraction}
-      goToNextInteraction={goToNextInteraction}
-    >
-      <AudioWrapper>
-        <HelpButton />
-        <Chapter2Content />
-      </AudioWrapper>
-    </ChatProvider>
+    <AudioWrapper>
+      <HelpButton />
+      <Chapter2Content />
+    </AudioWrapper>
   )
 }

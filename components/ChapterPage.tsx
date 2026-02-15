@@ -1,11 +1,12 @@
 "use client"
 
-import type React from "react"
+import React, {useEffect, useState} from "react"
 import { readFromStorage } from "@/scripts/local-storage"
 import { useInteractions } from "@/hooks/use-interactions"
-import { redirect, usePathname } from "next/navigation"
+import { useRouter } from "next/navigation"
 import LoadingScreen from "@/components/LoadingScreen"
 import { ChatProvider } from "@/context/ChatContext"
+import AudioWrapper from "@/components/audio/AudioWrapper";
 
 interface ChapterPageProps {
   chapterNumber: number
@@ -13,44 +14,77 @@ interface ChapterPageProps {
   ViewComponent: React.ComponentType<any>
 }
 
+export const CHAPTER2_PROGRESS_KEY = "chapter2_progress"
+
+const getProgressId = (chapterNumber: number) => {
+  // todo handle other chapters when they have progress saving implemented
+  if (chapterNumber === 2) {
+    const progress = readFromStorage(CHAPTER2_PROGRESS_KEY) as string
+    if (progress) {
+      console.log(`Resuming chapter ${chapterNumber} from interaction ID:`, progress)
+      return progress.currentInteractionId;
+    }
+  }
+  return null
+}
+
 export default function ChapterPage({
   chapterNumber,
   interactionsFileName,
   ViewComponent,
 }: ChapterPageProps) {
-  const chapter = readFromStorage("chapter") as number
+  const savedProgress = getProgressId(chapterNumber)
   const {
     state,
+    soundMap,
     currentInteraction,
     goToNextInteraction,
     handleUserInput,
     handleChoiceSelection,
-  } = useInteractions(interactionsFileName)
+  } = useInteractions(interactionsFileName, savedProgress)
 
-  const pathname = usePathname()
+  const [chapterChecked, setChapterChecked] = useState(false)
+  const [hasValidChapter, setHasValidChapter] = useState(false)
+  const router = useRouter()
 
-  if (chapter == undefined && pathname !== "/") {
-    console.log("Redirecting to root")
-    redirect("/")
-  }
-  // todo maybe get rid of current chapter altogether and just use completed vs unlocked chapters
-  // if (chapter && chapter !== chapterNumber && pathname !== "/menu") {
-  //   console.log("Redirecting to menu from chapter", chapter)
-  //   redirect("/menu")
-  // }
+  // Check localStorage for chapter on client-side only
+  useEffect(() => {
+    const storedChapter = readFromStorage("chapter")
+    // Chapter is valid if it exists (including 0)
+    const isValid = storedChapter !== undefined && storedChapter !== null
+    if (!isValid) {
+      console.log("No chapter found in localStorage, redirecting to root")
+      router.push("/")
+    } else {
+      setHasValidChapter(true)
+    }
+    setChapterChecked(true)
+  }, [router])
 
-  if (!state || state === "loading" || !currentInteraction) {
+  // Show loading while checking chapter or loading interactions
+  if (
+    !chapterChecked ||
+    !hasValidChapter ||
+    !state ||
+    state === "loading" ||
+    !currentInteraction ||
+    !soundMap
+  ) {
     return <LoadingScreen />
   }
 
   return (
-    <ChatProvider
-      handleUserInput={handleUserInput}
-      handleChoiceSelection={handleChoiceSelection}
-      currentInteraction={currentInteraction}
-      goToNextInteraction={goToNextInteraction}
-    >
-      <ViewComponent />
-    </ChatProvider>
+    <AudioWrapper soundMap={soundMap}>
+      <ChatProvider
+        state={state}
+        handleUserInput={handleUserInput}
+        handleChoiceSelection={handleChoiceSelection}
+        currentInteraction={currentInteraction}
+        goToNextInteraction={goToNextInteraction}
+      >
+        <ViewComponent />
+      </ChatProvider>
+    </AudioWrapper>
+
   )
 }

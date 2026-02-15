@@ -62,6 +62,7 @@
     },
     "painter": {
       "type": "video",
+      "source": "painter.mp4",
       "next-id": "gallery"
     },
     "gallery": {
