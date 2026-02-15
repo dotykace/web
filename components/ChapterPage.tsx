@@ -1,9 +1,9 @@
 "use client"
 
-import React from "react"
+import React, {useEffect, useState} from "react"
 import { readFromStorage } from "@/scripts/local-storage"
 import { useInteractions } from "@/hooks/use-interactions"
-import { redirect, usePathname } from "next/navigation"
+import { useRouter } from "next/navigation"
 import LoadingScreen from "@/components/LoadingScreen"
 import { ChatProvider } from "@/context/ChatContext"
 import AudioWrapper from "@/components/audio/AudioWrapper";
@@ -33,7 +33,6 @@ export default function ChapterPage({
   interactionsFileName,
   ViewComponent,
 }: ChapterPageProps) {
-  const chapter = readFromStorage("chapter") as number
   const savedProgress = getProgressId(chapterNumber)
   const {
     state,
@@ -44,14 +43,33 @@ export default function ChapterPage({
     handleChoiceSelection,
   } = useInteractions(interactionsFileName, savedProgress)
 
-  const pathname = usePathname()
+  const [chapterChecked, setChapterChecked] = useState(false)
+  const [hasValidChapter, setHasValidChapter] = useState(false)
+  const router = useRouter()
 
-  if (chapter == undefined && pathname !== "/") {
-    console.log("Redirecting to root")
-    redirect("/")
-  }
+  // Check localStorage for chapter on client-side only
+  useEffect(() => {
+    const storedChapter = readFromStorage("chapter")
+    // Chapter is valid if it exists (including 0)
+    const isValid = storedChapter !== undefined && storedChapter !== null
+    if (!isValid) {
+      console.log("No chapter found in localStorage, redirecting to root")
+      router.push("/")
+    } else {
+      setHasValidChapter(true)
+    }
+    setChapterChecked(true)
+  }, [router])
 
-  if (!state || state === "loading" || !currentInteraction || !soundMap) {
+  // Show loading while checking chapter or loading interactions
+  if (
+    !chapterChecked ||
+    !hasValidChapter ||
+    !state ||
+    state === "loading" ||
+    !currentInteraction ||
+    !soundMap
+  ) {
     return <LoadingScreen />
   }
 
