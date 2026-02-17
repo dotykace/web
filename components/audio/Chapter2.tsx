@@ -282,7 +282,7 @@ function Chapter2Content() {
 
   if (
     !currentInteraction ||
-    currentInteraction === "checkpoint" ||
+    currentInteraction.type === "checkpoint" ||
     state === "loading"
   ) {
     return (

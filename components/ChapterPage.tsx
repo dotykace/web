@@ -1,7 +1,6 @@
 "use client"
 
-import type React from "react"
-import { useState, useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { readFromStorage } from "@/scripts/local-storage"
 import { useInteractions } from "@/hooks/use-interactions"
 import { useRouter } from "next/navigation"
@@ -37,9 +36,6 @@ export default function ChapterPage({
   interactionsFileName,
   ViewComponent,
 }: ChapterPageProps) {
-  const [chapterChecked, setChapterChecked] = useState(false)
-  const [hasValidChapter, setHasValidChapter] = useState(false)
-  const router = useRouter()
   const savedProgress = getProgressId(chapterNumber)
   const {
     state,
@@ -50,12 +46,15 @@ export default function ChapterPage({
     handleChoiceSelection,
   } = useInteractions(interactionsFileName, savedProgress)
 
+  const [chapterChecked, setChapterChecked] = useState(false)
+  const [hasValidChapter, setHasValidChapter] = useState(false)
+  const router = useRouter()
+
   // Check localStorage for chapter on client-side only
   useEffect(() => {
     const storedChapter = readFromStorage("chapter")
     // Chapter is valid if it exists (including 0)
     const isValid = storedChapter !== undefined && storedChapter !== null
-
     if (!isValid) {
       console.log("No chapter found in localStorage, redirecting to root")
       router.push("/")
