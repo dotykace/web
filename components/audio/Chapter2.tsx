@@ -18,7 +18,6 @@ import VoiceVisualization from "@/components/VoiceVisualization"
 import { CHAPTER2_PROGRESS_KEY } from "@/components/ChapterPage"
 import ChapterHeader from "@/components/ChapterHeader"
 
-
 interface Chapter2Progress {
   currentInteractionId: string
   savedUserMessage: string
@@ -62,17 +61,15 @@ function Chapter2Content() {
     setTimeLeft(null)
     setShowWarning(false)
 
-    // Voice interactions: flow JSON uses "sound" key (not "filename") for the audio file
     if (currentInteraction.type === "voice") {
-      const soundFile = currentInteraction.sound || currentInteraction.filename || ""
       const audio = {
-        filename: soundFile,
+        filename: currentInteraction.filename || "",
         type: "voice" as const,
         opts: {
           loop: currentInteraction.loop || false,
         },
         onFinish: () => {
-          console.log("Played chapter 2 audio:", soundFile)
+          console.log("Played chapter 2 audio:", currentInteraction.filename)
           saveAndContinue()
         },
       }
@@ -300,8 +297,6 @@ function Chapter2Content() {
     )
   }
 
-  // Empty string because background gradient is now on the parent wrapper (Chapter2 component)
-  const chapter2Coloring = ""
   const InteractionContent = () => {
     if (!currentInteraction) return null
     switch (currentInteraction?.type) {
@@ -330,21 +325,12 @@ function Chapter2Content() {
           )
         }
         break
-      // Message type: can optionally have animation.buttons for user choices (e.g. "2.2", "8.0")
       case "message":
         return (
           <div className="w-full space-y-6">
             <p className="text-white text-xl leading-relaxed text-center font-semibold tracking-wide drop-shadow-lg">
               {currentInteraction?.text()}
             </p>
-            {currentInteraction?.animation?.buttons && (
-              <div className="space-y-3">
-                {currentInteraction.animation.buttons.map(
-                  (btn: { label: string; "next-id": string }, idx: number) =>
-                    CustomButton(btn),
-                )}
-              </div>
-            )}
           </div>
         )
       case "show-message": {
@@ -366,7 +352,6 @@ function Chapter2Content() {
 
   return (
     <BasicAudioVisual
-      coloring={chapter2Coloring}
       audio={currentAudio}
       id={currentInteraction.id}
       canSkip={!currentInteraction.loop}
