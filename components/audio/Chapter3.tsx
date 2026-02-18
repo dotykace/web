@@ -140,7 +140,7 @@ function Chapter3Content() {
         id={currentInteraction.id}
         audio={currentAudio}
         showProgress={false}
-        canSkip={!currentInteraction.loop}
+        canSkip={!currentInteraction.loop && !showChoices}
       >
         {needsChildren ? (
           <div className="w-full space-y-4">
