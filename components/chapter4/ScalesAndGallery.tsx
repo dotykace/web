@@ -1,4 +1,5 @@
 import { useChatContext } from "@/context/ChatContext"
+import { useSharedAudio } from "@/context/AudioContext"
 import Scales from "@/components/chapter4/Scales"
 import Gallery from "@/components/chapter4/Gallery"
 import React, { useEffect, useState } from "react"
@@ -24,6 +25,7 @@ interface Interpretation {
 export default function ScalesAndGallery() {
   const [hasStartedExperience, setHasStartedExperience] = useState(false)
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
+  const { muted, toggleMute } = useSharedAudio()
 
   if (!hasStartedExperience) {
     return (
@@ -103,7 +105,14 @@ export default function ScalesAndGallery() {
 
   return (
     <div className={`h-dvh flex flex-col overflow-hidden ${coloring}`}>
-      {!isVideoPlaying && <ChapterHeader chapterNumber={4} />}
+      {!isVideoPlaying && (
+        <ChapterHeader
+          chapterNumber={4}
+          showAudioControl
+          muted={muted}
+          onToggleMute={toggleMute}
+        />
+      )}
       <div className="flex-1 min-h-0 flex flex-col">
         <ScalesAndGalleryContent onVideoStateChange={setIsVideoPlaying} />
       </div>

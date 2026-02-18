@@ -365,10 +365,9 @@ function Chapter2Content() {
 const chapter2Bg =
   "bg-gradient-to-br from-violet-500 via-purple-600 to-fuchsia-600"
 
-// Outer wrapper: manages start screen state, background gradient, ChapterHeader, and AudioWrapper
 export default function Chapter2() {
-  // Start screen gate — user must click "Spustit" before the chapter experience begins
   const [hasStarted, setHasStarted] = useState(false)
+  const { muted, toggleMute } = useSharedAudio()
 
   if (!hasStarted) {
     return (
@@ -413,7 +412,12 @@ export default function Chapter2() {
   // No extra AudioWrapper needed — ChapterPage already wraps with AudioWrapper + ChatProvider
   return (
     <div className={`h-screen overflow-hidden ${chapter2Bg} flex flex-col`}>
-      <ChapterHeader chapterNumber={2} />
+      <ChapterHeader
+        chapterNumber={2}
+        showAudioControl
+        muted={muted}
+        onToggleMute={toggleMute}
+      />
       <Chapter2Content />
     </div>
   )

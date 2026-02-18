@@ -34,6 +34,7 @@ interface SoundMap {
 
 export function useAudioManager() {
   const audioContextRef = useRef<AudioContext | null>(null)
+  const masterGainRef = useRef<GainNode | null>(null)
 
   // Preloaded sounds map: key -> Sound
   const soundsRef = useRef<Record<string, Sound>>({})
@@ -42,6 +43,7 @@ export function useAudioManager() {
   const playingRef = useRef<Record<string, PlayingInstance[]>>({})
 
   const [isPlaying, setIsPlaying] = useState<Record<string, boolean>>({})
+  const [muted, setMuted] = useState(false)
 
   const getAudioContext = () => {
     if (!audioContextRef.current) {
@@ -50,6 +52,16 @@ export function useAudioManager() {
     }
     return audioContextRef.current
   }
+
+  // All sounds route through this node so mute/unmute affects everything at once
+  const getMasterGain = useCallback(() => {
+    if (!masterGainRef.current) {
+      const context = getAudioContext()
+      masterGainRef.current = context.createGain()
+      masterGainRef.current.connect(context.destination)
+    }
+    return masterGainRef.current
+  }, [])
 
   const resumeAudioContext = useCallback(() => {
     const context = getAudioContext()
@@ -141,7 +153,7 @@ export function useAudioManager() {
     source.buffer = sound.buffer
     source.loop = sound.loop
 
-    source.connect(gainNode).connect(context.destination)
+    source.connect(gainNode).connect(getMasterGain())
     source.start()
     return { source, gainNode }
   }, [])
@@ -235,6 +247,15 @@ export function useAudioManager() {
     Object.keys(playingRef.current).forEach(stop)
   }, [stop])
 
+  const toggleMute = useCallback(() => {
+    const gain = getMasterGain()
+    setMuted((prev) => {
+      const next = !prev
+      gain.gain.value = next ? 0 : 1
+      return next
+    })
+  }, [getMasterGain])
+
   // --- Cleanup on unmount
   useEffect(() => {
     stopAll()
@@ -250,5 +271,7 @@ export function useAudioManager() {
     togglePreloaded,
     toggleOnce,
     isPlaying,
+    muted,
+    toggleMute,
   }
 }

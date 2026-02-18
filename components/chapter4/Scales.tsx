@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import ScaleTemplate from "@/components/chapter4/ScaleTemplate"
 import { useSharedAudio } from "@/context/AudioContext"
-import AudioControl from "@/components/AudioControl"
 import type { ProcessedInteraction } from "@/interactions"
 import { PlayOnceOptions } from "@/hooks/use-audio"
 
@@ -57,7 +56,7 @@ export default function Scales({
   const [data, setData] = useState<Record<string, number>>({})
   const [dataCollected, setDataCollected] = useState(false)
 
-  const { playOnce, toggleOnce, isPlaying, stop } = useSharedAudio()
+  const { playOnce, isPlaying, stop } = useSharedAudio()
 
   const scalesObject =
     (currentInteraction.scales as Record<string, Scale>) || {}
@@ -123,15 +122,6 @@ export default function Scales({
 
   return (
     <div className="h-full flex flex-col">
-      <AudioControl
-        onClick={() => {
-          if (currentAudio) {
-            toggleOnce(currentAudio)
-          }
-        }}
-        audioEnabled={isPlaying[currentAudio?.filename ?? ""] || false}
-        disabled={!currentAudio}
-      />
       <div className="flex-1 min-h-0">
         <ScaleTemplate
           topText={currentScale.top}

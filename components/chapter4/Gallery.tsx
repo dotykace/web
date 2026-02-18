@@ -5,7 +5,6 @@ import React, { useEffect, useState, useRef, useCallback } from "react"
 import { GalleryModal } from "@/components/chapter4/GalleryModal"
 import { setToStorage } from "@/scripts/local-storage"
 import { useSharedAudio } from "@/context/AudioContext"
-import AudioControl from "@/components/AudioControl"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Carousel,
@@ -25,7 +24,7 @@ export default function Gallery({
   onFinish: (image: string) => void
   audio: { filename: string; type: "sound" | "voice"; onFinish: () => void }
 }) {
-  const { playOnce, toggleOnce, isPlaying, stop } = useSharedAudio()
+  const { playOnce, isPlaying, stop } = useSharedAudio()
   const confirmText = "Potvrdit"
   const hasPlayedRef = useRef(false)
   const strings = images.slice(0, 5)
@@ -77,13 +76,6 @@ export default function Gallery({
 
   return (
     <div className="w-full h-full overflow-hidden relative flex flex-col">
-      {/* Audio control */}
-      <AudioControl
-        onClick={() => toggleOnce(audio)}
-        audioEnabled={isPlaying[audio?.filename] || false}
-        disabled={!audio}
-      />
-
       {/* Animated background particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(6)].map((_, i) => (
