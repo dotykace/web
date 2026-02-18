@@ -3,7 +3,6 @@ import Scales from "@/components/chapter4/Scales"
 import Gallery from "@/components/chapter4/Gallery"
 import React, { useEffect, useState } from "react"
 import BasicAudioVisual from "@/components/BasicAudioVisual"
-import AudioWrapper from "@/components/audio/AudioWrapper"
 import CountDownInput from "@/components/CountDownInput"
 import { useRouter } from "next/navigation"
 import useDB from "@/hooks/use-db"
@@ -14,8 +13,6 @@ import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 
 const coloring = "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900"
-
-const soundMap = {}
 
 interface Interpretation {
   secondary: string
@@ -60,18 +57,18 @@ export default function ScalesAndGallery() {
             transition={{ delay: 0.3, duration: 0.4, type: "spring" }}
             className="flex justify-center"
           >
-            <div className="w-20 h-20 rounded-full bg-white border-2 border-indigo-400 shadow-xl flex items-center justify-center">
+            <div className="w-20 h-20 rounded-full bg-white shadow-xl flex items-center justify-center">
               <span className="text-3xl font-bold text-indigo-600">4</span>
             </div>
           </motion.div>
 
           {/* Main card */}
-          <div className="bg-white rounded-2xl border-2 border-indigo-400 p-8 text-center shadow-xl">
+          <div className="w-full bg-white rounded-3xl p-8 text-center shadow-xl">
             <motion.h2
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.4 }}
-              className="text-2xl font-bold text-indigo-600 mb-2"
+              className="text-2xl font-bold text-gray-900 mb-2"
             >
               Kapitola 4
             </motion.h2>
@@ -79,7 +76,7 @@ export default function ScalesAndGallery() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5, duration: 0.4 }}
-              className="text-indigo-500 mb-8 font-medium text-sm"
+              className="text-indigo-600 mb-8 font-medium text-sm"
             >
               Pro spuštění zážitku klikněte na tlačítko
             </motion.p>
@@ -108,9 +105,7 @@ export default function ScalesAndGallery() {
     <div className={`h-dvh flex flex-col overflow-hidden ${coloring}`}>
       {!isVideoPlaying && <ChapterHeader chapterNumber={4} />}
       <div className="flex-1 min-h-0 flex flex-col">
-        <AudioWrapper soundMap={soundMap} setLoaded={() => {}}>
-          <ScalesAndGalleryContent onVideoStateChange={setIsVideoPlaying} />
-        </AudioWrapper>
+        <ScalesAndGalleryContent onVideoStateChange={setIsVideoPlaying} />
       </div>
     </div>
   )
