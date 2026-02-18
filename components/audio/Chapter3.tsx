@@ -17,6 +17,7 @@ function Chapter3Content() {
   const [inputValue, setInputValue] = useState("")
   const [timeLeft, setTimeLeft] = useState<number | null>(null)
   const [showWarning, setShowWarning] = useState(false)
+  const [showChoices, setShowChoices] = useState(false)
   const countdownRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
@@ -30,6 +31,7 @@ function Chapter3Content() {
     setInputValue("")
     setTimeLeft(null)
     setShowWarning(false)
+    setShowChoices(false)
     if (countdownRef.current) {
       clearInterval(countdownRef.current)
       countdownRef.current = null
@@ -111,29 +113,36 @@ function Chapter3Content() {
 
   if (!currentInteraction || state !== "initialized") return null
 
+  const hasChoices = !!(currentInteraction.choices as any[])?.length
+  const hasButton = !!currentInteraction.button
+
   const currentAudio =
     currentInteraction.type === "voice" && currentInteraction.filename
       ? {
           filename: currentInteraction.filename as string,
           type: "voice" as const,
           onFinish: () => {
-            if (!currentInteraction.button) {
+            // If the interaction has choices or a button, reveal them instead of advancing
+            if (hasChoices) {
+              setShowChoices(true)
+            } else if (!hasButton) {
               goToNextInteraction()
             }
           },
         }
       : null
 
-  // Voice interaction with optional continue button
+  // Voice interaction — may include choices or a continue button shown after audio
   if (currentInteraction.type === "voice") {
     return (
       <BasicAudioVisual
         id={currentInteraction.id}
         audio={currentAudio}
         showProgress={false}
-        canSkip={!currentInteraction.loop && !currentInteraction.button}
+        canSkip={!currentInteraction.loop && !hasButton && !hasChoices}
       >
-        {currentInteraction.button && (
+        {/* Continue button (shown immediately, user clicks after listening) */}
+        {hasButton && (
           <div className="w-full px-4 mt-4">
             <button
               onClick={() => handleButtonClick(currentInteraction.button)}
@@ -145,45 +154,31 @@ function Chapter3Content() {
             </button>
           </div>
         )}
-      </BasicAudioVisual>
-    )
-  }
 
-  // Multiple choice
-  if (currentInteraction.type === "multiple-choice") {
-    return (
-      <BasicAudioVisual
-        id={currentInteraction.id}
-        audio={null}
-        showProgress={false}
-        canSkip={false}
-      >
-        <div className="space-y-3 w-full px-4">
-          {currentInteraction.text() && (
-            <p className="text-white text-lg text-center font-medium mb-4">
-              {currentInteraction.text()}
-            </p>
-          )}
-          {(currentInteraction.choices as Array<{ label: string; "next-id": string }>)?.map(
-            (choice, index) => (
-              <motion.div
-                key={choice.label}
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: index * 0.08 }}
-              >
-                <button
-                  onClick={() => handleChoiceClick(choice)}
-                  className="w-full bg-white hover:bg-white/90
-                             text-orange-900 font-bold tracking-wide py-4 px-8 rounded-full shadow-lg
-                             transition-all duration-300 active:scale-[0.98]"
+        {/* Choices revealed after audio finishes */}
+        {showChoices && hasChoices && (
+          <div className="space-y-3 w-full px-4 mt-4">
+            {(currentInteraction.choices as Array<{ label: string; "next-id": string }>).map(
+              (choice, index) => (
+                <motion.div
+                  key={choice.label}
+                  initial={{ y: 10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: index * 0.08 }}
                 >
-                  {choice.label}
-                </button>
-              </motion.div>
-            ),
-          )}
-        </div>
+                  <button
+                    onClick={() => handleChoiceClick(choice)}
+                    className="w-full bg-white hover:bg-white/90
+                               text-orange-900 font-bold tracking-wide py-4 px-8 rounded-full shadow-lg
+                               transition-all duration-300 active:scale-[0.98]"
+                  >
+                    {choice.label}
+                  </button>
+                </motion.div>
+              ),
+            )}
+          </div>
+        )}
       </BasicAudioVisual>
     )
   }
