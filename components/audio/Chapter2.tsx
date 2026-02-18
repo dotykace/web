@@ -16,7 +16,6 @@ import { useChatContext } from "@/context/ChatContext"
 import { useSharedAudio } from "@/context/AudioContext"
 import VoiceVisualization from "@/components/VoiceVisualization"
 import { CHAPTER2_PROGRESS_KEY } from "@/components/ChapterPage"
-import ChapterHeader from "@/components/ChapterHeader"
 
 interface Chapter2Progress {
   currentInteractionId: string
@@ -362,31 +361,22 @@ function Chapter2Content() {
   )
 }
 
-const chapter2Bg =
-  "bg-gradient-to-br from-violet-500 via-purple-600 to-fuchsia-600"
-
 export default function Chapter2() {
   const [hasStarted, setHasStarted] = useState(false)
-  const { muted, toggleMute } = useSharedAudio()
 
   if (!hasStarted) {
     return (
-      <div
-        className={`h-screen overflow-hidden ${chapter2Bg} flex items-center justify-center p-4`}
-      >
-        {/* Decorative blurred circle */}
+      <div className="flex-1 flex items-center justify-center p-4">
         <div
           className="fixed w-32 h-32 bg-yellow-300/25 rounded-full pointer-events-none blur-2xl"
           style={{ top: "12%", left: "8%" }}
         />
 
         <div className="w-full max-w-md space-y-6 flex flex-col items-center">
-          {/* Chapter number badge */}
           <div className="w-20 h-20 rounded-full bg-white shadow-xl flex items-center justify-center">
             <span className="text-3xl font-bold text-purple-900">2</span>
           </div>
 
-          {/* Main card */}
           <div className="w-full bg-white rounded-3xl p-8 text-center shadow-xl">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Kapitola 2
@@ -408,17 +398,5 @@ export default function Chapter2() {
     )
   }
 
-  // Background + ChapterHeader are here (not in BasicAudioVisual) so the header stays fixed above the content
-  // No extra AudioWrapper needed — ChapterPage already wraps with AudioWrapper + ChatProvider
-  return (
-    <div className={`h-screen overflow-hidden ${chapter2Bg} flex flex-col`}>
-      <ChapterHeader
-        chapterNumber={2}
-        showAudioControl
-        muted={muted}
-        onToggleMute={toggleMute}
-      />
-      <Chapter2Content />
-    </div>
-  )
+  return <Chapter2Content />
 }

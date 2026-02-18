@@ -1,5 +1,4 @@
 import { useChatContext } from "@/context/ChatContext"
-import { useSharedAudio } from "@/context/AudioContext"
 import Scales from "@/components/chapter4/Scales"
 import Gallery from "@/components/chapter4/Gallery"
 import React, { useEffect, useState } from "react"
@@ -7,13 +6,11 @@ import BasicAudioVisual from "@/components/BasicAudioVisual"
 import CountDownInput from "@/components/CountDownInput"
 import { useRouter } from "next/navigation"
 import useDB from "@/hooks/use-db"
-import ChapterHeader from "@/components/ChapterHeader"
 import FullScreenVideo from "@/components/FullScreenVideo"
 import { readFromStorage, setToStorage } from "@/scripts/local-storage"
+import { useChapterLayout } from "@/context/ChapterLayoutContext"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-
-const coloring = "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900"
 
 interface Interpretation {
   secondary: string
@@ -24,15 +21,10 @@ interface Interpretation {
 
 export default function ScalesAndGallery() {
   const [hasStartedExperience, setHasStartedExperience] = useState(false)
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false)
-  const { muted, toggleMute } = useSharedAudio()
 
   if (!hasStartedExperience) {
     return (
-      <div
-        className={`h-screen overflow-hidden ${coloring} flex items-center justify-center p-4`}
-      >
-        {/* Decorative elements */}
+      <div className="flex-1 flex items-center justify-center p-4">
         <div
           className="fixed w-24 h-24 bg-blue-400/30 rounded-full pointer-events-none blur-xl animate-pulse"
           style={{ top: "15%", left: "10%" }}
@@ -52,7 +44,6 @@ export default function ScalesAndGallery() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="w-full max-w-md space-y-6"
         >
-          {/* Chapter badge */}
           <motion.div
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -64,7 +55,6 @@ export default function ScalesAndGallery() {
             </div>
           </motion.div>
 
-          {/* Main card */}
           <div className="w-full bg-white rounded-3xl p-8 text-center shadow-xl">
             <motion.h2
               initial={{ opacity: 0, y: 10 }}
@@ -103,29 +93,12 @@ export default function ScalesAndGallery() {
     )
   }
 
-  return (
-    <div className={`h-dvh flex flex-col overflow-hidden ${coloring}`}>
-      {!isVideoPlaying && (
-        <ChapterHeader
-          chapterNumber={4}
-          showAudioControl
-          muted={muted}
-          onToggleMute={toggleMute}
-        />
-      )}
-      <div className="flex-1 min-h-0 flex flex-col">
-        <ScalesAndGalleryContent onVideoStateChange={setIsVideoPlaying} />
-      </div>
-    </div>
-  )
+  return <ScalesAndGalleryContent />
 }
 
-function ScalesAndGalleryContent({
-  onVideoStateChange,
-}: {
-  onVideoStateChange?: (isPlaying: boolean) => void
-}) {
+function ScalesAndGalleryContent() {
   const { currentInteraction, goToNextInteraction } = useChatContext()
+  const { setHeaderVisible } = useChapterLayout()
   const [data, setData] = useState<Record<string, Interpretation> | null>(null)
   const [interactionIndex, setInteractionIndex] = useState(0)
   const [dbHook, setDbHook] = useState<any>(null)
@@ -136,11 +109,10 @@ function ScalesAndGalleryContent({
     setDbHook(hook)
   }, [])
 
-  // Notify parent when video state changes
-  React.useEffect(() => {
-    const isVideo = currentInteraction?.type === "video"
-    onVideoStateChange?.(isVideo)
-  }, [currentInteraction?.type, onVideoStateChange])
+  // Hide ChapterHeader during fullscreen video playback
+  useEffect(() => {
+    setHeaderVisible(currentInteraction?.type !== "video")
+  }, [currentInteraction?.type, setHeaderVisible])
 
   // Track interaction progress
   const totalSteps = 5 // Approximate: intro voice + scales + gallery + input
@@ -239,7 +211,6 @@ function ScalesAndGalleryContent({
       return (
         <BasicAudioVisual
           id={currentInteraction.id}
-          coloring={coloring}
           audio={audio}
           progress={progress}
           showProgress={false}
@@ -250,7 +221,6 @@ function ScalesAndGalleryContent({
       return (
         <BasicAudioVisual
           id={currentInteraction.id}
-          coloring={coloring}
           audio={null}
           progress={90}
           showProgress={false}
@@ -266,7 +236,6 @@ function ScalesAndGalleryContent({
       return (
         <BasicAudioVisual
           id={currentInteraction.id}
-          coloring={coloring}
           audio={null}
           progress={progress}
           showProgress={false}
