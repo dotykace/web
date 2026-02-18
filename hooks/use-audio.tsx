@@ -177,6 +177,10 @@ export function useAudioManager() {
       const duration = buffer.duration
       const timeOut = setTimeout(
         () => {
+          fetch("/api/log", {
+            method: "POST",
+            body: JSON.stringify({ msg: ("Sound timeout reached, calling onFinish if exists") }),
+          })
           console.log("Sound timeout reached, calling onFinish if exists")
           if (onFinish) onFinish()
         },
