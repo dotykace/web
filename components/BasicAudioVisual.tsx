@@ -35,25 +35,29 @@ export default function BasicAudioVisual({
 
   const { playOnce, stopAll } = useSharedAudio()
 
+  // audio/stopAll/playOnce are intentionally omitted from deps —
+  // the effect should only fire when the interaction id changes
+  const audioRef = useRef(audio)
+  audioRef.current = audio
+
   React.useEffect(() => {
-    // Stop ALL audio before playing new audio
     stopAll()
 
-    // Only play if we have audio and haven't played for this id yet
-    if (audio && playedForIdRef.current !== id) {
+    const currentAudio = audioRef.current
+    if (currentAudio && playedForIdRef.current !== id) {
       playedForIdRef.current = id || null
       playOnce({
-        filename: audio.filename,
-        onFinish: audio.onFinish || (() => {}),
-        type: audio.type || "sound",
+        filename: currentAudio.filename,
+        onFinish: currentAudio.onFinish || (() => {}),
+        type: currentAudio.type || "sound",
       })
     }
 
-    // Cleanup: stop all audio when component unmounts
     return () => {
       stopAll()
     }
-  }, [id, audio, playOnce, stopAll])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id])
 
   const skipInteraction = () => {
     if (!audio) return
