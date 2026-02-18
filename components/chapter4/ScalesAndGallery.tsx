@@ -238,6 +238,7 @@ function ScalesAndGalleryContent({
           coloring={coloring}
           audio={audio}
           progress={progress}
+          showProgress={false}
         />
       )
     }
@@ -248,6 +249,7 @@ function ScalesAndGalleryContent({
           coloring={coloring}
           audio={null}
           progress={90}
+          showProgress={false}
         >
           <CountDownInput
             questionText={currentInteraction.text()}
@@ -263,6 +265,7 @@ function ScalesAndGalleryContent({
           coloring={coloring}
           audio={null}
           progress={progress}
+          showProgress={false}
         />
       )
   }
