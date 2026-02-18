@@ -5,6 +5,7 @@ import ChapterPage from "@/components/ChapterPage"
 import { notFound } from "next/navigation"
 import ScalesAndGallery from "@/components/chapter4/ScalesAndGallery"
 import Chapter2 from "@/components/audio/Chapter2"
+import Chapter3 from "@/components/audio/Chapter3"
 
 export const chapterConfigs = {
   "0": {
@@ -28,7 +29,10 @@ export const chapterConfigs = {
   "3": {
     chapterNumber: 3,
     interactionsFileName: "chapter3-flow",
-    ViewComponent: Chat,
+    ViewComponent: Chapter3,
+    coloring: "bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600",
+    showHeader: true,
+    showAudioControl: true,
   },
   "4": {
     chapterNumber: 4,
