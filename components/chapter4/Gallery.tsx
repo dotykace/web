@@ -26,6 +26,7 @@ export default function Gallery({
   audio: { filename: string; type: "sound" | "voice"; onFinish: () => void }
 }) {
   const { playOnce, toggleOnce, isPlaying, stop } = useSharedAudio()
+  const confirmText = "Potvrdit"
   const hasPlayedRef = useRef(false)
   const strings = images.slice(0, 5)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
@@ -46,15 +47,19 @@ export default function Gallery({
     setSelectedIndex((prev) => (prev === currentIndex ? null : currentIndex))
   }, [currentIndex])
 
+  const handleDownload = (imagePath: string) => {
+    const link = document.createElement("a")
+    link.href = imagePath
+    link.download = "Dotykace-Result.jpg"
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   const saveSelection = (download: boolean) => {
     const selectedImage = strings[selectedIndex ?? 0]
     if (download) {
-      const link = document.createElement("a")
-      link.href = selectedImage
-      link.download = "Dotykace-Result.jpg"
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      handleDownload(selectedImage)
     }
     setToStorage("gallerySelection", selectedImage)
     if (onFinish) {
@@ -282,7 +287,7 @@ export default function Gallery({
                   : "bg-white/20 text-white/50 cursor-not-allowed"
               }`}
             >
-              Potvrdit
+              {confirmText}
             </Button>
           </motion.div>
         </div>

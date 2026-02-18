@@ -1,7 +1,7 @@
 import { useChatContext } from "@/context/ChatContext"
 import Scales from "@/components/chapter4/Scales"
 import Gallery from "@/components/chapter4/Gallery"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import BasicAudioVisual from "@/components/BasicAudioVisual"
 import AudioWrapper from "@/components/audio/AudioWrapper"
 import CountDownInput from "@/components/CountDownInput"
@@ -124,8 +124,13 @@ function ScalesAndGalleryContent({
   const { currentInteraction, goToNextInteraction } = useChatContext()
   const [data, setData] = useState<Record<string, Interpretation> | null>(null)
   const [interactionIndex, setInteractionIndex] = useState(0)
-  const dbHook = useDB()
+  const [dbHook, setDbHook] = useState<any>(null)
   const router = useRouter()
+
+  useEffect(() => {
+    const hook = useDB()
+    setDbHook(hook)
+  }, [])
 
   // Notify parent when video state changes
   React.useEffect(() => {

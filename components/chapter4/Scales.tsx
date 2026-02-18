@@ -1,8 +1,9 @@
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState } from "react"
 import ScaleTemplate from "@/components/chapter4/ScaleTemplate"
 import { useSharedAudio } from "@/context/AudioContext"
 import AudioControl from "@/components/AudioControl"
 import type { ProcessedInteraction } from "@/interactions"
+import { PlayOnceOptions } from "@/hooks/use-audio"
 
 interface Interpretation {
   secondary: string
@@ -55,7 +56,6 @@ export default function Scales({
 }) {
   const [data, setData] = useState<Record<string, number>>({})
   const [dataCollected, setDataCollected] = useState(false)
-  const playedVoicesRef = useRef<Set<string>>(new Set())
 
   const { playOnce, toggleOnce, isPlaying, stop } = useSharedAudio()
 
@@ -64,6 +64,7 @@ export default function Scales({
   const [currentScale, setCurrentScale] = useState<Scale | undefined>(
     scalesObject["A"],
   )
+  const [currentAudio, setCurrentAudio] = useState<PlayOnceOptions>()
 
   useEffect(() => {
     if (dataCollected) {
@@ -100,31 +101,25 @@ export default function Scales({
   useEffect(() => {
     if (!currentScale) return
     if (currentScale.voice) {
-      // Skip if already playing or already played for this scale
       if (isPlaying[currentScale.voice]) return
-      if (playedVoicesRef.current.has(currentScale.id)) return
-
-      playedVoicesRef.current.add(currentScale.id)
-      const audio = {
-        filename: currentScale.voice,
-        type: "voice" as const,
+      const audio: PlayOnceOptions = {
+        filename: currentScale.voice as string,
+        type: "voice",
         onFinish: () => {
           console.log("Played sound for scales:", currentScale.voice)
         },
       }
-      playOnce(audio)
+      setCurrentAudio(audio)
     }
-  }, [currentScale, isPlaying, playOnce])
+  }, [currentScale])
+
+  useEffect(() => {
+    if (currentAudio) {
+      playOnce(currentAudio)
+    }
+  }, [currentAudio, playOnce])
 
   if (!currentScale) return null
-
-  const currentAudio = currentScale.voice
-    ? {
-        filename: currentScale.voice,
-        type: "voice" as const,
-        onFinish: () => {},
-      }
-    : null
 
   return (
     <div className="h-full flex flex-col">
