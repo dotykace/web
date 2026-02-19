@@ -1,7 +1,15 @@
 import DotykaceLogo from "@/components/DotykaceLogo"
 import { Card, CardContent } from "@/components/ui/card"
 
-export default function DefaultWaitingScreen({ header, subheader, icon }) {
+export default function DefaultWaitingScreen({
+  header,
+  subheader,
+  icon,
+}: {
+  header: string
+  subheader: string
+  icon: React.ReactNode
+}) {
   return (
     <div className="min-h-screen p-4">
       <div className="max-w-md mx-auto space-y-6">
