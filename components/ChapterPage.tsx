@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useCallback, useEffect, useMemo, useState } from "react"
-import { readFromStorage } from "@/scripts/local-storage"
+import { readFromStorage, removeFromStorage } from "@/scripts/local-storage"
 import { useInteractions } from "@/hooks/use-interactions"
 import { useRouter } from "next/navigation"
 import LoadingScreen from "@/components/LoadingScreen"
@@ -39,9 +39,11 @@ const getProgressId = (chapterNumber: number) => {
 function ChapterHeaderBridge({
   chapterNumber,
   showAudioControl,
+  onRestart,
 }: {
   chapterNumber: number
   showAudioControl: boolean
+  onRestart?: () => void
 }) {
   const { muted, toggleMute } = useSharedAudio()
   return (
@@ -50,6 +52,7 @@ function ChapterHeaderBridge({
       showAudioControl={showAudioControl}
       muted={muted}
       onToggleMute={toggleMute}
+      onRestart={onRestart}
     />
   )
 }
@@ -127,6 +130,10 @@ export default function ChapterPage({
             <ChapterHeaderBridge
               chapterNumber={chapterNumber}
               showAudioControl={showAudioControl}
+              onRestart={savedProgress ? () => {
+                removeFromStorage(CHAPTER2_PROGRESS_KEY)
+                window.location.reload()
+              } : undefined}
             />
           )}
           <div className="flex-1 min-h-0 flex flex-col">
