@@ -198,12 +198,18 @@ export function useAudioManager() {
 
   const playOnce = useCallback(
     async ({ filename, opts, type, onFinish }: PlayOnceOptions) => {
-      let buffer: AudioBuffer
+      let buffer: AudioBuffer | undefined
 
-      // Try to load audio, retry once after a delay (iOS Safari needs
-      // recovery time after share-sheet / page-background transitions).
-      for (let attempt = 0; attempt < 2; attempt++) {
+      // iOS Safari suspends AudioContext and network when the share sheet or
+      // another browser UI is active. Retry with increasing delays so the
+      // system has enough time to recover.
+      const retryDelays = [800, 1500, 3000]
+      for (let attempt = 0; attempt <= retryDelays.length; attempt++) {
         try {
+          const ctx = getAudioContext()
+          if (ctx.state === "suspended" || (ctx.state as string) === "interrupted") {
+            await ctx.resume().catch(() => {})
+          }
           buffer = await fetchSound(filename, type)
           break
         } catch (error) {
@@ -211,10 +217,11 @@ export function useAudioManager() {
             `Audio load attempt ${attempt + 1} failed for "${filename}":`,
             error,
           )
-          if (attempt === 0) {
-            await new Promise((r) => setTimeout(r, 1000))
+          if (attempt < retryDelays.length) {
+            await new Promise((r) => setTimeout(r, retryDelays[attempt]))
           } else {
             console.error(`Audio load failed permanently for "${filename}"`)
+            if (onFinish) onFinish()
             return
           }
         }
@@ -239,6 +246,7 @@ export function useAudioManager() {
       const result = await play(sound)
       if (!result) {
         if (timeOut) clearTimeout(timeOut)
+        if (onFinish) onFinish()
         return
       }
       const { source, gainNode } = result

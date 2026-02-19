@@ -87,8 +87,9 @@ export default function Gallery({
       const selectedImage = strings[selectedIndex ?? 0]
       if (download) {
         await handleDownload(selectedImage)
-        // Give iOS Safari time to fully resume after the share sheet
-        await new Promise((r) => setTimeout(r, 300))
+        // iOS Safari suspends AudioContext while the share sheet is open.
+        // Wait and poke the context so it resumes before the next audio plays.
+        await new Promise((r) => setTimeout(r, 600))
       }
       setToStorage("gallerySelection", selectedImage)
       if (onFinish) {
