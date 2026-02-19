@@ -88,7 +88,7 @@
     },
     "3.11.4": {
       "type": "input",
-      "text": "Popiš, jak rychle a jak spolehlivě to poznáš",
+      "text": "Popiš, jak rychle a jak spolehlivě to poznáš:",
       "duration": 20,
       "save-label": "Potvrdit",
       "next-id": "3.11.final"
