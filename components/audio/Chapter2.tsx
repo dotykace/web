@@ -157,7 +157,7 @@ function Chapter2Content() {
               <button
                 onClick={() => handleButtonClick(currentInteraction.button)}
                 className="w-full bg-white hover:bg-white/90
-                           text-purple-900 font-bold tracking-wide py-4 px-8 rounded-full shadow-lg
+                           text-purple-900 font-bold tracking-wide py-2 px-4 rounded-full shadow-lg
                            transition-all duration-300 active:scale-[0.98]"
               >
                 {currentInteraction.button.label}
@@ -197,7 +197,7 @@ function Chapter2Content() {
                 <button
                   onClick={() => handleChoiceClick(choice)}
                   className="w-full bg-white hover:bg-white/90
-                             text-purple-900 font-bold tracking-wide py-4 px-8 rounded-full shadow-lg
+                             text-purple-900 font-bold tracking-wide py-2 rounded-full shadow-lg
                              transition-all duration-300 active:scale-[0.98]"
                 >
                   {choice.label}
@@ -248,7 +248,7 @@ function Chapter2Content() {
             disabled={!inputValue.trim()}
             className="w-full bg-white hover:bg-white/90
                        disabled:bg-white/30 disabled:text-white/50
-                       text-purple-900 font-bold tracking-wide py-4 px-8 rounded-full shadow-lg
+                       text-purple-900 font-bold tracking-wide py-2 rounded-full shadow-lg
                        disabled:shadow-none transition-all duration-300 active:scale-[0.98]"
           >
             {currentInteraction["save-label"] || "Uložit"}
@@ -327,7 +327,7 @@ export default function Chapter2() {
             <button
               onClick={() => setHasStarted(true)}
               className="w-full bg-purple-600 hover:bg-purple-700
-                         text-white font-bold py-4 px-8 rounded-full shadow-lg shadow-purple-500/30
+                         text-white font-bold py-2 px-2 rounded-full shadow-lg shadow-purple-500/30
                          transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
             >
               Spustit
