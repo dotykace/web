@@ -22,20 +22,20 @@ export function GalleryModal({
   const declineText = "Ne, díky"
 
   const footer = (
-    <>
-      <button
-        onClick={() => closeModal(false)}
-        className="px-4 rounded-full py-2 text-sm font-medium text-black bg-white border border-transparent hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-      >
-        {declineText}
-      </button>
+    <div className="flex flex-col gap-2 w-full">
       <button
         onClick={() => closeModal(true)}
-        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+        className="w-full rounded-full py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
       >
         {approveText}
       </button>
-    </>
+      <button
+        onClick={() => closeModal(false)}
+        className="w-full rounded-full py-2 text-sm font-semibold text-black bg-white hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+      >
+        {declineText}
+      </button>
+    </div>
   )
 
   return (

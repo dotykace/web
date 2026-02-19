@@ -161,7 +161,7 @@ export default function Gallery({
       </motion.div>
 
       {/* Carousel */}
-      <div className="flex-1 min-h-0 px-4 z-10 py-2 flex items-center overflow-hidden">
+      <div className="flex-1 min-h-0 px-4 z-10 py-1 sm:py-2 flex items-center overflow-hidden">
         <Carousel
           setApi={setApi}
           className="w-full max-w-md mx-auto h-full"
@@ -183,7 +183,7 @@ export default function Gallery({
                   <AnimatePresence>
                     {selectedIndex === index && (
                       <motion.div
-                        className="absolute -inset-2 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 rounded-3xl blur-lg"
+                        className="absolute -inset-2 rounded-3xl blur-lg"
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 0.6, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.8 }}
@@ -191,10 +191,10 @@ export default function Gallery({
                     )}
                   </AnimatePresence>
 
-                  {/* Image card */}
+                  {/* Image card: width-driven with height cap to prevent overflow */}
                   <motion.div
                     style={{ aspectRatio: "4/5" }}
-                    className={`relative h-full max-w-full rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 ${
+                    className={`relative w-full max-h-full rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 ${
                       selectedIndex === index
                         ? "ring-4 ring-white shadow-2xl"
                         : currentIndex === index
@@ -225,7 +225,7 @@ export default function Gallery({
 
                     {/* Selection badge */}
                     <motion.div
-                      className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                      className={`absolute top-2 right-2 sm:top-3 sm:right-3 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
                         selectedIndex === index
                           ? "bg-green-500 text-white shadow-lg shadow-green-500/50"
                           : "bg-black/40 backdrop-blur-sm border-2 border-white"
@@ -239,14 +239,17 @@ export default function Gallery({
                           animate={{ scale: 1, rotate: 0 }}
                           transition={{ type: "spring", stiffness: 500 }}
                         >
-                          <Check className="w-6 h-6" strokeWidth={3} />
+                          <Check
+                            className="w-5 h-5 sm:w-6 sm:h-6"
+                            strokeWidth={3}
+                          />
                         </motion.div>
                       )}
                     </motion.div>
 
                     {/* Image number */}
-                    <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1">
-                      <span className="text-white text-sm font-medium">
+                    <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 bg-black/50 backdrop-blur-sm rounded-full px-2.5 py-0.5 sm:px-3 sm:py-1">
+                      <span className="text-white text-xs sm:text-sm font-medium">
                         {index + 1} / {strings.length}
                       </span>
                     </div>
@@ -259,9 +262,9 @@ export default function Gallery({
       </div>
 
       {/* Bottom controls */}
-      <div className="shrink-0 px-4 pb-4 pt-2 z-10">
+      <div className="shrink-0 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-1 sm:pt-2 z-10">
         {/* Dot indicators */}
-        <div className="flex justify-center gap-1.5 mb-2">
+        <div className="flex justify-center gap-1.5 mb-1.5 sm:mb-2">
           {strings.map((_, i) => (
             <motion.button
               key={i}
@@ -284,9 +287,9 @@ export default function Gallery({
           <motion.div className="flex-1" whileTap={{ scale: 0.98 }}>
             <Button
               onClick={handleSelect}
-              className={`w-full py-2.5 text-sm font-bold rounded-full transition-all duration-300 ${
+              className={`w-full py-2 sm:py-2.5 text-xs sm:text-sm font-bold rounded-full transition-all duration-300 ${
                 selectedIndex === currentIndex
-                  ? "bg-green-500 hover:bg-green-600 text-white"
+                  ? "bg-white hover:bg-white/90 text-indigo-900 "
                   : "bg-white hover:bg-white/90 text-indigo-900"
               }`}
             >
@@ -307,9 +310,9 @@ export default function Gallery({
                 setShowModal(true)
               }}
               disabled={selectedIndex === null}
-              className={`w-full py-2.5 text-sm font-bold rounded-full transition-all duration-300 ${
+              className={`w-full py-2 sm:py-2.5 text-xs sm:text-sm font-bold rounded-full transition-all duration-300 ${
                 selectedIndex !== null
-                  ? "bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white shadow-lg shadow-purple-500/30"
+                  ? "bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-purple-500/30"
                   : "bg-white/20 text-white/50 cursor-not-allowed"
               }`}
             >
