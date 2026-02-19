@@ -5,6 +5,7 @@ import { useChatContext } from "@/context/ChatContext"
 import MobileNotification from "@/components/mobile-notification"
 import { Interaction } from "@/interactions"
 import EmojiReactionButton from "@/components/EmojiReactions"
+import { motion } from "framer-motion"
 
 import ChatOverlay from "@/components/ChatOverlay"
 import ChatBubble from "@/components/ChatBubble"
@@ -40,28 +41,57 @@ export default function Chat() {
           style={{ bottom: "12%", right: "8%" }}
         />
 
-        <div className="w-full max-w-md space-y-6 flex flex-col items-center relative z-10">
-          <div className="w-20 h-20 rounded-full bg-blue-50 border-2 border-blue-200 flex items-center justify-center">
-            <span className="text-3xl font-bold text-blue-600">1</span>
-          </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="w-full max-w-md space-y-6 relative z-10"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3, duration: 0.4, type: "spring" }}
+            className="flex justify-center"
+          >
+            <div className="w-20 h-20 rounded-full bg-blue-50 border-2 border-blue-200 shadow-xl flex items-center justify-center">
+              <span className="text-3xl font-bold text-blue-600">1</span>
+            </div>
+          </motion.div>
 
-          <div className="w-full rounded-3xl p-8 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Kapitola 1
-            </h2>
-            <p className="text-blue-500 mb-8 font-medium text-sm">
-              Připrav se na začátek příběhu
-            </p>
-            <button
-              onClick={() => setHasStarted(true)}
-              className="w-full bg-blue-500 hover:bg-blue-600
-                         text-white font-bold py-2 px-2 rounded-full shadow-lg shadow-blue-300/40
-                         transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+          <div className="w-full bg-white rounded-3xl p-8 text-center shadow-xl">
+            <motion.h2
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.4 }}
+              className="text-2xl font-bold text-gray-900 mb-2"
             >
-              Spustit
-            </button>
+              Kapitola 1
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 0.4 }}
+              className="text-blue-500 mb-8 font-medium text-sm"
+            >
+              Připrav se na začátek příběhu
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.4 }}
+            >
+              <button
+                onClick={() => setHasStarted(true)}
+                className="w-full bg-blue-500 hover:bg-blue-600
+                           text-white font-bold py-4 px-8 rounded-full shadow-lg shadow-blue-300/40
+                           transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                Jsi ready?
+              </button>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       </div>
     )
   }

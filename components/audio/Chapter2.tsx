@@ -330,7 +330,7 @@ export default function Chapter2() {
                          text-white font-bold py-2 px-2 rounded-full shadow-lg shadow-purple-500/30
                          transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
             >
-              Spustit
+              Jsi ready?
             </button>
           </div>
         </div>

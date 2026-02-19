@@ -70,7 +70,7 @@ export default function ScalesAndGallery() {
               transition={{ delay: 0.5, duration: 0.4 }}
               className="text-indigo-600 mb-8 font-medium text-sm"
             >
-              Pro spuštění zážitku klikněte na tlačítko
+              Připrav se na poslední část příběhu
             </motion.p>
 
             <motion.div
@@ -84,7 +84,7 @@ export default function ScalesAndGallery() {
                            text-white font-bold py-4 px-8 rounded-full shadow-lg shadow-indigo-500/30
                            transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
               >
-                Spustit
+                Jsi ready?
               </Button>
             </motion.div>
           </div>
