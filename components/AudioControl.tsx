@@ -19,7 +19,7 @@ export default function AudioControl({
       variant="ghost"
       size="icon"
       onClick={onClick}
-      className="text-white hover:bg-white/20"
+      className="text-white bg-black/10 rounded-full hover:bg-white/20"
     >
       {audioEnabled ? (
         <Volume2 className="h-5 w-5" />
@@ -31,9 +31,5 @@ export default function AudioControl({
 
   if (inline) return button
 
-  return (
-    <div className="absolute top-4 left-4 z-20">
-      {button}
-    </div>
-  )
+  return <div className="absolute top-4 left-4 z-20">{button}</div>
 }
