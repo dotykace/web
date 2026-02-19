@@ -113,7 +113,11 @@ export function useAudioManager() {
   ): Promise<AudioBuffer> => {
     const context = getAudioContext()
     if (!context) throw new Error("AudioContext not available")
-    const response = await fetch(getPath(filename, type))
+    const path = getPath(filename, type)
+    const response = await fetch(path)
+    if (!response.ok) {
+      throw new Error(`Failed to fetch audio ${path}: ${response.status}`)
+    }
     const arrayBuffer = await response.arrayBuffer()
     return await context.decodeAudioData(arrayBuffer)
   }
@@ -121,14 +125,17 @@ export function useAudioManager() {
   // --- Load a sound and decode it
   const loadSound = useCallback(
     async (key: string, filename: string, opts?: UseAudioManagerOptions) => {
-      const buffer = await fetchSound(filename)
-
-      soundsRef.current[key] = {
-        buffer,
-        loop: opts?.loop ?? false,
-        volume: opts?.volume ?? 1,
+      try {
+        const buffer = await fetchSound(filename)
+        soundsRef.current[key] = {
+          buffer,
+          loop: opts?.loop ?? false,
+          volume: opts?.volume ?? 1,
+        }
+        setIsPlaying((prev) => ({ ...prev, [key]: false }))
+      } catch (error) {
+        console.error(`Failed to load sound "${key}" (${filename}):`, error)
       }
-      setIsPlaying((prev) => ({ ...prev, [key]: false }))
     },
     [],
   )
@@ -191,13 +198,34 @@ export function useAudioManager() {
 
   const playOnce = useCallback(
     async ({ filename, opts, type, onFinish }: PlayOnceOptions) => {
-      const buffer = await fetchSound(filename, type)
+      let buffer: AudioBuffer
+
+      // Try to load audio, retry once after a delay (iOS Safari needs
+      // recovery time after share-sheet / page-background transitions).
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          buffer = await fetchSound(filename, type)
+          break
+        } catch (error) {
+          console.warn(
+            `Audio load attempt ${attempt + 1} failed for "${filename}":`,
+            error,
+          )
+          if (attempt === 0) {
+            await new Promise((r) => setTimeout(r, 1000))
+          } else {
+            console.error(`Audio load failed permanently for "${filename}"`)
+            return
+          }
+        }
+      }
+
       const sound = {
-        buffer,
+        buffer: buffer!,
         loop: opts?.loop ?? false,
         volume: opts?.volume ?? 1,
       }
-      const duration = buffer.duration
+      const duration = buffer!.duration
       let timeOut: ReturnType<typeof setTimeout> | null = null
       if (!sound.loop) {
         timeOut = setTimeout(
@@ -233,9 +261,17 @@ export function useAudioManager() {
 
     instances.forEach(({ source, gainNode, timeOut }) => {
       if (timeOut) clearTimeout(timeOut)
-      source.stop()
-      source.disconnect()
-      gainNode.disconnect()
+      try {
+        source.stop()
+      } catch (_) {
+        // iOS Safari throws InvalidStateError if the source already stopped
+      }
+      try {
+        source.disconnect()
+        gainNode.disconnect()
+      } catch (_) {
+        // Already disconnected
+      }
     })
 
     playingRef.current[key] = []

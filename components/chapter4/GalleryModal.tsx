@@ -25,13 +25,13 @@ export function GalleryModal({
     <>
       <button
         onClick={() => closeModal(false)}
-        className="px-4 py-2 text-sm font-medium text-white bg-gray-500 border border-transparent rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+        className="px-4 rounded-full py-2 text-sm font-medium text-black bg-white border border-transparent hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
       >
         {declineText}
       </button>
       <button
         onClick={() => closeModal(true)}
-        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
       >
         {approveText}
       </button>

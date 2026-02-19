@@ -46,25 +46,58 @@ export default function Gallery({
     setSelectedIndex((prev) => (prev === currentIndex ? null : currentIndex))
   }, [currentIndex])
 
-  const handleDownload = (imagePath: string) => {
-    const link = document.createElement("a")
-    link.href = imagePath
-    link.download = "Dotykace-Result.jpg"
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+  const handleDownload = async (imagePath: string) => {
+    try {
+      const response = await fetch(imagePath)
+      const blob = await response.blob()
+
+      // Use Web Share API on mobile (reliable on iOS Safari)
+      if (navigator.share) {
+        const file = new File([blob], "Dotykace-Result.jpg", {
+          type: blob.type || "image/jpeg",
+        })
+        if (navigator.canShare?.({ files: [file] })) {
+          try {
+            await navigator.share({ files: [file] })
+          } catch (shareErr) {
+            if ((shareErr as DOMException).name !== "AbortError") {
+              console.warn("Share failed:", shareErr)
+            }
+          }
+          return
+        }
+      }
+
+      // Desktop fallback: anchor download
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = url
+      link.download = "Dotykace-Result.jpg"
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      setTimeout(() => URL.revokeObjectURL(url), 10000)
+    } catch (error) {
+      console.error("Image download failed:", error)
+    }
   }
 
-  const saveSelection = (download: boolean) => {
-    const selectedImage = strings[selectedIndex ?? 0]
-    if (download) {
-      handleDownload(selectedImage)
+  const saveSelection = async (download: boolean) => {
+    try {
+      const selectedImage = strings[selectedIndex ?? 0]
+      if (download) {
+        await handleDownload(selectedImage)
+        // Give iOS Safari time to fully resume after the share sheet
+        await new Promise((r) => setTimeout(r, 300))
+      }
+      setToStorage("gallerySelection", selectedImage)
+      if (onFinish) {
+        onFinish(selectedImage)
+      }
+      setShowModal(false)
+    } catch (error) {
+      console.error("saveSelection error:", error)
     }
-    setToStorage("gallerySelection", selectedImage)
-    if (onFinish) {
-      onFinish(selectedImage)
-    }
-    setShowModal(false)
   }
 
   useEffect(() => {
