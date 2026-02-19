@@ -3,11 +3,13 @@ import Image from "next/image"
 
 export default function VoiceVisualization({
   isActive = true,
+  className,
 }: {
   isActive?: boolean
+  className?: string
 }) {
   return (
-    <div className="relative w-full h-48 flex items-center justify-center overflow-hidden">
+    <div className={`relative w-full flex items-center justify-center ${className ?? "h-48"}`}>
       {/* Background animated circles — neutral white so they adapt to any chapter gradient */}
       <div className="absolute inset-0">
         {[...Array(6)].map((_, i) => (

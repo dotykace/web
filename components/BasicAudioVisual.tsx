@@ -76,7 +76,7 @@ export default function BasicAudioVisual({
   return (
     <div className={`flex-1 min-h-0 flex flex-col ${coloring}`}>
       {/* Main content area */}
-      <div className="flex-1 flex flex-col items-center justify-center p-4 min-h-0">
+      <div className="flex-1 flex flex-col items-center justify-center p-4 min-h-0 overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
             key={id}
@@ -84,7 +84,7 @@ export default function BasicAudioVisual({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -20, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="w-full max-w-md flex flex-col items-center justify-center text-center"
+            className="w-full max-w-md flex flex-col items-center justify-center text-center min-h-0 max-h-full"
           >
             {children ?? <VoiceVisualization />}
           </motion.div>

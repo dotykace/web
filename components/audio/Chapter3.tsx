@@ -152,11 +152,13 @@ function Chapter3Content() {
         canSkip={!currentInteraction.loop && !showChoices && !hasButton}
       >
         {needsChildren ? (
-          <div className="w-full space-y-4">
-            <VoiceVisualization />
+          <div className="w-full flex flex-col min-h-0 gap-3">
+            <div className={`flex-shrink-0 transition-all duration-300 origin-top ${showChoices ? "h-24 sm:h-28 scale-75" : "h-36 sm:h-48"}`}>
+              <VoiceVisualization className="h-full" />
+            </div>
 
             {hasButton && (
-              <div className="px-4">
+              <div className="px-4 flex-shrink-0">
                 <button
                   onClick={() => handleButtonClick(currentInteraction.button)}
                   className="w-full bg-white hover:bg-white/90
@@ -169,13 +171,13 @@ function Chapter3Content() {
             )}
 
             {showChoices && hasChoices && (
-              <div className="px-2 flex flex-col min-h-0">
+              <div className="px-2 flex flex-col min-h-0 flex-1 overflow-hidden">
                 {currentInteraction.label && (
-                  <p className="text-white text-lg text-center font-semibold tracking-wide drop-shadow-lg mb-2 shrink-0">
+                  <p className="text-white text-base sm:text-lg text-center font-semibold tracking-wide drop-shadow-lg mb-2 flex-shrink-0">
                     {currentInteraction.label}
                   </p>
                 )}
-                <div className="space-y-2 overflow-y-auto max-h-[45vh] pr-1">
+                <div className="space-y-1.5 sm:space-y-2 overflow-y-auto flex-1 min-h-0 pr-1 pb-2">
                   {(
                     currentInteraction.choices as Array<{
                       label: string
@@ -191,7 +193,7 @@ function Chapter3Content() {
                       <button
                         onClick={() => handleChoiceClick(choice)}
                         className="w-full bg-white hover:bg-white/90
-                                     text-orange-900 font-semibold text-sm tracking-wide py-2.5 px-2 rounded-full shadow-md
+                                     text-orange-900 font-semibold text-xs sm:text-sm tracking-wide py-2 sm:py-2.5 px-3 rounded-full shadow-md
                                      transition-all duration-300 active:scale-[0.98]"
                       >
                         {choice.label}
