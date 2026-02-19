@@ -35,6 +35,7 @@
     "3.10.21": {
       "type": "voice",
       "filename": "track22.mp3",
+      "label": "Dokáže tě ještě někdo takhle zkamenět?",
       "choices": [
         { "label": "Myslím, že ano", "next-id": "3.10.22a" },
         { "label": "Nevím", "next-id": "3.10.22b" },
@@ -59,6 +60,7 @@
     "3.11.0": {
       "type": "voice",
       "filename": "track24.mp3",
+      "label": "Kdy mě vezmeš poprvé do ruky?",
       "choices": [
         { "label": "ihned", "next-id": "3.11.1" },
         { "label": "ještě v posteli", "next-id": "3.11.1" },
@@ -94,6 +96,7 @@
     "3.11.final": {
       "type": "voice",
       "filename": "track29.mp3",
+      "label": "Jak často mi dáváš přednost před lidmi?",
       "choices": [
         { "label": "nikdy", "next-id": "final" },
         { "label": "výjimečně, když se s tebou zapomenu", "next-id": "final" },
@@ -101,7 +104,10 @@
         { "label": "občas", "next-id": "final" },
         { "label": "často", "next-id": "final" },
         { "label": "vždycky", "next-id": "final" },
-        { "label": "není v tom rozdíl - používám tě ke komunikování s jinými lidmi", "next-id": "final" }
+        {
+          "label": "není v tom rozdíl - používám tě ke komunikování s jinými lidmi",
+          "next-id": "final"
+        }
       ]
     },
     "final": {
