@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card"
-import React from "react"
+import React, {useRef} from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import VoiceVisualization from "@/components/VoiceVisualization"
 import { useSharedAudio } from "@/context/AudioContext"
@@ -17,15 +17,41 @@ export default function BasicAudioVisual({
   coloring?: string
   canSkip?: boolean
 }) {
-  const { playOnce, stop, toggleOnce, isPlaying } = useSharedAudio()
+  const playedForIdRef = useRef<string | null>(null)
+  const { playOnce, stopAll, toggleOnce, isPlaying } = useSharedAudio()
+
+
   React.useEffect(() => {
-    if (audio) {
-      playOnce(audio)
+    // Stop ALL audio before playing new audio
+    stopAll()
+
+    // Only play if we have audio and haven't played for this id yet
+    if (audio && playedForIdRef.current !== id) {
+      playedForIdRef.current = id || null
+      playOnce({
+        filename: audio.filename,
+        onFinish: audio.onFinish || (() => {
+        }),
+        type: audio.type || "sound",
+      })
     }
-  }, [audio, playOnce])
+
+    // Cleanup: stop all audio when component unmounts
+    return () => {
+      stopAll()
+    }
+  }, [id, audio, playOnce, stopAll])
 
   const skipInteraction = () => {
-    stop(audio.filename)
+    if (!audio) return
+    // Stop ALL audio first
+    stopAll()
+    // Then call onFinish to advance to next interaction
+    fetch("/api/log", {
+      method: "POST",
+      body: JSON.stringify({ msg: ("Skipping audio " + audio.file) }),
+    })
+    console.log("basic audio visual skip")
     if (audio.onFinish) {
       audio.onFinish()
     }

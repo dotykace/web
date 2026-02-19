@@ -193,6 +193,10 @@ export function useAudioManager() {
         gainNode.disconnect()
         removeFromPlaying(filename, { source, gainNode })
         clearTimeout(timeOut)
+        fetch("/api/log", {
+          method: "POST",
+          body: JSON.stringify({ msg: ("Clear timeout: "+ filename) }),
+        })
       }
     },
     [play],
