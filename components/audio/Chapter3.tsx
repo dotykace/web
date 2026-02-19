@@ -161,29 +161,36 @@ function Chapter3Content() {
             )}
 
             {showChoices && hasChoices && (
-              <div className="space-y-2 px-2">
-                {(
-                  currentInteraction.choices as Array<{
-                    label: string
-                    "next-id": string
-                  }>
-                ).map((choice, index) => (
-                  <motion.div
-                    key={choice.label}
-                    initial={{ y: 10, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: index * 0.08 }}
-                  >
-                    <button
-                      onClick={() => handleChoiceClick(choice)}
-                      className="w-full bg-white hover:bg-white/90
-                                   text-orange-900 font-semibold text-sm tracking-wide py-2.5 px-2 rounded-full shadow-md
-                                   transition-all duration-300 active:scale-[0.98]"
+              <div className="px-2 flex flex-col min-h-0">
+                {currentInteraction.label && (
+                  <p className="text-white text-lg text-center font-semibold tracking-wide drop-shadow-lg mb-2 shrink-0">
+                    {currentInteraction.label}
+                  </p>
+                )}
+                <div className="space-y-2 overflow-y-auto max-h-[45vh] pr-1">
+                  {(
+                    currentInteraction.choices as Array<{
+                      label: string
+                      "next-id": string
+                    }>
+                  ).map((choice, index) => (
+                    <motion.div
+                      key={choice.label}
+                      initial={{ y: 10, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: index * 0.08 }}
                     >
-                      {choice.label}
-                    </button>
-                  </motion.div>
-                ))}
+                      <button
+                        onClick={() => handleChoiceClick(choice)}
+                        className="w-full bg-white hover:bg-white/90
+                                     text-orange-900 font-semibold text-sm tracking-wide py-2.5 px-2 rounded-full shadow-md
+                                     transition-all duration-300 active:scale-[0.98]"
+                      >
+                        {choice.label}
+                      </button>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
