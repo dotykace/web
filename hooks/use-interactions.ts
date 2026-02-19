@@ -157,9 +157,23 @@ export function useInteractions<T>(filename: string, progressId?: string) {
     const match = currentInteraction.id.match(/^(?:chapter-(\d+)|intro)-end$/)
 
     if (match) {
-      // If it's "intro-end", chapterNumber = 0; otherwise, use the captured number
       const chapterNumber = match[1] ? Number(match[1]) : 0
-      dbHook.updateChapter(chapterNumber, () => router.push("/menu")).then()
+
+      if (chapterNumber === 4) {
+        // Chapter 4 end is handled by ScalesAndGallery directly
+        // This is a fallback in case the interaction reaches chapter-4-end
+        if (dbHook) {
+          dbHook.updateChapter(4, () => router.push("/video")).then()
+        } else {
+          router.push("/video")
+        }
+      } else {
+        if (dbHook) {
+          dbHook.updateChapter(chapterNumber, () => router.push("/menu")).then()
+        } else {
+          router.push("/menu")
+        }
+      }
     }
   }, [currentInteraction, isClient])
 
