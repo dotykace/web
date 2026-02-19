@@ -142,7 +142,7 @@ export default function VideoPage() {
               >
                 <Button
                   onClick={handleFinish}
-                  className="px-12 py-6 text-lg font-semibold bg-amber-500 hover:bg-amber-600 text-gray-900 rounded-full shadow-lg shadow-amber-500/30 transition-all hover:shadow-amber-500/50 hover:scale-105"
+                  className="px-12 py-6 text-lg font-semibold bg-amber-500 hover:bg-amber-600 text-white rounded-full shadow-lg shadow-amber-500/30 transition-all hover:shadow-amber-500/50 hover:scale-105"
                 >
                   {finishButtonText}
                 </Button>

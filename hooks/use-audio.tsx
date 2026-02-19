@@ -152,7 +152,7 @@ export function useAudioManager() {
   )
 
   // --- Play a sound by key
-  const play = useCallback(async (sound) => {
+  const play = useCallback(async (sound: Sound) => {
     const context = getAudioContext()
     if (!context) {
       console.warn("AudioContext not available")
@@ -207,7 +207,10 @@ export function useAudioManager() {
       for (let attempt = 0; attempt <= retryDelays.length; attempt++) {
         try {
           const ctx = getAudioContext()
-          if (ctx.state === "suspended" || (ctx.state as string) === "interrupted") {
+          if (
+            ctx.state === "suspended" ||
+            (ctx.state as string) === "interrupted"
+          ) {
             await ctx.resume().catch(() => {})
           }
           buffer = await fetchSound(filename, type)
@@ -288,7 +291,7 @@ export function useAudioManager() {
 
   // --- Toggle a sound
   const toggle = useCallback(
-    (key, onReplay) => {
+    (key: string, onReplay: () => void) => {
       if (isPlaying[key]) {
         console.log("Stopping", key)
         stop(key)
