@@ -18,6 +18,7 @@ function Chapter3Content() {
   const [timeLeft, setTimeLeft] = useState<number | null>(null)
   const [showWarning, setShowWarning] = useState(false)
   const [showChoices, setShowChoices] = useState(false)
+  const [timerExpired, setTimerExpired] = useState(false)
   const countdownRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
@@ -32,6 +33,7 @@ function Chapter3Content() {
     setTimeLeft(null)
     setShowWarning(false)
     setShowChoices(false)
+    setTimerExpired(false)
     if (countdownRef.current) {
       clearInterval(countdownRef.current)
       countdownRef.current = null
@@ -48,7 +50,7 @@ function Chapter3Content() {
       setTimeLeft((prev) => {
         if (prev === null || prev <= 1) {
           if (countdownRef.current) clearInterval(countdownRef.current)
-          goToNextInteraction()
+          setTimerExpired(true)
           return null
         }
         if (
@@ -65,6 +67,12 @@ function Chapter3Content() {
       if (countdownRef.current) clearInterval(countdownRef.current)
     }
   }, [currentInteraction?.id])
+
+  useEffect(() => {
+    if (timerExpired) {
+      goToNextInteraction()
+    }
+  }, [timerExpired, goToNextInteraction])
 
   const saveToFirestore = async (
     value: string | string[],
@@ -279,7 +287,7 @@ export default function Chapter3() {
               Kapitola 3
             </h2>
             <p className="text-orange-500 mb-8 font-medium text-sm">
-              Pre spustenie zážitku klikněte na tlačítko
+              Pro spuštění zážitku klikněte na tlačítko
             </p>
             <button
               onClick={() => setHasStarted(true)}
