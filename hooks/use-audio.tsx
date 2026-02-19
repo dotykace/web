@@ -179,7 +179,7 @@ export function useAudioManager() {
         () => {
           fetch("/api/log", {
             method: "POST",
-            body: JSON.stringify({ msg: ("Sound timeout reached, calling onFinish if exists") }),
+            body: JSON.stringify({ msg: ("Timeout reached,for sound: "+ filename) }),
           })
           console.log("Sound timeout reached, calling onFinish if exists")
           if (onFinish) onFinish()
