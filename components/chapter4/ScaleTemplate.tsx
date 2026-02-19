@@ -67,7 +67,7 @@ export default function ScaleTemplate({
             height={20}
             className="w-5 h-5"
           />
-          <span className="text-xs font-bold text-white tracking-wide">
+          <span className="text-md font-bold text-white tracking-wide">
             {topText}
           </span>
         </div>
@@ -93,7 +93,7 @@ export default function ScaleTemplate({
             height={20}
             className="w-5 h-5"
           />
-          <span className="text-xs font-bold text-white tracking-wide">
+          <span className="text-md font-bold text-white tracking-wide">
             {bottomText}
           </span>
         </div>
@@ -111,7 +111,7 @@ export default function ScaleTemplate({
           onClick={handleConfirm}
           whileHover={{ scale: disabled ? 1 : 1.03 }}
           whileTap={{ scale: disabled ? 1 : 0.98 }}
-          className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all duration-200 ${
+          className={`px-8 py-2 text-lg font-semibold rounded-full transition-all duration-200 ${
             disabled
               ? "bg-white/30 text-white/50 cursor-not-allowed"
               : "bg-white text-indigo-900 hover:bg-white/90 shadow-lg hover:shadow-xl"
