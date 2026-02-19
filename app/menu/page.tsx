@@ -199,7 +199,7 @@ export default function MenuPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex flex-col items-center justify-center p-4">
+    <div className="h-[100dvh] bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex flex-col items-center justify-center px-6 py-4 overflow-hidden">
       <HelpButton />
       <AudioControl
         onClick={toggleBackgroundAudio}
@@ -207,12 +207,12 @@ export default function MenuPage() {
       />
 
       {/* Logo */}
-      <div className="p-4 pb-8">
-        <DotykaceLogo width={280} />
+      <div className="flex-shrink-0 pb-3 sm:pb-6 w-full max-w-xs">
+        <DotykaceLogo width={200} />
       </div>
 
       {/* Chapters Grid */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="flex-shrink-0 w-full max-w-xs grid grid-cols-2 gap-3 sm:gap-5">
         {sections.map((section, index) => {
           return (
             <MenuSectionCard
@@ -227,7 +227,7 @@ export default function MenuPage() {
       {/* Admin waiting message */}
       {roomId && (
         <motion.div
-          className="mt-8 text-center"
+          className="flex-shrink-0 mt-3 sm:mt-6 text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
