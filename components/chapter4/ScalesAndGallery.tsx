@@ -4,11 +4,11 @@ import Gallery from "@/components/chapter4/Gallery"
 import React, { useEffect, useState } from "react"
 import BasicAudioVisual from "@/components/BasicAudioVisual"
 import CountDownInput from "@/components/CountDownInput"
-import FullScreenVideo from "@/components/FullScreenVideo"
-import { readFromStorage } from "@/scripts/local-storage"
-import { useChapterLayout } from "@/context/ChapterLayoutContext"
 import { useRouter } from "next/navigation"
 import useDB from "@/hooks/use-db"
+import FullScreenVideo from "@/components/FullScreenVideo"
+import { readFromStorage, setToStorage } from "@/scripts/local-storage"
+import { useChapterLayout } from "@/context/ChapterLayoutContext"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 
@@ -101,11 +101,12 @@ function ScalesAndGalleryContent() {
   const { setHeaderVisible } = useChapterLayout()
   const [data, setData] = useState<Record<string, Interpretation> | null>(null)
   const [interactionIndex, setInteractionIndex] = useState(0)
+  const [dbHook, setDbHook] = useState<any>(null)
   const router = useRouter()
 
-  const [dbHook, setDbHook] = useState<ReturnType<typeof useDB>>(undefined)
   useEffect(() => {
-    setDbHook(useDB())
+    const hook = useDB()
+    setDbHook(hook)
   }, [])
 
   // Hide ChapterHeader during fullscreen video playback
@@ -163,11 +164,19 @@ function ScalesAndGalleryContent() {
     }
   }
 
-  const finishChapter = (_finalResponse: string) => {
+  const finishChapter = (finalResponse: string) => {
+    console.log("Final response:", finalResponse)
     if (dbHook) {
-      dbHook.updateChapter(4, () => router.push("/video")).then()
-    } else {
-      router.push("/video")
+      dbHook.canShowVideo().then((canShow) => {
+        const showVideo = canShow
+        console.log("Can show video:", showVideo)
+        if (showVideo) {
+          dbHook.updateChapter(4, () => router.push("/video")).then()
+        } else {
+          setToStorage("dotykaceFinished", true)
+          dbHook.updateChapter(4, () => router.push("/dotykace")).then()
+        }
+      })
     }
   }
 
