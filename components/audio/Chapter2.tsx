@@ -322,7 +322,7 @@ export default function Chapter2() {
               Kapitola 2
             </h2>
             <p className="text-purple-600 mb-8 font-medium text-sm">
-              Připrav se na další část příběhu
+              Jsi ready?
             </p>
             <button
               onClick={() => setHasStarted(true)}
@@ -330,7 +330,7 @@ export default function Chapter2() {
                          text-white font-bold py-2 px-2 rounded-full shadow-lg shadow-purple-500/30
                          transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
             >
-              Jsi ready?
+              Spustit
             </button>
           </div>
         </div>

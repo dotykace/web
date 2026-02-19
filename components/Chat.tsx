@@ -53,8 +53,8 @@ export default function Chat() {
             transition={{ delay: 0.3, duration: 0.4, type: "spring" }}
             className="flex justify-center"
           >
-            <div className="w-20 h-20 rounded-full bg-blue-50 border-2 border-blue-200 shadow-xl flex items-center justify-center">
-              <span className="text-3xl font-bold text-blue-600">1</span>
+            <div className="w-20 h-20 rounded-full bg-blue-500 border-2 border-blue-500 shadow-xl flex items-center justify-center">
+              <span className="text-3xl font-bold text-white">1</span>
             </div>
           </motion.div>
 
@@ -73,7 +73,7 @@ export default function Chat() {
               transition={{ delay: 0.5, duration: 0.4 }}
               className="text-blue-500 mb-8 font-medium text-sm"
             >
-              Připrav se na začátek příběhu
+              Jsi ready?
             </motion.p>
 
             <motion.div
@@ -84,10 +84,10 @@ export default function Chat() {
               <button
                 onClick={() => setHasStarted(true)}
                 className="w-full bg-blue-500 hover:bg-blue-600
-                           text-white font-bold py-4 px-8 rounded-full shadow-lg shadow-blue-300/40
+                           text-white font-bold py-2 px-2 rounded-full shadow-lg shadow-blue-300/40
                            transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
               >
-                Jsi ready?
+                Spustit
               </button>
             </motion.div>
           </div>
