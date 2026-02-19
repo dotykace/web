@@ -22,20 +22,16 @@ export default function BasicAudioVisual({
 
 
   React.useEffect(() => {
+    if (!audio) return
     // Stop ALL audio before playing new audio
     stopAll()
-
-    // Only play if we have audio and haven't played for this id yet
-    if (audio && playedForIdRef.current !== id) {
-      playedForIdRef.current = id || null
-      playOnce(audio)
-    }
+    playOnce(audio)
 
     // Cleanup: stop all audio when component unmounts
     return () => {
       stopAll()
     }
-  }, [id, audio, playOnce, stopAll])
+  }, [ audio, playOnce, stopAll])
 
   const skipInteraction = () => {
     if (!audio) return
