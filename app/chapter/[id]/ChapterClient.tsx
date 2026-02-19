@@ -30,7 +30,7 @@ export const chapterConfigs = {
     chapterNumber: 3,
     interactionsFileName: "chapter3-flow",
     ViewComponent: Chapter3,
-    coloring: "bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600",
+    coloring: "bg-gradient-to-br from-amber-400 via-orange-500 to-rose-500",
     showHeader: true,
     showAudioControl: true,
   },

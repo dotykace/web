@@ -1,8 +1,6 @@
 import React from "react"
 import Image from "next/image"
 
-// Matches the chapter2 VoiceVisualization from git-with-my-changes:
-// purple bg circles, fuchsia/violet/pink ping rings, gradient sound wave bars
 export default function VoiceVisualization({
   isActive = true,
 }: {
@@ -10,12 +8,12 @@ export default function VoiceVisualization({
 }) {
   return (
     <div className="relative w-full h-48 flex items-center justify-center overflow-hidden">
-      {/* Background animated circles */}
+      {/* Background animated circles — neutral white so they adapt to any chapter gradient */}
       <div className="absolute inset-0">
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
-            className="absolute rounded-full bg-purple-200 animate-pulse"
+            className="absolute rounded-full bg-white/15 animate-pulse"
             style={{
               width: `${60 + i * 20}px`,
               height: `${60 + i * 20}px`,
@@ -42,16 +40,15 @@ export default function VoiceVisualization({
             height={96}
             className="w-24 h-24 drop-shadow-lg"
           />
-          {/* Animated rings around character */}
           {isActive && (
             <>
-              <div className="absolute inset-0 rounded-full border-2 border-fuchsia-300/50 animate-ping" />
+              <div className="absolute inset-0 rounded-full border-2 border-white/30 animate-ping" />
               <div
-                className="absolute inset-0 rounded-full border-2 border-violet-300/50 animate-ping"
+                className="absolute inset-0 rounded-full border-2 border-white/20 animate-ping"
                 style={{ animationDelay: "0.5s" }}
               />
               <div
-                className="absolute inset-0 rounded-full border-2 border-pink-300/50 animate-ping"
+                className="absolute inset-0 rounded-full border-2 border-white/25 animate-ping"
                 style={{ animationDelay: "1s" }}
               />
             </>
@@ -63,7 +60,7 @@ export default function VoiceVisualization({
             {[...Array(3)].map((_, i) => (
               <div
                 key={i}
-                className="absolute w-2 bg-gradient-to-r from-fuchsia-400 to-violet-400 rounded-full animate-pulse"
+                className="absolute w-2 bg-white/40 rounded-full animate-pulse"
                 style={{
                   height: `${20 + i * 8}px`,
                   right: `${i * 8}px`,

@@ -40,7 +40,8 @@ function Chapter3Content() {
 
   // Start countdown for timed input interactions
   useEffect(() => {
-    if (currentInteraction?.type !== "input" || !currentInteraction.duration) return
+    if (currentInteraction?.type !== "input" || !currentInteraction.duration)
+      return
 
     setTimeLeft(currentInteraction.duration)
     countdownRef.current = setInterval(() => {
@@ -160,26 +161,29 @@ function Chapter3Content() {
             )}
 
             {showChoices && hasChoices && (
-              <div className="space-y-3 px-4">
-                {(currentInteraction.choices as Array<{ label: string; "next-id": string }>).map(
-                  (choice, index) => (
-                    <motion.div
-                      key={choice.label}
-                      initial={{ y: 10, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ delay: index * 0.08 }}
-                    >
-                      <button
-                        onClick={() => handleChoiceClick(choice)}
-                        className="w-full bg-white hover:bg-white/90
-                                   text-orange-900 font-bold tracking-wide py-4 px-8 rounded-full shadow-lg
+              <div className="space-y-2 px-2">
+                {(
+                  currentInteraction.choices as Array<{
+                    label: string
+                    "next-id": string
+                  }>
+                ).map((choice, index) => (
+                  <motion.div
+                    key={choice.label}
+                    initial={{ y: 10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: index * 0.08 }}
+                  >
+                    <button
+                      onClick={() => handleChoiceClick(choice)}
+                      className="w-full bg-white hover:bg-white/90
+                                   text-orange-900 font-semibold text-sm tracking-wide py-2.5 px-2 rounded-full shadow-md
                                    transition-all duration-300 active:scale-[0.98]"
-                      >
-                        {choice.label}
-                      </button>
-                    </motion.div>
-                  ),
-                )}
+                    >
+                      {choice.label}
+                    </button>
+                  </motion.div>
+                ))}
               </div>
             )}
           </div>
@@ -260,15 +264,15 @@ export default function Chapter3() {
 
         <div className="w-full max-w-md space-y-6 flex flex-col items-center">
           <div className="w-20 h-20 rounded-full bg-white shadow-xl flex items-center justify-center">
-            <span className="text-3xl font-bold text-orange-900">3</span>
+            <span className="text-3xl font-bold text-orange-500">3</span>
           </div>
 
           <div className="w-full bg-white rounded-3xl p-8 text-center shadow-xl">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Kapitola 3
             </h2>
-            <p className="text-orange-600 mb-8 font-medium text-sm">
-              Připrav se na další část příběhu
+            <p className="text-orange-500 mb-8 font-medium text-sm">
+              Pre spustenie zážitku klikněte na tlačítko
             </p>
             <button
               onClick={() => setHasStarted(true)}
@@ -276,7 +280,7 @@ export default function Chapter3() {
                          text-white font-bold py-4 px-8 rounded-full shadow-lg shadow-orange-500/30
                          transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
             >
-              Spustit
+              Spustiť
             </button>
           </div>
         </div>
