@@ -25,7 +25,9 @@ export default function SocialMediaPost({
         <div className="flex items-center space-x-4">
           <LocalSvgRenderer filename={avatar} className="w-12 h-12" />
           <div className="flex-1 justify-between">
-            <h3 className="font-medium text-gray-800 tracking-wide">{username}</h3>
+            <h3 className="font-medium text-gray-800 tracking-wide">
+              {username}
+            </h3>
             <p className="text-xs text-gray-500">{timestamp}</p>
           </div>
         </div>
@@ -41,7 +43,7 @@ export default function SocialMediaPost({
               {choices.map((choice, index) => (
                 <Button
                   key={index}
-                  className="flex-1 rounded-3xl py-6 backdrop-blur-md bg-blue-500 hover:bg-blue-600 
+                  className="flex-1 rounded-3xl py-2 backdrop-blur-md bg-blue-500 hover:bg-blue-600 
                              border border-blue-400 text-white font-medium tracking-wide 
                              transition-all duration-300 active:scale-[0.98] shadow-md"
                   onClick={choice.callback}

@@ -41,9 +41,6 @@ export default function VoiceItem({
             <div className="font-semibold text-xl text-gray-800">
               {voice.name}
             </div>
-            {disabled && (
-              <div className="text-sm text-gray-500">Brzy k dispozici</div>
-            )}
           </div>
         </div>
         <Button

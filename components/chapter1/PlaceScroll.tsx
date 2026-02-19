@@ -50,22 +50,18 @@ export default function PlaceScroll({
   return (
     <>
       {showBackToChat ? (
-        <Button
-          style={{
-            position: "absolute",
-            bottom: "50%",
-            left: "5%",
-            width: "90%",
-          }}
-          key={"back-to-chat-button"}
-          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out"
-          onClick={() => {
-            stop("loop")
-            goToNext("overlay-off_a")
-          }}
-        >
-          Zpět do chatu
-        </Button>
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <Button
+            key={"back-to-chat-button"}
+            className="bg-white hover:bg-white/90 text-blue-600 hover:text-blue-700 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out"
+            onClick={() => {
+              stop("loop")
+              goToNext("overlay-off_a")
+            }}
+          >
+            Zpět do chatu
+          </Button>
+        </div>
       ) : (
         <Place
           dotPosition={dotPosition}

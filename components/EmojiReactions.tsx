@@ -27,18 +27,14 @@ export default function EmojiReactionButton({
       {/* Fake input — looks like a text field but reveals emoji picker on click */}
       <button
         onClick={handleButtonClick}
-        className="w-full bg-gray-900 text-gray-400 rounded-full py-4 px-6 text-left focus:outline-none"
-        style={{
-          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-          background: "#1e1e24",
-        }}
+        className="w-full bg-white/90 text-gray-500 rounded-full py-4 px-6 pr-14 text-left focus:outline-none focus:ring-2 focus:ring-[#0EA5E9] shadow-inner"
       >
         Napiš odpověď...
       </button>
 
       {/* Arrow button */}
       <div className="absolute right-2 top-1/2 -translate-y-1/2">
-        <div className="bg-purple-600 rounded-full p-3 flex items-center justify-center">
+        <div className="bg-[#0EA5E9] rounded-full p-3 flex items-center justify-center shadow-lg">
           <ArrowRightIcon className="h-5 w-5 text-white" />
         </div>
       </div>

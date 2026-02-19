@@ -11,7 +11,7 @@ export default function EmojiList({
     <div
       className={
         (className ?? "") +
-        " bg-white/10 backdrop-blur-md rounded-2xl p-3 shadow-lg border border-white/20"
+        " bg-white/80 backdrop-blur-md rounded-full shadow-lg border-white/20"
       }
     >
       <div className="flex justify-around gap-1">
@@ -19,7 +19,7 @@ export default function EmojiList({
           <button
             key={index}
             className="text-2xl hover:scale-125 active:scale-90 transition-all duration-200 
-                       p-2 rounded-xl hover:bg-white/20 active:bg-white/30
+                       p-2 rounded-full hover:bg-white/50 active:bg-white/50
                        focus:outline-none focus:ring-2 focus:ring-white/30"
             onClick={() => onEmojiClick(emoji)}
           >
