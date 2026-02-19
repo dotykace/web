@@ -28,12 +28,7 @@ export default function BasicAudioVisual({
     // Only play if we have audio and haven't played for this id yet
     if (audio && playedForIdRef.current !== id) {
       playedForIdRef.current = id || null
-      playOnce({
-        filename: audio.filename,
-        onFinish: audio.onFinish || (() => {
-        }),
-        type: audio.type || "sound",
-      })
+      playOnce(audio)
     }
 
     // Cleanup: stop all audio when component unmounts
@@ -49,7 +44,7 @@ export default function BasicAudioVisual({
     // Then call onFinish to advance to next interaction
     fetch("/api/log", {
       method: "POST",
-      body: JSON.stringify({ msg: ("Skipping audio " + audio.file) }),
+      body: JSON.stringify({ msg: ("Skipping audio " + audio.filename) }),
     })
     console.log("basic audio visual skip")
     if (audio.onFinish) {
