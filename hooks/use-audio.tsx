@@ -16,7 +16,6 @@ interface Sound {
 interface PlayingInstance {
   source: AudioBufferSourceNode
   gainNode: GainNode
-  timeOut?: ReturnType<typeof setTimeout> | null
 }
 
 interface SoundMapEntry {
@@ -199,12 +198,11 @@ export function useAudioManager() {
         )
       }
       const { source, gainNode } = await play(sound)
-      const instance: PlayingInstance = { source, gainNode, timeOut }
-      addToPlaying(filename, instance)
+      addToPlaying(filename, { source, gainNode })
       source.onended = () => {
         source.disconnect()
         gainNode.disconnect()
-        removeFromPlaying(filename, instance)
+        removeFromPlaying(filename, { source, gainNode })
         if (timeOut) clearTimeout(timeOut)
       }
     },
@@ -216,8 +214,7 @@ export function useAudioManager() {
     const instances = playingRef.current[key]
     if (!instances) return
 
-    instances.forEach(({ source, gainNode, timeOut }) => {
-      if (timeOut) clearTimeout(timeOut)
+    instances.forEach(({ source, gainNode }) => {
       source.stop()
       source.disconnect()
       gainNode.disconnect()

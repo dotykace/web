@@ -63,12 +63,10 @@ export default function VideoPage() {
   }
 
   const handleFinish = () => {
-    setToStorage("dotykaceFinished", true)
     if (dbHook) {
-      dbHook.updateChapter(5, () => router.push("/dotykace"))
-    } else {
-      router.push("/dotykace")
+      dbHook.updateChapter(5, () => setToStorage("dotykaceFinished", true))
     }
+    router.push("/dotykace")
   }
 
   const filePath = `/videos/${selectedVoice}/`

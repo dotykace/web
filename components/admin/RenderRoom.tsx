@@ -25,13 +25,17 @@ import { Switch } from "@/components/ui/switch"
 export const chapterList = [0, 1, 2, 3, 4, 5]
 export default function RenderRoom({ room, processedRooms }) {
   const { participants } = useParticipants({ room })
-  const [showVideo, setShowVideo] = useState(room.showVideo || false)
+  const [showVideo, setShowVideo] = useState(false)
 
-  const changeVideoSettings = async (newValue: boolean) => {
+  const changeVideoSettings = async (showVideo: boolean) => {
     const videoUnlocked = room.showVideo || false
-    if (newValue !== videoUnlocked) {
+    if (showVideo && !videoUnlocked) {
       await updateDoc(doc(db, "rooms", room.docId!), {
-        showVideo: newValue,
+        showVideo: true,
+      } as Partial<DotykaceRoom>)
+    } else if (!showVideo && videoUnlocked) {
+      await updateDoc(doc(db, "rooms", room.docId!), {
+        showVideo: false,
       } as Partial<DotykaceRoom>)
     }
   }

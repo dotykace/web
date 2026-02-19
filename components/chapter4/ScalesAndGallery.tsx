@@ -166,20 +166,18 @@ function ScalesAndGalleryContent() {
 
   const finishChapter = (finalResponse: string) => {
     console.log("Final response:", finalResponse)
-    if (!dbHook) {
-      setToStorage("dotykaceFinished", true)
-      router.push("/dotykace")
-      return
+    if (dbHook) {
+      dbHook.canShowVideo().then((canShow) => {
+        const showVideo = canShow
+        console.log("Can show video:", showVideo)
+        if (showVideo) {
+          dbHook.updateChapter(4, () => router.push("/video")).then()
+        } else {
+          setToStorage("dotykaceFinished", true)
+          dbHook.updateChapter(4, () => router.push("/dotykace")).then()
+        }
+      })
     }
-    dbHook.canShowVideo().then((canShow: boolean) => {
-      console.log("Can show video:", canShow)
-      if (canShow) {
-        dbHook.updateChapter(4, () => router.push("/video"))
-      } else {
-        setToStorage("dotykaceFinished", true)
-        dbHook.updateChapter(4, () => router.push("/dotykace"))
-      }
-    })
   }
 
   if (currentInteraction.id === "scales")
