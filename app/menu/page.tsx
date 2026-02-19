@@ -12,8 +12,8 @@ import { useAudioManager } from "@/hooks/use-audio"
 import DotykaceLogo from "@/components/DotykaceLogo"
 import MenuSectionCard from "@/components/MenuSectionCard"
 import { chapterConfigs } from "@/app/chapter/[id]/ChapterClient"
-import LoadingScreen from "@/components/LoadingScreen";
-import AudioControl from "@/components/AudioControl";
+import LoadingScreen from "@/components/LoadingScreen"
+import AudioControl from "@/components/AudioControl"
 
 type SectionState = "locked" | "unlocked" | "completed"
 
@@ -192,18 +192,19 @@ export default function MenuPage() {
   const toggleBackgroundAudio = () => {
     if (audioManager.isPlaying["menu-background"]) {
       audioManager.stop("menu-background")
-    }
-    else {
+    } else {
       audioManager.resumeAudioContext()
       audioManager.playPreloaded("menu-background")
     }
-
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex flex-col items-center justify-center p-4">
       <HelpButton />
-      <AudioControl onClick={toggleBackgroundAudio} audioEnabled={audioManager.isPlaying["menu-background"]}/>
+      <AudioControl
+        onClick={toggleBackgroundAudio}
+        audioEnabled={audioManager.isPlaying["menu-background"]}
+      />
 
       {/* Logo */}
       <div className="p-4 pb-8">
@@ -231,12 +232,10 @@ export default function MenuPage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
         >
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl px-4 py-2 shadow-lg">
-            <p className="text-sky-700 text-sm">
-              {allowedChapters.length === 1
-                ? "Čakáte na povolenie od administrátora pre ďalšie kapitoly"
-                : `Máte povolené kapitoly: ${allowedChapters.join(", ")}`}
-            </p>
+          <div className="bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg text-sky-700 text-sm">
+            {allowedChapters.length === 1
+              ? "Čekáte na povolení od administrátora pro další kapitoly"
+              : `Máte povolené kapitoly: ${allowedChapters.join(", ")}`}
           </div>
         </motion.div>
       )}
