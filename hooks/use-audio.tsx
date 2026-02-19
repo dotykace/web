@@ -16,6 +16,7 @@ interface Sound {
 interface PlayingInstance {
   source: AudioBufferSourceNode
   gainNode: GainNode
+  timeOut?: ReturnType<typeof setTimeout> | null
 }
 
 interface SoundMapEntry {
@@ -65,13 +66,21 @@ export function useAudioManager() {
 
   const resumeAudioContext = useCallback(() => {
     const context = getAudioContext()
-    if (context && context.state !== "running") {
-      console.log("Resuming suspended AudioContext")
-      context.resume().catch((error) => {
-        console.error("Error resuming AudioContext:", error)
-      })
-    }
-  },[audioContextRef.current])
+    if (context.state === "running") return
+
+    // iOS Safari keeps the AudioContext suspended until audio is played during
+    // a user gesture. Push a 1-sample silent buffer before calling resume —
+    // this is the standard unlock pattern (same approach as howler.js).
+    const buffer = context.createBuffer(1, 1, 22050)
+    const source = context.createBufferSource()
+    source.buffer = buffer
+    source.connect(context.destination)
+    source.start(0)
+
+    context.resume().catch((error) => {
+      console.error("Error resuming AudioContext:", error)
+    })
+  }, [])
 
   const addToPlaying = (key: string, instance: PlayingInstance) => {
     // Track instance
@@ -153,7 +162,7 @@ export function useAudioManager() {
     source.buffer = sound.buffer
     source.loop = sound.loop
 
-    source.connect(gainNode).connect(getMasterGain())
+    source.connect(gainNode).connect(context.destination)
     source.start()
     return { source, gainNode }
   }, [])
@@ -165,7 +174,9 @@ export function useAudioManager() {
         console.warn(`Sound ${key} not loaded`)
         return
       }
-      const { source, gainNode } = await play(sound)
+      const result = await play(sound)
+      if (!result) return
+      const { source, gainNode } = result
 
       addToPlaying(key, { source, gainNode })
 
@@ -197,12 +208,18 @@ export function useAudioManager() {
           (duration - 0.1) * 1000,
         )
       }
-      const { source, gainNode } = await play(sound)
-      addToPlaying(filename, { source, gainNode })
+      const result = await play(sound)
+      if (!result) {
+        if (timeOut) clearTimeout(timeOut)
+        return
+      }
+      const { source, gainNode } = result
+      const instance: PlayingInstance = { source, gainNode, timeOut }
+      addToPlaying(filename, instance)
       source.onended = () => {
         source.disconnect()
         gainNode.disconnect()
-        removeFromPlaying(filename, { source, gainNode })
+        removeFromPlaying(filename, instance)
         if (timeOut) clearTimeout(timeOut)
       }
     },
@@ -214,7 +231,8 @@ export function useAudioManager() {
     const instances = playingRef.current[key]
     if (!instances) return
 
-    instances.forEach(({ source, gainNode }) => {
+    instances.forEach(({ source, gainNode, timeOut }) => {
+      if (timeOut) clearTimeout(timeOut)
       source.stop()
       source.disconnect()
       gainNode.disconnect()
@@ -251,17 +269,23 @@ export function useAudioManager() {
   }, [stop])
 
   const toggleMute = useCallback(() => {
-    const gain = getMasterGain()
     setMuted((prev) => {
       const next = !prev
-      gain.gain.value = next ? 0 : 1
+      const value = next ? 0 : 1
+      Object.values(playingRef.current).forEach((instances) => {
+        instances.forEach(({ gainNode }) => {
+          gainNode.gain.value = value
+        })
+      })
       return next
     })
-  }, [getMasterGain])
+  }, [])
 
   // --- Cleanup on unmount
   useEffect(() => {
-    stopAll()
+    return () => {
+      Object.keys(playingRef.current).forEach(stop)
+    }
   }, [stop])
 
   return {
