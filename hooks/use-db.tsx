@@ -23,7 +23,7 @@ export default function useDB() {
     const roomRef = doc(db, "rooms", roomId)
     const snapshot = await getDoc(roomRef)
     console.log("Checking if video can be shown for room:", roomId)
-    return snapshot.data()?.showVideo || false
+    return snapshot.data()?.showVideo !== false
   }
 
   const updatePlayerData = async (
@@ -59,7 +59,7 @@ export default function useDB() {
         const completedChapters = new Set(oldData.completedChapters || [])
         completedChapters.add(chapterNumber)
         const arrayFromSet = Array.from(completedChapters).sort((a, b) => a - b)
-        const currentChapter = Math.min(chapterNumber + 1, 4)
+        const currentChapter = chapterNumber + 1
 
         setToStorage("completedChapters", arrayFromSet)
         setToStorage("chapter", currentChapter)
