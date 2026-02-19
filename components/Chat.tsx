@@ -31,7 +31,7 @@ export default function Chat() {
 
   if (!hasStarted) {
     return (
-      <div className="h-screen bg-white flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="h-[100dvh] bg-white flex items-center justify-center p-4 relative overflow-hidden">
         <div
           className="fixed w-40 h-40 bg-blue-100 rounded-full pointer-events-none blur-3xl"
           style={{ top: "8%", left: "5%" }}
@@ -183,13 +183,13 @@ function ChatContent() {
   }
 
   return (
-    <main className="h-screen overflow-hidden flex flex-col bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600">
+    <main className="h-[100dvh] overflow-hidden flex flex-col bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600">
       {mode === "overlay" && <ChatOverlay />}
 
       <div className="w-full max-w-2xl mx-auto flex flex-1 flex-col px-4 overflow-hidden">
-        {/* Header - Fixed at top */}
-        <div className="flex-shrink-0 pt-8 pb-2">
-          <div className="bg-white/10 rounded-2xl border border-white/20 px-6 py-4 flex items-center gap-3">
+        {/* Header */}
+        <div className="flex-shrink-0 pt-4 sm:pt-8 pb-2">
+          <div className="bg-white/10 rounded-2xl border border-white/20 px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3">
             <LocalSvgRenderer filename={dotyFace} className="w-8 h-8" />
             <h2 className="text-white text-lg font-semibold">Zprávy</h2>
             <div className="flex-1" />
@@ -210,11 +210,10 @@ function ChatContent() {
 
         {/* Chat history - Scrollable */}
         <div
-          className="flex-1 overflow-y-auto pt-2 scrollbar-thin scrollbar-thumb-white/30 scrollbar-track-transparent"
+          className="flex-1 min-h-0 overflow-y-auto pt-2 pb-4 scrollbar-thin scrollbar-thumb-white/30 scrollbar-track-transparent"
           style={{
             scrollbarWidth: "thin",
             scrollbarColor: "rgba(255,255,255,0.3) transparent",
-            paddingBottom: showInput ? "140px" : "40px",
           }}
         >
           <div className="py-4">
@@ -242,32 +241,30 @@ function ChatContent() {
           </div>
         </div>
 
-        {/* Fixed Input Area at Bottom - Messenger Style */}
+        {/* Input Area - Part of flex column */}
         {showInput && (
-          <div className="fixed bottom-0 left-0 right-0 z-30 backdrop-blur-md bg-gradient-to-t from-indigo-600/90 to-transparent">
-            <div className="w-full max-w-2xl mx-auto px-4 pb-6 pt-4">
-              <div className="bg-white/10 rounded-2xl border border-white/20 p-4">
-                {showEmojiReactions ? (
-                  <EmojiReactionButton
-                    onSelect={(emoji: string) => {
-                      console.log("Selected emoji:", emoji)
-                      setShowEmojiReactions(false)
-                      addUserInputToHistory(emoji, "emoji")
-                      goToNextInteraction("1.03")
-                    }}
-                  />
-                ) : (
-                  <UserInput
-                    onSubmit={(input) => {
-                      handleUserInput(input)
-                      addUserInputToHistory(input)
-                      console.log("User input submitted:", input)
-                    }}
-                    placeholder={"Napiš odpověď..."}
-                    buttonText="Odeslat"
-                  />
-                )}
-              </div>
+          <div className="flex-shrink-0 pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <div className="bg-white/10 rounded-2xl border border-white/20 p-3 sm:p-4">
+              {showEmojiReactions ? (
+                <EmojiReactionButton
+                  onSelect={(emoji: string) => {
+                    console.log("Selected emoji:", emoji)
+                    setShowEmojiReactions(false)
+                    addUserInputToHistory(emoji, "emoji")
+                    goToNextInteraction("1.03")
+                  }}
+                />
+              ) : (
+                <UserInput
+                  onSubmit={(input) => {
+                    handleUserInput(input)
+                    addUserInputToHistory(input)
+                    console.log("User input submitted:", input)
+                  }}
+                  placeholder={"Napiš odpověď..."}
+                  buttonText="Odeslat"
+                />
+              )}
             </div>
           </div>
         )}
