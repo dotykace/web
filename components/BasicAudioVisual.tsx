@@ -89,21 +89,21 @@ export default function BasicAudioVisual({
             {children ?? <VoiceVisualization />}
           </motion.div>
         </AnimatePresence>
-
-        {/* Skip Button - centered below content */}
-        {audio && canSkip && (
-          <div className="flex justify-center mt-6">
-            <Button
-              onClick={skipInteraction}
-              variant="ghost"
-              className="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm flex items-center gap-2 rounded-full px-4 py-2"
-            >
-              <SkipForward className="h-4 w-4" />
-              <span>Přeskočit</span>
-            </Button>
-          </div>
-        )}
       </div>
+
+      {/* Skip Button - pinned to bottom */}
+      {audio && canSkip && (
+        <div className="flex justify-center pb-4 shrink-0">
+          <Button
+            onClick={skipInteraction}
+            variant="ghost"
+            className="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm flex items-center gap-2 rounded-full px-4 py-2"
+          >
+            <SkipForward className="h-4 w-4" />
+            <span>Přeskočit</span>
+          </Button>
+        </div>
+      )}
 
       {/* Progress Indicator */}
       {showProgress && (

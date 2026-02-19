@@ -149,7 +149,7 @@ function Chapter3Content() {
         id={currentInteraction.id}
         audio={currentAudio}
         showProgress={false}
-        canSkip={!currentInteraction.loop && !showChoices}
+        canSkip={!currentInteraction.loop && !showChoices && !hasButton}
       >
         {needsChildren ? (
           <div className="w-full space-y-4">
@@ -160,7 +160,7 @@ function Chapter3Content() {
                 <button
                   onClick={() => handleButtonClick(currentInteraction.button)}
                   className="w-full bg-white hover:bg-white/90
-                             text-orange-900 font-bold tracking-wide py-4 px-8 rounded-full shadow-lg
+                             text-orange-900 font-bold tracking-wide py-2 px-2 rounded-full shadow-lg
                              transition-all duration-300 active:scale-[0.98]"
                 >
                   {currentInteraction.button.label}
@@ -246,7 +246,7 @@ function Chapter3Content() {
             disabled={!inputValue.trim()}
             className="w-full bg-white hover:bg-white/90
                        disabled:bg-white/30 disabled:text-white/50
-                       text-orange-900 font-bold tracking-wide py-4 px-8 rounded-full shadow-lg
+                       text-orange-900 font-bold tracking-wide py-2 px-2 rounded-full shadow-lg
                        disabled:shadow-none transition-all duration-300 active:scale-[0.98]"
           >
             {currentInteraction["save-label"] || "Uložit"}
