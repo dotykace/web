@@ -1,7 +1,7 @@
 "use client"
 
-import React, { useCallback, useEffect, useMemo, useState } from "react"
-import { readFromStorage, removeFromStorage } from "@/scripts/local-storage"
+import React, { useEffect, useMemo, useState } from "react"
+import { readFromStorage } from "@/scripts/local-storage"
 import { useInteractions } from "@/hooks/use-interactions"
 import { useRouter } from "next/navigation"
 import LoadingScreen from "@/components/LoadingScreen"
@@ -20,30 +20,12 @@ interface ChapterPageProps {
   showAudioControl?: boolean
 }
 
-export const CHAPTER2_PROGRESS_KEY = "chapter2_progress"
-
-const getProgressId = (chapterNumber: number) => {
-  if (chapterNumber === 2) {
-    const progress = readFromStorage(CHAPTER2_PROGRESS_KEY) as string
-    if (progress) {
-      console.log(
-        `Resuming chapter ${chapterNumber} from interaction ID:`,
-        progress,
-      )
-      return progress.currentInteractionId
-    }
-  }
-  return null
-}
-
 function ChapterHeaderBridge({
   chapterNumber,
   showAudioControl,
-  onRestart,
 }: {
   chapterNumber: number
   showAudioControl: boolean
-  onRestart?: () => void
 }) {
   const { muted, toggleMute } = useSharedAudio()
   return (
@@ -52,7 +34,6 @@ function ChapterHeaderBridge({
       showAudioControl={showAudioControl}
       muted={muted}
       onToggleMute={toggleMute}
-      onRestart={onRestart}
     />
   )
 }
@@ -65,7 +46,6 @@ export default function ChapterPage({
   showHeader = false,
   showAudioControl = false,
 }: ChapterPageProps) {
-  const savedProgress = getProgressId(chapterNumber)
   const {
     state,
     soundMap,
@@ -73,7 +53,7 @@ export default function ChapterPage({
     goToNextInteraction,
     handleUserInput,
     handleChoiceSelection,
-  } = useInteractions(interactionsFileName, savedProgress)
+  } = useInteractions(interactionsFileName)
 
   const [chapterChecked, setChapterChecked] = useState(false)
   const [hasValidChapter, setHasValidChapter] = useState(false)
@@ -130,10 +110,6 @@ export default function ChapterPage({
             <ChapterHeaderBridge
               chapterNumber={chapterNumber}
               showAudioControl={showAudioControl}
-              onRestart={savedProgress ? () => {
-                removeFromStorage(CHAPTER2_PROGRESS_KEY)
-                window.location.reload()
-              } : undefined}
             />
           )}
           <div className="flex-1 min-h-0 flex flex-col">

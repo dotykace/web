@@ -2,8 +2,6 @@
 
 import HelpButton from "@/components/HelpButton"
 import AudioControl from "@/components/AudioControl"
-import { RotateCcw } from "lucide-react"
-import { Button } from "@/components/ui/button"
 
 interface ChapterHeaderProps {
   chapterNumber: number
@@ -11,7 +9,6 @@ interface ChapterHeaderProps {
   showAudioControl?: boolean
   muted?: boolean
   onToggleMute?: () => void
-  onRestart?: () => void
 }
 
 export default function ChapterHeader({
@@ -20,7 +17,6 @@ export default function ChapterHeader({
   showAudioControl = false,
   muted = false,
   onToggleMute,
-  onRestart,
 }: ChapterHeaderProps) {
   return (
     <div className="shrink-0 z-50 p-4">
@@ -31,16 +27,6 @@ export default function ChapterHeader({
           </h1>
 
           <div className="flex items-center gap-2">
-            {onRestart && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onRestart}
-                className="text-white hover:bg-white/20"
-              >
-                <RotateCcw className="h-4 w-4" />
-              </Button>
-            )}
             {showAudioControl && onToggleMute && (
               <AudioControl
                 onClick={onToggleMute}

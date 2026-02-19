@@ -187,20 +187,23 @@ export function useAudioManager() {
         volume: opts?.volume ?? 1,
       }
       const duration = buffer.duration
-      const timeOut = setTimeout(
-        () => {
-          console.log("Sound timeout reached, calling onFinish if exists")
-          if (onFinish) onFinish()
-        },
-        (duration - 0.1) * 1000,
-      )
+      let timeOut: ReturnType<typeof setTimeout> | null = null
+      if (!sound.loop) {
+        timeOut = setTimeout(
+          () => {
+            console.log("Sound timeout reached, calling onFinish if exists")
+            if (onFinish) onFinish()
+          },
+          (duration - 0.1) * 1000,
+        )
+      }
       const { source, gainNode } = await play(sound)
       addToPlaying(filename, { source, gainNode })
       source.onended = () => {
         source.disconnect()
         gainNode.disconnect()
         removeFromPlaying(filename, { source, gainNode })
-        clearTimeout(timeOut)
+        if (timeOut) clearTimeout(timeOut)
       }
     },
     [play],

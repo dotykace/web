@@ -48,6 +48,7 @@ export default function BasicAudioVisual({
       playedForIdRef.current = id || null
       playOnce({
         filename: currentAudio.filename,
+        opts: currentAudio.opts,
         onFinish: currentAudio.onFinish || (() => {}),
         type: currentAudio.type || "sound",
       })
