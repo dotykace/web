@@ -20,10 +20,50 @@ import FullScreenVideo from "@/components/FullScreenVideo"
 export default function Chat() {
   const { currentInteraction, goToNextInteraction } = useChatContext()
   const dbHook = useDB()
+  const [hasStarted, setHasStarted] = useState(false)
+
   const finishChapter = (voice: string) => {
     console.log("Selected voice:", voice)
     setToStorage("selectedVoice", voice)
     dbHook?.updateVoice(voice).then(() => goToNextInteraction())
+  }
+
+  if (!hasStarted) {
+    return (
+      <div className="h-screen bg-white flex items-center justify-center p-4 relative overflow-hidden">
+        <div
+          className="fixed w-40 h-40 bg-blue-100 rounded-full pointer-events-none blur-3xl"
+          style={{ top: "8%", left: "5%" }}
+        />
+        <div
+          className="fixed w-32 h-32 bg-sky-100 rounded-full pointer-events-none blur-3xl"
+          style={{ bottom: "12%", right: "8%" }}
+        />
+
+        <div className="w-full max-w-md space-y-6 flex flex-col items-center relative z-10">
+          <div className="w-20 h-20 rounded-full bg-blue-50 border-2 border-blue-200 flex items-center justify-center">
+            <span className="text-3xl font-bold text-blue-600">1</span>
+          </div>
+
+          <div className="w-full rounded-3xl p-8 text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Kapitola 1
+            </h2>
+            <p className="text-blue-500 mb-8 font-medium text-sm">
+              Připrav se na začátek příběhu
+            </p>
+            <button
+              onClick={() => setHasStarted(true)}
+              className="w-full bg-blue-500 hover:bg-blue-600
+                         text-white font-bold py-2 px-2 rounded-full shadow-lg shadow-blue-300/40
+                         transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+            >
+              Spustit
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
