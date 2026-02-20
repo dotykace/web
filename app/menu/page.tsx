@@ -12,8 +12,8 @@ import { useAudioManager } from "@/hooks/use-audio"
 import DotykaceLogo from "@/components/DotykaceLogo"
 import MenuSectionCard from "@/components/MenuSectionCard"
 import { chapterConfigs } from "@/app/chapter/[id]/ChapterClient"
-import LoadingScreen from "@/components/LoadingScreen";
-import AudioControl from "@/components/AudioControl";
+import LoadingScreen from "@/components/LoadingScreen"
+import AudioControl from "@/components/AudioControl"
 
 type SectionState = "locked" | "unlocked" | "completed"
 
@@ -192,26 +192,27 @@ export default function MenuPage() {
   const toggleBackgroundAudio = () => {
     if (audioManager.isPlaying["menu-background"]) {
       audioManager.stop("menu-background")
-    }
-    else {
+    } else {
       audioManager.resumeAudioContext()
       audioManager.playPreloaded("menu-background")
     }
-
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex flex-col items-center justify-center p-4">
+    <div className="h-[100dvh] bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex flex-col items-center justify-center px-6 py-4 overflow-hidden">
       <HelpButton />
-      <AudioControl onClick={toggleBackgroundAudio} audioEnabled={audioManager.isPlaying["menu-background"]}/>
+      <AudioControl
+        onClick={toggleBackgroundAudio}
+        audioEnabled={audioManager.isPlaying["menu-background"]}
+      />
 
       {/* Logo */}
-      <div className="p-4 pb-8">
-        <DotykaceLogo width={280} />
+      <div className="flex-shrink-0 pb-3 sm:pb-6 w-full max-w-xs">
+        <DotykaceLogo width={200} />
       </div>
 
       {/* Chapters Grid */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="flex-shrink-0 w-full max-w-xs grid grid-cols-2 gap-3 sm:gap-5">
         {sections.map((section, index) => {
           return (
             <MenuSectionCard
@@ -226,17 +227,15 @@ export default function MenuPage() {
       {/* Admin waiting message */}
       {roomId && (
         <motion.div
-          className="mt-8 text-center"
+          className="flex-shrink-0 mt-3 sm:mt-6 text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
         >
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl px-4 py-2 shadow-lg">
-            <p className="text-sky-700 text-sm">
-              {allowedChapters.length === 1
-                ? "Čakáte na povolenie od administrátora pre ďalšie kapitoly"
-                : `Máte povolené kapitoly: ${allowedChapters.join(", ")}`}
-            </p>
+          <div className="bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg text-sky-700 text-sm">
+            {allowedChapters.length === 1
+              ? "Čekáte na povolení od administrátora pro další kapitoly"
+              : `Máte povolené kapitoly: ${allowedChapters.join(", ")}`}
           </div>
         </motion.div>
       )}

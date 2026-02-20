@@ -14,20 +14,20 @@ const ChatContext = createContext<ChatContextType | undefined>(undefined)
 
 export const ChatProvider = ({
   children,
+  state,
   handleUserInput,
   handleChoiceSelection,
   currentInteraction,
   goToNextInteraction,
-  state,
-}) => {
+}: ChatContextType & { children: ReactNode }) => {
   return (
     <ChatContext.Provider
       value={{
+        state,
         handleUserInput,
         handleChoiceSelection,
         currentInteraction,
         goToNextInteraction,
-        state,
       }}
     >
       {children}

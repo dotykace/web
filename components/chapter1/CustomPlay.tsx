@@ -6,9 +6,11 @@ import { Pause, Play } from "lucide-react"
 import { useSharedAudio } from "@/context/AudioContext"
 import Image from "next/image"
 
-export default function CustomPlay({ onClick }) {
+export default function CustomPlay({ onClick }: { onClick: () => void }) {
   const [showLogos, setShowLogos] = useState(false)
-  const [logos, setLogos] = useState<[{}]>([])
+  const [logos, setLogos] = useState<
+    { id: number; text: string; position: { x: number; y: number } }[]
+  >([])
 
   const logoData = ["Facebook", "Instagram", "TikTok", "YouTube"]
 
@@ -92,6 +94,7 @@ export default function CustomPlay({ onClick }) {
                     height={80}
                     src={"/logos/" + emoji.text + "_logo.svg"}
                     alt={"My Icon " + emoji.text}
+                    className="w-20 h-20"
                   />
                 </motion.div>
               </div>

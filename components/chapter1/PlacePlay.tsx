@@ -4,9 +4,16 @@ import React, { useEffect, useState } from "react"
 import { LocalSvgRenderer } from "@/components/LocalSvgRenderer"
 import MobileNotification from "@/components/mobile-notification"
 import EmojiList from "@/components/EmojiList"
+import type { ProcessedInteraction } from "@/interactions"
 
-export default function PlacePlay({ current, goToNext }) {
-  const dotPosition = { start: 100 }
+export default function PlacePlay({
+  current,
+  goToNext,
+}: {
+  current: ProcessedInteraction
+  goToNext: (nextId?: string) => void
+}) {
+  const dotPosition = { x: 0.5, y: 0.5, offset: 20, start: 100 }
 
   const PREDEFINED_EMOJIS = ["🍽", "️😋", "🤤", "🥴", "🤢", "☠️"]
   const [animatingEmoji, setAnimatingEmoji] = useState<string | null>(null)
@@ -15,7 +22,7 @@ export default function PlacePlay({ current, goToNext }) {
 
   const notificationProps = {
     id: current.id,
-    title: "New Message",
+    title: "Nová zpráva",
     message: current?.text() ?? "",
     icon: (
       <LocalSvgRenderer

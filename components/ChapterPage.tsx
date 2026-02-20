@@ -1,37 +1,68 @@
 "use client"
 
-import React, {useEffect, useState} from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { readFromStorage } from "@/scripts/local-storage"
 import { useInteractions } from "@/hooks/use-interactions"
 import { useRouter } from "next/navigation"
 import LoadingScreen from "@/components/LoadingScreen"
 import { ChatProvider } from "@/context/ChatContext"
-import AudioWrapper from "@/components/audio/AudioWrapper";
+import AudioWrapper from "@/components/audio/AudioWrapper"
+import { useSharedAudio } from "@/context/AudioContext"
+import ChapterHeader from "@/components/ChapterHeader"
+import { ChapterLayoutProvider } from "@/context/ChapterLayoutContext"
 
 interface ChapterPageProps {
   chapterNumber: number
   interactionsFileName: string
   ViewComponent: React.ComponentType<any>
+  coloring?: string
+  showHeader?: boolean
+  showAudioControl?: boolean
 }
 
 export const CHAPTER2_PROGRESS_KEY = "chapter2_progress"
+export const CHAPTER3_PROGRESS_KEY = "chapter3_progress"
 
 const getProgressId = (chapterNumber: number) => {
-  // todo handle other chapters when they have progress saving implemented
+  // todo refactor to be more generic if needed for future chapters
+  let progress = undefined
   if (chapterNumber === 2) {
-    const progress = readFromStorage(CHAPTER2_PROGRESS_KEY) as string
-    if (progress) {
-      console.log(`Resuming chapter ${chapterNumber} from interaction ID:`, progress)
-      return progress.currentInteractionId;
-    }
+    progress = readFromStorage(CHAPTER2_PROGRESS_KEY) as string
   }
-  return null
+  else if (chapterNumber === 3) {
+    progress = readFromStorage(CHAPTER3_PROGRESS_KEY) as string
+  }
+  if (progress) {
+    console.log(`Resuming chapter ${chapterNumber} from interaction ID:`, progress)
+  }
+  return progress
+}
+
+function ChapterHeaderBridge({
+  chapterNumber,
+  showAudioControl,
+}: {
+  chapterNumber: number
+  showAudioControl: boolean
+}) {
+  const { muted, toggleMute } = useSharedAudio()
+  return (
+    <ChapterHeader
+      chapterNumber={chapterNumber}
+      showAudioControl={showAudioControl}
+      muted={muted}
+      onToggleMute={toggleMute}
+    />
+  )
 }
 
 export default function ChapterPage({
   chapterNumber,
   interactionsFileName,
   ViewComponent,
+  coloring,
+  showHeader = false,
+  showAudioControl = false,
 }: ChapterPageProps) {
   const savedProgress = getProgressId(chapterNumber)
   const {
@@ -45,12 +76,11 @@ export default function ChapterPage({
 
   const [chapterChecked, setChapterChecked] = useState(false)
   const [hasValidChapter, setHasValidChapter] = useState(false)
+  const [headerVisible, setHeaderVisible] = useState(true)
   const router = useRouter()
 
-  // Check localStorage for chapter on client-side only
   useEffect(() => {
     const storedChapter = readFromStorage("chapter")
-    // Chapter is valid if it exists (including 0)
     const isValid = storedChapter !== undefined && storedChapter !== null
     if (!isValid) {
       console.log("No chapter found in localStorage, redirecting to root")
@@ -61,7 +91,11 @@ export default function ChapterPage({
     setChapterChecked(true)
   }, [router])
 
-  // Show loading while checking chapter or loading interactions
+  const layoutContextValue = useMemo(
+    () => ({ setHeaderVisible }),
+    [setHeaderVisible],
+  )
+
   if (
     !chapterChecked ||
     !hasValidChapter ||
@@ -73,18 +107,41 @@ export default function ChapterPage({
     return <LoadingScreen />
   }
 
+  const chatProvider = (
+    <ChatProvider
+      state={state}
+      handleUserInput={handleUserInput}
+      handleChoiceSelection={handleChoiceSelection}
+      currentInteraction={currentInteraction}
+      goToNextInteraction={goToNextInteraction}
+    >
+      <ChapterLayoutProvider value={layoutContextValue}>
+        <ViewComponent />
+      </ChapterLayoutProvider>
+    </ChatProvider>
+  )
+
+  if (coloring) {
+    return (
+      <AudioWrapper soundMap={soundMap}>
+        <div className={`h-dvh flex flex-col overflow-hidden ${coloring}`}>
+          {showHeader && headerVisible && (
+            <ChapterHeaderBridge
+              chapterNumber={chapterNumber}
+              showAudioControl={!!showAudioControl}
+            />
+          )}
+          <div className="flex-1 min-h-0 flex flex-col">
+            {chatProvider}
+          </div>
+        </div>
+      </AudioWrapper>
+    )
+  }
+
   return (
     <AudioWrapper soundMap={soundMap}>
-      <ChatProvider
-        state={state}
-        handleUserInput={handleUserInput}
-        handleChoiceSelection={handleChoiceSelection}
-        currentInteraction={currentInteraction}
-        goToNextInteraction={goToNextInteraction}
-      >
-        <ViewComponent />
-      </ChatProvider>
+      {chatProvider}
     </AudioWrapper>
-
   )
 }

@@ -1,17 +1,36 @@
 import { useEffect, useState } from "react"
 import ScaleTemplate from "@/components/chapter4/ScaleTemplate"
 import { useSharedAudio } from "@/context/AudioContext"
-import AudioControl from "@/components/AudioControl"
+import type { ProcessedInteraction } from "@/interactions"
 import { PlayOnceOptions } from "@/hooks/use-audio"
 
-const classifyData = (number) => {
+interface Interpretation {
+  secondary: string
+  percentage: number
+  class: number
+  combo?: string
+}
+
+interface Scale {
+  id: string
+  voice?: string
+  next?: string
+  top: string
+  bottom: string
+  secondary: string
+}
+
+const classifyData = (number: number) => {
   if (number >= 67) return 1 // high
   if (number <= 33) return 5 // low
   return 3 // medium
 }
 // connections = {A: B, B: C, C: A}
-const interpretData = (connections, data) => {
-  const interpretations = {}
+const interpretData = (
+  connections: Record<string, string>,
+  data: Record<string, number>,
+): Record<string, Interpretation> => {
+  const interpretations: Record<string, Interpretation> = {}
   for (const key in data) {
     interpretations[key] = {
       secondary: connections[key],
@@ -27,39 +46,50 @@ const interpretData = (connections, data) => {
   return interpretations
 }
 
-export default function Scales({ currentInteraction, onComplete }) {
-  const [data, setData] = useState({})
+export default function Scales({
+  currentInteraction,
+  onComplete,
+}: {
+  currentInteraction: ProcessedInteraction
+  onComplete: (result: Record<string, Interpretation>) => void
+}) {
+  const [data, setData] = useState<Record<string, number>>({})
   const [dataCollected, setDataCollected] = useState(false)
 
-  const { playOnce, toggleOnce, isPlaying, stop } = useSharedAudio()
+  const { playOnce, isPlaying, stop } = useSharedAudio()
+
+  const scalesObject =
+    (currentInteraction.scales as Record<string, Scale>) || {}
+  const [currentScale, setCurrentScale] = useState<Scale | undefined>(
+    scalesObject["A"],
+  )
+  const [currentAudio, setCurrentAudio] = useState<PlayOnceOptions>()
 
   useEffect(() => {
     if (dataCollected) {
       console.log("Final data:", data)
-      const connections = {}
+      const connections: Record<string, string> = {}
       for (const key in scalesObject) {
         connections[key] = scalesObject[key].secondary
       }
       const result = interpretData(connections, data)
       onComplete(result)
     }
-  }, [data])
+  }, [data, dataCollected, scalesObject, onComplete])
 
-  const scalesObject = currentInteraction.scales
-  const [currentScale, setCurrentScale] = useState(scalesObject["A"])
-  const [currentAudio, setCurrentAudio] = useState<PlayOnceOptions>()
-
-  const updateData = (key, value) => {
+  const updateData = (key: string, value: number) => {
     setData((prev) => ({
       ...prev,
       [key]: value, // dynamically update key
     }))
   }
 
-  const updateScale = (number) => {
+  const updateScale = (number: number) => {
     if (!currentScale) return
     updateData(currentScale.id, number)
-    stop(currentScale.voice)
+    if (currentScale.voice) {
+      stop(currentScale.voice)
+    }
     if (!currentScale.next) {
       setDataCollected(true)
       return
@@ -91,24 +121,18 @@ export default function Scales({ currentInteraction, onComplete }) {
   if (!currentScale) return null
 
   return (
-    <div>
-      <AudioControl
-        onClick={() => {
-          if (currentAudio) {
-            toggleOnce(currentAudio)
+    <div className="h-full flex flex-col">
+      <div className="flex-1 min-h-0">
+        <ScaleTemplate
+          topText={currentScale.top}
+          bottomText={currentScale.bottom}
+          onConfirm={updateScale}
+          disabled={false}
+          confirmationText={
+            !currentScale.next ? "Potvrdit a dokončit" : undefined
           }
-        }}
-        audioEnabled={isPlaying[currentAudio?.filename] || false}
-        disabled={!currentAudio}
-      />
-      <ScaleTemplate
-        topText={currentScale.top}
-        bottomText={currentScale.bottom}
-        onConfirm={updateScale}
-        confirmationText={
-          !currentScale.next ? "Potvrdit a dokončit" : undefined
-        }
-      />
+        />
+      </div>
     </div>
   )
 }

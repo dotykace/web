@@ -4,9 +4,9 @@ import CardSequence from "@/components/CardSequence"
 import ChapterPage from "@/components/ChapterPage"
 import { notFound } from "next/navigation"
 import ScalesAndGallery from "@/components/chapter4/ScalesAndGallery"
-import Chapter2 from "@/components/audio/Chapter2";
+import Chapter2 from "@/components/audio/Chapter2"
+import Chapter3 from "@/components/audio/Chapter3"
 
-// Chapter configuration
 export const chapterConfigs = {
   "0": {
     chapterNumber: 0,
@@ -22,16 +22,25 @@ export const chapterConfigs = {
     chapterNumber: 2,
     interactionsFileName: "chapter2-flow",
     ViewComponent: Chapter2,
+    coloring: "bg-gradient-to-br from-violet-500 via-purple-600 to-fuchsia-600",
+    showHeader: true,
+    showAudioControl: true,
   },
   "3": {
     chapterNumber: 3,
     interactionsFileName: "chapter3-flow",
-    ViewComponent: Chat,
+    ViewComponent: Chapter3,
+    coloring: "bg-gradient-to-br from-amber-400 via-orange-500 to-rose-500",
+    showHeader: true,
+    showAudioControl: true,
   },
   "4": {
     chapterNumber: 4,
     interactionsFileName: "chapter4-flow",
     ViewComponent: ScalesAndGallery,
+    coloring: "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900",
+    showHeader: true,
+    showAudioControl: true,
   },
 }
 

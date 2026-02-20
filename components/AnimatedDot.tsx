@@ -9,12 +9,14 @@ type AnimatedDotProps = {
   revealComponent: JSX.Element
   onAnimationComplete?: () => void
   dotSize?: number
+  glowSize?: number
   dotColor?: string
   glowColor?: string
   animationDuration?: {
     grow?: number
     pulse?: number
     reveal?: number
+    expand?: number
   }
   className?: string
 }
@@ -54,16 +56,22 @@ export default function AnimatedDot({
       if (onAnimationComplete) {
         onAnimationComplete()
       }
-      setTimeout(() => {
-        setState("revealed")
-      }, animationDuration.expand) // Start revealing when glow is 30% expanded
+      setTimeout(
+        () => {
+          setState("revealed")
+        },
+        (animationDuration?.expand || 1) * 1000,
+      ) // Start revealing when glow is 30% expanded
     }
   }
 
   const handleExpandComplete = () => {
-    setTimeout(() => {
-      setState("revealed")
-    }, animationDuration.reveal * 1000)
+    setTimeout(
+      () => {
+        setState("revealed")
+      },
+      (animationDuration?.reveal || 0.5) * 1000,
+    )
   }
   const dotVariants: Variants = {
     disabled: {
@@ -74,7 +82,7 @@ export default function AnimatedDot({
       scale: 1,
       opacity: 1,
       transition: {
-        duration: animationDuration.grow,
+        duration: animationDuration?.grow || 0.5,
         ease: "easeIn",
       },
     },
@@ -103,7 +111,7 @@ export default function AnimatedDot({
       opacity: [0, 0.6, 0],
       scale: [1, 2, 1],
       transition: {
-        duration: animationDuration.pulse,
+        duration: animationDuration?.pulse || 2,
         repeat: Number.POSITIVE_INFINITY,
         repeatType: "loop",
       },
@@ -112,7 +120,7 @@ export default function AnimatedDot({
       opacity: 0.8,
       scale: 100, // Scale up to cover the screen
       transition: {
-        duration: animationDuration.expand,
+        duration: animationDuration?.expand || 1,
         ease: "easeOut",
       },
     },
@@ -120,14 +128,7 @@ export default function AnimatedDot({
       opacity: 0,
       transition: {
         duration: 0.5,
-        delay: animationDuration.reveal * 0.7, // Start fading out when component is mostly revealed
-      },
-      exit: {
-        opacity: 0,
-        scale: 0,
-        transition: {
-          duration: 0.3,
-        },
+        delay: (animationDuration?.reveal || 0.5) * 0.7, // Start fading out when component is mostly revealed
       },
     },
   }
@@ -141,7 +142,7 @@ export default function AnimatedDot({
       opacity: 1,
       scale: 1,
       transition: {
-        duration: animationDuration.reveal,
+        duration: animationDuration?.reveal || 0.5,
         ease: "easeInOut",
       },
     },

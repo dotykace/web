@@ -1,15 +1,19 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { DM_Sans } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 
-const inter = Inter({ subsets: ["latin", "latin-ext"] })
+const dmSans = DM_Sans({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-dm-sans",
+})
 
 export const metadata: Metadata = {
-  title: "Teen Card App",
-  description: "Interactive card-based app for teenagers",
+  title: "Dotykáče - Interaktivní zkušenost s mobilem",
+  description: "Interaktivní zkušenost s mobilem",
   generator: "v0.dev",
 }
 
@@ -20,12 +24,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="cs" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem={false}
-        >
+      <body className={`${dmSans.className} antialiased`}>
+        <ThemeProvider attribute="class">
           {children}
           <Toaster />
         </ThemeProvider>

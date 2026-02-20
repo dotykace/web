@@ -1,13 +1,13 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { Card, CardContent } from "@/components/ui/card"
-import HelpButton from "@/components/HelpButton"
+import { motion, AnimatePresence } from "framer-motion"
 import { readFromStorage, setToStorage } from "@/scripts/local-storage"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import useDB from "@/hooks/use-db"
 import { useRouter } from "next/navigation"
+import ChapterHeader from "@/components/ChapterHeader"
+import LoadingScreen from "@/components/LoadingScreen"
 
 interface VideoItem {
   id: number
@@ -30,16 +30,15 @@ export default function VideoPage() {
   const pageHeader = "Video na závěr"
   const finishButtonText = "Dokončit zážitek"
 
-  const [selectedVoice, setSelectedVoice] = useState()
-  const [dbHook, setDbHook] = useState()
+  const [selectedVoice, setSelectedVoice] = useState<string>()
+  const [dbHook, setDbHook] = useState<ReturnType<typeof useDB>>()
   const router = useRouter()
 
   const [filePathLoaded, setFilePathLoaded] = useState(false)
   const [showFinishButton, setShowFinishButton] = useState(false)
+  const [videoEnded, setVideoEnded] = useState(false)
 
   useEffect(() => {
-    console.log("Loading selected voice from storage")
-    // todo get voice from firebase
     const savedVoice = readFromStorage("selectedVoice") || "male"
     if (savedVoice) {
       setSelectedVoice(savedVoice)
@@ -56,6 +55,7 @@ export default function VideoPage() {
   }, [])
 
   const onVideoEnded = () => {
+    setVideoEnded(true)
     setShowFinishButton(true)
     setTimeout(() => {
       handleFinish()
@@ -70,78 +70,100 @@ export default function VideoPage() {
   }
 
   const filePath = `/videos/${selectedVoice}/`
-  const coloring =
-    "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900"
 
   if (!filePathLoaded) {
-    const loadingText = "Načítavam video obsah..."
-    return (
-      <div
-        className={`min-h-screen text-white flex items-center justify-center p-4 ${coloring}`}
-      >
-        {loadingText}
-      </div>
-    )
+    return <LoadingScreen message="Načítávám video obsah..." />
   }
 
   return (
-    <div
-      className={`min-h-screen flex flex-col items-center p-4 sm:p-6 md:p-8 ${coloring}`}
-    >
-      <HelpButton />
+    <main className="h-screen overflow-hidden flex flex-col bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600">
+      {/* Chapter Header */}
+      <ChapterHeader chapterNumber={5} />
 
-      <motion.div
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-center mb-8 mt-12 sm:mt-16"
-      >
-        <h1 className="text-4xl sm:text-5xl font-bold text-white drop-shadow-lg">
-          {pageHeader}
-        </h1>
-      </motion.div>
-
-      <div className="w-full max-w-3xl space-y-8 mb-12">
-        {videos.map((video, index) => (
+      {/* Content */}
+      <div className="flex-1 flex flex-col items-center justify-center px-4 overflow-hidden">
+        <div className="w-full max-w-2xl flex flex-col items-center gap-6">
+          {/* Title */}
           <motion.div
-            key={video.id}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center"
           >
-            <Card className="bg-white/10 backdrop-blur-lg border-white/20 shadow-2xl rounded-xl overflow-hidden">
-              <CardContent className="p-4 sm:p-6">
-                <h2 className="text-xl sm:text-2xl font-semibold text-white mb-3">
-                  {video.title}
-                </h2>
-                <p className="text-white/80 text-sm sm:text-base mb-4">
-                  {video.description}
-                </p>
-                <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg">
-                  <video
-                    className="absolute top-0 left-0 w-full h-full"
-                    src={`${filePath}${video.fileName}`}
-                    title={video.title}
-                    controls
-                    playsInline
-                    onEnded={onVideoEnded}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+            <h1 className="text-3xl sm:text-4xl font-bold text-white drop-shadow-lg">
+              {pageHeader}
+            </h1>
           </motion.div>
-        ))}
+
+          {/* Video Cards */}
+          <div className="w-full space-y-6">
+            {videos.map((video, index) => (
+              <motion.div
+                key={video.id}
+                initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{
+                  duration: 0.5,
+                  delay: 0.2 + index * 0.15,
+                  ease: [0.25, 0.46, 0.45, 0.94],
+                }}
+              >
+                <div className="rounded-3xl px-6 py-6 shadow-2xl bg-white/95 backdrop-blur-md text-gray-800 ring-2 ring-white/30">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+                    {video.title}
+                  </h2>
+                  <p className="text-gray-600 text-sm sm:text-base mb-4 leading-relaxed">
+                    {video.description}
+                  </p>
+                  <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-lg ring-1 ring-black/10">
+                    <video
+                      className="absolute top-0 left-0 w-full h-full bg-black"
+                      src={`${filePath}${video.fileName}`}
+                      title={video.title}
+                      controls
+                      playsInline
+                      onEnded={onVideoEnded}
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Finish Button */}
+          <AnimatePresence>
+            {showFinishButton && (
+              <motion.div
+                initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="pb-8"
+              >
+                <Button
+                  onClick={handleFinish}
+                  className="px-12 py-6 text-lg font-semibold bg-amber-500 hover:bg-amber-600 text-white rounded-full shadow-lg shadow-amber-500/30 transition-all hover:shadow-amber-500/50 hover:scale-105"
+                >
+                  {finishButtonText}
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Completion message */}
+          <AnimatePresence>
+            {videoEnded && !showFinishButton && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-white/70 text-sm"
+              >
+                Video dokončeno
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
-      {showFinishButton && (
-        <Button
-          onClick={handleFinish}
-          className={
-            "rounded-full border-2 border-blue-950 bg-blue-700 text-white text-xl p-6"
-          }
-        >
-          {finishButtonText}
-        </Button>
-      )}
-    </div>
+    </main>
   )
 }

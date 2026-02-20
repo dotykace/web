@@ -1,0 +1,142 @@
+{
+  "id": "chapter3-flow",
+  "startInteractionId": "chapter-3-start",
+  "interactions": {
+    "chapter-3-start": {
+      "type": "checkpoint",
+      "duration": 0,
+      "next-id": "3.10"
+    },
+    "3.10": {
+      "type": "voice",
+      "filename": "track16.mp3",
+      "next-id": "3.10.2"
+    },
+    "3.10.2": {
+      "type": "input",
+      "text": "Kolik času denně spolu v průměru strávíme?",
+      "duration": 15,
+      "save-label": "Potvrdit",
+      "next-id": "3.10.3"
+    },
+    "3.10.3": {
+      "type": "voice",
+      "saveProgress": true,
+      "filename": "track17-20.mp3",
+      "next-id": "3.10.18"
+    },
+    "3.10.18": {
+      "type": "voice",
+      "filename": "track21.mp3",
+      "button": {
+        "label": "Pokračovat",
+        "next-id": "3.10.21"
+      }
+    },
+    "3.10.21": {
+      "type": "voice",
+      "saveProgress": true,
+      "filename": "track22.mp3",
+      "next-id": "3.10.22"
+    },
+    "3.10.22": {
+      "type": "multiple-choice",
+      "text": "Dokáže tě ještě někdo takhle zkamenět?",
+      "choices": [
+        { "label": "Myslím, že ano", "next-id": "3.10.22a" },
+        { "label": "Nevím", "next-id": "3.10.22b" },
+        { "label": "Asi ne", "next-id": "3.10.22c" }
+      ]
+    },
+    "3.10.22a": {
+      "type": "voice",
+      "filename": "track23a.mp3",
+      "next-id": "3.11.0"
+    },
+    "3.10.22b": {
+      "type": "voice",
+      "filename": "track23b.mp3",
+      "next-id": "3.11.0"
+    },
+    "3.10.22c": {
+      "type": "voice",
+      "filename": "track23c.mp3",
+      "next-id": "3.11.0"
+    },
+    "3.11.0": {
+      "type": "voice",
+      "saveProgress": true,
+      "filename": "track24.mp3",
+      "next-id": "3.11.choice"
+    },
+    "3.11.choice": {
+      "type": "multiple-choice",
+      "text": "Kdy mě vezmeš poprvé do ruky?",
+      "choices": [
+        { "label": "ihned", "next-id": "3.11.1" },
+        { "label": "ještě v posteli", "next-id": "3.11.1" },
+        { "label": "jen co vstanu", "next-id": "3.11.1" },
+        { "label": "po ranních rituálech", "next-id": "3.11.1" },
+        { "label": "možná si na tebe ani nevzpomenu", "next-id": "3.11.1" }
+      ]
+    },
+    "3.11.1": {
+      "type": "voice",
+      "saveProgress": true,
+      "filename": "track25.mp3",
+      "next-id": "3.11.2"
+    },
+    "3.11.2": {
+      "type": "input",
+      "text": "Odkud mě nejčastěji bereš s sebou?",
+      "duration": 20,
+      "save-label": "Potvrdit",
+      "next-id": "3.11.3"
+    },
+    "3.11.3": {
+      "type": "voice",
+      "saveProgress": true,
+      "filename": "track26.mp3",
+      "next-id": "3.11.4"
+    },
+    "3.11.4": {
+      "type": "input",
+      "text": "Popiš, jak rychle a jak spolehlivě to poznáš:",
+      "duration": 20,
+      "save-label": "Potvrdit",
+      "next-id": "3.11.final"
+    },
+    "3.11.final": {
+      "type": "voice",
+      "saveProgress": true,
+      "filename": "track29.mp3",
+      "next-id": "3.11.final-choice"
+    },
+    "3.11.final-choice": {
+      "type": "multiple-choice",
+      "text": "Jak často mi dáváš přednost před lidmi?",
+      "choices": [
+        { "label": "nikdy", "next-id": "final" },
+        { "label": "výjimečně, když se s tebou zapomenu", "next-id": "final" },
+        { "label": "výjimečně, když na lidi nemám náladu", "next-id": "final" },
+        { "label": "občas", "next-id": "final" },
+        { "label": "často", "next-id": "final" },
+        { "label": "vždycky", "next-id": "final" },
+        {
+          "label": "není v tom rozdíl - používám tě ke komunikování s jinými lidmi",
+          "next-id": "final"
+        }
+      ]
+    },
+    "final": {
+      "type": "voice",
+      "filename": "track30.mp3",
+      "duration": 4,
+      "next-id": "chapter-3-end"
+    },
+    "chapter-3-end": {
+      "type": "checkpoint",
+      "duration": 0
+    }
+  }
+}

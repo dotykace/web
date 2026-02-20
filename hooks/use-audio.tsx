@@ -16,6 +16,7 @@ interface Sound {
 interface PlayingInstance {
   source: AudioBufferSourceNode
   gainNode: GainNode
+  timeOut?: ReturnType<typeof setTimeout> | null
 }
 
 interface SoundMapEntry {
@@ -34,6 +35,7 @@ interface SoundMap {
 
 export function useAudioManager() {
   const audioContextRef = useRef<AudioContext | null>(null)
+  const masterGainRef = useRef<GainNode | null>(null)
 
   // Preloaded sounds map: key -> Sound
   const soundsRef = useRef<Record<string, Sound>>({})
@@ -42,6 +44,7 @@ export function useAudioManager() {
   const playingRef = useRef<Record<string, PlayingInstance[]>>({})
 
   const [isPlaying, setIsPlaying] = useState<Record<string, boolean>>({})
+  const [muted, setMuted] = useState(false)
 
   const getAudioContext = () => {
     if (!audioContextRef.current) {
@@ -51,15 +54,33 @@ export function useAudioManager() {
     return audioContextRef.current
   }
 
+  // All sounds route through this node so mute/unmute affects everything at once
+  const getMasterGain = useCallback(() => {
+    if (!masterGainRef.current) {
+      const context = getAudioContext()
+      masterGainRef.current = context.createGain()
+      masterGainRef.current.connect(context.destination)
+    }
+    return masterGainRef.current
+  }, [])
+
   const resumeAudioContext = useCallback(() => {
     const context = getAudioContext()
-    if (context && context.state !== "running") {
-      console.log("Resuming suspended AudioContext")
-      context.resume().catch((error) => {
-        console.error("Error resuming AudioContext:", error)
-      })
-    }
-  },[audioContextRef.current])
+    if (context.state === "running") return
+
+    // iOS Safari keeps the AudioContext suspended until audio is played during
+    // a user gesture. Push a 1-sample silent buffer before calling resume —
+    // this is the standard unlock pattern (same approach as howler.js).
+    const buffer = context.createBuffer(1, 1, 22050)
+    const source = context.createBufferSource()
+    source.buffer = buffer
+    source.connect(context.destination)
+    source.start(0)
+
+    context.resume().catch((error) => {
+      console.error("Error resuming AudioContext:", error)
+    })
+  }, [])
 
   const addToPlaying = (key: string, instance: PlayingInstance) => {
     // Track instance
@@ -92,7 +113,11 @@ export function useAudioManager() {
   ): Promise<AudioBuffer> => {
     const context = getAudioContext()
     if (!context) throw new Error("AudioContext not available")
-    const response = await fetch(getPath(filename, type))
+    const path = getPath(filename, type)
+    const response = await fetch(path)
+    if (!response.ok) {
+      throw new Error(`Failed to fetch audio ${path}: ${response.status}`)
+    }
     const arrayBuffer = await response.arrayBuffer()
     return await context.decodeAudioData(arrayBuffer)
   }
@@ -100,14 +125,17 @@ export function useAudioManager() {
   // --- Load a sound and decode it
   const loadSound = useCallback(
     async (key: string, filename: string, opts?: UseAudioManagerOptions) => {
-      const buffer = await fetchSound(filename)
-
-      soundsRef.current[key] = {
-        buffer,
-        loop: opts?.loop ?? false,
-        volume: opts?.volume ?? 1,
+      try {
+        const buffer = await fetchSound(filename)
+        soundsRef.current[key] = {
+          buffer,
+          loop: opts?.loop ?? false,
+          volume: opts?.volume ?? 1,
+        }
+        setIsPlaying((prev) => ({ ...prev, [key]: false }))
+      } catch (error) {
+        console.error(`Failed to load sound "${key}" (${filename}):`, error)
       }
-      setIsPlaying((prev) => ({ ...prev, [key]: false }))
     },
     [],
   )
@@ -124,7 +152,7 @@ export function useAudioManager() {
   )
 
   // --- Play a sound by key
-  const play = useCallback(async (sound) => {
+  const play = useCallback(async (sound: Sound) => {
     const context = getAudioContext()
     if (!context) {
       console.warn("AudioContext not available")
@@ -153,7 +181,9 @@ export function useAudioManager() {
         console.warn(`Sound ${key} not loaded`)
         return
       }
-      const { source, gainNode } = await play(sound)
+      const result = await play(sound)
+      if (!result) return
+      const { source, gainNode } = result
 
       addToPlaying(key, { source, gainNode })
 
@@ -168,27 +198,68 @@ export function useAudioManager() {
 
   const playOnce = useCallback(
     async ({ filename, opts, type, onFinish }: PlayOnceOptions) => {
-      const buffer = await fetchSound(filename, type)
+      let buffer: AudioBuffer | undefined
+
+      // iOS Safari suspends AudioContext and network when the share sheet or
+      // another browser UI is active. Retry with increasing delays so the
+      // system has enough time to recover.
+      const retryDelays = [800, 1500, 3000]
+      for (let attempt = 0; attempt <= retryDelays.length; attempt++) {
+        try {
+          const ctx = getAudioContext()
+          if (
+            ctx.state === "suspended" ||
+            (ctx.state as string) === "interrupted"
+          ) {
+            await ctx.resume().catch(() => {})
+          }
+          buffer = await fetchSound(filename, type)
+          break
+        } catch (error) {
+          console.warn(
+            `Audio load attempt ${attempt + 1} failed for "${filename}":`,
+            error,
+          )
+          if (attempt < retryDelays.length) {
+            await new Promise((r) => setTimeout(r, retryDelays[attempt]))
+          } else {
+            console.error(`Audio load failed permanently for "${filename}"`)
+            if (onFinish) onFinish()
+            return
+          }
+        }
+      }
+
       const sound = {
-        buffer,
+        buffer: buffer!,
         loop: opts?.loop ?? false,
         volume: opts?.volume ?? 1,
       }
-      const duration = buffer.duration
-      const timeOut = setTimeout(
-        () => {
-          console.log("Sound timeout reached, calling onFinish if exists")
-          if (onFinish) onFinish()
-        },
-        (duration - 0.1) * 1000,
-      )
-      const { source, gainNode } = await play(sound)
-      addToPlaying(filename, { source, gainNode })
+      const duration = buffer!.duration
+      let timeOut: ReturnType<typeof setTimeout> | null = null
+      if (!sound.loop) {
+        timeOut = setTimeout(
+          () => {
+            console.log("Sound timeout reached, calling onFinish if exists")
+            if (onFinish) onFinish()
+          },
+          (duration - 0.1) * 1000,
+        )
+      }
+      const result = await play(sound)
+      if (!result) {
+        if (timeOut) clearTimeout(timeOut)
+        if (onFinish) onFinish()
+        return
+      }
+      const { source, gainNode } = result
+      const instance: PlayingInstance = { source, gainNode, timeOut }
+      addToPlaying(filename, instance)
       source.onended = () => {
         source.disconnect()
         gainNode.disconnect()
-        removeFromPlaying(filename, { source, gainNode })
-        clearTimeout(timeOut)
+        removeFromPlaying(filename, instance)
+        if (timeOut) clearTimeout(timeOut)
       }
     },
     [play],
@@ -199,10 +270,19 @@ export function useAudioManager() {
     const instances = playingRef.current[key]
     if (!instances) return
 
-    instances.forEach(({ source, gainNode }) => {
-      source.stop()
-      source.disconnect()
-      gainNode.disconnect()
+    instances.forEach(({ source, gainNode, timeOut }) => {
+      if (timeOut) clearTimeout(timeOut)
+      try {
+        source.stop()
+      } catch (_) {
+        // iOS Safari throws InvalidStateError if the source already stopped
+      }
+      try {
+        source.disconnect()
+        gainNode.disconnect()
+      } catch (_) {
+        // Already disconnected
+      }
     })
 
     playingRef.current[key] = []
@@ -211,7 +291,7 @@ export function useAudioManager() {
 
   // --- Toggle a sound
   const toggle = useCallback(
-    (key, onReplay) => {
+    (key: string, onReplay: () => void) => {
       if (isPlaying[key]) {
         console.log("Stopping", key)
         stop(key)
@@ -235,9 +315,24 @@ export function useAudioManager() {
     Object.keys(playingRef.current).forEach(stop)
   }, [stop])
 
+  const toggleMute = useCallback(() => {
+    setMuted((prev) => {
+      const next = !prev
+      const value = next ? 0 : 1
+      Object.values(playingRef.current).forEach((instances) => {
+        instances.forEach(({ gainNode }) => {
+          gainNode.gain.value = value
+        })
+      })
+      return next
+    })
+  }, [])
+
   // --- Cleanup on unmount
   useEffect(() => {
-    stopAll()
+    return () => {
+      Object.keys(playingRef.current).forEach(stop)
+    }
   }, [stop])
 
   return {
@@ -250,5 +345,7 @@ export function useAudioManager() {
     togglePreloaded,
     toggleOnce,
     isPlaying,
+    muted,
+    toggleMute,
   }
 }

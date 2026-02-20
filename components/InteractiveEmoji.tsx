@@ -7,7 +7,13 @@ export interface EmojiParams {
   text: string
   position: { x: number; y: number }
 }
-export default function InteractiveEmoji({ emoji, clickCallback }) {
+export default function InteractiveEmoji({
+  emoji,
+  clickCallback,
+}: {
+  emoji: EmojiParams
+  clickCallback: (id: number) => void
+}) {
   const [clicked, setClicked] = useState(false)
   const [showText, setShowText] = useState(false)
 

@@ -3,7 +3,13 @@
 import { useCallback } from "react"
 import { Send } from "lucide-react"
 
-export default function CustomSend({ onClick, isGlowing }) {
+export default function CustomSend({
+  onClick,
+  isGlowing,
+}: {
+  onClick: () => void
+  isGlowing: () => boolean
+}) {
   return (
     <div className="relative">
       {/* Send Button */}

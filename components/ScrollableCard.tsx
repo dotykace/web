@@ -5,19 +5,37 @@ import ScrollLine from "@/components/ScrollLine"
 import AnimatedCard from "@/components/AnimatedCard"
 import { readFromStorage } from "@/scripts/local-storage"
 import { useSwipeNavigation } from "@/hooks/use-scroll"
-const generateChoiceObject = (text, callback) => {
+import type { ProcessedInteraction } from "@/interactions"
+
+interface CardData {
+  id?: string
+  username?: string
+  content?: string
+  choices?: { text: string; callback: () => {} }[]
+}
+
+const generateChoiceObject = (
+  text: string,
+  callback: (text: string) => void,
+) => {
   return {
     text: text,
-    callback: () => callback(text),
+    callback: () => {
+      callback(text)
+      return {}
+    },
   }
 }
 const FINGERS = ["palec", "ukazovák", "prostředníček", "prsteníček", "malíček"]
-const createCard = (interaction, botName, onFinish) => {
+const createCard = (
+  interaction: ProcessedInteraction | null | undefined,
+  botName: string,
+  onFinish: (type: string, choice?: string) => void,
+): CardData | undefined => {
   if (!interaction) return undefined
   if (interaction.type !== "card") return undefined
-  let newCard = {
+  let newCard: CardData = {
     id: interaction.id,
-    avatar: "/placeholder.svg",
     username: botName,
     content: interaction.text(),
   }
@@ -44,18 +62,24 @@ export default function ScrollableCards({
   currentInteraction,
   onScroll,
   onFinish,
+}: {
+  currentInteraction: ProcessedInteraction | null | undefined
+  onScroll: () => void
+  onFinish: (type: string, choice?: string) => void
 }) {
   const [isTransitioning, setIsTransitioning] = useState(false)
   const lastWheelTime = useRef(0)
   const wheelCooldown = 800 // milliseconds between card changes
 
   const nextCard = () => {
+    if (!currentInteraction) return false
     return (
       currentInteraction.id !== "finger-choice" &&
       currentInteraction.id !== "finger-compare"
     )
   }
   const validCard = () => {
+    if (!currentInteraction) return false
     return currentInteraction.type === "card"
   }
 
@@ -71,8 +95,8 @@ export default function ScrollableCards({
   }, [currentInteraction])
 
   const autoScrollDelay = currentInteraction
-    ? (currentInteraction.duration * 1000 ?? 4000)
-    : 0 // 4 seconds
+    ? currentInteraction.duration * 1000
+    : 4000 // 4 seconds
   const intervalMs = (autoScrollDelay / 100) * 0.75
 
   const changeCard = () => {
@@ -91,7 +115,7 @@ export default function ScrollableCards({
     }, 600)
   }
 
-  const swipeCallback = (direction) => {
+  const swipeCallback = (direction: "up" | "down") => {
     if (direction === "up") {
       changeCard()
     }

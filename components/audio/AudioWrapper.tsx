@@ -1,20 +1,30 @@
 import { AudioProvider, useSharedAudio } from "@/context/AudioContext"
 import { useEffect } from "react"
 
-function AudioInitializer({ soundMap }) {
+function AudioInitializer({ soundMap }: { soundMap: SoundMap }) {
   const { preloadAll } = useSharedAudio()
 
   useEffect(() => {
-    if (!soundMap) return
+    if (!soundMap || Object.keys(soundMap).length === 0) return
     console.log("Starting to preload sounds...")
-    preloadAll(soundMap).then(() => {
-      console.log("Sounds loaded")
-    })
-  }, [preloadAll])
+    preloadAll(soundMap)
+      .then(() => {
+        console.log("Sounds loaded")
+      })
+      .catch((error) => {
+        console.error("Failed to preload sounds:", error)
+      })
+  }, [preloadAll, soundMap])
 
   return null
 }
-export default function AudioWrapper({ children, soundMap }) {
+export default function AudioWrapper({
+  children,
+  soundMap,
+}: {
+  children: React.ReactNode
+  soundMap: SoundMap
+}) {
   return (
     <AudioProvider>
       <AudioInitializer soundMap={soundMap} />

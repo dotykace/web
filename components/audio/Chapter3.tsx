@@ -4,22 +4,22 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Textarea } from "@/components/ui/textarea"
-import {readFromStorage, setToStorage} from "@/scripts/local-storage"
-import BasicAudioVisual from "@/components/BasicAudioVisual"
 import { useChatContext } from "@/context/ChatContext"
 import { useSharedAudio } from "@/context/AudioContext"
+import BasicAudioVisual from "@/components/BasicAudioVisual"
 import VoiceVisualization from "@/components/VoiceVisualization"
 import { motion } from "framer-motion"
-import { CHAPTER2_PROGRESS_KEY } from "@/components/ChapterPage"
+import { CHAPTER3_PROGRESS_KEY } from "@/components/ChapterPage"
+import {setToStorage} from "@/scripts/local-storage";
 
-function Chapter2Content() {
+function Chapter3Content() {
   const { state, currentInteraction, goToNextInteraction } = useChatContext()
   const { stopAll } = useSharedAudio()
 
   const [inputValue, setInputValue] = useState("")
-  const [savedUserMessage, setSavedUserMessage] = useState("")
   const [timeLeft, setTimeLeft] = useState<number | null>(null)
   const [showWarning, setShowWarning] = useState(false)
+  const [timerExpired, setTimerExpired] = useState(false)
   const countdownRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
@@ -28,19 +28,22 @@ function Chapter2Content() {
     }
   }, [])
 
+  // Reset state when interaction changes
   useEffect(() => {
     setInputValue("")
     setTimeLeft(null)
     setShowWarning(false)
+    setTimerExpired(false)
     if (countdownRef.current) {
       clearInterval(countdownRef.current)
       countdownRef.current = null
     }
     if (currentInteraction?.id && currentInteraction.saveProgress === true) {
-      setToStorage(CHAPTER2_PROGRESS_KEY, currentInteraction?.id)
+      setToStorage(CHAPTER3_PROGRESS_KEY, currentInteraction?.id)
     }
   }, [currentInteraction?.id])
 
+  // Start countdown for timed input interactions
   useEffect(() => {
     if (currentInteraction?.type !== "input" || !currentInteraction.duration)
       return
@@ -50,7 +53,7 @@ function Chapter2Content() {
       setTimeLeft((prev) => {
         if (prev === null || prev <= 1) {
           if (countdownRef.current) clearInterval(countdownRef.current)
-          goToNextInteraction()
+          setTimerExpired(true)
           return null
         }
         if (
@@ -68,27 +71,25 @@ function Chapter2Content() {
     }
   }, [currentInteraction?.id])
 
+  useEffect(() => {
+    if (timerExpired) {
+      goToNextInteraction()
+    }
+  }, [timerExpired, goToNextInteraction])
+
   const saveToFirestore = async (
-    inputData: string,
+    value: string | string[],
     interactionId: string,
-    choiceData?: { label: string; nextId: string },
+    interactionType: string,
   ) => {
     try {
-      const docData: Record<string, unknown> = {
+      await addDoc(collection(db, "chapter3"), {
         interactionId,
-        userInput: inputData,
-        userId: readFromStorage("playerId") || "anonymous",
-        roomId: readFromStorage("roomId") || "no-room",
+        responseValue: value,
+        interactionType,
         timestamp: serverTimestamp(),
-        sessionId: `session_${Date.now()}`,
-        chapter: "chapter2",
-      }
-
-      if (choiceData) {
-        docData.choice = choiceData
-      }
-
-      await addDoc(collection(db, "chapter2"), docData)
+        chapter: "chapter3",
+      })
     } catch (error) {
       console.error("Error saving to Firestore:", error)
     }
@@ -98,10 +99,7 @@ function Chapter2Content() {
     if (!currentInteraction) return
     if (countdownRef.current) clearInterval(countdownRef.current)
     if (inputValue.trim()) {
-      saveToFirestore(inputValue, currentInteraction.id)
-      if (currentInteraction.id === "pairs-text-field") {
-        setSavedUserMessage(inputValue)
-      }
+      saveToFirestore(inputValue, currentInteraction.id, "input")
     }
     goToNextInteraction()
   }, [inputValue, currentInteraction, goToNextInteraction])
@@ -110,10 +108,7 @@ function Chapter2Content() {
     (choice: { label: string; "next-id": string }) => {
       stopAll()
       if (currentInteraction) {
-        saveToFirestore("", currentInteraction.id, {
-          label: choice.label,
-          nextId: choice["next-id"],
-        })
+        saveToFirestore(choice.label, currentInteraction.id, "choice")
       }
       goToNextInteraction(choice["next-id"])
     },
@@ -129,7 +124,6 @@ function Chapter2Content() {
   )
 
   if (!currentInteraction || state !== "initialized") return null
-
   const hasButton = !!currentInteraction.button
 
   const currentAudio =
@@ -137,7 +131,6 @@ function Chapter2Content() {
       ? {
           filename: currentInteraction.filename as string,
           type: "voice" as const,
-          opts: { loop: currentInteraction.loop || false },
           onFinish: () => {
             if (!hasButton) {
               goToNextInteraction()
@@ -145,33 +138,6 @@ function Chapter2Content() {
           },
         }
       : null
-
-  if (currentInteraction.type === "voice") {
-    return (
-      <BasicAudioVisual
-        id={currentInteraction.id}
-        audio={currentAudio}
-        showProgress={false}
-        canSkip={!currentInteraction.loop}
-      >
-        {hasButton ? (
-          <div className="w-full space-y-4">
-            <VoiceVisualization />
-            <div className="px-4">
-              <button
-                onClick={() => handleButtonClick(currentInteraction.button)}
-                className="w-full bg-white hover:bg-white/90
-                           text-purple-900 font-bold tracking-wide py-2 px-4 rounded-full shadow-lg
-                           transition-all duration-300 active:scale-[0.98]"
-              >
-                {currentInteraction.button.label}
-              </button>
-            </div>
-          </div>
-        ) : null}
-      </BasicAudioVisual>
-    )
-  }
 
   if (currentInteraction.type === "multiple-choice") {
     return (
@@ -181,17 +147,19 @@ function Chapter2Content() {
         showProgress={false}
         canSkip={false}
       >
-        <div className="w-full space-y-4 px-4">
-          <p className="text-white text-xl leading-relaxed text-center font-semibold tracking-wide drop-shadow-lg">
-            {currentInteraction.text()}
-          </p>
-          <div className="space-y-3">
+        <div className="px-2 flex flex-col min-h-0 flex-1 overflow-hidden">
+          {currentInteraction.text() && (
+            <p className="text-white text-base sm:text-lg text-center font-semibold tracking-wide drop-shadow-lg mb-2 flex-shrink-0">
+              {currentInteraction.text()}
+            </p>
+          )}
+          <div className="space-y-1.5 sm:space-y-2 overflow-y-auto flex-1 min-h-0 pr-1 pb-2">
             {(
               currentInteraction.choices as Array<{
                 label: string
                 "next-id": string
               }>
-            )?.map((choice, index) => (
+            ).map((choice, index) => (
               <motion.div
                 key={choice.label}
                 initial={{ y: 10, opacity: 0 }}
@@ -201,8 +169,8 @@ function Chapter2Content() {
                 <button
                   onClick={() => handleChoiceClick(choice)}
                   className="w-full bg-white hover:bg-white/90
-                             text-purple-900 font-bold tracking-wide py-2 rounded-full shadow-lg
-                             transition-all duration-300 active:scale-[0.98]"
+                                     text-orange-900 font-semibold text-xs sm:text-sm tracking-wide py-2 sm:py-2.5 px-3 rounded-full shadow-md
+                                     transition-all duration-300 active:scale-[0.98]"
                 >
                   {choice.label}
                 </button>
@@ -214,6 +182,40 @@ function Chapter2Content() {
     )
   }
 
+  // Voice interaction — may include continue button shown after audio
+  if (currentInteraction.type === "voice") {
+    return (
+      <BasicAudioVisual
+        id={currentInteraction.id}
+        audio={currentAudio}
+        showProgress={false}
+        canSkip={!currentInteraction.loop && !hasButton}
+      >
+        {hasButton ? (
+          <div className="w-full flex flex-col min-h-0 gap-3">
+            <div className={`flex-shrink-0 transition-all duration-300 origin-top h-36 sm:h-48`}>
+              <VoiceVisualization className="h-full" />
+            </div>
+
+            {hasButton && (
+              <div className="px-4 flex-shrink-0">
+                <button
+                  onClick={() => handleButtonClick(currentInteraction.button)}
+                  className="w-full bg-white hover:bg-white/90
+                             text-orange-900 font-bold tracking-wide py-2 px-2 rounded-full shadow-lg
+                             transition-all duration-300 active:scale-[0.98]"
+                >
+                  {currentInteraction.button.label}
+                </button>
+              </div>
+            )}
+          </div>
+        ) : null}
+      </BasicAudioVisual>
+    )
+  }
+
+  // Input with countdown
   if (currentInteraction.type === "input") {
     return (
       <BasicAudioVisual
@@ -252,7 +254,7 @@ function Chapter2Content() {
             disabled={!inputValue.trim()}
             className="w-full bg-white hover:bg-white/90
                        disabled:bg-white/30 disabled:text-white/50
-                       text-purple-900 font-bold tracking-wide py-2 rounded-full shadow-lg
+                       text-orange-900 font-bold tracking-wide py-2 px-2 rounded-full shadow-lg
                        disabled:shadow-none transition-all duration-300 active:scale-[0.98]"
           >
             {currentInteraction["save-label"] || "Uložit"}
@@ -262,40 +264,7 @@ function Chapter2Content() {
     )
   }
 
-  if (currentInteraction.type === "message") {
-    return (
-      <BasicAudioVisual
-        id={currentInteraction.id}
-        audio={null}
-        showProgress={false}
-      >
-        <div className="w-full space-y-6">
-          <p className="text-white text-xl leading-relaxed text-center font-semibold tracking-wide drop-shadow-lg">
-            {currentInteraction.text()}
-          </p>
-        </div>
-      </BasicAudioVisual>
-    )
-  }
-
-  if (currentInteraction.type === "show-message") {
-    return (
-      <BasicAudioVisual
-        id={currentInteraction.id}
-        audio={null}
-        showProgress={false}
-      >
-        <div className="w-full">
-          <div className="bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-6 shadow-xl">
-            <p className="text-white text-lg leading-relaxed text-center font-medium">
-              {savedUserMessage || "Žádný vzkaz"}
-            </p>
-          </div>
-        </div>
-      </BasicAudioVisual>
-    )
-  }
-
+  // Fallback for other interaction types
   return (
     <BasicAudioVisual
       id={currentInteraction.id}
@@ -305,7 +274,7 @@ function Chapter2Content() {
   )
 }
 
-export default function Chapter2() {
+export default function Chapter3() {
   const [hasStarted, setHasStarted] = useState(false)
 
   if (!hasStarted) {
@@ -318,20 +287,20 @@ export default function Chapter2() {
 
         <div className="w-full max-w-md space-y-6 flex flex-col items-center">
           <div className="w-20 h-20 rounded-full bg-white shadow-xl flex items-center justify-center">
-            <span className="text-3xl font-bold text-purple-900">2</span>
+            <span className="text-3xl font-bold text-orange-500">3</span>
           </div>
 
           <div className="w-full bg-white rounded-3xl p-8 text-center shadow-xl">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Kapitola 2
+              Kapitola 3
             </h2>
-            <p className="text-purple-600 mb-8 font-medium text-sm">
+            <p className="text-orange-500 mb-8 font-medium text-sm">
               Jsi ready?
             </p>
             <button
               onClick={() => setHasStarted(true)}
-              className="w-full bg-purple-600 hover:bg-purple-700
-                         text-white font-bold py-2 px-2 rounded-full shadow-lg shadow-purple-500/30
+              className="w-full bg-orange-500 hover:bg-orange-600
+                         text-white font-bold py-2 px-2 rounded-full shadow-lg shadow-orange-500/30
                          transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
             >
               Spustit
@@ -342,5 +311,5 @@ export default function Chapter2() {
     )
   }
 
-  return <Chapter2Content />
+  return <Chapter3Content />
 }

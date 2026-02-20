@@ -1,15 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { doc, onSnapshot } from "firebase/firestore"
+import { doc, onSnapshot, getDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import type { DotykaceRoom, DotykaceParticipant } from "@/lib/dotykace-types"
 import { useRouter } from "next/navigation"
 import { Clock } from "lucide-react"
 import { readFromStorage, setToStorage } from "@/scripts/local-storage"
-
 import DefaultWaitingScreen from "@/components/DefaultWaitingScreen"
-
 export default function DotykaceRoomPage() {
   const [room, setRoom] = useState<DotykaceRoom | null>(null)
   const [connectionError, setConnectionError] = useState(false)
@@ -28,56 +26,74 @@ export default function DotykaceRoomPage() {
     if (!storedPlayerId) {
       console.log("Player ID not found in localStorage. Redirecting to root")
       router.push("/")
+      return
     }
+
+    let hasRedirected = false
 
     const roomRef = doc(db, "rooms", storedRoomId)
     const unsubscribe = onSnapshot(
       roomRef,
-      (document) => {
+      async (document) => {
+        if (hasRedirected) return
+
         if (document.exists()) {
           const roomData = document.data() as DotykaceRoom
           setRoom(roomData)
           setConnectionError(false)
           console.log(
-            `Connected to room "${storedRoomId}" as player "${storedPlayerName}"`,
+            `Connected to room "${storedRoomId}" as player "${storedPlayerName}" (ID: ${storedPlayerId})`
           )
-
-          // Skontroluj či hráč už existuje v miestnosti
-          const existingParticipant = doc(
-            db,
-            "rooms",
-            storedRoomId,
-            "participants",
-            storedPlayerId,
-          ) as DotykaceParticipant
-          console.log("Existing participant data:", existingParticipant)
 
           // Ak sa miestnosť spustila, automaticky začni introduction
           if (roomData.isStarted) {
-            let currentChapter = readFromStorage("chapter")
-            if (!currentChapter) {
-              currentChapter = existingParticipant?.currentChapter ?? 0
-              setToStorage("chapter", currentChapter)
-            }
-            if (currentChapter > 0) {
-              console.log(
-                "Current chapter from existing participant:",
-                currentChapter,
-              )
-              router.push(`/menu`)
+            hasRedirected = true
+
+            // Always fetch fresh participant data from Firestore
+            const participantRef = doc(
+              db,
+              "rooms",
+              storedRoomId,
+              "participants",
+              storedPlayerId
+            )
+            const participantDoc = await getDoc(participantRef)
+            const existingParticipant = participantDoc.exists()
+              ? (participantDoc.data() as DotykaceParticipant)
+              : null
+
+            console.log("Participant data from Firestore:", existingParticipant)
+
+            // Use Firestore data as source of truth, ignore localStorage
+            const currentChapter = existingParticipant?.currentChapter ?? 0
+            const completedChapters =
+              existingParticipant?.completedChapters ?? []
+
+            // Sync to localStorage
+            setToStorage("chapter", currentChapter)
+            setToStorage("completedChapters", completedChapters)
+
+            // New players (chapter 0 not completed) must start at intro
+            if (!completedChapters.includes(0)) {
+              console.log("Chapter 0 not completed, redirecting to chapter 0")
+              router.push("/chapter/0")
+            } else if (currentChapter > 0) {
+              console.log("Chapter 0 completed, going to menu")
+              router.push("/menu")
             } else {
               console.log("Current chapter is 0, redirecting to chapter 0")
               router.push("/chapter/0")
             }
           }
         } else {
+          hasRedirected = true
           router.push("/")
         }
       },
       (error) => {
         console.error("Connection error:", error)
         setConnectionError(true)
-      },
+      }
     )
 
     return () => unsubscribe()
@@ -85,11 +101,11 @@ export default function DotykaceRoomPage() {
 
   if (!room) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 flex items-center justify-center">
+      <div className="h-screen overflow-hidden bg-gradient-warm flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full border-2 border-gray-300 border-t-blue-600 h-8 w-8 mx-auto mb-4" />
+          <div className="animate-spin-smooth rounded-full border-3 border-white/30 border-t-white h-10 w-10 mx-auto mb-4" />
           {connectionError && (
-            <div className="text-white text-sm">
+            <div className="text-white/90 text-sm bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
               Problém s pripojením... Skúšam znovu...
             </div>
           )}
@@ -101,12 +117,12 @@ export default function DotykaceRoomPage() {
   const waitingHeader = "Čekáme na začátek"
   const waitingSubheader =
     "Administrátor ještě nespustil Dotykáče: interaktivní zkušenost s mobilem"
-  const waitingIcon = <Clock className="w-16 h-16 mx-auto text-sky-500 mb-4" />
+
   return (
     <DefaultWaitingScreen
       header={waitingHeader}
       subheader={waitingSubheader}
-      icon={waitingIcon}
+      icon={<Clock className="w-10 h-10 text-orange-500 animate-pulse" />}
     />
   )
 }
