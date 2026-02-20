@@ -119,14 +119,10 @@ export default function DotykaceRoomPage() {
     "Administrátor ještě nespustil Dotykáče: interaktivní zkušenost s mobilem"
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-warm p-4 flex flex-col items-center justify-center">
-      <div className="max-w-md mx-auto space-y-8 animate-fade-in">
-        <DefaultWaitingScreen
-          header={waitingHeader}
-          subheader={waitingSubheader}
-          icon={<Clock className="w-10 h-10 text-orange-500 animate-pulse" />}
-        />
-      </div>
-    </div>
+    <DefaultWaitingScreen
+      header={waitingHeader}
+      subheader={waitingSubheader}
+      icon={<Clock className="w-10 h-10 text-orange-500 animate-pulse" />}
+    />
   )
 }
