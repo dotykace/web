@@ -99,36 +99,6 @@ export default function CardSequence() {
     return () => clearTimeout(timer)
   }, [history.length, displayCount])
 
-  // Handle chapter completion when checkpoint is reached
-  useEffect(() => {
-    if (currentInteraction?.type === "checkpoint") {
-      // Extract chapter number from interaction id (e.g., "intro-end" -> 0, "chapter-1-end" -> 1)
-      const match = currentInteraction.id?.match(
-        /^(?:chapter-(\d+)|intro)-end$/,
-      )
-      const chapterNumber = match ? (match[1] ? Number(match[1]) : 0) : 0
-
-      // Save completion to localStorage
-      const existingCompleted =
-        (readFromStorage("completedChapters") as number[]) || []
-      const completedSet = new Set(existingCompleted)
-      completedSet.add(chapterNumber)
-      const completedArray = Array.from(completedSet).sort((a, b) => a - b)
-
-      setToStorage("completedChapters", completedArray)
-      setToStorage("chapter", Math.min(chapterNumber + 1, 4))
-      console.log(`Chapter ${chapterNumber} completed, redirecting to menu`)
-
-      // Update database if available, then redirect
-      if (dbHook && dbHook.updateChapter) {
-        dbHook.updateChapter(chapterNumber, () => router.push("/menu"))
-      } else {
-        // No database hook, just redirect
-        router.push("/menu")
-      }
-    }
-  }, [currentInteraction, router, dbHook])
-
   const visibleHistory = history.slice(0, displayCount)
 
   // Get the last N cards for the stack effect
