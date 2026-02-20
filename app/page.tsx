@@ -81,12 +81,12 @@ export default function HomePage() {
   const adminLabel = "Administrátor"
 
   return (
-    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-gradient-warm p-2 sm:p-4 flex items-center justify-center">
-      <div className="w-full max-w-md space-y-3 sm:space-y-5 flex flex-col animate-fade-in">
+    <div className="fixed inset-0 w-screen h-[100dvh] overflow-y-auto bg-gradient-warm p-2 sm:p-4 flex items-center justify-center">
+      <div className="w-full max-w-md space-y-2 sm:space-y-5 flex flex-col animate-fade-in py-4 sm:py-0">
         {/* Logo */}
         <div className="text-center flex-shrink-0">
-          <DotykaceLogo width={280} />
-          <p className="text-white/95 m-2 text-xl font-medium tracking-wide">
+          <DotykaceLogo width={200} />
+          <p className="text-white/95 m-1 sm:m-2 text-base sm:text-xl font-medium tracking-wide">
             {appSubtitle}
           </p>
         </div>
@@ -119,15 +119,15 @@ export default function HomePage() {
 
         {/* Login/Join Form */}
         <Card className="glass-card border-0 flex-shrink-0 animate-scale-in">
-          <CardHeader className="text-center px-4 sm:px-6 pt-5 sm:pt-6 pb-2 sm:pb-3">
-            <CardTitle className="text-lg sm:text-xl md:text-2xl text-gray-900 leading-tight font-bold">
+          <CardHeader className="text-center px-4 sm:px-6 pt-4 sm:pt-6 pb-1 sm:pb-3">
+            <CardTitle className="text-base sm:text-xl md:text-2xl text-gray-900 leading-tight font-bold">
               {loginTitle}
             </CardTitle>
-            <CardDescription className="text-gray-500 text-sm mt-1.5">
+            <CardDescription className="text-gray-500 text-xs sm:text-sm mt-1">
               {loginSubtitle}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 sm:space-y-4 px-4 sm:px-6 pb-5 sm:pb-6">
+          <CardContent className="space-y-2.5 sm:space-y-4 px-4 sm:px-6 pb-4 sm:pb-6">
             {error && (renderError(error) as ReactNode)}
 
             {isLogin
