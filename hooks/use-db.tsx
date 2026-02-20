@@ -23,7 +23,7 @@ export default function useDB() {
     const roomRef = doc(db, "rooms", roomId)
     const snapshot = await getDoc(roomRef)
     console.log("Checking if video can be shown for room:", roomId)
-    return snapshot.data()?.showVideo !== false
+    return snapshot.data()?.showVideo || false
   }
 
   const updatePlayerData = async (
@@ -59,7 +59,7 @@ export default function useDB() {
         const completedChapters = new Set(oldData.completedChapters || [])
         completedChapters.add(chapterNumber)
         const arrayFromSet = Array.from(completedChapters).sort((a, b) => a - b)
-        const currentChapter = chapterNumber + 1
+        const currentChapter = Math.min(chapterNumber + 1, 5)
 
         setToStorage("completedChapters", arrayFromSet)
         setToStorage("chapter", currentChapter)
@@ -90,29 +90,10 @@ export default function useDB() {
     )
   }
 
-  const saveChapterData = async (
-    chapterNumber: number,
-    chapterResponses: Record<string, string>,
-  ) => {
-    await updatePlayerData(
-      (oldData) => {
-        const existingResponses = oldData.responses || {}
-        return {
-          responses: {
-            ...existingResponses,
-            [`chapter${chapterNumber}`]: chapterResponses,
-          },
-        } as Partial<DotykaceParticipant>
-      },
-      () => {},
-    )
-  }
-
   return {
     updateVoice,
     updateChapter,
     participantRef,
     canShowVideo,
-    saveChapterData,
   }
 }
