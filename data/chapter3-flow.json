@@ -21,6 +21,7 @@
     },
     "3.10.3": {
       "type": "voice",
+      "saveProgress": true,
       "filename": "track17-20.mp3",
       "next-id": "3.10.18"
     },
@@ -34,6 +35,7 @@
     },
     "3.10.21": {
       "type": "voice",
+      "saveProgress": true,
       "filename": "track22.mp3",
       "next-id": "3.10.22"
     },
@@ -63,6 +65,7 @@
     },
     "3.11.0": {
       "type": "voice",
+      "saveProgress": true,
       "filename": "track24.mp3",
       "next-id": "3.11.choice"
     },
@@ -79,6 +82,7 @@
     },
     "3.11.1": {
       "type": "voice",
+      "saveProgress": true,
       "filename": "track25.mp3",
       "next-id": "3.11.2"
     },
@@ -91,6 +95,7 @@
     },
     "3.11.3": {
       "type": "voice",
+      "saveProgress": true,
       "filename": "track26.mp3",
       "next-id": "3.11.4"
     },
@@ -103,6 +108,7 @@
     },
     "3.11.final": {
       "type": "voice",
+      "saveProgress": true,
       "filename": "track29.mp3",
       "next-id": "3.11.final-choice"
     },

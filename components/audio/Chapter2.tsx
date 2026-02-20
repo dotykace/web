@@ -4,12 +4,13 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Textarea } from "@/components/ui/textarea"
-import { readFromStorage } from "@/scripts/local-storage"
+import {readFromStorage, setToStorage} from "@/scripts/local-storage"
 import BasicAudioVisual from "@/components/BasicAudioVisual"
 import { useChatContext } from "@/context/ChatContext"
 import { useSharedAudio } from "@/context/AudioContext"
 import VoiceVisualization from "@/components/VoiceVisualization"
 import { motion } from "framer-motion"
+import { CHAPTER2_PROGRESS_KEY } from "@/components/ChapterPage"
 
 function Chapter2Content() {
   const { state, currentInteraction, goToNextInteraction } = useChatContext()
@@ -34,6 +35,9 @@ function Chapter2Content() {
     if (countdownRef.current) {
       clearInterval(countdownRef.current)
       countdownRef.current = null
+    }
+    if (currentInteraction?.id && currentInteraction.saveProgress === true) {
+      setToStorage(CHAPTER2_PROGRESS_KEY, currentInteraction?.id)
     }
   }, [currentInteraction?.id])
 

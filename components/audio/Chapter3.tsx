@@ -9,6 +9,8 @@ import { useSharedAudio } from "@/context/AudioContext"
 import BasicAudioVisual from "@/components/BasicAudioVisual"
 import VoiceVisualization from "@/components/VoiceVisualization"
 import { motion } from "framer-motion"
+import { CHAPTER3_PROGRESS_KEY } from "@/components/ChapterPage"
+import {setToStorage} from "@/scripts/local-storage";
 
 function Chapter3Content() {
   const { state, currentInteraction, goToNextInteraction } = useChatContext()
@@ -35,6 +37,9 @@ function Chapter3Content() {
     if (countdownRef.current) {
       clearInterval(countdownRef.current)
       countdownRef.current = null
+    }
+    if (currentInteraction?.id && currentInteraction.saveProgress === true) {
+      setToStorage(CHAPTER3_PROGRESS_KEY, currentInteraction?.id)
     }
   }, [currentInteraction?.id])
 

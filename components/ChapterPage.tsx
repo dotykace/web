@@ -20,6 +20,24 @@ interface ChapterPageProps {
   showAudioControl?: boolean
 }
 
+export const CHAPTER2_PROGRESS_KEY = "chapter2_progress"
+export const CHAPTER3_PROGRESS_KEY = "chapter3_progress"
+
+const getProgressId = (chapterNumber: number) => {
+  // todo refactor to be more generic if needed for future chapters
+  let progress = undefined
+  if (chapterNumber === 2) {
+    progress = readFromStorage(CHAPTER2_PROGRESS_KEY) as string
+  }
+  else if (chapterNumber === 3) {
+    progress = readFromStorage(CHAPTER3_PROGRESS_KEY) as string
+  }
+  if (progress) {
+    console.log(`Resuming chapter ${chapterNumber} from interaction ID:`, progress)
+  }
+  return progress
+}
+
 function ChapterHeaderBridge({
   chapterNumber,
   showAudioControl,
@@ -46,6 +64,7 @@ export default function ChapterPage({
   showHeader = false,
   showAudioControl = false,
 }: ChapterPageProps) {
+  const savedProgress = getProgressId(chapterNumber)
   const {
     state,
     soundMap,
@@ -53,7 +72,7 @@ export default function ChapterPage({
     goToNextInteraction,
     handleUserInput,
     handleChoiceSelection,
-  } = useInteractions(interactionsFileName)
+  } = useInteractions(interactionsFileName, savedProgress)
 
   const [chapterChecked, setChapterChecked] = useState(false)
   const [hasValidChapter, setHasValidChapter] = useState(false)
@@ -109,7 +128,7 @@ export default function ChapterPage({
           {showHeader && headerVisible && (
             <ChapterHeaderBridge
               chapterNumber={chapterNumber}
-              showAudioControl={showAudioControl}
+              showAudioControl={!!showAudioControl}
             />
           )}
           <div className="flex-1 min-h-0 flex flex-col">
