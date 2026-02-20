@@ -8,16 +8,15 @@ import { useChatContext } from "@/context/ChatContext"
 import { useSharedAudio } from "@/context/AudioContext"
 import BasicAudioVisual from "@/components/BasicAudioVisual"
 import VoiceVisualization from "@/components/VoiceVisualization"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 
 function Chapter3Content() {
   const { state, currentInteraction, goToNextInteraction } = useChatContext()
-  const { stop, stopAll, playOnce, isPlaying } = useSharedAudio()
+  const { stopAll } = useSharedAudio()
 
   const [inputValue, setInputValue] = useState("")
   const [timeLeft, setTimeLeft] = useState<number | null>(null)
   const [showWarning, setShowWarning] = useState(false)
-  const [showChoices, setShowChoices] = useState(false)
   const [timerExpired, setTimerExpired] = useState(false)
   const countdownRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -32,7 +31,6 @@ function Chapter3Content() {
     setInputValue("")
     setTimeLeft(null)
     setShowWarning(false)
-    setShowChoices(false)
     setTimerExpired(false)
     if (countdownRef.current) {
       clearInterval(countdownRef.current)
@@ -121,8 +119,6 @@ function Chapter3Content() {
   )
 
   if (!currentInteraction || state !== "initialized") return null
-
-  const hasChoices = !!(currentInteraction.choices as any[])?.length
   const hasButton = !!currentInteraction.button
 
   const currentAudio =
@@ -131,29 +127,68 @@ function Chapter3Content() {
           filename: currentInteraction.filename as string,
           type: "voice" as const,
           onFinish: () => {
-            // If the interaction has choices or a button, reveal them instead of advancing
-            if (hasChoices) {
-              setShowChoices(true)
-            } else if (!hasButton) {
+            if (!hasButton) {
               goToNextInteraction()
             }
           },
         }
       : null
 
-  // Voice interaction — may include choices or a continue button shown after audio
+  if (currentInteraction.type === "multiple-choice") {
+    return (
+      <BasicAudioVisual
+        id={currentInteraction.id}
+        audio={null}
+        showProgress={false}
+        canSkip={false}
+      >
+        <div className="px-2 flex flex-col min-h-0 flex-1 overflow-hidden">
+          {currentInteraction.text() && (
+            <p className="text-white text-base sm:text-lg text-center font-semibold tracking-wide drop-shadow-lg mb-2 flex-shrink-0">
+              {currentInteraction.text()}
+            </p>
+          )}
+          <div className="space-y-1.5 sm:space-y-2 overflow-y-auto flex-1 min-h-0 pr-1 pb-2">
+            {(
+              currentInteraction.choices as Array<{
+                label: string
+                "next-id": string
+              }>
+            ).map((choice, index) => (
+              <motion.div
+                key={choice.label}
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: index * 0.08 }}
+              >
+                <button
+                  onClick={() => handleChoiceClick(choice)}
+                  className="w-full bg-white hover:bg-white/90
+                                     text-orange-900 font-semibold text-xs sm:text-sm tracking-wide py-2 sm:py-2.5 px-3 rounded-full shadow-md
+                                     transition-all duration-300 active:scale-[0.98]"
+                >
+                  {choice.label}
+                </button>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </BasicAudioVisual>
+    )
+  }
+
+  // Voice interaction — may include continue button shown after audio
   if (currentInteraction.type === "voice") {
-    const needsChildren = hasButton || hasChoices
     return (
       <BasicAudioVisual
         id={currentInteraction.id}
         audio={currentAudio}
         showProgress={false}
-        canSkip={!currentInteraction.loop && !showChoices && !hasButton}
+        canSkip={!currentInteraction.loop && !hasButton}
       >
-        {needsChildren ? (
+        {hasButton ? (
           <div className="w-full flex flex-col min-h-0 gap-3">
-            <div className={`flex-shrink-0 transition-all duration-300 origin-top ${showChoices ? "h-24 sm:h-28 scale-75" : "h-36 sm:h-48"}`}>
+            <div className={`flex-shrink-0 transition-all duration-300 origin-top h-36 sm:h-48`}>
               <VoiceVisualization className="h-full" />
             </div>
 
@@ -167,40 +202,6 @@ function Chapter3Content() {
                 >
                   {currentInteraction.button.label}
                 </button>
-              </div>
-            )}
-
-            {showChoices && hasChoices && (
-              <div className="px-2 flex flex-col min-h-0 flex-1 overflow-hidden">
-                {currentInteraction.label && (
-                  <p className="text-white text-base sm:text-lg text-center font-semibold tracking-wide drop-shadow-lg mb-2 flex-shrink-0">
-                    {currentInteraction.label}
-                  </p>
-                )}
-                <div className="space-y-1.5 sm:space-y-2 overflow-y-auto flex-1 min-h-0 pr-1 pb-2">
-                  {(
-                    currentInteraction.choices as Array<{
-                      label: string
-                      "next-id": string
-                    }>
-                  ).map((choice, index) => (
-                    <motion.div
-                      key={choice.label}
-                      initial={{ y: 10, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ delay: index * 0.08 }}
-                    >
-                      <button
-                        onClick={() => handleChoiceClick(choice)}
-                        className="w-full bg-white hover:bg-white/90
-                                     text-orange-900 font-semibold text-xs sm:text-sm tracking-wide py-2 sm:py-2.5 px-3 rounded-full shadow-md
-                                     transition-all duration-300 active:scale-[0.98]"
-                      >
-                        {choice.label}
-                      </button>
-                    </motion.div>
-                  ))}
-                </div>
               </div>
             )}
           </div>
