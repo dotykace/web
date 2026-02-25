@@ -128,12 +128,12 @@
       "text": "Zkontroluj hlasitost a připojení a zkus to znovu.",
       "choices": [
         {
-          "label": "Zkouška",
-          "next-id": "sound-test_a"
-        },
-        {
           "label": "Slyším!",
           "next-id": "botname-input"
+        },
+        {
+          "label": "Zkouška",
+          "next-id": "sound-test_a"
         }
       ]
     },
