@@ -15,7 +15,11 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { readFromStorage, setToStorage } from "@/scripts/local-storage"
 import { DotykaceParticipant } from "@/lib/dotykace-types"
 
-export default function PlayerForm({ setError }) {
+export default function PlayerForm({
+  setError,
+}: {
+  setError: (error: string) => void
+}) {
   const roomCodeLabel = "Kód místnosti"
   const playerNameLabel = "Jméno"
   const playerNamePlaceholder = "Zadejte vaše jméno"
@@ -63,7 +67,7 @@ export default function PlayerForm({ setError }) {
 
   const handleUserJoin = async () => {
     if (!roomCode || !playerName) {
-      setError("Prosím vyplňte všetky polia")
+      setError("Prosím vyplňte všechna pole")
       return
     }
 
@@ -76,7 +80,7 @@ export default function PlayerForm({ setError }) {
       const querySnapshot = await getDocs(idQuery)
 
       if (querySnapshot.empty) {
-        setError("Miestnosť nebola nájdená")
+        setError("Místnost nebyla nalezena")
         return
       }
 
@@ -84,7 +88,7 @@ export default function PlayerForm({ setError }) {
       const roomData = roomDoc.data()
 
       if (!roomData.isActive) {
-        setError("Miestnosť nie je aktívna")
+        setError("Místnost není aktivní")
         return
       }
       const savedRoomId = readFromStorage("roomId")
@@ -106,7 +110,7 @@ export default function PlayerForm({ setError }) {
       console.log(`User "${playerName}" joining room "${roomDoc.id}"`)
       router.push("/dotykace/room")
     } catch (err) {
-      setError("Chyba pri pripájaní do miestnosti")
+      setError("Chyba při připojování do místnosti")
       console.error("Join room error:", err)
     } finally {
       setLoading(false)
@@ -114,7 +118,7 @@ export default function PlayerForm({ setError }) {
   }
 
   return (
-    <>
+    <div className="space-y-4">
       <FormField
         id="roomCode"
         label={roomCodeLabel}
@@ -140,6 +144,6 @@ export default function PlayerForm({ setError }) {
         {loading ? ((<LoadingSpinner className="mr-2" />) as ReactNode) : null}
         {loginButtonText}
       </Button>
-    </>
+    </div>
   )
 }
