@@ -60,16 +60,19 @@ export default function VoiceRoom({
     })
   }
 
+  const titleHeader = "Jak na tebe mám mluvit?"
+  const titleSubheader = "Vyber si hlas, který ti nejvíc vyhovuje:"
+
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-slate-900 to-gray-950 p-4">
       <div className="w-full max-w-2xl space-y-8">
         {/* Title */}
         <div className="text-center space-y-3">
           <h1 className="text-4xl md:text-5xl font-bold text-white text-balance drop-shadow-lg">
-            Jak na tebe mám mluvit?
+            {titleHeader}
           </h1>
           <p className="text-white/80 text-lg">
-            Vyber si hlas, který ti nejvíce vyhovuje
+            {titleSubheader}
           </p>
         </div>
 
