@@ -88,7 +88,7 @@
     },
     "3.11.2": {
       "type": "input",
-      "text": "Odkud mě nejčastěji bereš s sebou?",
+      "text": "Kde mě nejčastěji nosíš?",
       "duration": 20,
       "save-label": "Potvrdit",
       "next-id": "3.11.3"
