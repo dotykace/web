@@ -1,5 +1,5 @@
 export default function LoadingScreen({
-  message = "Načítavam...",
+  message = "Načítám...",
   colorClass = "bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600",
   spinnerAccent = "border-t-white",
 }: {
