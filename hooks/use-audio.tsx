@@ -237,15 +237,13 @@ export function useAudioManager() {
       }
       const duration = buffer!.duration
       let timeOut: ReturnType<typeof setTimeout> | null = null
-      if (!sound.loop) {
-        timeOut = setTimeout(
-          () => {
-            console.log("Sound timeout reached, calling onFinish if exists")
-            if (onFinish) onFinish()
-          },
-          (duration - 0.1) * 1000,
-        )
-      }
+      timeOut = setTimeout(
+        () => {
+          console.log("Sound timeout reached, calling onFinish if exists")
+          if (onFinish) onFinish()
+        },
+        (duration - 0.1) * 1000,
+      )
       const result = await play(sound)
       if (!result) {
         if (timeOut) clearTimeout(timeOut)

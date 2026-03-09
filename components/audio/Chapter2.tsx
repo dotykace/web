@@ -20,6 +20,7 @@ function Chapter2Content() {
   const [savedUserMessage, setSavedUserMessage] = useState("")
   const [timeLeft, setTimeLeft] = useState<number | null>(null)
   const [showWarning, setShowWarning] = useState(false)
+  const [showButton, setShowButton] = useState(false)
   const countdownRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
@@ -32,6 +33,7 @@ function Chapter2Content() {
     setInputValue("")
     setTimeLeft(null)
     setShowWarning(false)
+    setShowButton(false)
     if (countdownRef.current) {
       clearInterval(countdownRef.current)
       countdownRef.current = null
@@ -142,6 +144,10 @@ function Chapter2Content() {
             if (!hasButton) {
               goToNextInteraction()
             }
+            else {
+              console.log("Voice interaction finished, showing button")
+              setShowButton(true)
+            }
           },
         }
       : null
@@ -154,7 +160,7 @@ function Chapter2Content() {
         showProgress={false}
         canSkip={!currentInteraction.loop}
       >
-        {hasButton ? (
+        {(hasButton && showButton) ? (
           <div className="w-full space-y-4">
             <VoiceVisualization />
             <div className="px-4">
