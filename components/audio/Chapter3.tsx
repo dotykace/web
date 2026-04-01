@@ -275,6 +275,22 @@ function Chapter3Content() {
 }
 
 export default function Chapter3() {
+  return AudioChapterStart(3, <Chapter3Content />)
+}
+
+const ChapterColors = {
+  2: {
+    text: "text-purple-600",
+    button: "bg-purple-600 hover:bg-purple-700 shadow-purple-500/30"
+  },
+  3: {
+    text: "text-orange-500",
+    button: "bg-orange-500 hover:bg-orange-600 shadow-orange-400/30"
+  }
+}
+
+const AudioChapterStart = (number, component) => {
+  const color = ChapterColors[number]
   const [hasStarted, setHasStarted] = useState(false)
 
   if (!hasStarted) {
@@ -287,21 +303,21 @@ export default function Chapter3() {
 
         <div className="w-full max-w-md space-y-6 flex flex-col items-center">
           <div className="w-20 h-20 rounded-full bg-white shadow-xl flex items-center justify-center">
-            <span className="text-3xl font-bold text-orange-500">3</span>
+            <span className={`text-3xl font-bold ${color.text}`}>{number}</span>
           </div>
 
           <div className="w-full bg-white rounded-3xl p-8 text-center shadow-xl">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Kapitola 3
+              Kapitola {number}
             </h2>
-            <p className="text-orange-500 mb-8 font-medium text-sm">
+            <p className={`mb-8 font-medium text-sm ${color.text}`}>
               Jsi ready?
             </p>
             <button
               onClick={() => setHasStarted(true)}
-              className="w-full bg-orange-500 hover:bg-orange-600
-                         text-white font-bold py-2 px-2 rounded-full shadow-lg shadow-orange-500/30
-                         transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+              className={`w-full ${color.button}
+                         text-white font-bold py-2 px-2 rounded-full shadow-lg
+                         transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]`}
             >
               Spustit
             </button>
@@ -311,5 +327,5 @@ export default function Chapter3() {
     )
   }
 
-  return <Chapter3Content />
+  return component
 }
