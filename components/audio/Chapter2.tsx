@@ -11,7 +11,7 @@ import { useSharedAudio } from "@/context/AudioContext"
 import VoiceVisualization from "@/components/VoiceVisualization"
 import { motion } from "framer-motion"
 import { CHAPTER2_PROGRESS_KEY } from "@/components/ChapterPage"
-import { AudioChapterStart } from "@/components/audio/Chapter3";
+import AudioChapterStart from "@/components/audio/AudioChapterStart";
 
 function Chapter2Content() {
   const { state, currentInteraction, goToNextInteraction } = useChatContext()
@@ -315,10 +315,5 @@ function Chapter2Content() {
 }
 
 export default function Chapter2() {
-  return <AudioChapterStart
-    number={2}
-    component={<Chapter2Content />}
-    progressKey={CHAPTER2_PROGRESS_KEY}
-    startId={"chapter-2-start"}
-  />
+  return <AudioChapterStart number={2} component={<Chapter2Content />}/>
 }
