@@ -10,7 +10,7 @@ import BasicAudioVisual from "@/components/BasicAudioVisual"
 import VoiceVisualization from "@/components/VoiceVisualization"
 import { motion } from "framer-motion"
 import { CHAPTER3_PROGRESS_KEY } from "@/components/ChapterPage"
-import {setToStorage} from "@/scripts/local-storage";
+import { readFromStorage, setToStorage } from "@/scripts/local-storage";
 
 function Chapter3Content() {
   const { state, currentInteraction, goToNextInteraction } = useChatContext()
@@ -275,7 +275,12 @@ function Chapter3Content() {
 }
 
 export default function Chapter3() {
-  return AudioChapterStart(3, <Chapter3Content />)
+  return <AudioChapterStart
+    number={3}
+    component={<Chapter3Content />}
+    progressKey={CHAPTER3_PROGRESS_KEY}
+    startId={"chapter-3-start"}
+  />
 }
 
 const ChapterColors = {
@@ -289,9 +294,23 @@ const ChapterColors = {
   }
 }
 
-const AudioChapterStart = (number, component) => {
+export const AudioChapterStart = ({number, component, progressKey, startId}) => {
   const color = ChapterColors[number]
   const [hasStarted, setHasStarted] = useState(false)
+
+  const storedProgress = readFromStorage(progressKey)
+  const subHeaderText = storedProgress ? "Máme uložený postup z předchozího hraní. Chceš začít znovu, nebo pokračovat?" : "Jsi ready?"
+  const startButtonText = storedProgress ? "Pokračovat" : "Spustit"
+
+  const {goToNextInteraction} = useChatContext()
+
+  const startChapter = useCallback((resetProgress) => {
+    if (resetProgress) {
+      localStorage.removeItem(progressKey)
+      goToNextInteraction(startId)
+    }
+    setHasStarted(true)
+  }, [goToNextInteraction])
 
   if (!hasStarted) {
     return (
@@ -311,15 +330,25 @@ const AudioChapterStart = (number, component) => {
               Kapitola {number}
             </h2>
             <p className={`mb-8 font-medium text-sm ${color.text}`}>
-              Jsi ready?
+              {subHeaderText}
             </p>
+            {storedProgress && (
+              <button
+                onClick={() => startChapter(true)}
+                className="w-full mb-4 bg-gray-300 hover:bg-gray-400
+                           text-gray-800 font-bold py-2 px-2 rounded-full shadow-lg shadow-gray-400/30
+                           transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                Začít znovu
+              </button>
+            )}
             <button
-              onClick={() => setHasStarted(true)}
+              onClick={() => startChapter(false)}
               className={`w-full ${color.button}
                          text-white font-bold py-2 px-2 rounded-full shadow-lg
                          transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]`}
             >
-              Spustit
+              {startButtonText}
             </button>
           </div>
         </div>
