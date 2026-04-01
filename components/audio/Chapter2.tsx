@@ -160,15 +160,17 @@ function Chapter2Content() {
         showProgress={false}
         canSkip={!currentInteraction.loop}
       >
-        {(hasButton && showButton) ? (
+        {(hasButton) ? (
           <div className="w-full space-y-4">
             <VoiceVisualization />
             <div className="px-4">
               <button
                 onClick={() => handleButtonClick(currentInteraction.button)}
+                disabled={!showButton}
                 className="w-full bg-white hover:bg-white/90
                            text-purple-900 font-bold tracking-wide py-2 px-4 rounded-full shadow-lg
                            transition-all duration-300 active:scale-[0.98]"
+                style={{ opacity: showButton ? 1 : 0, pointerEvents: showButton ? "auto" : "none" }}
               >
                 {currentInteraction.button.label}
               </button>
