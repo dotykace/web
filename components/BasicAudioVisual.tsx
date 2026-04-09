@@ -2,8 +2,7 @@ import React, { useRef } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import VoiceVisualization from "@/components/VoiceVisualization"
 import { useSharedAudio } from "@/context/AudioContext"
-import { Button } from "@/components/ui/button"
-import { SkipForward } from "lucide-react"
+import SkipButton from "@/components/SkipButton";
 
 interface AudioConfig {
   filename: string
@@ -32,6 +31,7 @@ export default function BasicAudioVisual({
   showProgress = true,
 }: BasicAudioVisualProps) {
   const playedForIdRef = useRef<string | null>(null)
+  const [showSkip, setShowSkip] = React.useState(false)
 
   const { playOnce, stopAll } = useSharedAudio()
 
@@ -41,6 +41,7 @@ export default function BasicAudioVisual({
   audioRef.current = audio
 
   React.useEffect(() => {
+    setShowSkip(false) // Reset skip button visibility when interaction changes
     stopAll()
 
     const currentAudio = audioRef.current
@@ -74,7 +75,7 @@ export default function BasicAudioVisual({
 
   // Changed from h-screen to flex-1 so this component works inside parent flex layouts (e.g. below ChapterHeader)
   return (
-    <div className={`flex-1 min-h-0 flex flex-col ${coloring}`}>
+    <div className={`flex-1 min-h-0 flex flex-col ${coloring} `}>
       {/* Main content area */}
       <div className="flex-1 flex flex-col items-center justify-center p-4 min-h-0 overflow-hidden">
         <AnimatePresence mode="wait">
@@ -85,6 +86,7 @@ export default function BasicAudioVisual({
             exit={{ y: -20, opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="w-full max-w-md flex flex-col items-center justify-center text-center min-h-0 max-h-full"
+            onClick={() => setShowSkip(canSkip!!)}
           >
             {children ?? <VoiceVisualization />}
           </motion.div>
@@ -92,17 +94,8 @@ export default function BasicAudioVisual({
       </div>
 
       {/* Skip Button - pinned to bottom */}
-      {audio && canSkip && (
-        <div className="flex justify-center pb-4 shrink-0">
-          <Button
-            onClick={skipInteraction}
-            variant="ghost"
-            className="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm flex items-center gap-2 rounded-full px-4 py-2"
-          >
-            <SkipForward className="h-4 w-4" />
-            <span>Přeskočit</span>
-          </Button>
-        </div>
+      {audio && (
+        <SkipButton onSkip={skipInteraction} visible={canSkip && showSkip} />
       )}
 
       {/* Progress Indicator */}

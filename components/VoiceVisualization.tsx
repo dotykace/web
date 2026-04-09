@@ -36,7 +36,7 @@ export default function VoiceVisualization({
           }`}
         >
           <Image
-            src="/images/phone-character-simple.png"
+            src="/images/doty/happy_1.svg"
             alt="Phone Character"
             width={96}
             height={96}

@@ -11,6 +11,7 @@ import { useSharedAudio } from "@/context/AudioContext"
 import VoiceVisualization from "@/components/VoiceVisualization"
 import { motion } from "framer-motion"
 import { CHAPTER2_PROGRESS_KEY } from "@/components/ChapterPage"
+import AudioChapterStart from "@/components/audio/AudioChapterStart";
 
 function Chapter2Content() {
   const { state, currentInteraction, goToNextInteraction } = useChatContext()
@@ -20,6 +21,7 @@ function Chapter2Content() {
   const [savedUserMessage, setSavedUserMessage] = useState("")
   const [timeLeft, setTimeLeft] = useState<number | null>(null)
   const [showWarning, setShowWarning] = useState(false)
+  const [showButton, setShowButton] = useState(false)
   const countdownRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
@@ -32,6 +34,7 @@ function Chapter2Content() {
     setInputValue("")
     setTimeLeft(null)
     setShowWarning(false)
+    setShowButton(false)
     if (countdownRef.current) {
       clearInterval(countdownRef.current)
       countdownRef.current = null
@@ -142,6 +145,10 @@ function Chapter2Content() {
             if (!hasButton) {
               goToNextInteraction()
             }
+            else {
+              console.log("Voice interaction finished, showing button")
+              setShowButton(true)
+            }
           },
         }
       : null
@@ -152,17 +159,19 @@ function Chapter2Content() {
         id={currentInteraction.id}
         audio={currentAudio}
         showProgress={false}
-        canSkip={!currentInteraction.loop}
+        canSkip={true}
       >
-        {hasButton ? (
+        {(hasButton) ? (
           <div className="w-full space-y-4">
             <VoiceVisualization />
             <div className="px-4">
               <button
                 onClick={() => handleButtonClick(currentInteraction.button)}
+                disabled={!showButton}
                 className="w-full bg-white hover:bg-white/90
                            text-purple-900 font-bold tracking-wide py-2 px-4 rounded-full shadow-lg
                            transition-all duration-300 active:scale-[0.98]"
+                style={{ opacity: showButton ? 1 : 0, pointerEvents: showButton ? "auto" : "none" }}
               >
                 {currentInteraction.button.label}
               </button>
@@ -306,41 +315,5 @@ function Chapter2Content() {
 }
 
 export default function Chapter2() {
-  const [hasStarted, setHasStarted] = useState(false)
-
-  if (!hasStarted) {
-    return (
-      <div className="flex-1 flex items-center justify-center p-4">
-        <div
-          className="fixed w-32 h-32 bg-yellow-300/25 rounded-full pointer-events-none blur-2xl"
-          style={{ top: "12%", left: "8%" }}
-        />
-
-        <div className="w-full max-w-md space-y-6 flex flex-col items-center">
-          <div className="w-20 h-20 rounded-full bg-white shadow-xl flex items-center justify-center">
-            <span className="text-3xl font-bold text-purple-900">2</span>
-          </div>
-
-          <div className="w-full bg-white rounded-3xl p-8 text-center shadow-xl">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Kapitola 2
-            </h2>
-            <p className="text-purple-600 mb-8 font-medium text-sm">
-              Jsi ready?
-            </p>
-            <button
-              onClick={() => setHasStarted(true)}
-              className="w-full bg-purple-600 hover:bg-purple-700
-                         text-white font-bold py-2 px-2 rounded-full shadow-lg shadow-purple-500/30
-                         transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
-            >
-              Spustit
-            </button>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  return <Chapter2Content />
+  return <AudioChapterStart number={2} component={<Chapter2Content />}/>
 }
