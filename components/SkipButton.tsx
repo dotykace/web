@@ -25,6 +25,7 @@ export default function SkipButton({
         transition={{ duration: 0.5, delay: 0.4 }}
       >
         <Button
+          disabled={!visible}
           onClick={onSkip}
           variant="ghost"
           className="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm flex items-center gap-2 rounded-full px-4 py-2"
