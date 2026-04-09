@@ -190,7 +190,7 @@ function Chapter3Content() {
         id={currentInteraction.id}
         audio={currentAudio}
         showProgress={false}
-        canSkip={!currentInteraction.loop && !hasButton}
+        canSkip={true}
       >
         {hasButton ? (
           <div className="w-full flex flex-col min-h-0 gap-3">

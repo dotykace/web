@@ -159,7 +159,7 @@ function Chapter2Content() {
         id={currentInteraction.id}
         audio={currentAudio}
         showProgress={false}
-        canSkip={!currentInteraction.loop}
+        canSkip={true}
       >
         {(hasButton) ? (
           <div className="w-full space-y-4">
