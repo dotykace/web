@@ -14,6 +14,7 @@ import MenuSectionCard, {Section, SectionState} from "@/components/MenuSectionCa
 import { chapterConfigs } from "@/app/chapter/[id]/ChapterClient"
 import LoadingScreen from "@/components/LoadingScreen"
 import AudioControl from "@/components/AudioControl"
+import GameBase from "@/components/game/GameBase"
 
 const chapterString = "Kapitola"
 const defaultSections = Object.values(chapterConfigs)
@@ -39,6 +40,8 @@ export default function MenuPage() {
   const [completedChapters, setCompletedChapters] = useState<number[]>([])
 
   const [sections, setSections] = useState<Section[]>(defaultSections)
+  const [gameMode, setGameMode] = useState<boolean>(false)
+  const [gameChapter, setGameChapter] = useState<number | null>(null)
 
   // 👉 hook musí byť vo vnútri komponentu
   const audioManager = useAudioManager()
@@ -156,6 +159,19 @@ export default function MenuPage() {
     }
   }, [roomId, playerId, isClient])
 
+  useEffect(() => {
+
+    if (chapter === 2 || chapter === 3) {
+      if (!allowedChapters.includes(chapter)) {
+        setGameChapter(chapter)
+      }
+      else {
+        setGameChapter(null)
+        setGameMode(false)
+      }
+    }
+  }, [allowedChapters, chapter]);
+
   const getState = (id: number): SectionState => {
     if (completedChapters.includes(id)) {
       return "completed"
@@ -189,6 +205,10 @@ export default function MenuPage() {
     }
   }
 
+  if (gameMode){
+    return <GameBase />
+  }
+
   return (
     <div className="h-[100dvh] bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex flex-col items-center justify-center px-6 py-4 overflow-hidden">
       <HelpButton />
@@ -205,7 +225,19 @@ export default function MenuPage() {
       {/* Chapters Grid */}
       <div className="flex-shrink-0 w-full max-w-xs grid grid-cols-2 gap-3 sm:gap-5">
         {sections.map((section, index) => {
-          return (
+          if (section.id === gameChapter){
+            const extendedSection = {
+              ...section,
+              gameMode: true,
+            }
+            return (
+            <MenuSectionCard
+              key={section.id}
+              section={extendedSection}
+              handleSectionClick={()=>setGameMode(true)}
+            />)
+          }
+          else return (
             <MenuSectionCard
               key={section.id}
               section={section}

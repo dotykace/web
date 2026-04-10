@@ -70,6 +70,13 @@ export default function MenuSectionCard({
           <Check className="w-4 h-4 text-white" strokeWidth={3} />
         </div>
       )}
+      {section.gameMode && (
+        <div className="pointer-events-none absolute z-50 flex flex-col items-center justify-center h-full">
+          <div className=" text-amber-950 rounded-full bg-white text-xs sm:text-sm font-bold p-2 py-4 shadow-lg border border-amber-950 ">
+            Cekas? Zahraj si hru.
+          </div>
+        </div>
+      )}
 
       {/* Title */}
       <div className="mt-1.5 w-full text-center">
