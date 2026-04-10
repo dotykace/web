@@ -3,7 +3,38 @@
 import {Button} from "@/components/ui/button";
 import React from "react";
 import {ArrowLeftIcon} from "lucide-react";
+import {useSwipeNavigation} from "@/hooks/use-scroll";
+import ScrollLine from "@/components/ScrollLine";
+
+function randomNormal(mean = 0, variance = 1) {
+  const stdDev = Math.sqrt(variance);
+
+  // Generate two independent uniform(0,1) values
+  let u1 = Math.random();
+  let u2 = Math.random();
+
+  // Avoid log(0)
+  u1 = u1 === 0 ? Number.MIN_VALUE : u1;
+
+  // Box-Muller transform
+  const z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+
+  // Scale and shift
+  return Math.max(0, Math.round( z0 * stdDev + mean));
+
+}
+
 export default function GameBase({chapterNumber, onExit}: {chapterNumber: number, oneExit: () => void}) {
+
+  const mean = 2* window.innerHeight // average scroll distance per scroll
+  const variance = 0.5* window.innerHeight * window.innerHeight // adjust variance as needed
+
+  const [goal, setGoal] = React.useState<number>(randomNormal(mean, variance))
+  const onScroll = (direction: "up" | "down", amount?: number) => {
+    console.log(`Scrolled ${direction} with amount ${amount}`)
+    setGoal((prevGoal) => Math.max(0, prevGoal - (amount || 1))) // decrease goal by scroll amount
+  }
+  useSwipeNavigation(onScroll, 0)
 
   const facts = [
     "Při průměrném scrollu urazí prst po obrazovce asi (...) cm. K odemčení tohoto faktu tedy musel tvůj prst urazit asi (...) centimetrů. Znamená to, že aby tvůj prst uběhl 1 km, musíš udělat (...) scrollů.",
@@ -19,31 +50,60 @@ export default function GameBase({chapterNumber, onExit}: {chapterNumber: number
 
   const nextFact = () => {
     setCurrentFactIndex((prevIndex) => (prevIndex + 1) % facts.length)
+    setGoal(randomNormal(mean, variance))
   }
+
+  const gameContent = () => {
+    switch (chapterNumber) {
+      case 2:
+        return (
+          <>
+            <div className="absolute top-12">
+              {/*todo fix scroll line rendering*/}
+              <ScrollLine />
+            </div>
+            <div className="mt-6 items-center justify-center flex text-center text-lg font-extrabold">
+              Cil: {goal} pixelu
+            </div>
+          </>
+        )
+      case 3:
+        return (
+          <>
+          </>
+        )
+      default:
+        return (
+          <>
+            Invalid chapter number
+          </>
+        )
+    }
+  }
+
   return (
     <div className="relative w-full h-screen overflow-hidden flex flex-col">
       <div className="flex items-center justify-between p-5 mt-7 mx-7 text-xl">
-        <Button onClick={onExit} className="bg-white
-                             text-purple-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
+        <Button onClick={onExit} className="bg-white text-purple-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
           <ArrowLeftIcon className="h-5 w-5 text-purple-900" />
           Zpět do menu
         </Button>
         <>
           7 fun faktů o 🧍a 📱
         </>
-
       </div>
-      <div className="p-12 mb-12  items-center justify-between flex flex-grow flex-col">
-        <b>Fakt {currentFactIndex + 1} z {facts.length}:</b>
-        <p className="mt-2 mb-6">
-          {facts[currentFactIndex]}
-        </p>
+      {goal > 0 ? gameContent() : (
+        <div className="p-12 mb-12  items-center justify-between flex flex-grow flex-col">
+          <b>Fakt {currentFactIndex + 1} z {facts.length}:</b>
+          <p className="mt-2 mb-6">
+            {facts[currentFactIndex]}
+          </p>
 
-        <Button onClick={nextFact} className="w-full bg-white
-                             text-purple-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
-          Další
-        </Button>
-      </div>
+          <Button onClick={nextFact} className="w-full bg-white text-purple-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
+            Další
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
