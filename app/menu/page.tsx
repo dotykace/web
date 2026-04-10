@@ -206,7 +206,7 @@ export default function MenuPage() {
   }
 
   if (gameMode){
-    return <GameBase />
+    return <GameBase chapterNumber={gameChapter??0} onExit={() => setGameMode(false)} />
   }
 
   return (
