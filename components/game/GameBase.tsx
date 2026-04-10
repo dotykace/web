@@ -1,10 +1,11 @@
 "use client"
 
 import {Button} from "@/components/ui/button";
-import React from "react";
+import React, {useEffect} from "react";
 import {ArrowLeftIcon} from "lucide-react";
 import {useSwipeNavigation} from "@/hooks/use-scroll";
 import ScrollLine from "@/components/ScrollLine";
+import GlowingDot from "@/components/GlowingDot";
 
 function randomNormal(mean = 0, variance = 1) {
   const stdDev = Math.sqrt(variance);
@@ -46,52 +47,16 @@ const FACTS = {
     "V České republice používá mobilní telefon 99 % osob starších 16 let. Toto číslo zůstává v posledních letech neměnné."
   ]
 }
-export default function GameBase({chapterNumber, onExit}: {chapterNumber: number, oneExit: () => void}) {
+export default function GameBase({chapterNumber, onExit}: {chapterNumber: number, onExit: () => void}) {
 
-  const mean = 2* window.innerHeight // average scroll distance per scroll
-  const variance = 0.5* window.innerHeight * window.innerHeight // adjust variance as needed
-
-  const [goal, setGoal] = React.useState<number>(randomNormal(mean, variance))
-  const onScroll = (direction: "up" | "down", amount?: number) => {
-    console.log(`Scrolled ${direction} with amount ${amount}`)
-    setGoal((prevGoal) => Math.max(0, prevGoal - (amount || 1))) // decrease goal by scroll amount
-  }
-  useSwipeNavigation(onScroll, 0)
+  const [play, setPlay] = React.useState(true)
 
   const facts = FACTS[chapterNumber] || ["No facts available for this chapter."]
   const [currentFactIndex, setCurrentFactIndex] = React.useState(0)
 
   const nextFact = () => {
+    setPlay(true)
     setCurrentFactIndex((prevIndex) => (prevIndex + 1) % facts.length)
-    setGoal(randomNormal(mean, variance))
-  }
-
-  const gameContent = () => {
-    switch (chapterNumber) {
-      case 2:
-        return (
-          <>
-            <div className="absolute top-12">
-              {/*todo fix scroll line rendering*/}
-              <ScrollLine />
-            </div>
-            <div className="mt-6 items-center justify-center flex text-center text-lg font-extrabold">
-              Cil: {goal} pixelu
-            </div>
-          </>
-        )
-      case 3:
-        return (
-          <>
-          </>
-        )
-      default:
-        return (
-          <>
-            Invalid chapter number
-          </>
-        )
-    }
   }
 
   return (
@@ -105,7 +70,7 @@ export default function GameBase({chapterNumber, onExit}: {chapterNumber: number
           7 fun faktů o 🧍a 📱
         </>
       </div>
-      {goal > 0 ? gameContent() : (
+      {play ? (<GameContent chapterNumber={chapterNumber} onReachGoal={()=>setPlay(false)}/>) : (
         <div className="p-12 mb-12  items-center justify-between flex flex-grow flex-col">
           <b>Fakt {currentFactIndex + 1} z {facts.length}:</b>
           <p className="mt-2 mb-6">
@@ -119,4 +84,67 @@ export default function GameBase({chapterNumber, onExit}: {chapterNumber: number
       )}
     </div>
   )
+}
+
+const PARAMS = {
+  2: {
+    mean: 2* window.innerHeight, // average scroll distance per scroll
+    variance: 0.5* window.innerHeight * window.innerHeight, // adjust variance as needed
+  },
+  3: {
+    mean: 20, // average clicks needed
+    variance: 50, // adjust variance as needed
+  }
+}
+
+const GameContent = ({chapterNumber, onReachGoal}: {chapterNumber: number, onReachGoal: ()=>void}) => {
+  const {mean, variance} = PARAMS[chapterNumber] || {mean: 0, variance: 1}
+  const [goal, setGoal] = React.useState<number>(randomNormal(mean, variance))
+
+  const onScroll = (direction: "up" | "down", amount?: number) => {
+    console.log(`Scrolled ${direction} with amount ${amount}`)
+    setGoal((prevGoal) => Math.max(0, prevGoal - (amount || 1))) // decrease goal by scroll amount
+  }
+
+  const onClick = () => {
+    setGoal(prevGoal => Math.max(0, prevGoal - 1))
+  }
+
+  useEffect(() => {
+      if (goal <= 0) {
+        onReachGoal()
+      }
+  }, [goal, onReachGoal]);
+
+  switch (chapterNumber) {
+    case 2:
+      useSwipeNavigation(onScroll, 0)
+      return (
+        <>
+          <div className="absolute top-12">
+            {/*todo fix scroll line rendering*/}
+            {/*todo back button not clickable under scroll line*/}
+            <ScrollLine />
+          </div>
+          <div className="mt-6 items-center justify-center flex text-center text-lg font-extrabold">
+            Cil: {goal} pixelu
+          </div>
+        </>
+      )
+    case 3:
+      return (
+        <div className="flex h-full items-center justify-center flex-col">
+          <div className="mb-6 items-center justify-center flex text-center text-lg font-extrabold">
+            Cil: {goal} kliknuti
+          </div>
+          <GlowingDot onClick={onClick} size={40} color="white" />
+        </div>
+      )
+    default:
+      return (
+        <>
+          Invalid chapter number
+        </>
+      )
+  }
 }
