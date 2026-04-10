@@ -2,13 +2,14 @@ import React from "react"
 import Image from "next/image"
 import { Check, Lock } from "lucide-react"
 
-type SectionState = "locked" | "unlocked" | "completed"
+export type SectionState = "locked" | "unlocked" | "completed"
 
-interface Section {
+export interface Section {
   id: number
   title: string
   path: string
   state: SectionState
+  gameMode?: boolean
 }
 
 function generateSectionFileName(chapterNumber: number, disabled: boolean) {

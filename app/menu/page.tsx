@@ -10,19 +10,10 @@ import type { DotykaceParticipant, DotykaceRoom } from "@/lib/dotykace-types"
 import HelpButton from "@/components/HelpButton"
 import { useAudioManager } from "@/hooks/use-audio"
 import DotykaceLogo from "@/components/DotykaceLogo"
-import MenuSectionCard from "@/components/MenuSectionCard"
+import MenuSectionCard, {Section, SectionState} from "@/components/MenuSectionCard"
 import { chapterConfigs } from "@/app/chapter/[id]/ChapterClient"
 import LoadingScreen from "@/components/LoadingScreen"
 import AudioControl from "@/components/AudioControl"
-
-type SectionState = "locked" | "unlocked" | "completed"
-
-interface Section {
-  id: number
-  title: string
-  path: string
-  state: SectionState
-}
 
 const chapterString = "Kapitola"
 const defaultSections = Object.values(chapterConfigs)
