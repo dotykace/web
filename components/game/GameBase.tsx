@@ -85,20 +85,17 @@ export default function GameBase({chapterNumber, onExit}: {chapterNumber: number
     </div>
   )
 }
-
-const PARAMS = {
-  2: {
-    mean: 2* window.innerHeight, // average scroll distance per scroll
-    variance: 0.5* window.innerHeight * window.innerHeight, // adjust variance as needed
-  },
-  3: {
-    mean: 20, // average clicks needed
-    variance: 50, // adjust variance as needed
+const generateParams = (val) => {
+  return {
+    mean: 2 * val,
+    variance: val * val * 0.5, // adjust variance as needed
   }
 }
 
 const GameContent = ({chapterNumber, onReachGoal}: {chapterNumber: number, onReachGoal: ()=>void}) => {
-  const {mean, variance} = PARAMS[chapterNumber] || {mean: 0, variance: 1}
+
+  // todo better set up for mean and variance, maybe even different distribution??
+  const {mean, variance} = generateParams(chapterNumber === 2 ? window.innerHeight : 10)
   const [goal, setGoal] = React.useState<number>(randomNormal(mean, variance))
 
   const onScroll = (direction: "up" | "down", amount?: number) => {
