@@ -6,6 +6,7 @@ import {ArrowLeftIcon} from "lucide-react";
 import {useSwipeNavigation} from "@/hooks/use-scroll";
 import ScrollLine from "@/components/ScrollLine";
 import GlowingDot from "@/components/GlowingDot";
+import ChapterHeader from "@/components/ChapterHeader";
 
 function randomNormal(mean = 0, variance = 1) {
   const stdDev = Math.sqrt(variance);
@@ -60,15 +61,12 @@ export default function GameBase({chapterNumber, onExit}: {chapterNumber: number
 
   return (
     <div className="relative w-full h-screen overflow-hidden flex flex-col">
-      <div className="flex items-center justify-between p-5 mt-7 mx-7 text-xl">
+      <ChapterHeader chapterNumber={0} chapterText={"7 fun faktů o 🧍a 📱"} showHelp={false} >
         <Button onClick={onExit} className="bg-white text-purple-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
           <ArrowLeftIcon className="h-5 w-5 text-purple-900" />
-          Zpět do menu
+          Menu
         </Button>
-        <>
-          7 fun faktů o 🧍a 📱
-        </>
-      </div>
+      </ChapterHeader>
       {play ? (
         <GameContent
           chapterNumber={chapterNumber}
