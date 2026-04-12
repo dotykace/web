@@ -1,11 +1,10 @@
-"use client"
-
 import {Button} from "@/components/ui/button";
 import React from "react";
 import {ArrowLeftIcon} from "lucide-react";
 import {chapterConfigs} from "@/app/chapter/[id]/ChapterClient";
 import ChapterHeader from "@/components/ChapterHeader";
 import GameContent from "@/components/game/GameContent";
+import DotySpeechBubble from "@/components/game/DotySpeechBubble";
 
 const FACTS = {
   // todo if starting amount change update info in the first fact
@@ -76,10 +75,7 @@ export default function GameBase({chapterNumber, onExit}: {chapterNumber: number
         ) : (
           <div className="p-12 mb-12  items-center justify-between flex flex-grow flex-col">
             <b>Fakt {currentFactIndex + 1} z {facts.length}:</b>
-            <p className="mt-2 mb-6">
-              {facts[currentFactIndex]}
-            </p>
-
+            <DotySpeechBubble text={facts[currentFactIndex]}/>
             <Button onClick={nextFact} className="w-full bg-white text-purple-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
               Další
             </Button>
