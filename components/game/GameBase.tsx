@@ -26,10 +26,9 @@ function randomNormal(mean = 0, variance = 1) {
 }
 
 const FACTS = {
-  // todo how to calculate centimeters??
-  // todo maybe ask them length of the screen????
+  // todo if starting amount change update info in the first fact
   2: [
-    "Při průměrném scrollu urazí prst po obrazovce asi 6 cm. K odemčení tohoto faktu tedy musel tvůj prst urazit asi (...) centimetrů. Znamená to, že aby tvůj prst uběhl 1 km, musíš udělat 16 tisic scrollů.",
+    "Při průměrném scrollu urazí prst po obrazovce asi 5 cm. K odemčení tohoto faktu tedy musel tvůj prst urazit asi 50 centimetrů. Znamená to, že aby tvůj prst uběhl 1 km, musíš udělat 20 tisic scrollů.",
     "Pojem \"doomscrolling\" zvolil Oxfordský slovník jedním ze slov roku 2020. Ukazuje to, že v době koronavirové pandemie se po světě rozšířila taky doomscrollovací pandemie. Ta, na rozdíl od pandemie koronaviru, trvá dodnes.",
     "Aby vás udrželi co nejdéle u obrazovek, používají vývojáři sociálních sítí stejné principy jako casina. To, jak jsou za sebe řazené reely (nekonečné pásmo videí ubíhající nahoru nebo nebo dolů), připomíná výherní automat. Taky pohyb prstu, kterým scrolluješ, připomíná zatáhnutí za páku automatu, které roztočí zářivé blikající obrázky.",
     "O vlivu mobilů na vaše zdraví, společenský život a duševní pohodu jde plošně tvrdit málo. Výzkumy ukazují, že se např. nedá obecně říct, že 4h screen time denně má na různé lidi tentýž účinek. Zásadní je, jak, kdy a k čemu mobil používáte. Jedno zjištění je ale zřejmé: v den, kdy na sociálních sítích strávíš víc času, než je pro tebe obvyklé, bývá tvoje nálada horší než obyčejně.",
@@ -70,7 +69,13 @@ export default function GameBase({chapterNumber, onExit}: {chapterNumber: number
           7 fun faktů o 🧍a 📱
         </>
       </div>
-      {play ? (<GameContent chapterNumber={chapterNumber} onReachGoal={()=>setPlay(false)}/>) : (
+      {play ? (
+        <GameContent
+          chapterNumber={chapterNumber}
+          onReachGoal={()=>setPlay(false)}
+          customGoal={currentFactIndex === 0 && chapterNumber === 2 ? 10 : undefined}
+        />
+      ) : (
         <div className="p-12 mb-12  items-center justify-between flex flex-grow flex-col">
           <b>Fakt {currentFactIndex + 1} z {facts.length}:</b>
           <p className="mt-2 mb-6">
@@ -85,25 +90,15 @@ export default function GameBase({chapterNumber, onExit}: {chapterNumber: number
     </div>
   )
 }
-const generateParams = (val) => {
-  return {
-    mean: 2 * val,
-    variance: val * val * 0.5, // adjust variance as needed
-  }
-}
 
-const GameContent = ({chapterNumber, onReachGoal}: {chapterNumber: number, onReachGoal: ()=>void}) => {
+const MEAN = 20
+const VARIANCE = 50
 
-  // todo better set up for mean and variance, maybe even different distribution??
-  const {mean, variance} = generateParams(chapterNumber === 2 ? window.innerHeight : 10)
-  const [goal, setGoal] = React.useState<number>(randomNormal(mean, variance))
+const GameContent = ({chapterNumber, onReachGoal, customGoal}: {chapterNumber: number, onReachGoal: (goalValue?:number)=>void, customGoal?: number }) => {
 
-  const onScroll = (direction: "up" | "down", amount?: number) => {
-    console.log(`Scrolled ${direction} with amount ${amount}`)
-    setGoal((prevGoal) => Math.max(0, prevGoal - (amount || 1))) // decrease goal by scroll amount
-  }
+  const [goal, setGoal] = React.useState<number>(customGoal ?? randomNormal(MEAN, VARIANCE))
 
-  const onClick = () => {
+  const decreaseGoal = () => {
     setGoal(prevGoal => Math.max(0, prevGoal - 1))
   }
 
@@ -115,7 +110,7 @@ const GameContent = ({chapterNumber, onReachGoal}: {chapterNumber: number, onRea
 
   switch (chapterNumber) {
     case 2:
-      useSwipeNavigation(onScroll, 0)
+      useSwipeNavigation(decreaseGoal, 0)
       return (
         <>
           <div className="absolute top-12">
@@ -124,7 +119,7 @@ const GameContent = ({chapterNumber, onReachGoal}: {chapterNumber: number, onRea
             <ScrollLine />
           </div>
           <div className="mt-6 items-center justify-center flex text-center text-lg font-extrabold">
-            Cil: {goal} pixelu
+            Cil: {goal} skrolu
           </div>
         </>
       )
@@ -134,7 +129,7 @@ const GameContent = ({chapterNumber, onReachGoal}: {chapterNumber: number, onRea
           <div className="mb-6 items-center justify-center flex text-center text-lg font-extrabold">
             Cil: {goal} kliknuti
           </div>
-          <GlowingDot onClick={onClick} size={40} color="white" />
+          <GlowingDot onClick={decreaseGoal} size={40} color="white" />
         </div>
       )
     default:
