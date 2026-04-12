@@ -28,9 +28,15 @@ const DotySpeechBubble = ({text}) => {
 
   return (
     <>
-      <p className="mt-2 mb-6">
-        {text}
-      </p>
+      {/* Speech bubble */}
+      <div className="relative max-w-md rounded-2xl bg-sky-500 px-5 py-4 text-white shadow-md">
+        <p className="text-lg leading-snug">
+          {text}
+        </p>
+
+        {/* bubble tail */}
+        <div className="absolute left-4 -bottom-2 h-4 w-4 rotate-45 bg-sky-500" />
+      </div>
       <Image
         src={`/images/doty/${pickRandomDotyFace()}.svg`}
         alt="Doty"
