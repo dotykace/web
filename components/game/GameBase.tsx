@@ -52,7 +52,7 @@ export default function GameBase({chapterNumber, onExit}: {chapterNumber: number
   }
 
   return (
-    <div className={`relative w-full h-screen overflow-hidden flex flex-col ${coloring}`}>
+    <div className={`relative w-full h-screen overflow-hidden flex flex-col pb-12 ${coloring}`}>
       <div
         className={`absolute inset-0 bg-black pointer-events-none`}
         style={{
@@ -73,8 +73,8 @@ export default function GameBase({chapterNumber, onExit}: {chapterNumber: number
             customGoal={currentFactIndex === 0 && chapterNumber === 2 ? 10 : undefined}
           />
         ) : (
-          <div className="p-12 mb-12  items-center justify-between flex flex-grow flex-col">
-            <b>Fakt {currentFactIndex + 1} z {facts.length}:</b>
+          <div className="p-4 items-center justify-between flex flex-grow flex-col">
+            <b>Fakt {currentFactIndex + 1}:</b>
             <DotySpeechBubble text={facts[currentFactIndex]}/>
             <Button onClick={nextFact} className="w-full bg-white text-sky-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
               Další
