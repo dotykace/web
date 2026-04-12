@@ -61,8 +61,8 @@ export default function GameBase({chapterNumber, onExit}: {chapterNumber: number
       />
       <div className="relative z-10 flex flex-col h-full">
         <ChapterHeader chapterNumber={0} chapterText={"7 fun faktů o 🧍a 📱"} showHelp={false} >
-          <Button onClick={onExit} className="bg-white text-purple-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
-            <ArrowLeftIcon className="h-5 w-5 text-purple-900" />
+          <Button onClick={onExit} className="bg-white text-sky-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
+            <ArrowLeftIcon className="h-5 w-5 text-sky-900" />
             Menu
           </Button>
         </ChapterHeader>
@@ -76,7 +76,7 @@ export default function GameBase({chapterNumber, onExit}: {chapterNumber: number
           <div className="p-12 mb-12  items-center justify-between flex flex-grow flex-col">
             <b>Fakt {currentFactIndex + 1} z {facts.length}:</b>
             <DotySpeechBubble text={facts[currentFactIndex]}/>
-            <Button onClick={nextFact} className="w-full bg-white text-purple-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
+            <Button onClick={nextFact} className="w-full bg-white text-sky-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
               Další
             </Button>
           </div>
