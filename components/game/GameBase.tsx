@@ -6,6 +6,7 @@ import {ArrowLeftIcon} from "lucide-react";
 import {useSwipeNavigation} from "@/hooks/use-scroll";
 import ScrollLine from "@/components/ScrollLine";
 import GlowingDot from "@/components/GlowingDot";
+import {chapterConfigs} from "@/app/chapter/[id]/ChapterClient";
 import ChapterHeader from "@/components/ChapterHeader";
 
 function randomNormal(mean = 0, variance = 1) {
@@ -47,44 +48,64 @@ const FACTS = {
     "V České republice používá mobilní telefon 99 % osob starších 16 let. Toto číslo zůstává v posledních letech neměnné."
   ]
 }
+
+const OPACITY_START = 90
+const OPACITY_STEP = 7
 export default function GameBase({chapterNumber, onExit}: {chapterNumber: number, onExit: () => void}) {
 
   const [play, setPlay] = React.useState(true)
+  const [opacityLevel, setOpacityLevel] = React.useState(OPACITY_START)
+  const {coloring} = chapterConfigs[chapterNumber]
 
   const facts = FACTS[chapterNumber] || ["No facts available for this chapter."]
   const [currentFactIndex, setCurrentFactIndex] = React.useState(0)
 
+  const opacityMin = OPACITY_START - OPACITY_STEP*(facts.length-1)
   const nextFact = () => {
     setPlay(true)
+    if (opacityLevel <= opacityMin || opacityLevel <= 0){
+      setOpacityLevel(OPACITY_START)
+    }
+    else{
+      setOpacityLevel(prevState => prevState - OPACITY_STEP)
+    }
     setCurrentFactIndex((prevIndex) => (prevIndex + 1) % facts.length)
   }
 
   return (
-    <div className="relative w-full h-screen overflow-hidden flex flex-col">
-      <ChapterHeader chapterNumber={0} chapterText={"7 fun faktů o 🧍a 📱"} showHelp={false} >
-        <Button onClick={onExit} className="bg-white text-purple-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
-          <ArrowLeftIcon className="h-5 w-5 text-purple-900" />
-          Menu
-        </Button>
-      </ChapterHeader>
-      {play ? (
-        <GameContent
-          chapterNumber={chapterNumber}
-          onReachGoal={()=>setPlay(false)}
-          customGoal={currentFactIndex === 0 && chapterNumber === 2 ? 10 : undefined}
-        />
-      ) : (
-        <div className="p-12 mb-12  items-center justify-between flex flex-grow flex-col">
-          <b>Fakt {currentFactIndex + 1} z {facts.length}:</b>
-          <p className="mt-2 mb-6">
-            {facts[currentFactIndex]}
-          </p>
-
-          <Button onClick={nextFact} className="w-full bg-white text-purple-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
-            Další
+    <div className={`relative w-full h-screen overflow-hidden flex flex-col ${coloring}`}>
+      <div
+        className={`absolute inset-0 bg-black pointer-events-none`}
+        style={{
+          opacity: opacityLevel/100
+        }}
+      />
+      <div className="relative z-10 flex flex-col h-full">
+        <ChapterHeader chapterNumber={0} chapterText={"7 fun faktů o 🧍a 📱"} showHelp={false} >
+          <Button onClick={onExit} className="bg-white text-purple-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
+            <ArrowLeftIcon className="h-5 w-5 text-purple-900" />
+            Menu
           </Button>
-        </div>
-      )}
+        </ChapterHeader>
+        {play ? (
+          <GameContent
+            chapterNumber={chapterNumber}
+            onReachGoal={()=>setPlay(false)}
+            customGoal={currentFactIndex === 0 && chapterNumber === 2 ? 10 : undefined}
+          />
+        ) : (
+          <div className="p-12 mb-12  items-center justify-between flex flex-grow flex-col">
+            <b>Fakt {currentFactIndex + 1} z {facts.length}:</b>
+            <p className="mt-2 mb-6">
+              {facts[currentFactIndex]}
+            </p>
+
+            <Button onClick={nextFact} className="w-full bg-white text-purple-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
+              Další
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
