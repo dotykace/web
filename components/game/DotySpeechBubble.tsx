@@ -30,7 +30,7 @@ const DotySpeechBubble = ({text}) => {
     <>
       {/* Speech bubble */}
       <div className="relative max-w-md rounded-2xl bg-sky-500 px-5 py-4 text-white shadow-md">
-        <p className="text-lg leading-snug">
+        <p className="text-lg leading-snug [@media(max-height:700px)]:max-h-[30dvh] [@media(max-height:700px)]:overflow-y-auto pr-2">
           {text}
         </p>
 
@@ -42,7 +42,7 @@ const DotySpeechBubble = ({text}) => {
         alt="Doty"
         width={96}
         height={96}
-        className="w-24 h-24 drop-shadow-lg"
+        className="w-24 h-24 drop-shadow-lg mt-2"
       />
     </>
   )

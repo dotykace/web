@@ -81,9 +81,9 @@ export default function GameBase({chapterNumber, onExit}: {chapterNumber: number
           />
         ) : (
           <div className="z-20 px-4 items-center justify-between text-white flex flex-grow flex-col">
-            <b>Fakt {currentFactIndex + 1}:</b>
+            <div className="font-bold mb-2">Fakt {currentFactIndex + 1}:</div>
             <DotySpeechBubble text={facts[currentFactIndex]}/>
-            <Button onClick={nextFact} className="w-full bg-white text-sky-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
+            <Button onClick={nextFact} className="mt-2 w-full bg-white text-sky-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
               Další
             </Button>
           </div>

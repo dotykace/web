@@ -43,7 +43,7 @@ const GameContent = ({chapterNumber, onReachGoal, customGoal}: {chapterNumber: n
       useSwipeNavigation(decreaseGoal, 0)
       return (
         <>
-          <div className="absolute top-12 h-[100dvh]">
+          <div className="absolute top-10 h-[100dvh]">
             {/*todo fix scroll line rendering*/}
             {/*todo back button not clickable under scroll line*/}
             <ScrollLine />
