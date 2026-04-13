@@ -49,7 +49,7 @@ const GameContent = ({chapterNumber, onReachGoal, customGoal}: {chapterNumber: n
             <ScrollLine />
           </div>
           <div className="mt-6 items-center justify-center flex text-center text-lg font-extrabold">
-            Cil: {goal} scrollů
+            Cíl: {goal} scrollů
           </div>
         </>
       )
@@ -57,7 +57,7 @@ const GameContent = ({chapterNumber, onReachGoal, customGoal}: {chapterNumber: n
       return (
         <div className="flex h-full items-center justify-center flex-col">
           <div className="mb-6 items-center justify-center flex text-center text-lg font-extrabold">
-            Cil: {goal} ťuknutí
+            Cíl: {goal} ťuknutí
           </div>
           <GlowingDot onClick={decreaseGoal} size={40} color="white" />
         </div>

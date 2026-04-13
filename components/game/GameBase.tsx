@@ -11,9 +11,10 @@ const FACTS = {
     "Při průměrném scrollu urazí prst po obrazovce asi 5 cm. K odemčení tohoto faktu tedy musel tvůj prst urazit asi 50 centimetrů. Znamená to, že aby tvůj prst uběhl 1 km, musíš udělat 20 tisic scrollů.",
     "Pojem \"doomscrolling\" zvolil Oxfordský slovník jedním ze slov roku 2020. Ukazuje to, že v době koronavirové pandemie se po světě rozšířila taky doomscrollovací pandemie. Ta, na rozdíl od pandemie koronaviru, trvá dodnes.",
     "Aby vás udrželi co nejdéle u obrazovek, používají vývojáři sociálních sítí stejné principy jako casina. To, jak jsou za sebe řazené reely (nekonečné pásmo videí ubíhající nahoru nebo nebo dolů), připomíná výherní automat. Taky pohyb prstu, kterým scrolluješ, připomíná zatáhnutí za páku automatu, které roztočí zářivé blikající obrázky.",
-    "O vlivu mobilů na vaše zdraví, společenský život a duševní pohodu jde plošně tvrdit málo. Výzkumy ukazují, že se např. nedá obecně říct, že 4h screen time denně má na různé lidi tentýž účinek. Zásadní je, jak, kdy a k čemu mobil používáte. Jedno zjištění je ale zřejmé: v den, kdy na sociálních sítích strávíš víc času, než je pro tebe obvyklé, bývá tvoje nálada horší než obyčejně.",
-    "12% čechů a češek ve věku 9-15 let denně hraje hry. Méně než jednou za měsíc hraje hry 21%. Vůbec hry nehraje 8%. ",
-    "1 čech nebo češka provolá z mobilu v průměru 7 minut denně.",
+    "O vlivu mobilů na vaše zdraví, společenský život a duševní pohodu jde plošně tvrdit málo.\n" +
+    "Výzkumy ukazují, že se např. nedá obecně říct, že 4h screen time denně mají na různé lidi tentýž účinek. Zásadní je, jak, kdy a k čemu mobil používáte. Jedno zjištění je ale zřejmé: v den, kdy na sociálních sítích strávíš víc času, než je pro tebe obvyklé, bývá tvoje nálada horší než obyčejně.",
+    "12% Čechů a Češek ve věku 9-15 let denně hraje hry. Méně než jednou za měsíc hraje hry 21%. Vůbec hry nehraje 8%.",
+    "1 Čech nebo Češka provolá z mobilu v průměru 7 minut denně.",
     "V roce 2025 používalo v Česku chytré telefony 82% majitelů mobilu. Dalších 16% používalo tlačítkový telefon. ",
   ],
   3: [
