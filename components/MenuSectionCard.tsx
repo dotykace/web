@@ -1,6 +1,7 @@
 import React from "react"
 import Image from "next/image"
 import { Check, Lock } from "lucide-react"
+import MenuGameOverlay from "@/components/game/MenuGameOverlay";
 
 export type SectionState = "locked" | "unlocked" | "completed"
 
@@ -71,10 +72,8 @@ export default function MenuSectionCard({
         </div>
       )}
       {section.gameMode && (
-        <div className="pointer-events-none absolute z-50 flex flex-col items-center justify-center h-full">
-          <div className=" text-amber-950 rounded-full bg-white text-xs sm:text-sm font-bold p-2 py-4 shadow-lg border border-amber-950 ">
-            Cekas? Zahraj si hru.
-          </div>
+        <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+          <MenuGameOverlay chapterNumber={section.id} />
         </div>
       )}
 
