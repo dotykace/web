@@ -62,7 +62,7 @@ export default function GameBase({chapterNumber, onExit}: {chapterNumber: number
       <div className="relative z-10 flex flex-col h-full">
         <div className="z-50 p-4">
           <div className="max-w-2xl mx-auto flex items-center gap-3">
-            <Button onClick={onExit} className="bg-white text-sky-900 font-bold py-2 rounded-full shadow-lg">
+            <Button onClick={onExit} className="bg-white text-sky-900 font-bold pl-2 pr-3 py-1 rounded-full shadow-lg">
               <ArrowLeftIcon className="h-4 w-4 text-sky-900" />
               Menu
             </Button>
