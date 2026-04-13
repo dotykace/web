@@ -52,9 +52,9 @@ export default function GameBase({chapterNumber, onExit}: {chapterNumber: number
   }
 
   return (
-    <div className={`relative w-full h-screen overflow-hidden flex flex-col pb-12 ${coloring}`}>
+    <div className={`relative w-full h-[100dvh] overflow-hidden flex flex-col pb-12 ${coloring}`}>
       <div
-        className={`absolute inset-0 bg-black pointer-events-none`}
+        className={`absolute inset-0 bg-black pointer-events-none z-0`}
         style={{
           opacity: opacityLevel/100
         }}
@@ -62,13 +62,13 @@ export default function GameBase({chapterNumber, onExit}: {chapterNumber: number
       <div className="relative z-10 flex flex-col h-full">
         <div className="z-50 p-4">
           <div className="max-w-2xl mx-auto flex items-center gap-3">
-            <Button onClick={onExit} className="bg-white text-sky-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
+            <Button onClick={onExit} className="bg-white text-sky-900 font-bold py-2 rounded-full shadow-lg">
               <ArrowLeftIcon className="h-4 w-4 text-sky-900" />
               Menu
             </Button>
             <div className="bg-white/20 backdrop-blur-md flex-grow rounded-full px-4 py-2 border border-white/30 flex items-center justify-between">
               <h1 className="text-white pl-2 font-bold text-lg">
-                7 fun faktů o 🧍a 📱
+                7 fun faktů o🧍a 📱
               </h1>
             </div>
           </div>
@@ -80,7 +80,7 @@ export default function GameBase({chapterNumber, onExit}: {chapterNumber: number
             customGoal={currentFactIndex === 0 && chapterNumber === 2 ? 10 : undefined}
           />
         ) : (
-          <div className="p-4 items-center justify-between flex flex-grow flex-col">
+          <div className="z-20 px-4 items-center justify-between text-white flex flex-grow flex-col">
             <b>Fakt {currentFactIndex + 1}:</b>
             <DotySpeechBubble text={facts[currentFactIndex]}/>
             <Button onClick={nextFact} className="w-full bg-white text-sky-900 font-bold tracking-wide py-2 rounded-full shadow-lg">

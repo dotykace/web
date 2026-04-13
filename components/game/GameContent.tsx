@@ -43,20 +43,20 @@ const GameContent = ({chapterNumber, onReachGoal, customGoal}: {chapterNumber: n
       useSwipeNavigation(decreaseGoal, 0)
       return (
         <>
-          <div className="absolute top-12">
+          <div className="absolute top-12 h-[100dvh]">
             {/*todo fix scroll line rendering*/}
             {/*todo back button not clickable under scroll line*/}
             <ScrollLine />
           </div>
-          <div className="mt-6 items-center justify-center flex text-center text-lg font-extrabold">
+          <div className="z-20 text-white mt-2 items-center justify-center flex text-center text-lg font-extrabold">
             Cíl: {goal} scrollů
           </div>
         </>
       )
     case 3:
       return (
-        <div className="flex h-full items-center justify-center flex-col">
-          <div className="mb-6 items-center justify-center flex text-center text-lg font-extrabold">
+        <div className="flex h-[100dvh] items-center justify-center flex-col">
+          <div className="z-20 text-white mb-6 items-center justify-center flex text-center text-lg font-extrabold">
             Cíl: {goal} ťuknutí
           </div>
           <GlowingDot onClick={decreaseGoal} size={40} color="white" />
