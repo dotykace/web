@@ -13,7 +13,6 @@ interface ChapterHeaderProps {
 
 export default function ChapterHeader({
   chapterNumber,
-  accentColor = "white",
   showAudioControl = false,
   muted = false,
   onToggleMute,

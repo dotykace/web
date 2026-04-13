@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react"
 
 export function useSwipeNavigation(
-  onSwipe: (direction: "up" | "down") => void,
+  onSwipe: (direction: "up" | "down", amount?: number) => void,
   minSwipeDistance: number = 50,
 ) {
   const touchStartY = useRef(0)
@@ -11,7 +11,7 @@ export function useSwipeNavigation(
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault()
       const direction = e.deltaY > 0 ? "up" : "down"
-      onSwipe(direction)
+      onSwipe(direction, Math.abs(e.deltaY))
     }
 
     const handleTouchStart = (e: TouchEvent) => {
@@ -28,7 +28,7 @@ export function useSwipeNavigation(
       const absSwipeDistance = Math.abs(swipeDistance)
 
       if (absSwipeDistance > minSwipeDistance) {
-        onSwipe(swipeDistance > 0 ? "up" : "down")
+        onSwipe(swipeDistance > 0 ? "up" : "down", absSwipeDistance)
       }
     }
 
