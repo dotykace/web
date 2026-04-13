@@ -2,7 +2,6 @@ import {Button} from "@/components/ui/button";
 import React from "react";
 import {ArrowLeftIcon} from "lucide-react";
 import {chapterConfigs} from "@/app/chapter/[id]/ChapterClient";
-import ChapterHeader from "@/components/ChapterHeader";
 import GameContent from "@/components/game/GameContent";
 import DotySpeechBubble from "@/components/game/DotySpeechBubble";
 
@@ -60,12 +59,19 @@ export default function GameBase({chapterNumber, onExit}: {chapterNumber: number
         }}
       />
       <div className="relative z-10 flex flex-col h-full">
-        <ChapterHeader chapterNumber={0} chapterText={"7 fun faktů o 🧍a 📱"} showHelp={false} >
-          <Button onClick={onExit} className="bg-white text-sky-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
-            <ArrowLeftIcon className="h-5 w-5 text-sky-900" />
-            Menu
-          </Button>
-        </ChapterHeader>
+        <div className="z-50 p-4">
+          <div className="max-w-2xl mx-auto flex items-center gap-3">
+            <Button onClick={onExit} className="bg-white text-sky-900 font-bold tracking-wide py-2 rounded-full shadow-lg">
+              <ArrowLeftIcon className="h-4 w-4 text-sky-900" />
+              Menu
+            </Button>
+            <div className="bg-white/20 backdrop-blur-md flex-grow rounded-full px-4 py-2 border border-white/30 flex items-center justify-between">
+              <h1 className="text-white pl-2 font-bold text-lg">
+                7 fun faktů o 🧍a 📱
+              </h1>
+            </div>
+          </div>
+        </div>
         {play ? (
           <GameContent
             chapterNumber={chapterNumber}
