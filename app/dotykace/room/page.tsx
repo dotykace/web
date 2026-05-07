@@ -19,13 +19,13 @@ export default function DotykaceRoomPage() {
     const storedPlayerId = readFromStorage("playerId") as string
 
     if (!storedPlayerName || !storedRoomId) {
-      router.push("/")
+      router.push("/login")
       return
     }
 
     if (!storedPlayerId) {
       console.log("Player ID not found in localStorage. Redirecting to root")
-      router.push("/")
+      router.push("/login")
       return
     }
 
@@ -87,7 +87,7 @@ export default function DotykaceRoomPage() {
           }
         } else {
           hasRedirected = true
-          router.push("/")
+          router.push("/login")
         }
       },
       (error) => {

@@ -10,10 +10,10 @@ export default function NotFound() {
         Sorry, the page you&apos;re looking for doesn&apos;t exist.
       </p>
       <Link
-        href="/menu"
+        href="/login"
         className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
       >
-        Go to Menu
+        Go to Log In
       </Link>
     </div>
   )

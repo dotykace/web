@@ -45,7 +45,7 @@ export default function AdminPage() {
   useEffect(() => {
     const storedAdminId = readFromStorage("adminId")
     if (!storedAdminId) {
-      router.push("/")
+      router.push("/login")
       return
     }
     setAdminId(storedAdminId)
@@ -137,7 +137,7 @@ export default function AdminPage() {
 
   const logout = () => {
     removeFromStorage("adminId")
-    router.push("/")
+    router.push("/login")
   }
 
   const EmptyRoomList = () => {
