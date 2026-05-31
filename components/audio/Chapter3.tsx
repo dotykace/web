@@ -1,120 +1,24 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
-import { collection, addDoc, serverTimestamp } from "firebase/firestore"
-import { db } from "@/lib/firebase"
-import { Textarea } from "@/components/ui/textarea"
+import { useEffect, useCallback } from "react"
 import { useChatContext } from "@/context/ChatContext"
 import { useSharedAudio } from "@/context/AudioContext"
 import BasicAudioVisual from "@/components/BasicAudioVisual"
-import VoiceVisualization from "@/components/VoiceVisualization"
-import { motion } from "framer-motion"
 import { CHAPTER3_PROGRESS_KEY } from "@/components/ChapterPage"
 import { setToStorage } from "@/scripts/local-storage";
 import AudioChapterStart from "@/components/audio/AudioChapterStart";
+import AudioChapterInput from "@/components/audio/AudioChapterInput";
+import LoadingScreen from "@/components/LoadingScreen";
 
 function Chapter3Content() {
   const { state, currentInteraction, goToNextInteraction } = useChatContext()
   const { stopAll } = useSharedAudio()
 
-  const [inputValue, setInputValue] = useState("")
-  const [timeLeft, setTimeLeft] = useState<number | null>(null)
-  const [showWarning, setShowWarning] = useState(false)
-  const [timerExpired, setTimerExpired] = useState(false)
-  const countdownRef = useRef<NodeJS.Timeout | null>(null)
-
   useEffect(() => {
-    return () => {
-      if (countdownRef.current) clearInterval(countdownRef.current)
-    }
-  }, [])
-
-  // Reset state when interaction changes
-  useEffect(() => {
-    setInputValue("")
-    setTimeLeft(null)
-    setShowWarning(false)
-    setTimerExpired(false)
-    if (countdownRef.current) {
-      clearInterval(countdownRef.current)
-      countdownRef.current = null
-    }
     if (currentInteraction?.id && currentInteraction.saveProgress === true) {
       setToStorage(CHAPTER3_PROGRESS_KEY, currentInteraction?.id)
     }
   }, [currentInteraction?.id])
-
-  // Start countdown for timed input interactions
-  useEffect(() => {
-    if (currentInteraction?.type !== "input" || !currentInteraction.duration)
-      return
-
-    setTimeLeft(currentInteraction.duration)
-    countdownRef.current = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev === null || prev <= 1) {
-          if (countdownRef.current) clearInterval(countdownRef.current)
-          setTimerExpired(true)
-          return null
-        }
-        if (
-          currentInteraction["warning-after"] &&
-          prev === currentInteraction["warning-after"]
-        ) {
-          setShowWarning(true)
-        }
-        return prev - 1
-      })
-    }, 1000)
-
-    return () => {
-      if (countdownRef.current) clearInterval(countdownRef.current)
-    }
-  }, [currentInteraction?.id])
-
-  useEffect(() => {
-    if (timerExpired) {
-      goToNextInteraction()
-    }
-  }, [timerExpired, goToNextInteraction])
-
-  const saveToFirestore = async (
-    value: string | string[],
-    interactionId: string,
-    interactionType: string,
-  ) => {
-    try {
-      await addDoc(collection(db, "chapter3"), {
-        interactionId,
-        responseValue: value,
-        interactionType,
-        timestamp: serverTimestamp(),
-        chapter: "chapter3",
-      })
-    } catch (error) {
-      console.error("Error saving to Firestore:", error)
-    }
-  }
-
-  const handleInputSave = useCallback(() => {
-    if (!currentInteraction) return
-    if (countdownRef.current) clearInterval(countdownRef.current)
-    if (inputValue.trim()) {
-      saveToFirestore(inputValue, currentInteraction.id, "input")
-    }
-    goToNextInteraction()
-  }, [inputValue, currentInteraction, goToNextInteraction])
-
-  const handleChoiceClick = useCallback(
-    (choice: { label: string; "next-id": string }) => {
-      stopAll()
-      if (currentInteraction) {
-        saveToFirestore(choice.label, currentInteraction.id, "choice")
-      }
-      goToNextInteraction(choice["next-id"])
-    },
-    [currentInteraction, stopAll, goToNextInteraction],
-  )
 
   const handleButtonClick = useCallback(
     (button: { label: string; "next-id": string }) => {
@@ -125,6 +29,10 @@ function Chapter3Content() {
   )
 
   if (!currentInteraction || state !== "initialized") return null
+  if(currentInteraction.type === "checkpoint"){
+    return <LoadingScreen />
+  }
+
   const hasButton = !!currentInteraction.button
 
   const currentAudio =
@@ -140,49 +48,6 @@ function Chapter3Content() {
         }
       : null
 
-  if (currentInteraction.type === "multiple-choice") {
-    return (
-      <BasicAudioVisual
-        id={currentInteraction.id}
-        audio={null}
-        showProgress={false}
-        canSkip={false}
-      >
-        <div className="px-2 flex flex-col min-h-0 flex-1 overflow-hidden">
-          {currentInteraction.text() && (
-            <p className="text-white text-base sm:text-lg text-center font-semibold tracking-wide drop-shadow-lg mb-2 flex-shrink-0">
-              {currentInteraction.text()}
-            </p>
-          )}
-          <div className="space-y-1.5 sm:space-y-2 overflow-y-auto flex-1 min-h-0 pr-1 pb-2">
-            {(
-              currentInteraction.choices as Array<{
-                label: string
-                "next-id": string
-              }>
-            ).map((choice, index) => (
-              <motion.div
-                key={choice.label}
-                initial={{ y: 10, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: index * 0.08 }}
-              >
-                <button
-                  onClick={() => handleChoiceClick(choice)}
-                  className="w-full bg-white hover:bg-white/90
-                                     text-orange-900 font-semibold text-xs sm:text-sm tracking-wide py-2 sm:py-2.5 px-3 rounded-full shadow-md
-                                     transition-all duration-300 active:scale-[0.98]"
-                >
-                  {choice.label}
-                </button>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </BasicAudioVisual>
-    )
-  }
-
   // Voice interaction — may include continue button shown after audio
   if (currentInteraction.type === "voice") {
     return (
@@ -191,87 +56,34 @@ function Chapter3Content() {
         audio={currentAudio}
         canSkip={true}
       >
-        {hasButton ? (
-          <div className="w-full flex flex-col min-h-0 gap-3">
-            <div className={`flex-shrink-0 transition-all duration-300 origin-top h-36 sm:h-48`}>
-              <VoiceVisualization className="h-full" />
-            </div>
-
-            {hasButton && (
-              <div className="px-4 flex-shrink-0">
-                <button
-                  onClick={() => handleButtonClick(currentInteraction.button)}
-                  className="w-full bg-white hover:bg-white/90
+        {hasButton && (
+          <div className="px-4 flex-shrink-0 w-full">
+            <button
+              onClick={() => handleButtonClick(currentInteraction.button)}
+              className="w-full bg-white hover:bg-white/90
                              text-orange-900 font-bold tracking-wide py-2 px-2 rounded-full shadow-lg
                              transition-all duration-300 active:scale-[0.98]"
-                >
-                  {currentInteraction.button.label}
-                </button>
-              </div>
-            )}
+            >
+              {currentInteraction.button.label}
+            </button>
           </div>
-        ) : null}
+        )}
       </BasicAudioVisual>
     )
   }
-
-  // Input with countdown
-  if (currentInteraction.type === "input") {
-    return (
-      <BasicAudioVisual
-        id={currentInteraction.id}
-        audio={null}
-        showProgress={false}
-        canSkip={false}
-      >
-        <div className="space-y-4 w-full px-4">
-          <p className="text-white text-lg text-center font-medium">
-            {currentInteraction.text()}
-          </p>
-          <Textarea
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Napíš svou odpověď..."
-            className="bg-white/10 border-2 border-white/30 text-white placeholder:text-white/50
-                       resize-none rounded-2xl font-medium tracking-wide focus:border-white/50 focus:ring-white/20 backdrop-blur-sm"
-            rows={3}
-          />
-          {timeLeft !== null && (
-            <div className="text-center">
-              <div className="text-white font-bold text-sm tracking-wide drop-shadow-md">
-                Zostáva: {Math.floor(timeLeft / 60)}:
-                {(timeLeft % 60).toString().padStart(2, "0")}
-              </div>
-              {showWarning && currentInteraction["warning-text"] && (
-                <div className="text-yellow-300 text-sm mt-2 font-bold tracking-wide drop-shadow-md">
-                  {currentInteraction["warning-text"]}
-                </div>
-              )}
-            </div>
-          )}
-          <button
-            onClick={handleInputSave}
-            disabled={!inputValue.trim()}
-            className="w-full bg-white hover:bg-white/90
-                       disabled:bg-white/30 disabled:text-white/50
-                       text-orange-900 font-bold tracking-wide py-2 px-2 rounded-full shadow-lg
-                       disabled:shadow-none transition-all duration-300 active:scale-[0.98]"
-          >
-            {currentInteraction["save-label"] || "Uložit"}
-          </button>
-        </div>
-      </BasicAudioVisual>
+  else {
+    return(
+      <AudioChapterInput
+        chapterString={"chapter3"}
+        stopAll={stopAll}
+        currentInteraction={currentInteraction}
+        goToNextInteraction={goToNextInteraction}
+        coloring={{
+          text: "text-orange-900",
+        }}
+      />
     )
   }
-
-  // Fallback for other interaction types
-  return (
-    <BasicAudioVisual
-      id={currentInteraction.id}
-      audio={null}
-      showProgress={false}
-    />
-  )
 }
 
 export default function Chapter3() {
