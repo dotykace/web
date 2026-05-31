@@ -184,7 +184,7 @@
       "text": "Ok! UN a BN - jdeme na to."
     },
     "intro-end": {
-      "type": "checkpoint",
+      "type": "end",
       "duration": 0
     },
     "confirm-play": {

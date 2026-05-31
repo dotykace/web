@@ -6,7 +6,7 @@
   "startInteractionId": "chapter-4-start",
   "interactions": {
     "chapter-4-start": {
-      "type": "checkpoint",
+      "type": "start",
       "duration": 0,
       "next-id": "intro-voice"
     },
@@ -83,7 +83,7 @@
       "next-id": "chapter-4-end"
     },
     "chapter-4-end": {
-      "type": "checkpoint",
+      "type": "end",
       "duration": 0
     }
   }

@@ -8,7 +8,6 @@ import { useSharedAudio } from "@/context/AudioContext"
 import { CHAPTER2_PROGRESS_KEY } from "@/components/ChapterPage"
 import AudioChapterStart from "@/components/audio/AudioChapterStart";
 import AudioChapterInput from "@/components/audio/AudioChapterInput";
-import LoadingScreen from "@/components/LoadingScreen";
 
 function Chapter2Content() {
   const { state, currentInteraction, goToNextInteraction } = useChatContext()
@@ -33,10 +32,6 @@ function Chapter2Content() {
   )
 
   if (!currentInteraction || state !== "initialized") return null
-  if(currentInteraction.type === "checkpoint"){
-    return <LoadingScreen />
-  }
-
   const hasButton = !!currentInteraction.button
 
   const currentAudio =

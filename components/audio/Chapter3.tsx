@@ -8,7 +8,6 @@ import { CHAPTER3_PROGRESS_KEY } from "@/components/ChapterPage"
 import { setToStorage } from "@/scripts/local-storage";
 import AudioChapterStart from "@/components/audio/AudioChapterStart";
 import AudioChapterInput from "@/components/audio/AudioChapterInput";
-import LoadingScreen from "@/components/LoadingScreen";
 
 function Chapter3Content() {
   const { state, currentInteraction, goToNextInteraction } = useChatContext()
@@ -29,10 +28,6 @@ function Chapter3Content() {
   )
 
   if (!currentInteraction || state !== "initialized") return null
-  if(currentInteraction.type === "checkpoint"){
-    return <LoadingScreen />
-  }
-
   const hasButton = !!currentInteraction.button
 
   const currentAudio =

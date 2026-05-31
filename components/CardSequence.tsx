@@ -165,11 +165,6 @@ export default function CardSequence() {
     )
   }
 
-  // Handle checkpoint - show loading and redirect
-  if (currentInteraction?.type === "checkpoint") {
-    return <LoadingScreen />
-  }
-
   // Handle video interactions
   if (currentInteraction?.type === "video") {
     return (

@@ -3,7 +3,7 @@
   "startInteractionId": "chapter-3-start",
   "interactions": {
     "chapter-3-start": {
-      "type": "checkpoint",
+      "type": "start",
       "duration": 0,
       "next-id": "3.10"
     },
@@ -135,7 +135,7 @@
       "next-id": "chapter-3-end"
     },
     "chapter-3-end": {
-      "type": "checkpoint",
+      "type": "end",
       "duration": 0
     }
   }
