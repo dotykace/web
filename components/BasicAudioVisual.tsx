@@ -28,7 +28,7 @@ export default function BasicAudioVisual({
   coloring = "bg-white/10",
   canSkip = true,
   progress = 50,
-  showProgress = true,
+  showProgress = false,
 }: BasicAudioVisualProps) {
   const playedForIdRef = useRef<string | null>(null)
   const [showSkip, setShowSkip] = React.useState(false)

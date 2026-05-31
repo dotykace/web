@@ -158,7 +158,6 @@ function Chapter2Content() {
       <BasicAudioVisual
         id={currentInteraction.id}
         audio={currentAudio}
-        showProgress={false}
         canSkip={true}
       >
         {(hasButton) ? (
