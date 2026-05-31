@@ -15,7 +15,6 @@ interface BasicAudioVisualProps {
   audio?: AudioConfig | null
   id?: string
   children?: React.ReactNode
-  coloring?: string
   canSkip?: boolean
   progress?: number
   showProgress?: boolean // When false, hides the progress bar (e.g. chapter 2 doesn't need it)
@@ -25,13 +24,13 @@ export default function BasicAudioVisual({
   audio = null,
   id,
   children,
-  coloring = "bg-white/10",
   canSkip = true,
   progress = 50,
-  showProgress = true,
+  showProgress = false,
 }: BasicAudioVisualProps) {
   const playedForIdRef = useRef<string | null>(null)
   const [showSkip, setShowSkip] = React.useState(false)
+  const [loading, setLoading] = React.useState(!!audio)
 
   const { playOnce, stopAll } = useSharedAudio()
 
@@ -51,6 +50,7 @@ export default function BasicAudioVisual({
         filename: currentAudio.filename,
         opts: currentAudio.opts,
         onFinish: currentAudio.onFinish || (() => {}),
+        onStarted: () => {setLoading(false)},
         type: currentAudio.type || "sound",
       })
     }
@@ -75,23 +75,30 @@ export default function BasicAudioVisual({
 
   // Changed from h-screen to flex-1 so this component works inside parent flex layouts (e.g. below ChapterHeader)
   return (
-    <div className={`flex-1 min-h-0 flex flex-col ${coloring} `}>
+    <div className={`flex-1 min-h-0 flex flex-col`}>
       {/* Main content area */}
-      <div className="flex-1 flex flex-col items-center justify-center p-4 min-h-0 overflow-hidden">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={id}
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -20, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="w-full max-w-md flex flex-col items-center justify-center text-center min-h-0 max-h-full"
-            onClick={() => setShowSkip(canSkip!!)}
-          >
-            {children ?? <VoiceVisualization />}
-          </motion.div>
-        </AnimatePresence>
-      </div>
+      {loading? (
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="text-white/80">Načítám audio...</div>
+        </div>
+        ):(
+        <div className="flex-1 flex flex-col items-center justify-center p-4 min-h-0 overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={id}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="w-full max-w-md flex flex-col items-center justify-center text-center min-h-0 max-h-full"
+              onClick={() => setShowSkip(canSkip!!)}
+            >
+              <VoiceVisualization />
+              {children ?? null}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      )}
 
       {/* Skip Button - pinned to bottom */}
       {audio && (

@@ -134,7 +134,7 @@
       "next-id": "chapter-1-end"
     },
     "chapter-1-end": {
-      "type": "checkpoint",
+      "type": "end",
       "duration": 0
     },
     "place-1": {

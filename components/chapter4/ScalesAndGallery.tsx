@@ -218,7 +218,6 @@ function ScalesAndGalleryContent() {
           id={currentInteraction.id}
           audio={audio}
           progress={progress}
-          showProgress={false}
         />
       )
     }
@@ -228,7 +227,6 @@ function ScalesAndGalleryContent() {
           id={currentInteraction.id}
           audio={null}
           progress={90}
-          showProgress={false}
         >
           <CountDownInput
             questionText={currentInteraction.text()}
@@ -243,7 +241,6 @@ function ScalesAndGalleryContent() {
           id={currentInteraction.id}
           audio={null}
           progress={progress}
-          showProgress={false}
         />
       )
   }

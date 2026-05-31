@@ -102,7 +102,9 @@ export default function ChapterPage({
     !state ||
     state === "loading" ||
     !currentInteraction ||
-    !soundMap
+    !soundMap ||
+    currentInteraction?.type === "start" ||
+    currentInteraction?.type === "end"
   ) {
     return <LoadingScreen />
   }
