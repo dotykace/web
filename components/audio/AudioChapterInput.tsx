@@ -1,11 +1,21 @@
-import {AnimatePresence, motion} from "framer-motion";
-import React, {useCallback, useEffect, useRef, useState} from "react";
-import {Textarea} from "@/components/ui/textarea";
-import {readFromStorage, setToStorage} from "@/scripts/local-storage";
-import {addDoc, collection, serverTimestamp} from "firebase/firestore";
-import {db} from "@/lib/firebase";
+import { AnimatePresence, motion } from "framer-motion";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { readFromStorage } from "@/scripts/local-storage";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { ProcessedInteraction } from "@/interactions";
 
-export default function AudioChapterInput({currentInteraction, coloring, chapterString, stopAll, goToNextInteraction}: {}) {
+interface AudioChapterInputProps {
+  currentInteraction: ProcessedInteraction
+  coloring?: { bg?: string; text?: string }
+  chapterString: string
+  stopAll: () => void
+  goToNextInteraction: (nextId?: string) => void
+  onSaveInput?: (value: string) => void
+}
+
+export default function AudioChapterInput({currentInteraction, coloring, chapterString, stopAll, goToNextInteraction, onSaveInput}: AudioChapterInputProps) {
   const {id, type} = currentInteraction
 
   const [timeLeft, setTimeLeft] = useState<number | null>(null)
@@ -84,9 +94,7 @@ export default function AudioChapterInput({currentInteraction, coloring, chapter
     if (countdownRef.current) clearInterval(countdownRef.current)
     if (inputValue.trim()) {
       saveToFirestore(inputValue, currentInteraction.id, "input")
-      if (id === "pairs-text-field") {
-        setToStorage("pairs-text-field", inputValue)
-      }
+      if (onSaveInput) onSaveInput(inputValue)
     }
     goToNextInteraction()
   }, [inputValue, currentInteraction, goToNextInteraction])
@@ -170,16 +178,6 @@ export default function AudioChapterInput({currentInteraction, coloring, chapter
             <p className="text-white text-xl leading-relaxed text-center font-semibold tracking-wide drop-shadow-lg">
               {currentInteraction.text()}
             </p>
-          </div>
-        )
-      case "show-message":
-        return (
-          <div className="w-full">
-            <div className="bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-6 shadow-xl">
-              <p className="text-white text-lg leading-relaxed text-center font-medium">
-                {readFromStorage("pairs-text-field") || "Žádný vzkaz"}
-              </p>
-            </div>
           </div>
         )
       default:

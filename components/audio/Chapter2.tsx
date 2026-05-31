@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { setToStorage } from "@/scripts/local-storage"
 import BasicAudioVisual from "@/components/BasicAudioVisual"
 import { useChatContext } from "@/context/ChatContext"
@@ -15,6 +15,7 @@ function Chapter2Content() {
   const { stopAll } = useSharedAudio()
 
   const [showButton, setShowButton] = useState(false)
+  const [savedMessage, setSavedMessage] = useState<string | null>(null)
 
   useEffect(() => {
     setShowButton(false)
@@ -80,6 +81,17 @@ function Chapter2Content() {
       </BasicAudioVisual>
     )
   }
+  else if (currentInteraction.type === "show-message"){
+    return (
+      <div className="w-full flex-1 flex items-center justify-center p-4">
+        <div className="bg-white/20 backdrop-blur-lg border border-white/30 rounded-3xl p-6 shadow-xl">
+          <p className="text-white text-lg leading-relaxed text-center font-medium">
+            {savedMessage || "Žádný vzkaz"}
+          </p>
+        </div>
+      </div>
+    )
+  }
   else {
     return(
       <AudioChapterInput
@@ -89,6 +101,11 @@ function Chapter2Content() {
         goToNextInteraction={goToNextInteraction}
         coloring={{
           text: "text-purple-900",
+        }}
+        onSaveInput={(input) => {
+          if (currentInteraction.id === "pairs-text-field" ){
+            setSavedMessage(input)
+          }
         }}
       />
     )
