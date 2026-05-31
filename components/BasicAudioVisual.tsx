@@ -15,7 +15,6 @@ interface BasicAudioVisualProps {
   audio?: AudioConfig | null
   id?: string
   children?: React.ReactNode
-  coloring?: string
   canSkip?: boolean
   progress?: number
   showProgress?: boolean // When false, hides the progress bar (e.g. chapter 2 doesn't need it)
@@ -25,7 +24,6 @@ export default function BasicAudioVisual({
   audio = null,
   id,
   children,
-  coloring = "bg-white/10",
   canSkip = true,
   progress = 50,
   showProgress = false,
@@ -77,7 +75,7 @@ export default function BasicAudioVisual({
 
   // Changed from h-screen to flex-1 so this component works inside parent flex layouts (e.g. below ChapterHeader)
   return (
-    <div className={`flex-1 min-h-0 flex flex-col ${coloring} `}>
+    <div className={`flex-1 min-h-0 flex flex-col`}>
       {/* Main content area */}
       {loading? (
         <div className="flex-1 flex items-center justify-center p-4">
