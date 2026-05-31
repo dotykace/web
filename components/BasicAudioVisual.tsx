@@ -32,6 +32,7 @@ export default function BasicAudioVisual({
 }: BasicAudioVisualProps) {
   const playedForIdRef = useRef<string | null>(null)
   const [showSkip, setShowSkip] = React.useState(false)
+  const [loading, setLoading] = React.useState(!!audio)
 
   const { playOnce, stopAll } = useSharedAudio()
 
@@ -51,6 +52,7 @@ export default function BasicAudioVisual({
         filename: currentAudio.filename,
         opts: currentAudio.opts,
         onFinish: currentAudio.onFinish || (() => {}),
+        onStarted: () => {setLoading(false)},
         type: currentAudio.type || "sound",
       })
     }
@@ -77,6 +79,11 @@ export default function BasicAudioVisual({
   return (
     <div className={`flex-1 min-h-0 flex flex-col ${coloring} `}>
       {/* Main content area */}
+      {loading? (
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="text-white/80">Načítám audio...</div>
+        </div>
+        ):(
         <div className="flex-1 flex flex-col items-center justify-center p-4 min-h-0 overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
@@ -93,6 +100,7 @@ export default function BasicAudioVisual({
             </motion.div>
           </AnimatePresence>
         </div>
+      )}
 
       {/* Skip Button - pinned to bottom */}
       {audio && (
