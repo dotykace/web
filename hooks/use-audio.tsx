@@ -26,6 +26,7 @@ interface SoundMapEntry {
 
 export interface PlayOnceOptions extends SoundMapEntry {
   onFinish?: () => void
+  onStarted?: () => void
   type: "sound" | "voice"
 }
 
@@ -197,7 +198,7 @@ export function useAudioManager() {
   )
 
   const playOnce = useCallback(
-    async ({ filename, opts, type, onFinish }: PlayOnceOptions) => {
+    async ({ filename, opts, type, onFinish, onStarted }: PlayOnceOptions) => {
       let buffer: AudioBuffer | undefined
 
       // iOS Safari suspends AudioContext and network when the share sheet or
@@ -249,6 +250,9 @@ export function useAudioManager() {
         if (timeOut) clearTimeout(timeOut)
         if (onFinish) onFinish()
         return
+      }
+      else{
+        if (onStarted) onStarted()
       }
       const { source, gainNode } = result
       const instance: PlayingInstance = { source, gainNode, timeOut }
